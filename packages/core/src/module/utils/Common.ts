@@ -350,8 +350,8 @@ class Tools {
   useDarkTheme(): boolean {
     let dark = true
     const configTheme = Config.app.Theme
-    if (configTheme === 0) {
-      // 自动
+    if (configTheme === 0 || configTheme === 3) {
+      // 自动 / 智能场景的兜底自动
       const currentHour = new Date().getHours()
       if (currentHour >= 6 && currentHour < 18) {
         dark = false

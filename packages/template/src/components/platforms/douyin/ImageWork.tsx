@@ -190,6 +190,8 @@ const DouyinImageCover: React.FC<Props> = ({ data }) => {
   const mediaType = cover.media_type ?? 'static'
   const mediaMeta = imageMediaTypeMeta[mediaType]
   const MediaIcon = mediaMeta.icon
+  const previewImages = image_list.images.slice(1, 4).filter((image) => image.url)
+  const remainingPreviewCount = Math.max(totalCount - previewImages.length - 1, 0)
 
   return (
     <section className="relative -mx-20 mt-12 overflow-visible">
@@ -226,6 +228,27 @@ const DouyinImageCover: React.FC<Props> = ({ data }) => {
       <div className="absolute left-24 top-10 z-30 flex items-center gap-5 text-white drop-shadow-lg">
         <span className="text-[34px] font-black tabular-nums">共 {totalCount} 张</span>
       </div>
+
+      {previewImages.length > 0 && (
+        <div className="absolute right-24 top-8 z-30 flex items-center -space-x-5 drop-shadow-2xl">
+          {previewImages.map((image, index) => (
+            <img
+              key={`${image.url}-${index}`}
+              src={image.url}
+              alt="图文预览"
+              className="h-28 w-28 rounded-3xl object-cover ring-2 ring-white/25"
+              style={{ transform: `rotate(${(index - 1) * 5}deg)` }}
+              referrerPolicy="no-referrer"
+              crossOrigin="anonymous"
+            />
+          ))}
+          {remainingPreviewCount > 0 && (
+            <div className="flex h-28 w-28 items-center justify-center rounded-3xl backdrop-blur-xs bg-black/50 px-5 text-[32px] font-black text-white ring-2 ring-white/25">
+              +{remainingPreviewCount}
+            </div>
+          )}
+        </div>
+      )}
 
       <div className="absolute bottom-12 right-24 z-30 flex items-center gap-4 text-white drop-shadow-2xl">
         <MediaIcon size={72} weight="fill" />

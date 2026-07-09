@@ -5,6 +5,8 @@ import axios from 'node-karin/axios'
 import type { Plugin } from 'template'
 import type { BilibiliPosterPalette } from 'template/types/platforms/bilibili/dynamic/live'
 
+import { Config } from '@/module/utils/Config'
+
 type BeforeRenderContext = Parameters<NonNullable<Plugin['beforeRender']>>[0]
 type ApplyRequest = Parameters<NonNullable<Plugin['apply']>>[0]
 
@@ -17,6 +19,19 @@ type RGB = {
 type PosterPaletteSeed = {
   dominant: RGB
   vividCandidate: RGB
+}
+
+type PosterImageSample = {
+  buffer: Buffer
+  paletteSeed: PosterPaletteSeed
+}
+
+type CoverThemeDecision = {
+  useDarkTheme: boolean
+  averageLuma: number
+  darkRatio: number
+  brightRatio: number
+  vividRatio: number
 }
 
 const clamp = (value: number, min: number, max: number): number => {
@@ -43,6 +58,10 @@ const rgbToCss = (rgb: RGB): string => {
 
 const rgba = (rgb: RGB, alpha: number): string => {
   return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha})`
+}
+
+const relativeLuma = ({ r, g, b }: RGB): number => {
+  return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255
 }
 
 const rgbToHsl = ({ r, g, b }: RGB): { h: number; s: number; l: number } => {
@@ -263,14 +282,144 @@ const extractPosterPaletteSeedFromBuffer = (buffer: Buffer): PosterPaletteSeed |
   }
 }
 
+const resolvePosterImageSample = async (imageUrl: string): Promise<PosterImageSample | null> => {
+  const candidates = Array.from(new Set([buildProxyImageUrl(imageUrl), imageUrl].filter(Boolean)))
+
+  for (const candidate of candidates) {
+    try {
+      const response = await axios.get<ArrayBuffer>(candidate, {
+        responseType: 'arraybuffer',
+        headers: {
+          accept: 'image/png,image/apng,image/*,*/*;q=0.8'
+        }
+      })
+
+      const buffer = Buffer.from(response.data)
+      const paletteSeed = extractPosterPaletteSeedFromBuffer(buffer)
+
+      if (paletteSeed) {
+        return { buffer, paletteSeed }
+      }
+    } catch (error) {
+      logger.debug(`[Render] 封面取色失败，尝试候选图: ${candidate}`, error)
+    }
+  }
+
+  return null
+}
+
+const decideCoverTheme = (buffer: Buffer): CoverThemeDecision | null => {
+  const decoded = decodePngToPixels(buffer)
+  if (!decoded) return null
+
+  const { data } = decoded
+  const pixelCount = data.length / 4
+  const pixelStep = Math.max(1, Math.floor(pixelCount / 1800))
+
+  let total = 0
+  let lumaSum = 0
+  let darkCount = 0
+  let brightCount = 0
+  let vividCount = 0
+
+  for (let pixelIndex = 0; pixelIndex < pixelCount; pixelIndex += pixelStep) {
+    const i = pixelIndex * 4
+    const alpha = data[i + 3]
+    if (alpha < 20) continue
+
+    const rgb = {
+      r: data[i],
+      g: data[i + 1],
+      b: data[i + 2]
+    }
+    const luma = relativeLuma(rgb)
+    const { s, l } = rgbToHsl(rgb)
+
+    total += 1
+    lumaSum += luma
+    if (luma < 0.38) darkCount += 1
+    if (luma > 0.72) brightCount += 1
+    if (s > 0.42 && l > 0.16 && l < 0.86) vividCount += 1
+  }
+
+  if (!total) return null
+
+  const averageLuma = lumaSum / total
+  const darkRatio = darkCount / total
+  const brightRatio = brightCount / total
+  const vividRatio = vividCount / total
+  const shouldUseLight = averageLuma > 0.72 && brightRatio > 0.48 && vividRatio < 0.28 && darkRatio < 0.18
+  const shouldUseDark = averageLuma < 0.54 || darkRatio > 0.34 || (vividRatio > 0.38 && averageLuma < 0.72)
+
+  return {
+    useDarkTheme: shouldUseLight ? false : shouldUseDark,
+    averageLuma,
+    darkRatio,
+    brightRatio,
+    vividRatio
+  }
+}
+
+const isBilibiliPosterPaletteRequest = (request: ApplyRequest): boolean => {
+  return request.templateType === 'bilibili' && request.templateName === 'dynamic/DYNAMIC_TYPE_LIVE_RCMD'
+}
+
+const isDouyinCoverThemeRequest = (request: ApplyRequest): boolean => {
+  return request.templateType === 'douyin' && (request.templateName === 'video-work' || request.templateName === 'image-work')
+}
+
+const getDouyinCoverUrl = (request: ApplyRequest): string => {
+  const data = request.data || {}
+
+  if (request.templateName === 'video-work') {
+    return typeof data.image_url === 'string' ? data.image_url : ''
+  }
+
+  if (request.templateName === 'image-work') {
+    const imageList = (data as { image_list?: { images?: Array<{ url?: unknown }> } }).image_list
+    const cover = imageList?.images?.find((image) => typeof image.url === 'string' && image.url.length > 0)
+    return typeof cover?.url === 'string' ? cover.url : ''
+  }
+
+  return ''
+}
+
+const applyDouyinCoverTheme = async (ctx: BeforeRenderContext): Promise<void> => {
+  const imageUrl = getDouyinCoverUrl(ctx.request)
+  if (!imageUrl) return
+
+  const sample = await resolvePosterImageSample(imageUrl)
+  if (!sample) return
+
+  const decision = decideCoverTheme(sample.buffer)
+  if (!decision) return
+
+  const data = ctx.request.data || {}
+  ctx.request.useDarkTheme = decision.useDarkTheme
+  data.useDarkTheme = decision.useDarkTheme
+
+  logger.debug(
+    `[Render] 抖音封面智能主题: ${ctx.request.templateName} -> ${decision.useDarkTheme ? '深色' : '浅色'} ` +
+      `(luma=${decision.averageLuma.toFixed(2)}, dark=${decision.darkRatio.toFixed(2)}, bright=${decision.brightRatio.toFixed(2)}, vivid=${decision.vividRatio.toFixed(2)})`
+  )
+}
+
 export const createPosterPalettePlugin = (): Plugin => {
   return {
-    name: '封面动态取色',
+    name: '封面动态取色与智能主题',
     enforce: 'pre',
     apply(request: ApplyRequest) {
-      return request.templateType === 'bilibili' && request.templateName === 'dynamic/DYNAMIC_TYPE_LIVE_RCMD'
+      return isBilibiliPosterPaletteRequest(request) || (Config.app.Theme === 3 && isDouyinCoverThemeRequest(request))
     },
     async beforeRender(ctx: BeforeRenderContext) {
+      if (Config.app.Theme === 3 && isDouyinCoverThemeRequest(ctx.request)) {
+        await applyDouyinCoverTheme(ctx)
+      }
+
+      if (!isBilibiliPosterPaletteRequest(ctx.request)) {
+        return
+      }
+
       const data = ctx.request.data || {}
       const imageUrl = typeof data.image_url === 'string' ? data.image_url : ''
 
@@ -279,37 +428,19 @@ export const createPosterPalettePlugin = (): Plugin => {
       }
 
       const useDarkTheme = Boolean(ctx.request.useDarkTheme ?? data.useDarkTheme)
-      const candidates = [buildProxyImageUrl(imageUrl), imageUrl]
+      const sample = await resolvePosterImageSample(imageUrl)
+      if (!sample) return
 
-      for (const candidate of candidates) {
-        try {
-          const response = await axios.get<ArrayBuffer>(candidate, {
-            responseType: 'arraybuffer',
-            headers: {
-              accept: 'image/png,image/apng,image/*,*/*;q=0.8'
-            }
-          })
+      const lightPalette = createPosterPalette(sample.paletteSeed, false)
+      const darkPalette = createPosterPalette(sample.paletteSeed, true)
 
-          const buffer = Buffer.from(response.data)
-          const paletteSeed = extractPosterPaletteSeedFromBuffer(buffer)
-
-          if (paletteSeed) {
-            const lightPalette = createPosterPalette(paletteSeed, false)
-            const darkPalette = createPosterPalette(paletteSeed, true)
-
-            ctx.state.props = {
-              ...ctx.state.props,
-              posterPalettes: {
-                light: lightPalette,
-                dark: darkPalette
-              },
-              posterPalette: useDarkTheme ? darkPalette : lightPalette
-            }
-            return
-          }
-        } catch (error) {
-          logger.debug(`[Render] 封面动态取色失败，尝试候选图: ${candidate}`, error)
-        }
+      ctx.state.props = {
+        ...ctx.state.props,
+        posterPalettes: {
+          light: lightPalette,
+          dark: darkPalette
+        },
+        posterPalette: useDarkTheme ? darkPalette : lightPalette
       }
     }
   }

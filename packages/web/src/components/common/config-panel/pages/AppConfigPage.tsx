@@ -47,7 +47,12 @@ const AppConfigPage = ({ config, renderers }: ConfigPageProps) => {
             [
               { label: '自动', value: '0', description: '06:00-18:00为浅色，18:00-06:00为深色' },
               { label: '浅色', value: '1' },
-              { label: '深色', value: '2' }
+              { label: '深色', value: '2' },
+              {
+                label: '智能场景（实验性）',
+                value: '3',
+                description: '自动模式的超集；部分模板会根据封面色调 智能调整主题色，可能会出现不适配的情况。'
+              }
             ],
             (value) => Number(value)
           )}

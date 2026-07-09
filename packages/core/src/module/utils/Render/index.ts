@@ -78,12 +78,13 @@ export const Render = async <P extends DynamicRenderPath>(
   })
 
   const watermarkTextBitSize = Buffer.byteLength(watermarkText, 'utf8') * 8
+  const useDarkTheme = Common.useDarkTheme()
 
   const renderRequest: TypedRenderRequest<keyof DataTypeMap> = {
     templateType: templateType as TypedRenderRequest<keyof DataTypeMap>['templateType'],
     templateName,
     scale: Math.min(2, Math.max(0.5, Number(Config.app.renderScale) / 100)),
-    useDarkTheme: Common.useDarkTheme(),
+    useDarkTheme,
     version: Config.app.RemoveWatermark
       ? undefined
       : {
@@ -98,7 +99,7 @@ export const Render = async <P extends DynamicRenderPath>(
     watermarkTextBitSize,
     data: {
       ...data,
-      useDarkTheme: Common.useDarkTheme()
+      useDarkTheme
     }
   }
 
