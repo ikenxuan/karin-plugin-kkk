@@ -15478,6 +15478,12 @@
     column-gap: calc(var(--spacing) * 24);
   }
 
+  :where(.-space-x-5 > :not(:last-child)) {
+    --tw-space-x-reverse: 0;
+    margin-inline-start: calc(calc(var(--spacing) * -5) * var(--tw-space-x-reverse));
+    margin-inline-end: calc(calc(var(--spacing) * -5) * calc(1 - var(--tw-space-x-reverse)));
+  }
+
   :where(.space-x-2 > :not(:last-child)) {
     --tw-space-x-reverse: 0;
     margin-inline-start: calc(calc(var(--spacing) * 2) * var(--tw-space-x-reverse));
@@ -19054,6 +19060,16 @@
   @supports (color: color-mix(in lab, red, red)) {
     .ring-border\/40 {
       --tw-ring-color: color-mix(in oklab, var(--border) 40%, transparent);
+    }
+  }
+
+  .ring-white\/25 {
+    --tw-ring-color: #ffffff40;
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .ring-white\/25 {
+      --tw-ring-color: color-mix(in oklab, var(--color-white) 25%, transparent);
     }
   }
 
