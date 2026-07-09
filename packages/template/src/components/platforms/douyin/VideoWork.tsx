@@ -1,17 +1,23 @@
-import { renderRichTextToReact } from '@kkk/richtext'
+import { extractRichTextPlainText, renderRichTextToReact } from '@kkk/richtext'
 import { MapPinIcon, MusicNoteIcon, PlayIcon, UserPlusIcon, UsersIcon, UsersThreeIcon } from '@phosphor-icons/react'
 import { format, formatDistanceToNow, fromUnixTime } from 'date-fns'
 import { zhCN } from 'date-fns/locale'
-import { Clock3, Hash, Maximize } from 'lucide-react'
+import { Clock3, Hash } from 'lucide-react'
 import React from 'react'
 
 import type { DouyinVideoWorkProps } from '../../../types/platforms/douyin/videoWork'
-import { cn } from '../../../utils/cn'
 import { generateQRCode } from '../../../utils/QRcode'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 import { DouyinCommentIcon, DouyinFavoriteIcon, DouyinLikeIcon, DouyinShareIcon } from './Icons'
 
 type Props = Omit<DouyinVideoWorkProps, 'templateType' | 'templateName'>
+
+const getTitleClassName = (titleLength: number): string => {
+  if (titleLength > 96) return 'text-[42px] leading-[1.34]'
+  if (titleLength > 72) return 'text-[48px] leading-[1.3]'
+  if (titleLength > 48) return 'text-[54px] leading-[1.26]'
+  return 'text-[62px] leading-[1.18]'
+}
 
 function formatDuration(duration?: number): string | undefined {
   if (typeof duration !== 'number' || !Number.isFinite(duration) || duration < 0) return undefined
@@ -26,155 +32,211 @@ function formatDuration(duration?: number): string | undefined {
   return `${pad(minutes)}:${pad(seconds)}`
 }
 
-const DouyinAvatarUserInfo: React.FC<Props> = (props) => {
-  const { avater_url, username, create_time, useDarkTheme, dynamicTYPE } = props.data
-  const subscriberRole = props.data.cooperation_info?.subscriber_role
+const DouyinDiffuseBackground: React.FC<Props> = ({ data }) => (
+  <div className="pointer-events-none absolute inset-0 overflow-hidden select-none">
+    <img
+      src={data.image_url}
+      alt=""
+      className="absolute inset-0 h-full w-full scale-150 object-cover opacity-50 blur-[120px] saturate-[1.8]"
+      referrerPolicy="no-referrer"
+      crossOrigin="anonymous"
+    />
+    <div className="absolute inset-0 bg-linear-to-b from-background/70 via-background/50 to-background/70" />
+
+    <div className="absolute inset-0 opacity-[0.35] mix-blend-overlay dark:mix-blend-soft-light">
+      <svg className="h-full w-full" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <filter id="douyinVideoWorkNoise">
+            <feTurbulence type="fractalNoise" baseFrequency="1.2" numOctaves="3" stitchTiles="stitch" />
+            <feColorMatrix type="saturate" values="0" />
+            <feComponentTransfer>
+              <feFuncR type="discrete" tableValues="0 1" />
+              <feFuncG type="discrete" tableValues="0 1" />
+              <feFuncB type="discrete" tableValues="0 1" />
+            </feComponentTransfer>
+            <feComponentTransfer>
+              <feFuncA type="linear" slope="2" intercept="-0.5" />
+            </feComponentTransfer>
+          </filter>
+          <mask id="douyinVideoWorkNoiseMask">
+            <linearGradient id="douyinVideoWorkNoiseGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="white" stopOpacity="1" />
+              <stop offset="15%" stopColor="white" stopOpacity="0.6" />
+              <stop offset="50%" stopColor="white" stopOpacity="0.15" />
+              <stop offset="85%" stopColor="white" stopOpacity="0.6" />
+              <stop offset="100%" stopColor="white" stopOpacity="1" />
+            </linearGradient>
+            <rect width="100%" height="100%" fill="url(#douyinVideoWorkNoiseGradient)" />
+          </mask>
+        </defs>
+        <rect width="100%" height="100%" filter="url(#douyinVideoWorkNoise)" mask="url(#douyinVideoWorkNoiseMask)" fill="white" />
+      </svg>
+    </div>
+  </div>
+)
+
+const DouyinPosterHeader: React.FC<Props> = ({ data }) => {
+  const { avater_url, username, create_time, useDarkTheme, ip_location } = data
   const publishTime = formatDistanceToNow(fromUnixTime(create_time), {
     addSuffix: true,
     locale: zhCN
   })
+
   return (
-    <div className="flex gap-10 items-center justify-between px-0 pb-0 pl-24 pr-10">
-      <div className="flex gap-10 items-center">
-        <div className="flex justify-center items-center bg-white rounded-full w-35 h-35">
-          <img
-            src={avater_url}
-            alt="头像"
-            className="rounded-full w-33 h-33 shadow-large"
-            referrerPolicy="no-referrer"
-            crossOrigin="anonymous"
-          />
-        </div>
-        <div className="flex flex-col gap-8 text-7xl">
-          <div className="text-6xl font-bold select-text text-foreground">{username}</div>
-          <div className="flex gap-2 items-center text-4xl font-normal whitespace-nowrap text-muted">
-            <Clock3 size={40} />
-            <span className="select-text">{publishTime}</span>
-            {subscriberRole && (
-              <span className="ml-5 px-3 py-1 rounded-xl bg-surface-secondary text-3xl text-foreground">{subscriberRole}</span>
+    <header className="flex items-start justify-between gap-14">
+      <div className="flex min-w-0 items-center gap-6">
+        <img
+          src={avater_url}
+          alt="头像"
+          className="h-24 w-24 shrink-0 rounded-full object-cover shadow-2xl"
+          referrerPolicy="no-referrer"
+          crossOrigin="anonymous"
+        />
+        <div className="min-w-0">
+          <div className="max-w-[660px] truncate text-[44px] font-black leading-tight text-foreground select-text">{username}</div>
+          <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-[30px] text-muted">
+            <span className="inline-flex items-center gap-2">
+              <Clock3 size={28} />
+              <span className="select-text">{publishTime}</span>
+            </span>
+            {ip_location && (
+              <span className="inline-flex items-center gap-2">
+                <MapPinIcon size={30} weight="fill" />
+                <span className="select-text">{ip_location}</span>
+              </span>
             )}
           </div>
         </div>
       </div>
-      <div className="shrink-0 flex flex-col items-end gap-2">
-        <img
-          src={useDarkTheme ? '/image/douyin/dylogo-light.svg' : '/image/douyin/dylogo-dark.svg'}
-          alt="抖音"
-          className="h-20 w-auto object-contain"
-        />
-        {dynamicTYPE && (
-          <div className="px-6 py-2 rounded-full bg-surface-secondary text-2xl font-medium text-muted select-text tracking-widest">
-            {dynamicTYPE}
-          </div>
-        )}
-      </div>
-    </div>
+      <img
+        src={useDarkTheme ? '/image/douyin/dylogo-light.svg' : '/image/douyin/dylogo-dark.svg'}
+        alt="抖音"
+        className="mt-2 h-[68px] w-auto shrink-0 object-contain opacity-90"
+      />
+    </header>
   )
 }
 
-const DouyinVideoCover: React.FC<Props> = (props) => {
-  const { image_url, music, duration } = props.data
+const DouyinVideoCover: React.FC<Props> = ({ data }) => {
+  const { image_url, music, duration } = data
   const durationText = formatDuration(duration)
-  const musicBadge = music && (
-    <div className="absolute left-7 bottom-7 z-20 flex items-center gap-4 max-w-[72%] p-3 rounded-3xl bg-black/45 backdrop-blur-2xl border border-white/20 shadow-large overflow-hidden">
-      <div className="relative shrink-0 w-18 h-18">
-        {music.cover ? (
-          <>
-            <img
-              src={music.cover}
-              alt=""
-              className="absolute inset-0 w-full h-full rounded-2xl object-cover blur-md scale-110 opacity-70"
-              referrerPolicy="no-referrer"
-              crossOrigin="anonymous"
-            />
-            <img
-              src={music.cover}
-              alt="BGM封面"
-              className="relative z-10 w-full h-full rounded-2xl object-cover"
-              referrerPolicy="no-referrer"
-              crossOrigin="anonymous"
-            />
-          </>
-        ) : (
-          <div className="flex items-center justify-center w-full h-full rounded-2xl bg-white/15 text-white">
-            <MusicNoteIcon size={36} weight="fill" />
-          </div>
-        )}
-      </div>
-      <div className="flex flex-col gap-1 min-w-0 pr-2 text-white">
-        <span className="text-3xl font-semibold truncate select-text">{music.title}</span>
-        <span className="text-2xl text-white/85 truncate select-text">{music.author}</span>
-      </div>
-    </div>
-  )
 
   return (
-    <div className="px-20">
-      <div className="relative overflow-hidden rounded-5xl shadow-large">
+    <section className="relative -mx-20 mt-12 overflow-visible">
+      <div
+        className="absolute -inset-x-16 -inset-y-24 z-0 overflow-hidden"
+        style={{
+          maskImage: 'linear-gradient(to bottom, transparent 0%, black 28%, black 72%, transparent 100%)',
+          WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 28%, black 72%, transparent 100%)'
+        }}
+      >
         <img
           src={image_url}
-          alt="视频封面"
-          className="object-contain w-full h-auto block"
+          alt=""
+          className="h-full w-full scale-[1.08] object-cover opacity-62 blur-[46px] saturate-[1.15]"
           referrerPolicy="no-referrer"
           crossOrigin="anonymous"
         />
-        <div className="absolute bottom-8 right-10 z-20 flex items-center justify-center text-white mix-blend-difference">
-          <svg width="0" height="0" className="absolute">
-            <filter id="douyin-play-inner-blur" colorInterpolationFilters="sRGB">
-              <feGaussianBlur in="SourceGraphic" stdDeviation="30" result="blur" />
-              <feComposite in="blur" in2="SourceAlpha" operator="in" />
-            </filter>
-          </svg>
-          <PlayIcon size={150} weight="fill" aria-label="播放" style={{ filter: 'url(#douyin-play-inner-blur)' }} />
-        </div>
-        {durationText && (
-          <div className="absolute top-7 left-7 z-20 px-5 py-2 rounded-2xl bg-black/50 backdrop-blur-sm">
-            <span className="text-3xl font-medium text-white select-text">{durationText}</span>
-          </div>
-        )}
-        {musicBadge}
       </div>
-    </div>
+      <img
+        src={image_url}
+        alt="视频封面"
+        className="relative z-10 block h-auto w-full drop-shadow-2xl"
+        style={{
+          maskImage: 'linear-gradient(to bottom, transparent 0%, black 18%, black 82%, transparent 100%)',
+          WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 18%, black 82%, transparent 100%)'
+        }}
+        referrerPolicy="no-referrer"
+        crossOrigin="anonymous"
+      />
+      <div className="absolute inset-x-0 bottom-0 z-20 h-[42%] bg-linear-to-b from-transparent via-black/50 to-transparent" />
+
+      <div className="absolute left-24 top-10 z-30 flex items-center gap-5 text-white">
+        {durationText && <span className="text-[34px] font-black tabular-nums drop-shadow-lg">时长: {durationText}</span>}
+      </div>
+
+      <PlayIcon
+        size={104}
+        weight="fill"
+        aria-label="播放"
+        className="absolute bottom-12 right-24 z-30 text-white opacity-90 drop-shadow-2xl"
+      />
+
+      {music && (
+        <div className="absolute bottom-12 left-24 z-30 flex max-w-[850px] items-center gap-5 text-white drop-shadow-xl">
+          {music.cover ? (
+            <div className="relative h-20 w-20 shrink-0">
+              <img
+                src={music.cover}
+                alt=""
+                className="absolute inset-0 h-full w-full scale-110 rounded-2xl object-cover opacity-65 blur-md"
+                referrerPolicy="no-referrer"
+                crossOrigin="anonymous"
+              />
+              <img
+                src={music.cover}
+                alt="BGM封面"
+                className="relative z-10 h-full w-full rounded-2xl object-cover"
+                referrerPolicy="no-referrer"
+                crossOrigin="anonymous"
+              />
+            </div>
+          ) : (
+            <MusicNoteIcon size={44} weight="fill" className="shrink-0" />
+          )}
+          <div className="min-w-0">
+            <div className="truncate text-[36px] font-black leading-tight select-text">{music.title}</div>
+            <div className="truncate text-[27px] font-semibold text-white/76 select-text">{music.author}</div>
+          </div>
+        </div>
+      )}
+    </section>
   )
 }
 
-const DouyinDynamicContent: React.FC<Props> = (props) => {
-  const { title, desc } = props.data
+const DouyinPosterTitle: React.FC<Props> = ({ data }) => {
+  const { title, desc } = data
+  const hasTitle = Boolean(title?.nodes.length)
+  const hasDesc = Boolean(desc?.nodes.length)
+  const titleLength = title ? extractRichTextPlainText(title).length : 0
+  const titleClassName = getTitleClassName(titleLength)
   const richTextOptions = {
     hashtag: {
-      className: 'text-[#04498d] dark:text-[#face15] font-medium'
+      className: 'text-inherit opacity-60'
     },
     mention: {
-      className: 'text-[#04498d] dark:text-[#face15] font-medium'
+      className: 'text-inherit'
     }
   }
-  const hasTitle = Boolean(title?.nodes.length)
-  const hasDesc = desc.nodes.length > 0
+
+  if (!hasTitle && !hasDesc) {
+    return <h1 className="mt-14 text-[68px] font-black leading-[1.16] text-foreground select-text">抖音视频作品</h1>
+  }
 
   return (
-    <div className="flex flex-col px-20 w-full leading-relaxed">
+    <section className="mt-13">
       {hasTitle && title && (
-        <div
-          className="text-[72px] leading-tight mb-8 text-foreground select-text"
+        <h1
+          className={`${titleClassName} font-bold text-foreground select-text`}
           style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}
         >
           {renderRichTextToReact(title, richTextOptions)}
-        </div>
+        </h1>
       )}
       {hasDesc && (
         <div
-          className="text-[56px] tracking-[0.5px] leading-[1.7] whitespace-pre-wrap text-foreground select-text"
+          className="mt-7 max-w-[1160px] whitespace-pre-wrap text-[42px] font-medium leading-[1.48] text-muted select-text"
           style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}
         >
           {renderRichTextToReact(desc, richTextOptions)}
         </div>
       )}
-    </div>
+    </section>
   )
 }
 
-const DouyinDynamicStatus: React.FC<Props> = (props) => {
-  const { dianzan, pinglun, shouchang, share, ip_location, suggest_word } = props.data
+const DouyinSignalLine: React.FC<Props> = ({ data }) => {
+  const { dianzan, pinglun, shouchang, share, suggest_word } = data
   const renderTime = format(new Date(), 'yyyy-MM-dd HH:mm:ss')
   const stats = [
     { icon: DouyinLikeIcon, value: dianzan, label: '点赞' },
@@ -184,169 +246,130 @@ const DouyinDynamicStatus: React.FC<Props> = (props) => {
   ]
 
   return (
-    <div className="flex flex-col gap-10 px-18 w-full leading-relaxed">
-      <div className="flex gap-6 items-center text-5xl tracking-normal select-text text-foreground/70">
-        {stats.map((stat, idx) => {
+    <section className="mt-12">
+      <div className="flex flex-wrap items-end gap-x-16 gap-y-8">
+        {stats.map((stat) => {
           const Icon = stat.icon
           return (
-            <React.Fragment key={stat.label}>
-              {idx > 0 && <span>·</span>}
-              <div className="flex gap-2 items-end">
-                <Icon size={46} weight="fill" className="mt-2" />
-                <span className="font-medium">{stat.value}</span>
-                <span className="text-3xl font-light">{stat.label}</span>
+            <div key={stat.label} className="min-w-[150px]">
+              <div className="flex items-center gap-3 text-[28px] font-semibold text-muted">
+                <Icon size={36} weight="fill" className="text-foreground/80" />
+                <span>{stat.label}</span>
               </div>
-            </React.Fragment>
+              <div className="mt-2 text-[64px] font-black leading-none text-foreground tabular-nums select-text">{stat.value}</div>
+            </div>
           )
         })}
       </div>
-      {ip_location && (
-        <div className="flex gap-12 items-center font-light select-text text-foreground/70">
-          <div className="flex gap-2 items-center">
-            <MapPinIcon size={50} weight="fill" className="mt-1" />
-            <span className="text-5xl font-medium">{ip_location}</span>
+      <div className="mt-8 flex min-w-0 flex-col gap-3 text-[29px] leading-[1.45] text-muted">
+        {suggest_word && (
+          <div className="min-w-0 truncate select-text">
+            <span>{suggest_word.hint_text}</span>
+            <span className="ml-2 font-black text-foreground">{suggest_word.word}</span>
           </div>
-          {suggest_word && (
-            <div className="flex gap-2 items-center py-3.5 px-6 bg-foreground/5 dark:bg-foreground/10 rounded-full text-4xl font-light select-text text-foreground/70">
-              <span className="text-muted">{suggest_word.hint_text}</span>
-              <span className="text-[#04498d] dark:text-[#face15] font-medium">{suggest_word.word}</span>
-            </div>
-          )}
+        )}
+        <div className="flex items-center gap-3">
+          <span className="select-text">图片生成于: {renderTime}</span>
         </div>
-      )}
-      <div className="flex gap-3 items-center text-4xl font-light tracking-normal select-text text-foreground/70">
-        <Maximize size={44} />
-        图片生成于: {renderTime}
       </div>
-    </div>
+    </section>
   )
 }
 
-const DouyinCoCreatorList: React.FC<Props> = (props) => {
-  const subscriberNickname = props.data.username
-  const allCreators = props.data.cooperation_info?.co_creators ?? []
-  const creators = allCreators.filter((c) => c.nickname !== subscriberNickname)
+const DouyinCoCreatorList: React.FC<Props & { coCreatorCount: number }> = ({ data, coCreatorCount }) => {
+  const subscriberNickname = data.username
+  const allCreators = data.cooperation_info?.co_creators ?? []
+  const creators = allCreators.filter((creator) => creator.nickname !== subscriberNickname)
   if (creators.length === 0) return null
 
-  const items = creators.slice(0, 50)
-
-  const listRef = React.useRef<HTMLDivElement>(null)
-  const [visibleCount, setVisibleCount] = React.useState(items.length)
-
-  React.useEffect(() => {
-    const calc = () => {
-      const el = listRef.current
-      if (!el) return
-      const containerWidth = el.offsetWidth
-      const ITEM_W = 152
-      const GAP = 32
-      const PAD_R = 8
-
-      const capacity = Math.floor((containerWidth - PAD_R) / (ITEM_W + GAP))
-      const needEllipsis = items.length > capacity
-      const nextVisible = needEllipsis ? Math.max(0, capacity - 1) : items.length
-      setVisibleCount(nextVisible)
-    }
-
-    calc()
-    window.addEventListener('resize', calc)
-    return () => window.removeEventListener('resize', calc)
-  }, [items.length])
+  const visibleCreators = creators.slice(0, 8)
+  const remainingCount = Math.max(coCreatorCount - visibleCreators.length - 1, 0)
 
   return (
-    <div className="flex flex-col px-20 w-full">
-      <div ref={listRef} className="flex overflow-hidden gap-8 py-1 pr-2 w-full">
-        {items.slice(0, visibleCount).map((c, idx) => (
-          <div key={`${c.nickname || 'creator'}-${idx}`} className="flex flex-col items-center min-w-38 w-38 shrink-0">
-            <div className="flex justify-center items-center bg-white rounded-full w-30 h-30">
-              <img
-                src={c.avatar_url}
-                alt="共创者头像"
-                className="object-cover w-28 h-28 rounded-full"
-                referrerPolicy="no-referrer"
-                crossOrigin="anonymous"
-              />
-            </div>
-            <div className="overflow-hidden mt-6 w-full text-3xl font-medium leading-tight text-center truncate whitespace-nowrap select-text text-foreground">
-              {c.nickname || '未提供'}
-            </div>
-            <div className="overflow-hidden mt-2 w-full text-3xl leading-tight text-center truncate whitespace-nowrap select-text text-muted">
-              {c.role_title || '未提供'}
+    <section className="mt-16">
+      <div className="flex items-center gap-3 text-[34px] font-black text-foreground">
+        <UsersIcon size={42} weight="fill" className="text-foreground/80" />
+        <span>共 {coCreatorCount} 人共创</span>
+      </div>
+      <div className="mt-6 flex min-w-0 flex-wrap items-center gap-x-10 gap-y-6 overflow-hidden">
+        {visibleCreators.map((creator, index) => (
+          <div key={`${creator.nickname || 'creator'}-${index}`} className="flex min-w-0 max-w-[310px] items-center gap-4">
+            <img
+              src={creator.avatar_url || data.avater_url}
+              alt="共创者头像"
+              className="h-[72px] w-[72px] shrink-0 rounded-full object-cover shadow-xl"
+              referrerPolicy="no-referrer"
+              crossOrigin="anonymous"
+            />
+            <div className="min-w-0">
+              <div className="truncate text-[28px] font-black leading-tight text-foreground select-text">
+                {creator.nickname || '未提供'}
+              </div>
+              <div className="mt-1 truncate text-[23px] font-semibold text-muted select-text">{creator.role_title || '共创者'}</div>
             </div>
           </div>
         ))}
-
-        {items.length > visibleCount && (
-          <div className="flex flex-col items-center min-w-38 w-38 shrink-0">
-            <div className="flex justify-center items-center rounded-full bg-surface-secondary w-30 h-30">
-              <span className="text-[42px] leading-none text-muted">···</span>
-            </div>
-            <div className="overflow-hidden mt-6 w-full text-3xl font-medium leading-tight text-center truncate whitespace-nowrap select-text text-foreground">
-              还有{items.length - visibleCount}人
-            </div>
-            <div className="overflow-hidden mt-2 w-full text-3xl leading-tight text-center truncate whitespace-nowrap select-text text-muted">
-              共创
-            </div>
-          </div>
-        )}
+        {remainingCount > 0 && <div className="text-[32px] font-black text-muted">剩余 {remainingCount} 个...</div>}
       </div>
-    </div>
+    </section>
   )
 }
 
-const DouyinDynamicFooter: React.FC<Props> = (props) => {
-  const { avater_url, username, 抖音号, 获赞, 关注, 粉丝, share_url, useDarkTheme } = props.data
+const DouyinPosterFooter: React.FC<Props> = ({ data }) => {
+  const { avater_url, username, 抖音号, 获赞, 关注, 粉丝, share_url, useDarkTheme } = data
   const stats = [
-    { icon: DouyinLikeIcon, iconSize: 36, label: '获赞', value: 获赞 },
-    { icon: UserPlusIcon, iconSize: 36, label: '关注', value: 关注 },
-    { icon: UsersThreeIcon, iconSize: 36, label: '粉丝', value: 粉丝 }
+    { icon: DouyinLikeIcon, iconSize: 26, label: '获赞', value: 获赞 },
+    { icon: UserPlusIcon, iconSize: 32, label: '关注', value: 关注 },
+    { icon: UsersThreeIcon, iconSize: 32, label: '粉丝', value: 粉丝 }
   ]
 
   return (
-    <div className="flex justify-between items-start px-20 pb-20">
-      <div className="flex flex-col gap-12">
-        <div className="flex gap-12 items-start">
-          <div className="relative shrink-0">
-            <div className="flex justify-center items-center bg-white rounded-full w-35 h-35">
-              <img
-                src={avater_url}
-                alt="头像"
-                className="rounded-full w-33 h-33 shadow-large"
-                referrerPolicy="no-referrer"
-                crossOrigin="anonymous"
-              />
-            </div>
-          </div>
-          <div className="flex flex-col gap-5">
-            <div className="text-7xl font-bold select-text text-foreground">{username}</div>
-            <div className="flex gap-2 items-center text-4xl text-muted">
-              <Hash size={32} />
-              <span className="select-text">抖音号: {抖音号}</span>
+    <footer className="mt-10 flex items-start justify-between gap-16">
+      <div className="min-w-0 flex-1 pt-4">
+        <div className="flex items-center gap-6">
+          <img
+            src={avater_url}
+            alt="头像"
+            className="h-24 w-24 shrink-0 rounded-full object-cover shadow-xl"
+            referrerPolicy="no-referrer"
+            crossOrigin="anonymous"
+          />
+          <div className="min-w-0">
+            <div className="max-w-[650px] truncate text-[48px] font-black leading-tight text-foreground select-text">{username}</div>
+            <div className="mt-3 flex items-center gap-2 text-[30px] text-muted">
+              <Hash size={28} />
+              <span className="truncate select-text">抖音号: {抖音号}</span>
             </div>
           </div>
         </div>
 
-        <div className="text-3xl flex gap-6 items-center text-foreground/70">
+        <div className="mt-10 flex flex-wrap gap-x-14 gap-y-6">
           {stats.map((stat) => {
             const Icon = stat.icon
             return (
-              <div key={stat.label} className="flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-surface">
-                <div className="flex gap-1 items-center">
-                  <Icon size={stat.iconSize} weight="fill" />
-                  <span className="text-muted">{stat.label}</span>
+              <div key={stat.label} className="min-w-[150px]">
+                <div className="flex items-center gap-3 text-[25px] font-semibold text-muted">
+                  <Icon size={stat.iconSize} weight="fill" className="text-foreground/80" />
+                  <span>{stat.label}</span>
                 </div>
-                <div className="w-full h-px bg-border" />
-                <span className="select-text font-medium text-4xl">{stat.value}</span>
+                <div className="mt-2 text-[32px] font-black leading-none text-foreground select-text">{stat.value}</div>
               </div>
             )
           })}
         </div>
       </div>
 
-      <div className="flex flex-col items-center gap-4">
-        <img src={generateQRCode(share_url, useDarkTheme)} alt="二维码" className="h-auto w-75 rounded-2xl" />
+      <div className="shrink-0 text-center">
+        <div className="drop-shadow-2xl">
+          <img
+            src={generateQRCode(share_url, useDarkTheme)}
+            alt="二维码"
+            className="h-[300px] w-[300px]"
+          />
+        </div>
+        <div className="mt-2 text-[28px] font-black text-foreground/80">扫码查看作品详情</div>
       </div>
-    </div>
+    </footer>
   )
 }
 
@@ -355,41 +378,17 @@ export const DouyinVideoWork: React.FC<Props> = React.memo((props) => {
   const hasCoCreators = !!coCreatorCount && coCreatorCount > 0
 
   return (
-    <DefaultLayout {...props}>
-      <div className="p-4">
-        <div className="h-25" />
+    <DefaultLayout {...props} className="relative overflow-hidden">
+        <DouyinDiffuseBackground {...props} />
 
-        <DouyinAvatarUserInfo {...props} />
-
-        <div className="h-15" />
-
-        <DouyinDynamicContent {...props} />
-
-        <div className="h-15" />
-
-        <DouyinVideoCover {...props} />
-
-        <div className="h-20" />
-
-        <DouyinDynamicStatus {...props} />
-
-        <div className={cn(hasCoCreators && 'h-23', !hasCoCreators && 'h-40')} />
-
-        {hasCoCreators && (
-          <>
-            <div className="px-20 pb-8">
-              <div className="gap-2 inline-flex items-center rounded-2xl bg-surface text-foreground/80 px-6 py-3">
-                <UsersIcon size={26} weight="fill" />
-                <span className="text-3xl font-medium leading-none select-text">{coCreatorCount}人共创</span>
-              </div>
-            </div>
-            <DouyinCoCreatorList {...props} />
-            <div className="h-15" />
-          </>
-        )}
-
-        <DouyinDynamicFooter {...props} />
-      </div>
+        <section className="relative z-10 px-20 pt-18">
+          <DouyinPosterHeader {...props} />
+          <DouyinPosterTitle {...props} />
+          <DouyinVideoCover {...props} />
+          <DouyinSignalLine {...props} />
+          {hasCoCreators && <DouyinCoCreatorList {...props} coCreatorCount={coCreatorCount} />}
+          <DouyinPosterFooter {...props} />
+        </section>
     </DefaultLayout>
   )
 })

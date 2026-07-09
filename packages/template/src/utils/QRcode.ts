@@ -13,11 +13,11 @@ export const generateQRCode = (text: string, useDarkTheme: boolean = false) => {
       data: text,
       size: 1000,
       dotsOptions: {
-        dotType: 'rounded',
+        dotType: 'extra-rounded',
         color: useDarkTheme ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)'
       },
       cornersSquareOptions: {
-        cornerType: 'extra-rounded',
+        cornerType: 'dot',
         color: useDarkTheme ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)'
       },
       cornersDotOptions: {

@@ -1,4 +1,5 @@
 import type { SVGProps } from 'react'
+import React from 'react'
 
 type IconProps = Omit<SVGProps<SVGSVGElement>, 'width' | 'height'> & {
   size?: number

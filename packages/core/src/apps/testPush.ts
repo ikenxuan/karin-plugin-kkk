@@ -1,4 +1,4 @@
-import karin, { type ImageElement, logger, segment } from 'node-karin'
+import karin, { type ImageElement, logger } from 'node-karin'
 
 import { douyinFetcher } from '@/module/utils/amagiClient'
 import { Config } from '@/module/utils/Config'
@@ -185,8 +185,8 @@ const handleTestPush = wrapWithErrorHandler(
     }
 
     e.reply([
-      ...images,
-      segment.markdown('[跳转](mqqapi://forward/url?version=1&src_type=web&url_prefix=' + encodeURIComponent('https://www.douyin.com'))
+      ...images
+      // segment.markdown('[跳转](mqqapi://forward/url?version=1&src_type=web&url_prefix=' + encodeURIComponent('https://www.douyin.com'))
     ])
     logger.mark(`[测试抖音推送] ${pushType}推送渲染完成`)
     return true
