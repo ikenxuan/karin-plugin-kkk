@@ -133,7 +133,7 @@ function getImageMediaType(image: { clip_type?: number } | null | undefined): Im
 
 /**
  * 构建图文作品图片列表。
- * 第一项为封面，后续最多保留 2 张预览图，并在每项上携带媒体类型。
+ * 第一项为封面，保留全部后续图片供模板从索引 1 起按需预览，并在每项上携带媒体类型。
  * @param images - 作品原始图片数组，每项包含 url_list（多分辨率 URL）
  * @param fallbackCover - images 缺失时使用的兜底封面
  * @returns 图片列表数据
@@ -171,7 +171,6 @@ function buildImageList(
       usedUrls.add(key)
       return true
     })
-    .slice(0, 3)
 
   return {
     images: imageItems,

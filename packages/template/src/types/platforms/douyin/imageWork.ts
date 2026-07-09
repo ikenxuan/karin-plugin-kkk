@@ -9,7 +9,7 @@ export type DouyinImageMediaType = 'static' | 'live' | 'clip'
  * 抖音图文作品组件属性接口
  */
 export interface DouyinImageWorkProps extends BaseComponentProps<{
-  /** 图文图片列表（首项为封面，后续最多 2 张预览图） */
+  /** 图文图片列表（首项为封面；组件从索引 1 起最多展示 3 张预览图） */
   image_list: {
     /** 图片列表，按原始顺序排列 */
     images: Array<{

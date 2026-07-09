@@ -225,8 +225,9 @@ const DouyinImageCover: React.FC<Props> = ({ data }) => {
 
       <div className="absolute inset-x-0 bottom-0 z-20 h-[42%] bg-linear-to-b from-transparent via-black/50 to-transparent" />
 
-      <div className="absolute left-24 top-10 z-30 flex items-center gap-5 text-white drop-shadow-lg">
-        <span className="text-[34px] font-black tabular-nums">共 {totalCount} 张</span>
+      <div className="absolute left-24 top-12 z-30 flex items-center gap-4 text-white drop-shadow-2xl">
+        <MediaIcon size={72} weight="fill" />
+        <span className="text-[34px] font-black select-text">{mediaMeta.label}</span>
       </div>
 
       {previewImages.length > 0 && (
@@ -237,7 +238,7 @@ const DouyinImageCover: React.FC<Props> = ({ data }) => {
               src={image.url}
               alt="图文预览"
               className="h-28 w-28 rounded-3xl object-cover ring-2 ring-white/25"
-              style={{ transform: `rotate(${(index - 1) * 5}deg)` }}
+              style={{ transform: `rotate(${(index - 1) * 8}deg)` }}
               referrerPolicy="no-referrer"
               crossOrigin="anonymous"
             />
@@ -250,9 +251,8 @@ const DouyinImageCover: React.FC<Props> = ({ data }) => {
         </div>
       )}
 
-      <div className="absolute bottom-12 right-24 z-30 flex items-center gap-4 text-white drop-shadow-2xl">
-        <MediaIcon size={72} weight="fill" />
-        <span className="text-[34px] font-black select-text">{mediaMeta.label}</span>
+      <div className="absolute  bottom-1 right-24 z-30 flex items-center gap-5 text-white drop-shadow-lg">
+        <span className="text-[34px] font-black tabular-nums">共 {totalCount} 张</span>
       </div>
 
       {music && (
