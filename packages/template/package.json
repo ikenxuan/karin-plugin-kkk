@@ -33,8 +33,8 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.110.0",
-    "@heroui/react": "3.2.1",
-    "@heroui/styles": "3.2.1",
+    "@heroui/react": "3.2.2",
+    "@heroui/styles": "3.2.2",
     "@icons-pack/react-simple-icons": "^13.13.0",
     "@ikenxuan/qrcode": "1.4.0",
     "@kkk/richtext": "workspace:*",
@@ -70,7 +70,7 @@
     "@types/react-dom": "19.2.3",
     "@vitejs/devtools": "^0.3.4",
     "@vitejs/plugin-react": "^6.0.3",
-    "code-inspector-plugin": "^1.6.4",
+    "code-inspector-plugin": "^1.6.6",
     "cross-env": "10.1.0",
     "react-scan": "^0.5.7",
     "vite-plugin-checker": "^0.14.4"

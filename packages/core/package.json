@@ -89,13 +89,13 @@
     "cors": "^2.8.6",
     "date-fns": "^4.4.0",
     "heic-decode": "^2.1.0",
-    "http-proxy-middleware": "4.1.1",
+    "http-proxy-middleware": "4.2.0",
     "jpeg-js": "^0.4.4",
     "template": "workspace:*",
-    "tsdown": "^0.22.3",
+    "tsdown": "^0.22.4",
     "vite-plugin-top-level-await": "^1.6.0",
     "vite-plugin-wasm": "^3.6.0",
-    "vitest": "^4.1.9"
+    "vitest": "^4.1.10"
   },
   "peerDependencies": {
     "@karinjs/plugin-puppeteer": "*",
@@ -124,5 +124,5 @@
     "web": "./lib/web.config.js",
     "ts-web": "./src/web.config.ts"
   },
-  "timestamp": "2026-07-07T02:03:08.432Z"
+  "timestamp": "2026-07-09T07:15:02.594Z"
 }
