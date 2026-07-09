@@ -1,9 +1,194 @@
-import { t as ChalkInstance } from "./index-_og592jD.mjs";
 import { EventEmitter as EventEmitter$1 } from "node:events";
 import zod from "zod";
 import { AxiosRequestConfig, AxiosResponse, RawAxiosResponseHeaders } from "axios";
 import express from "express";
+//#region ../../node_modules/.pnpm/chalk@5.6.2/node_modules/chalk/source/vendor/supports-color/index.d.ts
+/**
+Levels:
+- `0` - All colors disabled.
+- `1` - Basic 16 colors support.
+- `2` - ANSI 256 colors support.
+- `3` - Truecolor 16 million colors support.
+*/
+type ColorSupportLevel = 0 | 1 | 2 | 3;
+//#endregion
+//#region ../../node_modules/.pnpm/chalk@5.6.2/node_modules/chalk/source/index.d.ts
+interface ChalkInstance {
+  (...text: unknown[]): string;
+  /**
+	The color support for Chalk.
 
+	By default, color support is automatically detected based on the environment.
+
+	Levels:
+	- `0` - All colors disabled.
+	- `1` - Basic 16 colors support.
+	- `2` - ANSI 256 colors support.
+	- `3` - Truecolor 16 million colors support.
+	*/
+  level: ColorSupportLevel;
+  /**
+	Use RGB values to set text color.
+
+	@example
+	```
+	import chalk from 'chalk';
+
+	chalk.rgb(222, 173, 237);
+	```
+	*/
+  rgb: (red: number, green: number, blue: number) => this;
+  /**
+	Use HEX value to set text color.
+
+	@param color - Hexadecimal value representing the desired color.
+
+	@example
+	```
+	import chalk from 'chalk';
+
+	chalk.hex('#DEADED');
+	```
+	*/
+  hex: (color: string) => this;
+  /**
+	Use an [8-bit unsigned number](https://en.wikipedia.org/wiki/ANSI_escape_code#8-bit) to set text color.
+
+	@example
+	```
+	import chalk from 'chalk';
+
+	chalk.ansi256(201);
+	```
+	*/
+  ansi256: (index: number) => this;
+  /**
+	Use RGB values to set background color.
+
+	@example
+	```
+	import chalk from 'chalk';
+
+	chalk.bgRgb(222, 173, 237);
+	```
+	*/
+  bgRgb: (red: number, green: number, blue: number) => this;
+  /**
+	Use HEX value to set background color.
+
+	@param color - Hexadecimal value representing the desired color.
+
+	@example
+	```
+	import chalk from 'chalk';
+
+	chalk.bgHex('#DEADED');
+	```
+	*/
+  bgHex: (color: string) => this;
+  /**
+	Use a [8-bit unsigned number](https://en.wikipedia.org/wiki/ANSI_escape_code#8-bit) to set background color.
+
+	@example
+	```
+	import chalk from 'chalk';
+
+	chalk.bgAnsi256(201);
+	```
+	*/
+  bgAnsi256: (index: number) => this;
+  /**
+	Modifier: Reset the current style.
+	*/
+  readonly reset: this;
+  /**
+	Modifier: Make the text bold.
+	*/
+  readonly bold: this;
+  /**
+	Modifier: Make the text have lower opacity.
+	*/
+  readonly dim: this;
+  /**
+	Modifier: Make the text italic. *(Not widely supported)*
+	*/
+  readonly italic: this;
+  /**
+	Modifier: Put a horizontal line below the text. *(Not widely supported)*
+	*/
+  readonly underline: this;
+  /**
+	Modifier: Put a horizontal line above the text. *(Not widely supported)*
+	*/
+  readonly overline: this;
+  /**
+	Modifier: Invert background and foreground colors.
+	*/
+  readonly inverse: this;
+  /**
+	Modifier: Print the text but make it invisible.
+	*/
+  readonly hidden: this;
+  /**
+	Modifier: Puts a horizontal line through the center of the text. *(Not widely supported)*
+	*/
+  readonly strikethrough: this;
+  /**
+	Modifier: Print the text only when Chalk has a color level above zero.
+
+	Can be useful for things that are purely cosmetic.
+	*/
+  readonly visible: this;
+  readonly black: this;
+  readonly red: this;
+  readonly green: this;
+  readonly yellow: this;
+  readonly blue: this;
+  readonly magenta: this;
+  readonly cyan: this;
+  readonly white: this;
+  /*
+	Alias for `blackBright`.
+	*/
+  readonly gray: this;
+  /*
+	Alias for `blackBright`.
+	*/
+  readonly grey: this;
+  readonly blackBright: this;
+  readonly redBright: this;
+  readonly greenBright: this;
+  readonly yellowBright: this;
+  readonly blueBright: this;
+  readonly magentaBright: this;
+  readonly cyanBright: this;
+  readonly whiteBright: this;
+  readonly bgBlack: this;
+  readonly bgRed: this;
+  readonly bgGreen: this;
+  readonly bgYellow: this;
+  readonly bgBlue: this;
+  readonly bgMagenta: this;
+  readonly bgCyan: this;
+  readonly bgWhite: this;
+  /*
+	Alias for `bgBlackBright`.
+	*/
+  readonly bgGray: this;
+  /*
+	Alias for `bgBlackBright`.
+	*/
+  readonly bgGrey: this;
+  readonly bgBlackBright: this;
+  readonly bgRedBright: this;
+  readonly bgGreenBright: this;
+  readonly bgYellowBright: this;
+  readonly bgBlueBright: this;
+  readonly bgMagentaBright: this;
+  readonly bgCyanBright: this;
+  readonly bgWhiteBright: this;
+}
+//#endregion
 //#region ../amagi/packages/core/dist/default/index.d.ts
 //#region src/platform/bilibili/sign/wbi.d.ts
 /**
@@ -13,7 +198,8 @@ import express from "express";
  * @returns 返回包含 WBI 签名的查询字符串
  * @throws 当获取 WBI 密钥失败或 URL 解析失败时抛出错误
  */
-declare const wbi_sign: (BASEURL: string | URL, cookie: string) => Promise<string>; //#endregion
+declare const wbi_sign: (BASEURL: string | URL, cookie: string) => Promise<string>;
+//#endregion
 //#region src/platform/bilibili/sign/bv2av.d.ts
 /**
  * av号转bv号
@@ -26,7 +212,8 @@ declare const av2bv: (aid: number) => `BV1${string}`;
  * @param bvid bv号
  * @returns
  */
-declare const bv2av: (bvid: string) => number; //#endregion
+declare const bv2av: (bvid: string) => number;
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/ProtobufDanmaku/ProtobufDanmaku_V0.d.ts
 type BiliProtobufDanmaku_V0 = {
   code: number;
@@ -54,16 +241,19 @@ type Elem = {
   progress: number;
   weight: number;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/ProtobufDanmaku/index.d.ts
-type BiliProtobufDanmaku = BiliProtobufDanmaku_V0; //#endregion
+type BiliProtobufDanmaku = BiliProtobufDanmaku_V0;
+//#endregion
 //#region src/platform/bilibili/sign/danmaku_proto.d.ts
 /**
  * 解析弹幕分段响应
  * @param data - 二进制 protobuf 数据
  * @returns 解析后的弹幕数据
  */
-declare function parseDmSegMobileReply(data: ArrayBuffer | Uint8Array): BiliProtobufDanmaku['data']['elems'][number]; //#endregion
+declare function parseDmSegMobileReply(data: ArrayBuffer | Uint8Array): BiliProtobufDanmaku['data']['elems'][number];
+//#endregion
 //#region src/types/BilibiliAPIParams.d.ts
 /**
  * B站 API 参数类型定义
@@ -80,19 +270,24 @@ declare function parseDmSegMobileReply(data: ArrayBuffer | Uint8Array): BiliProt
 interface BilibiliMethodOptionsMap {
   /** 获取单个视频信息 */
   VideoInfoParams: {
-    methodType: 'videoInfo'; /** 稿件BVID */
+    methodType: 'videoInfo';
+    /** 稿件BVID */
     bvid: string;
   };
   /** 获取视频流下载信息 */
   VideoStreamParams: {
-    methodType: 'videoStream'; /** 稿件AVID */
-    avid: number; /** 稿件cid */
+    methodType: 'videoStream';
+    /** 稿件AVID */
+    avid: number;
+    /** 稿件cid */
     cid: number;
   };
   /** 获取评论数据 */
   CommentParams: {
-    methodType: 'comments'; /** 评论区类型代码，详见 [评论区类型代码](https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/docs/comment/readme.md#%E8%AF%84%E8%AE%BA%E5%8C%BA%E7%B1%BB%E5%9E%8B%E4%BB%A3%E7%A0%81) */
-    type: CommentType; /** 稿件ID，也就是AV号去除前缀后的内容 */
+    methodType: 'comments';
+    /** 评论区类型代码，详见 [评论区类型代码](https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/docs/comment/readme.md#%E8%AF%84%E8%AE%BA%E5%8C%BA%E7%B1%BB%E5%9E%8B%E4%BB%A3%E7%A0%81) */
+    type: CommentType;
+    /** 稿件ID，也就是AV号去除前缀后的内容 */
     oid: string;
     /**
      * 获取的评论数量，默认20
@@ -117,7 +312,8 @@ interface BilibiliMethodOptionsMap {
      * 平台类型
      * @defaultValue 1
      */
-    plat?: number; /** 当获取第一页评论时存在 */
+    plat?: number;
+    /** 当获取第一页评论时存在 */
     seek_rpid?: string;
     /**
      * web位置参数
@@ -127,9 +323,12 @@ interface BilibiliMethodOptionsMap {
   };
   /** 获取指定评论的回复 */
   CommentReplyParams: {
-    methodType: 'commentReplies'; /** 评论区类型代码，详见 [评论区类型代码](https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/docs/comment/readme.md#%E8%AF%84%E8%AE%BA%E5%8C%BA%E7%B1%BB%E5%9E%8B%E4%BB%A3%E7%A0%81) */
-    type: CommentType; /** 目标评论区 ID，也就是AV号去除前缀后的内容 */
-    oid: string; /** 根评论ID */
+    methodType: 'commentReplies';
+    /** 评论区类型代码，详见 [评论区类型代码](https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/docs/comment/readme.md#%E8%AF%84%E8%AE%BA%E5%8C%BA%E7%B1%BB%E5%9E%8B%E4%BB%A3%E7%A0%81) */
+    type: CommentType;
+    /** 目标评论区 ID，也就是AV号去除前缀后的内容 */
+    oid: string;
+    /** 根评论ID */
     root: string;
     /**
      * 获取的评论数量，默认20
@@ -139,34 +338,42 @@ interface BilibiliMethodOptionsMap {
   };
   /** 获取用户相关数据 */
   UserParams: {
-    methodType: 'userCard' | 'userDynamicList' | 'uploaderTotalViews' | 'userSpaceInfo'; /** UP主UID */
+    methodType: 'userCard' | 'userDynamicList' | 'uploaderTotalViews' | 'userSpaceInfo';
+    /** UP主UID */
     host_mid: number;
   };
   /** 获取动态数据 */
   DynamicParams: {
-    methodType: 'dynamicDetail' | 'dynamicCard'; /** 动态ID */
+    methodType: 'dynamicDetail' | 'dynamicCard';
+    /** 动态ID */
     dynamic_id: string;
   };
   /** 获取番剧基本信息 */
   BangumiInfoParams: {
-    methodType: 'bangumiInfo'; /** 稿件ep_id，其含义为 {@link https://www.bilibili.com/anime/index | 番剧索引} 或 **我的追番** 中的番剧，对应网址中包含ss号，如：{@link https://www.bilibili.com/bangumi/play/ss33802} */
-    season_id?: string; /** 稿件ep_id，番剧的某一集，对应网址中包含ep号，如：{@link https://www.bilibili.com/bangumi/play/ep330798} */
+    methodType: 'bangumiInfo';
+    /** 稿件ep_id，其含义为 {@link https://www.bilibili.com/anime/index | 番剧索引} 或 **我的追番** 中的番剧，对应网址中包含ss号，如：{@link https://www.bilibili.com/bangumi/play/ss33802} */
+    season_id?: string;
+    /** 稿件ep_id，番剧的某一集，对应网址中包含ep号，如：{@link https://www.bilibili.com/bangumi/play/ep330798} */
     ep_id?: string;
   };
   /** 获取番剧视频流信息 */
   BangumiStreamParams: {
-    methodType: 'bangumiStream'; /** 稿件cid */
-    cid: number; /** 稿件ep_id，番剧的某一集，对应网址中包含ep号，如：{@link https://www.bilibili.com/bangumi/play/ep330798} */
+    methodType: 'bangumiStream';
+    /** 稿件cid */
+    cid: number;
+    /** 稿件ep_id，番剧的某一集，对应网址中包含ep号，如：{@link https://www.bilibili.com/bangumi/play/ep330798} */
     ep_id: string;
   };
   /** 获取直播间信息 */
   LiveRoomParams: {
-    methodType: 'liveRoomInfo' | 'liveRoomInit'; /** 直播间ID */
+    methodType: 'liveRoomInfo' | 'liveRoomInit';
+    /** 直播间ID */
     room_id: string;
   };
   /** 查询二维码状态 */
   QrcodeParams: {
-    methodType: 'qrcodeStatus'; /** 扫码登录秘钥 */
+    methodType: 'qrcodeStatus';
+    /** 扫码登录秘钥 */
     qrcode_key: string;
   };
   /** 获取表情列表 */
@@ -183,12 +390,14 @@ interface BilibiliMethodOptionsMap {
   };
   /** BV号转AV号 */
   Bv2AvParams: {
-    methodType: 'bvToAv'; /** 视频BV号 */
+    methodType: 'bvToAv';
+    /** 视频BV号 */
     bvid: string;
   };
   /** AV号转BV号 */
   Av2BvParams: {
-    methodType: 'avToBv'; /** 视频AV号 */
+    methodType: 'avToBv';
+    /** 视频AV号 */
     avid: number;
   };
   /** 获取专栏正文内容 */
@@ -239,7 +448,8 @@ interface BilibiliMethodOptionsMap {
    * @see https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/docs/danmaku/danmaku_proto.md
    */
   DanmakuParams: {
-    methodType: 'videoDanmaku'; /** 稿件cid */
+    methodType: 'videoDanmaku';
+    /** 稿件cid */
     cid: number;
     /**
      * 分段序号（从1开始），每6分钟为一段
@@ -249,17 +459,24 @@ interface BilibiliMethodOptionsMap {
   };
   /** 从 v_voucher 申请验证码 */
   ApplyVoucherCaptchaParams: {
-    methodType: 'captchaFromVoucher'; /** CSRF Token (位于 Cookie 的 bili_jct) */
-    csrf?: string; /** 结构为字符串 voucher_ 尾随一串以 - 为分隔符的小写 UUID */
+    methodType: 'captchaFromVoucher';
+    /** CSRF Token (位于 Cookie 的 bili_jct) */
+    csrf?: string;
+    /** 结构为字符串 voucher_ 尾随一串以 - 为分隔符的小写 UUID */
     v_voucher: string;
   };
   /** 验证验证码结果 */
   ValidateCaptchaParams: {
-    methodType: 'validateCaptcha'; /** CSRF Token (位于 Cookie 的 bili_jct) */
-    csrf?: string; /** 极验3 https://www.geetest.com 的验证码 challenge */
-    challenge: string; /** 验证码 token */
-    token: string; /** 人机验证成功后的 validate 参数 */
-    validate: string; /** 人机验证成功后的 seccode 参数，{validate}|jordan */
+    methodType: 'validateCaptcha';
+    /** CSRF Token (位于 Cookie 的 bili_jct) */
+    csrf?: string;
+    /** 极验3 https://www.geetest.com 的验证码 challenge */
+    challenge: string;
+    /** 验证码 token */
+    token: string;
+    /** 人机验证成功后的 validate 参数 */
+    validate: string;
+    /** 人机验证成功后的 seccode 参数，{validate}|jordan */
     seccode: string;
   };
 }
@@ -348,7 +565,8 @@ type BilibiliMethodOptMap = {
   captchaFromVoucher: BilibiliMethodOptionsMap['ApplyVoucherCaptchaParams'];
   validateCaptcha: BilibiliMethodOptionsMap['ValidateCaptchaParams'];
   videoDanmaku: BilibiliMethodOptionsMap['DanmakuParams'];
-}; //#endregion
+};
+//#endregion
 //#region src/validation/bilibili.d.ts
 /** 视频信息参数验证 */
 declare const BilibiliVideoParamsSchema: zod.ZodType<BilibiliMethodOptionsMap['VideoInfoParams']>;
@@ -649,7 +867,8 @@ declare const BilibiliMethodRoutes: {
   readonly videoDanmaku: "/fetch_danmaku";
 };
 /** B站方法类型 */
-type BilibiliMethodType = keyof typeof BilibiliValidationSchemas; //#endregion
+type BilibiliMethodType = keyof typeof BilibiliValidationSchemas;
+//#endregion
 //#region src/types/DouyinAPIParams.d.ts
 /**
  * 抖音 API 参数类型定义
@@ -666,8 +885,10 @@ type BilibiliMethodType = keyof typeof BilibiliValidationSchemas; //#endregion
 interface DouyinMethodOptionsMap {
   /** 获取指定评论的回复 */
   CommentReplyParams: {
-    methodType: 'commentReplies'; /** 视频ID */
-    aweme_id: string; /** 评论ID */
+    methodType: 'commentReplies';
+    /** 视频ID */
+    aweme_id: string;
+    /** 评论ID */
     comment_id: string;
     /**
      * 获取的评论数量
@@ -683,28 +904,33 @@ interface DouyinMethodOptionsMap {
   };
   /** 获取用户相关数据 */
   UserParams: {
-    methodType: 'userProfile'; /** 用户ID */
+    methodType: 'userProfile';
+    /** 用户ID */
     sec_uid: string;
   };
   /** 获取用户列表数据（视频列表、喜欢列表、推荐列表） */
   UserListParams: {
-    methodType: 'userVideoList' | 'userFavoriteList' | 'userRecommendList'; /** 用户ID */
+    methodType: 'userVideoList' | 'userFavoriteList' | 'userRecommendList';
+    /** 用户ID */
     sec_uid: string;
     /**
      * 获取的数量
      * @defaultValue 18
      */
-    number?: number; /** 游标，用于获取下一页，不用填。 */
+    number?: number;
+    /** 游标，用于获取下一页，不用填。 */
     max_cursor?: string;
   };
   /** 获取作品数据 */
   WorkParams: {
-    methodType: 'videoWork' | 'imageAlbumWork' | 'slidesWork' | 'parseWork' | 'textWork'; /** 视频ID、图集ID、合辑ID */
+    methodType: 'videoWork' | 'imageAlbumWork' | 'slidesWork' | 'parseWork' | 'textWork';
+    /** 视频ID、图集ID、合辑ID */
     aweme_id: string;
   };
   /** 获取评论数据 */
   CommentParams: {
-    methodType: 'comments'; /** 视频ID */
+    methodType: 'comments';
+    /** 视频ID */
     aweme_id: string;
     /**
      * 获取的评论数量
@@ -720,28 +946,34 @@ interface DouyinMethodOptionsMap {
   };
   /** 获取音乐数据 */
   MusicParams: {
-    methodType: 'musicInfo'; /** 音乐ID */
+    methodType: 'musicInfo';
+    /** 音乐ID */
     music_id: string;
   };
   /** 获取直播间信息 */
   LiveRoomParams: {
-    methodType: 'liveRoomInfo'; /** 直播间ID，可从用户主页信息信息响应中的room_id_str值取得 */
-    room_id: string; /** 直播间真实房间号（可通过live.douyin.com/{web_rid}直接访问直播间），可在在用户主页信息响应中的room_data中获取 */
+    methodType: 'liveRoomInfo';
+    /** 直播间ID，可从用户主页信息信息响应中的room_id_str值取得 */
+    room_id: string;
+    /** 直播间真实房间号（可通过live.douyin.com/{web_rid}直接访问直播间），可在在用户主页信息响应中的room_data中获取 */
     web_rid: string;
   };
   /** 申请登录二维码 */
   QrcodeParams: {
-    methodType: 'loginQrcode'; /** fp指纹 */
+    methodType: 'loginQrcode';
+    /** fp指纹 */
     verify_fp: string;
   };
   /** 获取热点词数据 */
   HotWordsParams: {
-    methodType: 'suggestWords'; /** 搜索词 */
+    methodType: 'suggestWords';
+    /** 搜索词 */
     query: string;
   };
   /** 搜索数据 */
   SearchParams: {
-    methodType: 'search'; /** 搜索词 */
+    methodType: 'search';
+    /** 搜索词 */
     query: string;
     /**
      * 搜索类型
@@ -752,7 +984,8 @@ interface DouyinMethodOptionsMap {
      * 搜索数量
      * @default 10
      */
-    number?: number; /** 上次搜索的游标值 */
+    number?: number;
+    /** 上次搜索的游标值 */
     search_id?: string;
   };
   /** 获取表情列表 */
@@ -765,7 +998,8 @@ interface DouyinMethodOptionsMap {
   };
   /** 获取弹幕数据 */
   DanmakuParams: {
-    methodType: 'danmakuList'; /** 视频ID */
+    methodType: 'danmakuList';
+    /** 视频ID */
     aweme_id: string;
     /**
      * 弹幕查询的开始时间（毫秒）
@@ -779,22 +1013,26 @@ interface DouyinMethodOptionsMap {
      * 例如：设置为10000表示获取到视频第10秒的弹幕
      * 不设置则获取到视频结束
      */
-    end_time?: number; /** 视频总时长 */
+    end_time?: number;
+    /** 视频总时长 */
     duration: number;
   };
   /** 获取视频作品数据 */
   VideoWorkParams: {
-    methodType: 'videoWork'; /** 视频ID */
+    methodType: 'videoWork';
+    /** 视频ID */
     aweme_id: string;
   };
   /** 获取图集作品数据 */
   ImageAlbumWorkParams: {
-    methodType: 'imageAlbumWork'; /** 图集ID */
+    methodType: 'imageAlbumWork';
+    /** 图集ID */
     aweme_id: string;
   };
   /** 获取合辑作品数据 */
   SlidesWorkParams: {
-    methodType: 'slidesWork'; /** 合辑ID */
+    methodType: 'slidesWork';
+    /** 合辑ID */
     aweme_id: string;
   };
 }
@@ -823,7 +1061,8 @@ type DouyinMethodOptMap = {
   dynamicEmojiList: DouyinMethodOptionsMap['EmojiProParams'];
   commentReplies: DouyinMethodOptionsMap['CommentReplyParams'];
   danmakuList: DouyinMethodOptionsMap['DanmakuParams'];
-}; //#endregion
+};
+//#endregion
 //#region src/validation/douyin.d.ts
 /** 作品参数验证 */
 declare const DouyinWorkParamsSchema: zod.ZodType<DouyinMethodOptionsMap['WorkParams']>;
@@ -1042,32 +1281,40 @@ declare const DouyinMethodRoutes: {
   readonly loginQrcode: "/fetch_login_qrcode";
 };
 /** 抖音方法类型 */
-type DouyinMethodType = keyof typeof DouyinValidationSchemas; //#endregion
+type DouyinMethodType = keyof typeof DouyinValidationSchemas;
+//#endregion
 //#region src/types/KuaishouAPIParams.d.ts
 /**
  * 快手 API 方法参数映射
  */
 interface KuaishouMethodOptionsMap {
   VideoInfoParams: {
-    methodType: 'videoWork'; /** 作品ID */
+    methodType: 'videoWork';
+    /** 作品ID */
     photoId: string;
   };
   CommentParams: {
-    methodType: 'comments'; /** 作品ID */
+    methodType: 'comments';
+    /** 作品ID */
     photoId: string;
   };
   UserProfileParams: {
-    methodType: 'userProfile'; /** 用户主页 principalId，可直接取 profile 页 URL 末段 */
+    methodType: 'userProfile';
+    /** 用户主页 principalId，可直接取 profile 页 URL 末段 */
     principalId: string;
   };
   UserWorkListParams: {
-    methodType: 'userWorkList'; /** 用户主页 principalId，可直接取 profile 页 URL 末段 */
-    principalId: string; /** 分页游标；为空时请求首屏作品列表 */
-    pcursor?: string; /** 每页数量，默认 12 */
+    methodType: 'userWorkList';
+    /** 用户主页 principalId，可直接取 profile 页 URL 末段 */
+    principalId: string;
+    /** 分页游标；为空时请求首屏作品列表 */
+    pcursor?: string;
+    /** 每页数量，默认 12 */
     count?: number;
   };
   LiveRoomInfoParams: {
-    methodType: 'liveRoomInfo'; /** 直播间 principalId，可直接取 /u/{principalId} URL 末段 */
+    methodType: 'liveRoomInfo';
+    /** 直播间 principalId，可直接取 /u/{principalId} URL 末段 */
     principalId: string;
   };
   EmojiListParams: {
@@ -1084,7 +1331,8 @@ type KuaishouMethodOptMap = {
   userWorkList: KuaishouMethodOptionsMap['UserWorkListParams'];
   liveRoomInfo: KuaishouMethodOptionsMap['LiveRoomInfoParams'];
   emojiList: KuaishouMethodOptionsMap['EmojiListParams'];
-}; //#endregion
+};
+//#endregion
 //#region src/validation/kuaishou.d.ts
 /**
  * 快手视频参数验证模式
@@ -1170,39 +1418,54 @@ declare const KuaishouMethodRoutes: {
   readonly liveRoomInfo: "/fetch_live_room_info";
   readonly emojiList: "/fetch_emoji_list";
 };
-type KuaishouMethodType = keyof typeof KuaishouValidationSchemas; //#endregion
+type KuaishouMethodType = keyof typeof KuaishouValidationSchemas;
+//#endregion
 //#region src/types/XiaohongshuAPIParams.d.ts
 /**
  * 小红书 API 方法参数映射
  */
 interface XiaohongshuMethodOptionsMap {
   HomeFeedParams: {
-    methodType: 'homeFeed'; /** 游标分数，用于分页 */
-    cursor_score?: string; /** 每次请求的数量 */
-    num?: number; /** 刷新类型 */
-    refresh_type?: number; /** 笔记索引 */
-    note_index?: number; /** 分类 */
-    category?: string; /** 搜索关键词 */
+    methodType: 'homeFeed';
+    /** 游标分数，用于分页 */
+    cursor_score?: string;
+    /** 每次请求的数量 */
+    num?: number;
+    /** 刷新类型 */
+    refresh_type?: number;
+    /** 笔记索引 */
+    note_index?: number;
+    /** 分类 */
+    category?: string;
+    /** 搜索关键词 */
     search_key?: string;
   };
   NoteParams: {
-    methodType: 'noteDetail'; /** 笔记ID */
-    note_id: string; /** 反爬的 X-Sec-Token 可从web地址中获取 */
+    methodType: 'noteDetail';
+    /** 笔记ID */
+    note_id: string;
+    /** 反爬的 X-Sec-Token 可从web地址中获取 */
     xsec_token: string;
   };
   CommentParams: {
-    methodType: 'noteComments'; /** 笔记ID */
-    note_id: string; /** 游标 */
-    cursor?: string; /** 反爬的 X-Sec-Token 可从web地址中获取 */
+    methodType: 'noteComments';
+    /** 笔记ID */
+    note_id: string;
+    /** 游标 */
+    cursor?: string;
+    /** 反爬的 X-Sec-Token 可从web地址中获取 */
     xsec_token: string;
   };
   UserParams: {
-    methodType: 'userProfile'; /** 用户ID */
+    methodType: 'userProfile';
+    /** 用户ID */
     user_id: string;
   };
   UserNoteParams: {
-    methodType: 'userNoteList'; /** 用户ID */
-    user_id: string; /** 上一页最后一条笔记的ID */
+    methodType: 'userNoteList';
+    /** 用户ID */
+    user_id: string;
+    /** 上一页最后一条笔记的ID */
     cursor?: string;
     /**
      * 每次请求的数量
@@ -1214,11 +1477,16 @@ interface XiaohongshuMethodOptionsMap {
     methodType: 'emojiList';
   };
   SearchNoteParams: {
-    methodType: 'searchNotes'; /** 搜索关键词 */
-    keyword: string; /** 页码 */
-    page?: number; /** 每页数量 */
-    page_size?: number; /** 排序类型 */
-    sort?: SearchSortType; /** 笔记类型 */
+    methodType: 'searchNotes';
+    /** 搜索关键词 */
+    keyword: string;
+    /** 页码 */
+    page?: number;
+    /** 每页数量 */
+    page_size?: number;
+    /** 排序类型 */
+    sort?: SearchSortType;
+    /** 笔记类型 */
     note_type?: SearchNoteType;
   };
 }
@@ -1233,12 +1501,13 @@ type XiaohongshuMethodOptMap = {
   userNoteList: XiaohongshuMethodOptionsMap['UserNoteParams'];
   emojiList: XiaohongshuMethodOptionsMap['EmojiListParams'];
   searchNotes: XiaohongshuMethodOptionsMap['SearchNoteParams'];
-}; //#endregion
+};
+//#endregion
 //#region src/platform/xiaohongshu/API.d.ts
 /**
  * 根据 XiaohongshuMethodOptionsMap 创建一个新的类型，去除每个字段中的 methodType
  */
-type XiaohongshuMethodOptionsWithoutMethodType = { [K in keyof XiaohongshuMethodOptionsMap]: Omit<XiaohongshuMethodOptionsMap[K], 'methodType'> };
+type XiaohongshuMethodOptionsWithoutMethodType = { [K in keyof XiaohongshuMethodOptionsMap]: Omit<XiaohongshuMethodOptionsMap[K], 'methodType'>; };
 /**
  * 搜索排序类型枚举
  */
@@ -1367,7 +1636,8 @@ declare const xiaohongshuApiUrls: {
     };
     Url: string;
   };
-}; //#endregion
+};
+//#endregion
 //#region src/validation/xiaohongshu.d.ts
 /**
  * 小红书验证模式映射
@@ -1461,7 +1731,8 @@ declare const XiaohongshuMethodRoutes: {
   readonly emojiList: "/fetch_emoji_list";
   readonly searchNotes: "/fetch_search_notes";
 };
-type XiaohongshuMethodType = keyof typeof XiaohongshuValidationSchemas; //#endregion
+type XiaohongshuMethodType = keyof typeof XiaohongshuValidationSchemas;
+//#endregion
 //#region src/types/NetworksConfigType.d.ts
 type NetworksConfigType = {
   /**
@@ -1659,13 +1930,16 @@ declare enum xiaohongshuAPIErrorCode {
   FREQUENCY_ERROR = 300013,
   /** 浏览器异常，请尝试更换浏览器后重试 */
   BROWSER_ERROR = 300015
-} //#endregion
+}
+//#endregion
 //#region src/validation/index.d.ts
 /**
  * 基础响应类型
  */
 type BaseResponse = {
-  /** 响应消息 */message: string; /** 响应状态码 */
+  /** 响应消息 */
+  message: string;
+  /** 响应状态码 */
   code: number;
 };
 /**
@@ -1673,16 +1947,22 @@ type BaseResponse = {
  * @template T - 响应数据的类型，默认为any
  */
 type SuccessResult<T = any> = BaseResponse & {
-  /** 响应状态 */success: true; /** 响应数据，类型由泛型 T 决定 */
-  data: T; /** 成功响应时错误信息为空 */
+  /** 响应状态 */
+  success: true;
+  /** 响应数据，类型由泛型 T 决定 */
+  data: T;
+  /** 成功响应时错误信息为空 */
   error: never;
 };
 /**
  * 错误响应类型
  */
 type ErrorResult = BaseResponse & {
-  /** 响应状态 */success: false; /** API 错误类型 */
-  error: APIErrorType; /** 错误响应时数据为空 */
+  /** 响应状态 */
+  success: false;
+  /** API 错误类型 */
+  error: APIErrorType;
+  /** 错误响应时数据为空 */
   data: never;
 };
 /**
@@ -1739,7 +2019,8 @@ declare const createSuccessResponse: <T>(data: T, message: string, code?: number
  * @param code - 错误状态码（可选，默认500）
  * @returns 格式化的错误响应对象
  */
-declare const createErrorResponse: (error: APIErrorType, message: string, code?: number, data?: unknown) => ErrorResult; //#endregion
+declare const createErrorResponse: (error: APIErrorType, message: string, code?: number, data?: unknown) => ErrorResult;
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/ArticleCard/ArticleCard_V0.d.ts
 type ArticleCard_V0 = {
   code: number;
@@ -2102,9 +2383,11 @@ type Lv5440 = {
   uid: number;
   uname: string;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/ArticleCard/index.d.ts
-type ArticleCard = ArticleCard_V0; //#endregion
+type ArticleCard = ArticleCard_V0;
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/ArticleContent/ArticleContent.d.ts
 type ArticleContent_V0 = {
   code: number;
@@ -2320,9 +2603,11 @@ type Stats$1 = {
   share: number;
   view: number;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/ArticleContent/index.d.ts
-type ArticleContent = ArticleContent_V0; //#endregion
+type ArticleContent = ArticleContent_V0;
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/ArticleInfo/ArticleInfo_V0.d.ts
 type ArticleInfo_V0 = {
   code: number;
@@ -2373,9 +2658,11 @@ type Stats = {
   share: number;
   view: number;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/ArticleInfo/index.d.ts
-type ArticleInfo = ArticleInfo_V0; //#endregion
+type ArticleInfo = ArticleInfo_V0;
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/AV2BV/AV2BV_V0.d.ts
 type BiliAv2Bv_V0 = {
   code: number;
@@ -2386,9 +2673,11 @@ type BiliAv2Bv_V0 = {
 type Data$15 = {
   bvid: string;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/AV2BV/index.d.ts
-type BiliAv2Bv = BiliAv2Bv_V0; //#endregion
+type BiliAv2Bv = BiliAv2Bv_V0;
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/BangumiVideoInfo/BangumiVideoInfo_V0.d.ts
 type BiliBangumiVideoInfo_V0 = {
   code: number;
@@ -2809,9 +3098,11 @@ type VipInfo = {
   status: number;
   type: number;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/BangumiVideoInfo/index.d.ts
-type BiliBangumiVideoInfo = BiliBangumiVideoInfo_V0; //#endregion
+type BiliBangumiVideoInfo = BiliBangumiVideoInfo_V0;
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/BangumiVideoPlayurlIsLogin/BangumiVideoPlayurlIsLogin_V0.d.ts
 /** 番剧下载地址（已登录） */
 type BiliBangumiVideoPlayurlIsLogin_V0 = {
@@ -2953,9 +3244,11 @@ type SupportFormat$3 = {
   sub_description: string;
   superscript: string;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/BangumiVideoPlayurlIsLogin/index.d.ts
-type BiliBangumiVideoPlayurlIsLogin = BiliBangumiVideoPlayurlIsLogin_V0; //#endregion
+type BiliBangumiVideoPlayurlIsLogin = BiliBangumiVideoPlayurlIsLogin_V0;
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/BangumiVideoPlayurlNoLogin/BangumiVideoPlayurlNoLogin_V0.d.ts
 /** 番剧下载地址（未登录） */
 type BiliBangumiVideoPlayurlNoLogin_V0 = {
@@ -3023,9 +3316,11 @@ type SupportFormat$2 = {
   sub_description: string;
   superscript: string;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/BangumiVideoPlayurlNoLogin/index.d.ts
-type BiliBangumiVideoPlayurlNoLogin = BiliBangumiVideoPlayurlNoLogin_V0; //#endregion
+type BiliBangumiVideoPlayurlNoLogin = BiliBangumiVideoPlayurlNoLogin_V0;
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/EmojiList/EmojiList_V0.d.ts
 type BiliEmojiList_V0 = {
   code: number;
@@ -3097,9 +3392,11 @@ type Setting = {
   recent_limit: number;
   schema: string;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/EmojiList/index.d.ts
-type BiliEmojiList = BiliEmojiList_V0; //#endregion
+type BiliEmojiList = BiliEmojiList_V0;
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/BiliCommentReply/BiliCommentReply_V0.d.ts
 type BiliCommentReply_V0 = {
   code: number;
@@ -3596,9 +3893,11 @@ type Top$1 = {
 type Upper = {
   mid: number;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/BiliCommentReply/index.d.ts
-type BiliCommentReply = BiliCommentReply_V0; //#endregion
+type BiliCommentReply = BiliCommentReply_V0;
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/BV2AV/BV2AV_V0.d.ts
 type BiliBv2AV_V0 = {
   code: number;
@@ -3609,9 +3908,11 @@ type BiliBv2AV_V0 = {
 type Data$13 = {
   aid: string;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/BV2AV/index.d.ts
-type BiliBv2AV = BiliBv2AV_V0; //#endregion
+type BiliBv2AV = BiliBv2AV_V0;
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/Captcha/ApplyCaptcha/ApplyCaptcha_V0.d.ts
 type ApplyCaptcha_V0 = {
   code: number;
@@ -3634,9 +3935,11 @@ type Geetest = {
   challenge: string;
   gt: string;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/Captcha/ApplyCaptcha/index.d.ts
-type ApplyCaptcha = ApplyCaptcha_V0; //#endregion
+type ApplyCaptcha = ApplyCaptcha_V0;
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/Captcha/ValidateCaptcha/ValidateCaptcha_V0.d.ts
 type ValidateCaptcha_V0 = {
   code: number;
@@ -3649,9 +3952,11 @@ type DataData$23 = {
   grisk_id: string;
   is_valid: number;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/Captcha/ValidateCaptcha/index.d.ts
-type ValidateCaptcha = ValidateCaptcha_V0; //#endregion
+type ValidateCaptcha = ValidateCaptcha_V0;
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/ColumnInfo/ColumnInfo_V0.d.ts
 type ColumnInfo_V0 = {
   code: number;
@@ -3758,9 +4063,11 @@ type List = {
   update_time: number;
   words: number;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/ColumnInfo/index.d.ts
-type ColumnInfo = ColumnInfo_V0; //#endregion
+type ColumnInfo = ColumnInfo_V0;
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_ARTICLE/DYNAMIC_TYPE_ARTICLE_V0.d.ts
 type DynamicTypeArticle_V0 = {
   code: number;
@@ -4020,9 +4327,11 @@ type Like$11 = {
   forbidden: boolean;
   status: boolean;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_ARTICLE/index.d.ts
-type DynamicTypeArticle = DynamicTypeArticle_V0; //#endregion
+type DynamicTypeArticle = DynamicTypeArticle_V0;
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_AV/DYNAMIC_TYPE_AV_V0.d.ts
 type DynamicTypeAV_V0$1 = {
   code: number;
@@ -4299,9 +4608,11 @@ type Like$10 = {
   forbidden: boolean;
   status: boolean;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_AV/index.d.ts
-type DynamicTypeAV = DynamicTypeAV_V0$1; //#endregion
+type DynamicTypeAV = DynamicTypeAV_V0$1;
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_DRAW/DYNAMIC_TYPE_DRAW_V0.d.ts
 type DynamicTypeDraw_V0$1 = {
   code: number;
@@ -4657,9 +4968,11 @@ type Like$9 = {
   forbidden: boolean;
   status: boolean;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_DRAW/index.d.ts
-type DynamicTypeDraw = DynamicTypeDraw_V0$1; //#endregion
+type DynamicTypeDraw = DynamicTypeDraw_V0$1;
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_FORWARD/Forward/DYNAMIC_TYPE_AV/DYNAMIC_TYPE_AV_V0.d.ts
 type DynamicTypeAV_V0 = {
   code: number;
@@ -5193,7 +5506,8 @@ type Stat$2 = {
   danmaku: string;
   play: string;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_FORWARD/Forward/DYNAMIC_TYPE_AV/DYNAMIC_TYPE_AV_V1.d.ts
 type DynamicTypeAV_V1 = {
   code: number;
@@ -5696,9 +6010,11 @@ type Stat$1 = {
   danmaku: string;
   play: string;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_FORWARD/Forward/DYNAMIC_TYPE_AV/index.d.ts
-type DynamicTypeAV$1 = DynamicTypeAV_V0 | DynamicTypeAV_V1; //#endregion
+type DynamicTypeAV$1 = DynamicTypeAV_V0 | DynamicTypeAV_V1;
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_FORWARD/Forward/DYNAMIC_TYPE_DRAW/DYNAMIC_TYPE_DRAW_V0.d.ts
 type DynamicTypeDraw_V0 = {
   code: number;
@@ -6235,7 +6551,8 @@ type SummaryRichTextNode$2 = {
   text: string;
   type: string;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_FORWARD/Forward/DYNAMIC_TYPE_DRAW/DYNAMIC_TYPE_DRAW_V1.d.ts
 type DynamicTypeDraw_V1 = {
   code: number;
@@ -6772,9 +7089,11 @@ type SummaryRichTextNode$1 = {
   text: string;
   type: string;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_FORWARD/Forward/DYNAMIC_TYPE_DRAW/index.d.ts
-type DynamicTypeDraw$1 = DynamicTypeDraw_V0 | DynamicTypeDraw_V1; //#endregion
+type DynamicTypeDraw$1 = DynamicTypeDraw_V0 | DynamicTypeDraw_V1;
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_FORWARD/Forward/DYNAMIC_TYPE_LIVE_RCMD/DYNAMIC_TYPE_LIVE_RCMD_V0.d.ts
 type DynamicTypeLiveRcmd_V0$1 = {
   code: number;
@@ -7254,9 +7573,11 @@ type LiveRcmd$1 = {
   content: string;
   reserve_type: number;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_FORWARD/Forward/DYNAMIC_TYPE_LIVE_RCMD/index.d.ts
-type DynamicTypeLiveRcmd$1 = DynamicTypeLiveRcmd_V0$1; //#endregion
+type DynamicTypeLiveRcmd$1 = DynamicTypeLiveRcmd_V0$1;
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_FORWARD/Forward/DYNAMIC_TYPE_WORD/DYNAMIC_TYPE_WORD_V0.d.ts
 type DynamicTypeWord_V0$1 = {
   code: number;
@@ -7841,9 +8162,11 @@ type SummaryRichTextNode = {
   text: string;
   type: string;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_FORWARD/Forward/DYNAMIC_TYPE_WORD/index.d.ts
-type DynamicTypeWord$1 = DynamicTypeWord_V0$1; //#endregion
+type DynamicTypeWord$1 = DynamicTypeWord_V0$1;
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_FORWARD/index.d.ts
 type FixOrig<O, LiteralType extends string> = O & {
   type: LiteralType;
@@ -7875,7 +8198,8 @@ type DynamicTypeForward<T extends keyof OriginalDynamicItemMap> = {
   ttl: number;
   [property: string]: any;
 };
-type DynamicTypeForwardUnion = DynamicTypeForward<DynamicType.AV> | DynamicTypeForward<DynamicType.DRAW> | DynamicTypeForward<DynamicType.WORD> | DynamicTypeForward<DynamicType.LIVE_RCMD>; //#endregion
+type DynamicTypeForwardUnion = DynamicTypeForward<DynamicType.AV> | DynamicTypeForward<DynamicType.DRAW> | DynamicTypeForward<DynamicType.WORD> | DynamicTypeForward<DynamicType.LIVE_RCMD>;
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_LIVE_RCMD/DYNAMIC_TYPE_LIVE_RCMD_V0.d.ts
 type DynamicTypeLiveRcmd_V0 = {
   code: number;
@@ -8151,9 +8475,11 @@ type Like$2 = {
   forbidden: boolean;
   status: boolean;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_LIVE_RCMD/index.d.ts
-type DynamicTypeLiveRcmd = DynamicTypeLiveRcmd_V0; //#endregion
+type DynamicTypeLiveRcmd = DynamicTypeLiveRcmd_V0;
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_WORD/DYNAMIC_TYPE_WORD_V0.d.ts
 type DynamicTypeWord_V0 = {
   code: number;
@@ -8480,9 +8806,11 @@ type Like$1 = {
   forbidden: boolean;
   status: boolean;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_WORD/index.d.ts
-type DynamicTypeWord = DynamicTypeWord_V0; //#endregion
+type DynamicTypeWord = DynamicTypeWord_V0;
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/Dynamic/index.d.ts
 /**
  * 转发动态种子动态主体类型枚举
@@ -8548,7 +8876,8 @@ declare enum AdditionalType {
   RESERVE = "ADDITIONAL_TYPE_RESERVE",
   /** 充电专属抽奖 */
   UPOWER_LOTTERY = "ADDITIONAL_TYPE_UPOWER_LOTTERY"
-} //#endregion
+}
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/DynamicInfo/index.d.ts
 declare enum DynamicType {
   AV = "DYNAMIC_TYPE_AV",
@@ -8576,7 +8905,8 @@ type BiliDynamicInfo<T extends DynamicType> = {
   message: string;
   ttl: number;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/LiveRoomDef/LiveRoomDef_V0.d.ts
 type BiliLiveRoomDef_V0 = {
   code: number;
@@ -8603,9 +8933,11 @@ type Data$12 = {
   special_type: number;
   uid: number;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/LiveRoomDef/index.d.ts
-type BiliLiveRoomDef = BiliLiveRoomDef_V0; //#endregion
+type BiliLiveRoomDef = BiliLiveRoomDef_V0;
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/LiveRoomDetail/LiveRoomDetail_V0.d.ts
 type BiliLiveRoomDetail_V0 = {
   code: number;
@@ -8696,9 +9028,11 @@ type StudioInfo = {
   master_list: string[];
   status: number;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/LiveRoomDetail/index.d.ts
-type BiliLiveRoomDetail = BiliLiveRoomDetail_V0; //#endregion
+type BiliLiveRoomDetail = BiliLiveRoomDetail_V0;
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/Login/CheckQrcode/CheckQrcode_V0.d.ts
 type BiliCheckQrcode_V0 = {
   code: number;
@@ -8718,9 +9052,11 @@ type FluffyData = {
   timestamp: number;
   url: string;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/Login/CheckQrcode/index.d.ts
-type BiliCheckQrcode = BiliCheckQrcode_V0; //#endregion
+type BiliCheckQrcode = BiliCheckQrcode_V0;
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/Login/NewLoginQrcode/NewLoginQrcode.d.ts
 type BiliNewLoginQrcode_V0 = {
   code: number;
@@ -8733,9 +9069,11 @@ type Data$10 = {
   qrcode_key: string;
   url: string;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/Login/NewLoginQrcode/index.d.ts
-type BiliNewLoginQrcode = BiliNewLoginQrcode_V0; //#endregion
+type BiliNewLoginQrcode = BiliNewLoginQrcode_V0;
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/OneWork/OneWork_V0.d.ts
 type BiliOneWork_V0 = {
   code: number;
@@ -8879,9 +9217,11 @@ type Subtitle = {
 type UserGarb = {
   url_image_ani_cut: string;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/OneWork/index.d.ts
-type BiliOneWork = BiliOneWork_V0; //#endregion
+type BiliOneWork = BiliOneWork_V0;
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/UserDynamic/index.d.ts
 type BiliUserDynamic = {
   code: number;
@@ -8911,7 +9251,8 @@ type DataData$8<T extends DynamicType = DynamicType> = {
   update_baseline: string;
   update_num: number;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/UserFullView/UserFullView_V0.d.ts
 type BiliUserFullView_V0 = {
   code: number;
@@ -8935,9 +9276,11 @@ type Archive = {
 type Article = {
   view: number;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/UserFullView/index.d.ts
-type BiliUserFullView = BiliUserFullView_V0; //#endregion
+type BiliUserFullView = BiliUserFullView_V0;
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/UserProfile/UserProfile_V0.d.ts
 type BiliUserProfile_V0 = {
   code: number;
@@ -9073,9 +9416,11 @@ type Space = {
   l_img: string;
   s_img: string;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/UserProfile/index.d.ts
-type BiliUserProfile = BiliUserProfile_V0; //#endregion
+type BiliUserProfile = BiliUserProfile_V0;
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/UserSpaceInfo/UserSpaceInfo_V0.d.ts
 type UserSpaceInfo_V0 = {
   code: number;
@@ -9310,9 +9655,11 @@ type OttInfo = {
 type SuperVip = {
   is_super_vip: boolean;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/UserSpaceInfo/index.d.ts
-type UserSpaceInfo = UserSpaceInfo_V0; //#endregion
+type UserSpaceInfo = UserSpaceInfo_V0;
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/VideoPlayurlIsLogin/VideoPlayurlIsLogin_V0.d.ts
 /** 视频下载地址（已登录） */
 type BiliVideoPlayurlIsLogin_V0 = {
@@ -9430,9 +9777,11 @@ type SupportFormat$1 = {
   quality: number;
   superscript: string;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/VideoPlayurlIsLogin/index.d.ts
-type BiliVideoPlayurlIsLogin = BiliVideoPlayurlIsLogin_V0; //#endregion
+type BiliVideoPlayurlIsLogin = BiliVideoPlayurlIsLogin_V0;
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/VideoPlayurlNoLogin/VideoPlayurlNoLogin_V0.d.ts
 /** 视频下载地址（未登录） */
 type BiliBiliVideoPlayurlNoLogin_V0 = {
@@ -9481,9 +9830,11 @@ type SupportFormat = {
   quality?: number;
   superscript?: string;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/VideoPlayurlNoLogin/index.d.ts
-type BiliBiliVideoPlayurlNoLogin = BiliBiliVideoPlayurlNoLogin_V0; //#endregion
+type BiliBiliVideoPlayurlNoLogin = BiliBiliVideoPlayurlNoLogin_V0;
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/WorkComments/WorkComments_V0.d.ts
 type BiliWorkComments_V0 = {
   code: number;
@@ -11265,9 +11616,11 @@ type TopReplyUpAction = {
 type DataUpper = {
   mid: number;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/WorkComments/index.d.ts
-type BiliWorkComments = BiliWorkComments_V0; //#endregion
+type BiliWorkComments = BiliWorkComments_V0;
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/DynamicCard/DynamicCard_V0.d.ts
 type BiliDynamicCard_V0 = {
   code: number;
@@ -11397,9 +11750,11 @@ type Relation = {
   is_followed: number;
   status: number;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/DynamicCard/index.d.ts
-type BiliDynamicCard = BiliDynamicCard_V0; //#endregion
+type BiliDynamicCard = BiliDynamicCard_V0;
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/index.d.ts
 /**
  * B站返回类型映射
@@ -11435,7 +11790,8 @@ interface BilibiliReturnTypeMap {
   captchaFromVoucher: ApplyCaptcha;
   validateCaptcha: ValidateCaptcha;
   videoDanmaku: BiliProtobufDanmaku;
-} //#endregion
+}
+//#endregion
 //#region src/types/ReturnDataType/Douyin/ArticleWork/ArticleWork_V0.d.ts
 type ArticleWork_V0 = {
   aweme_detail: AwemeDetail$3;
@@ -12158,9 +12514,11 @@ type XiguaBaseInfo$6 = {
 type LogPb$14 = {
   impr_id: string;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Douyin/ArticleWork/index.d.ts
-type ArticleWork = ArticleWork_V0; //#endregion
+type ArticleWork = ArticleWork_V0;
+//#endregion
 //#region src/types/ReturnDataType/Douyin/CommentReply/CommentReply_V0.d.ts
 type CommentReply_V0 = {
   comments: Comment$2[];
@@ -12312,9 +12670,11 @@ type Extra$7 = {
 type LogPb$13 = {
   impr_id: string;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Douyin/CommentReply/index.d.ts
-type CommentReply = CommentReply_V0; //#endregion
+type CommentReply = CommentReply_V0;
+//#endregion
 //#region src/types/ReturnDataType/Douyin/DyDanmakuList/DyDanmakuList_V0.d.ts
 type DyDanmakuList_V0 = {
   danmaku_list: DanmakuList[];
@@ -12362,9 +12722,11 @@ type DataExtra$1 = {
 type LogPb$12 = {
   impr_id: string;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Douyin/DyDanmakuList/index.d.ts
-type DyDanmakuList = DyDanmakuList_V0; //#endregion
+type DyDanmakuList = DyDanmakuList_V0;
+//#endregion
 //#region src/types/ReturnDataType/Douyin/EmojiList/EmojiList_V0.d.ts
 type DyEmojiList_V0 = {
   emoji_list: EmojiListElement[];
@@ -12383,9 +12745,11 @@ type Emojiurl = {
   uri: string;
   url_list: string[];
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Douyin/EmojiList/index.d.ts
-type DyEmojiList = DyEmojiList_V0; //#endregion
+type DyEmojiList = DyEmojiList_V0;
+//#endregion
 //#region src/types/ReturnDataType/Douyin/EmojiProList/EmojiProList_V0.d.ts
 type DyEmojiProList_V0 = {
   decision_trees: DecisionTrees;
@@ -12927,9 +13291,11 @@ type ReportToggles = {
   interactive_resources_v2: number;
   plus_panel_diff: number;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Douyin/EmojiProList/index.d.ts
-type DyEmojiProList = DyEmojiProList_V0; //#endregion
+type DyEmojiProList = DyEmojiProList_V0;
+//#endregion
 //#region src/types/ReturnDataType/Douyin/ImageAlbumWork/ImageAlbumWork_V0.d.ts
 /** 图集作品 */
 type DyImageAlbumWork_V0 = {
@@ -13617,9 +13983,11 @@ type XiguaBaseInfo$5 = {
 type LogPb$10 = {
   impr_id: string;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Douyin/ImageAlbumWork/index.d.ts
-type DyImageAlbumWork = DyImageAlbumWork_V0; //#endregion
+type DyImageAlbumWork = DyImageAlbumWork_V0;
+//#endregion
 //#region src/types/ReturnDataType/Douyin/MusicWork/MusicWork_V0.d.ts
 type DyMusicWork_V0 = {
   extra: Extra$6;
@@ -13848,9 +14216,11 @@ type MediumCoverurl = {
   uri: string;
   url_list: string[];
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Douyin/MusicWork/index.d.ts
-type DyMusicWork = DyMusicWork_V0; //#endregion
+type DyMusicWork = DyMusicWork_V0;
+//#endregion
 //#region src/types/ReturnDataType/Douyin/SearchInfo/SearchInfoGeneral/SearchInfoGeneral_V0.d.ts
 type SearchInfoGeneralData_V0 = {
   ad_info: {
@@ -15005,9 +15375,11 @@ type MultiColumnsInfo = {
   group_tag: string;
   is_multi_columns: boolean;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Douyin/SearchInfo/SearchInfoGeneral/index.d.ts
-type SearchInfoGeneralData = SearchInfoGeneralData_V0; //#endregion
+type SearchInfoGeneralData = SearchInfoGeneralData_V0;
+//#endregion
 //#region src/types/ReturnDataType/Douyin/SearchInfo/SearchInfoUser/SearchInfoUser_V0.d.ts
 type SearchInfoUser_V0 = {
   challenge_list: null;
@@ -15160,9 +15532,11 @@ type UserTag = {
   icon_url: string;
   type: string;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Douyin/SearchInfo/SearchInfoUser/index.d.ts
-type SearchInfoUser = SearchInfoUser_V0; //#endregion
+type SearchInfoUser = SearchInfoUser_V0;
+//#endregion
 //#region src/types/ReturnDataType/Douyin/SearchInfo/SearchInfoVideo/SearchInfoVideo_V0.d.ts
 type SearchInfoVideo_V0 = {
   aweme_list: null;
@@ -15844,9 +16218,11 @@ type SearchNilText = {
 type LogPb$6 = {
   impr_id: string;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Douyin/SearchInfo/SearchInfoVideo/index.d.ts
-type SearchInfoVideo = SearchInfoVideo_V0; //#endregion
+type SearchInfoVideo = SearchInfoVideo_V0;
+//#endregion
 //#region src/types/ReturnDataType/Douyin/SlidesWork/SlidesWork_V0.d.ts
 /** 合辑作品 */
 type DySlidesWork_V0 = {
@@ -16619,9 +16995,11 @@ type XiguaBaseInfo$4 = {
 type LogPb$5 = {
   impr_id: string;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Douyin/SlidesWork/index.d.ts
-type DySlidesWork = DySlidesWork_V0; //#endregion
+type DySlidesWork = DySlidesWork_V0;
+//#endregion
 //#region src/types/ReturnDataType/Douyin/SuggestWords/SuggestWords_V0.d.ts
 type DySuggestWords_V0 = {
   data: Datum$1[];
@@ -16689,9 +17067,11 @@ type TimeCost = {
   server_engine_cost: string;
   stream_inner: string;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Douyin/SuggestWords/index.d.ts
-type DySuggestWords = DySuggestWords_V0; //#endregion
+type DySuggestWords = DySuggestWords_V0;
+//#endregion
 //#region src/types/ReturnDataType/Douyin/UserFavoriteList/UserFavoriteList_V0.d.ts
 type UserFavoriteList_V0 = {
   aweme_list: AwemeList$2[];
@@ -17772,9 +18152,11 @@ type XiguaBaseInfo$3 = {
 type LogPb$4 = {
   impr_id: string;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Douyin/UserFavoriteList/index.d.ts
-type DyUserFavoriteList = UserFavoriteList_V0; //#endregion
+type DyUserFavoriteList = UserFavoriteList_V0;
+//#endregion
 //#region src/types/ReturnDataType/Douyin/UserInfo/UserInfo_V0.d.ts
 type DyUserInfo_V0 = {
   extra: Extra$1;
@@ -18099,9 +18481,11 @@ type WhiteCoverurl = {
   uri: string;
   url_list: string[];
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Douyin/UserInfo/index.d.ts
-type DyUserInfo = DyUserInfo_V0; //#endregion
+type DyUserInfo = DyUserInfo_V0;
+//#endregion
 //#region src/types/ReturnDataType/Douyin/UserLiveVideos/UserLiveVideos_V0.d.ts
 type DyUserLiveVideos_V0 = {
   data: Data$3;
@@ -20185,9 +20569,11 @@ type WebStreamurl = {
 type UserLiveVideosExtra = {
   now: number;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Douyin/UserLiveVideos/index.d.ts
-type DyUserLiveVideos = DyUserLiveVideos_V0; //#endregion
+type DyUserLiveVideos = DyUserLiveVideos_V0;
+//#endregion
 //#region src/types/ReturnDataType/Douyin/UserPostVideos/UserPostVideos_V0.d.ts
 type DyUserPostVideos_V0 = {
   aweme_list: AwemeList$1[];
@@ -21102,9 +21488,11 @@ type XiguaBaseInfo$2 = {
 type LogPb$2 = {
   impr_id: string;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Douyin/UserPostVideos/index.d.ts
-type DyUserPostVideos = DyUserPostVideos_V0; //#endregion
+type DyUserPostVideos = DyUserPostVideos_V0;
+//#endregion
 //#region src/types/ReturnDataType/Douyin/UserRecommendList/UserRecommendList_V0.d.ts
 type UserRecommendList_V0 = {
   aweme_date: AwemeDate;
@@ -22994,9 +23382,11 @@ type XiguaBaseInfo$1 = {
 type XiguaTask = {
   is_xigua_task: boolean;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Douyin/UserRecommendList/index.d.ts
-type UserRecommendList = UserRecommendList_V0; //#endregion
+type UserRecommendList = UserRecommendList_V0;
+//#endregion
 //#region src/types/ReturnDataType/Douyin/VideoWork/VideoWork_V0.d.ts
 /** 单个视频作品 */
 type DyVideoWWork_V0 = {
@@ -23740,9 +24130,11 @@ type XiguaBaseInfo = {
 type LogPb$1 = {
   impr_id: string;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Douyin/VideoWork/index.d.ts
-type DyVideoWork = DyVideoWWork_V0; //#endregion
+type DyVideoWork = DyVideoWWork_V0;
+//#endregion
 //#region src/types/ReturnDataType/Douyin/WorkComments/WorkComments_V0.d.ts
 type DyWorkComments_V0 = {
   comment_common_data: string;
@@ -24064,9 +24456,11 @@ type FastResponseComment = {
 type LogPb = {
   impr_id: string;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Douyin/WorkComments/index.d.ts
-type DyWorkComments = DyWorkComments_V0; //#endregion
+type DyWorkComments = DyWorkComments_V0;
+//#endregion
 //#region src/types/ReturnDataType/Douyin/index.d.ts
 type DySearchInfo = SearchInfoGeneralData | SearchInfoUser | SearchInfoVideo;
 /**
@@ -24094,7 +24488,8 @@ interface DouyinReturnTypeMap {
   liveRoomInfo: DyUserLiveVideos;
   loginQrcode: any;
   commentReplies: CommentReply;
-} //#endregion
+}
+//#endregion
 //#region src/types/ReturnDataType/Kuaishou/EmojiList/EmojiList_V0.d.ts
 type KsEmojiList_V0 = {
   data: Data$2;
@@ -24695,9 +25090,11 @@ type IconUrls = {
   '[龍]': string;
   '[龙]': string;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Kuaishou/EmojiList/index.d.ts
-type KsEmojiList = KsEmojiList_V0; //#endregion
+type KsEmojiList = KsEmojiList_V0;
+//#endregion
 //#region src/types/ReturnDataType/Kuaishou/LiveRoomDetail/LiveRoomDetail_V0.d.ts
 type KsLiveRoomInfo_V0 = {
   principalId?: string;
@@ -24812,9 +25209,11 @@ type KsLiveRoomConfig = {
   multiResolutionPlayUrls?: any[];
   user?: Record<string, any>;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Kuaishou/LiveRoomDetail/index.d.ts
-type KsLiveRoomInfo = KsLiveRoomInfo_V0; //#endregion
+type KsLiveRoomInfo = KsLiveRoomInfo_V0;
+//#endregion
 //#region src/types/ReturnDataType/Kuaishou/OneWork/OneWork_V0.d.ts
 type KsOneWork_V0 = {
   data: Data$1;
@@ -25112,9 +25511,11 @@ type Tag$1 = {
   name: string;
   type: string;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Kuaishou/OneWork/index.d.ts
-type KsOneWork = KsOneWork_V0; //#endregion
+type KsOneWork = KsOneWork_V0;
+//#endregion
 //#region src/types/ReturnDataType/Kuaishou/UserCommon.d.ts
 type KsUserProfileUserInfo = {
   id: string;
@@ -25196,7 +25597,8 @@ type KsUserProfileCounts = {
   review?: number;
   open?: number;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Kuaishou/UserHomeDetail.d.ts
 type KsUserHomeDetail = {
   principalId: string;
@@ -25309,9 +25711,11 @@ type KsUserHomeFollowState = {
 type KsUserHomeFollowButtonState = {
   followStatus: string;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Kuaishou/UserProfile.d.ts
-type KsUserProfile = KsUserHomeDetail; //#endregion
+type KsUserProfile = KsUserHomeDetail;
+//#endregion
 //#region src/types/ReturnDataType/Kuaishou/UserWorkList.d.ts
 /**
  * 快手用户公开视频列表。
@@ -25326,7 +25730,8 @@ type KsUserWorkList = {
   hasMore: boolean;
   result: number;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Kuaishou/WorkComments/WorkComments_V0.d.ts
 type KsWorkComments_V0 = {
   data: Data;
@@ -25377,9 +25782,11 @@ type SubComment$1 = {
   status: string;
   timestamp: number;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Kuaishou/WorkComments/index.d.ts
-type KsWorkComments = KsWorkComments_V0; //#endregion
+type KsWorkComments = KsWorkComments_V0;
+//#endregion
 //#region src/types/ReturnDataType/Kuaishou/index.d.ts
 /**
  * 快手返回类型映射
@@ -25391,7 +25798,8 @@ interface KuaishouReturnTypeMap {
   userProfile: KsUserProfile;
   userWorkList: KsUserWorkList;
   liveRoomInfo: KsLiveRoomInfo;
-} //#endregion
+}
+//#endregion
 //#region src/types/ReturnDataType/Xiaohongshu/HomeFeed/HomeFeed_V0.d.ts
 type HomeFeed_V0 = {
   code: number;
@@ -25458,9 +25866,11 @@ type Video = {
 type Capa = {
   duration: number;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Xiaohongshu/HomeFeed/index.d.ts
-type HomeFeed = HomeFeed_V0; //#endregion
+type HomeFeed = HomeFeed_V0;
+//#endregion
 //#region src/types/ReturnDataType/Xiaohongshu/NoteComments/NoteComments_V0.d.ts
 type NoteComments_V0 = {
   code: number;
@@ -25551,9 +25961,11 @@ type CommentUserInfo = {
   user_id: string;
   xsec_token: string;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Xiaohongshu/NoteComments/index.d.ts
-type NoteComments = NoteComments_V0; //#endregion
+type NoteComments = NoteComments_V0;
+//#endregion
 //#region src/types/ReturnDataType/Xiaohongshu/OneNote/OneNote_V0.d.ts
 type OneNote_V0 = {
   code: number;
@@ -25643,9 +26055,11 @@ type User$1 = {
   user_id: string;
   xsec_token: string;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Xiaohongshu/OneNote/index.d.ts
-type OneNote = OneNote_V0; //#endregion
+type OneNote = OneNote_V0;
+//#endregion
 //#region src/types/ReturnDataType/Xiaohongshu/SearchNotes/SearchNotes_V0.d.ts
 type SearchNotes_V0 = {
   code: number;
@@ -25729,9 +26143,11 @@ type Query = {
   name: string;
   search_word: string;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Xiaohongshu/SearchNotes/index.d.ts
-type SearchNotes = SearchNotes_V0; //#endregion
+type SearchNotes = SearchNotes_V0;
+//#endregion
 //#region src/types/ReturnDataType/Xiaohongshu/XiaohongshuEmojiList/XiaohongshuEmojiList_V0.d.ts
 type XiaohongshuEmojiList_V0 = {
   code: number;
@@ -25769,9 +26185,11 @@ type Result$2 = {
   message: string;
   success: boolean;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Xiaohongshu/XiaohongshuEmojiList/index.d.ts
-type XiaohongshuEmojiList = XiaohongshuEmojiList_V0; //#endregion
+type XiaohongshuEmojiList = XiaohongshuEmojiList_V0;
+//#endregion
 //#region src/types/ReturnDataType/Xiaohongshu/XiaohongshuUserProfile/XiaohongshuUserProfile_V0.d.ts
 type XiaohongshuUserProfile_V0 = {
   code: number;
@@ -25842,9 +26260,11 @@ type Tag = {
 type VerifyInfo = {
   redOfficialVerifyType: number;
   [property: string]: any;
-}; //#endregion
+};
+//#endregion
 //#region src/types/ReturnDataType/Xiaohongshu/XiaohongshuUserProfile/index.d.ts
-type XiaohongshuUserProfile = XiaohongshuUserProfile_V0; //#endregion
+type XiaohongshuUserProfile = XiaohongshuUserProfile_V0;
+//#endregion
 //#region src/types/ReturnDataType/Xiaohongshu/index.d.ts
 /**
  * 小红书返回类型映射
@@ -25857,7 +26277,8 @@ interface XiaohongshuReturnTypeMap {
   userNoteList: any;
   emojiList: XiaohongshuEmojiList;
   searchNotes: SearchNotes;
-} //#endregion
+}
+//#endregion
 //#region src/types/method-keys.d.ts
 /**
  * API 方法名常量定义
@@ -26174,7 +26595,8 @@ declare const MethodMaps: {
     };
     readonly toFetcher: Record<XiaohongshuInternalMethodKey, XiaohongshuFetcherMethodKey>;
   };
-}; //#endregion
+};
+//#endregion
 //#region src/types/index.d.ts
 /**
  * 移除methodType字段的工具类型
@@ -26199,19 +26621,19 @@ type TypeControl = {
 type DouyinDataOptionsMap = { [K in DouyinMethodType]: {
   opt: DouyinMethodOptMap[K];
   data: DouyinReturnTypeMap[K];
-} };
+}; };
 type BilibiliDataOptionsMap = { [K in BilibiliMethodType]: {
   opt: BilibiliMethodOptMap[K];
   data: BilibiliReturnTypeMap[K];
-} };
+}; };
 type KuaishouDataOptionsMap = { [K in KuaishouMethodType]: {
   opt: KuaishouMethodOptMap[K];
   data: KuaishouReturnTypeMap[K];
-} };
+}; };
 type XiaohongshuDataOptionsMap = { [K in XiaohongshuMethodType]: {
   opt: XiaohongshuMethodOptMap[K];
   data: XiaohongshuReturnTypeMap[K];
-} };
+}; };
 type XiaohongshuDataOptions<T extends keyof XiaohongshuDataOptionsMap> = OmitMethodType<XiaohongshuDataOptionsMap[T]['opt'] & TypeControl>;
 type DouyinDataOptions<T extends DouyinMethodType> = OmitMethodType<zod.infer<(typeof DouyinValidationSchemas)[T]> & TypeControl>;
 type BilibiliDataOptions<T extends keyof BilibiliDataOptionsMap> = OmitMethodType<BilibiliDataOptionsMap[T]['opt'] & TypeControl>;
@@ -26221,14 +26643,19 @@ type KuaishouDataOptions<T extends keyof KuaishouDataOptionsMap> = OmitMethodTyp
  * 该类型是方法 `getXXXData` 封装后请求遇到错误时的返回类型
  */
 type APIErrorType<T extends 'douyin' | 'bilibili' | 'kuaishou' | 'xiaohongshu' | 'default' = 'default'> = {
-  /** 错误码 */code: T extends 'douyin' ? douoyinAPIErrorCode : T extends 'bilibili' ? bilibiliAPIErrorCode : T extends 'kuaishou' ? kuaishouAPIErrorCode : T extends 'xiaohongshu' ? xiaohongshuAPIErrorCode : amagiAPIErrorCode; /** 错误时的响应数据 */
-  data: any; /** amagi 错误详情 */
-  amagiError: ErrorDetail; /** 错误信息 */
+  /** 错误码 */
+  code: T extends 'douyin' ? douoyinAPIErrorCode : T extends 'bilibili' ? bilibiliAPIErrorCode : T extends 'kuaishou' ? kuaishouAPIErrorCode : T extends 'xiaohongshu' ? xiaohongshuAPIErrorCode : amagiAPIErrorCode;
+  /** 错误时的响应数据 */
+  data: any;
+  /** amagi 错误详情 */
+  amagiError: ErrorDetail;
+  /** 错误信息 */
   amagiMessage: string;
-}; //#endregion
+};
+//#endregion
 //#region src/platform/bilibili/API.d.ts
 /** 去除 methodType 字段后的参数类型 */
-type BilibiliMethodOptionsWithoutMethodType = { [K in keyof BilibiliMethodOptionsMap]: OmitMethodType<BilibiliMethodOptionsMap[K]> };
+type BilibiliMethodOptionsWithoutMethodType = { [K in keyof BilibiliMethodOptionsMap]: OmitMethodType<BilibiliMethodOptionsMap[K]>; };
 /**
  * B站 API URL 构建类
  *
@@ -26315,7 +26742,8 @@ declare class BilibiliAPI {
   getVideoDanmaku(data: BilibiliMethodOptionsWithoutMethodType['DanmakuParams']): string;
 }
 /** B站 API URL 构建器实例 */
-declare const bilibiliApiUrls: BilibiliAPI; //#endregion
+declare const bilibiliApiUrls: BilibiliAPI;
+//#endregion
 //#region src/model/fetchers/bilibili/types.d.ts
 /** B站视频信息请求参数 */
 interface BilibiliVideoInfoOptions extends BaseRequestOptions {
@@ -26550,7 +26978,8 @@ interface IBilibiliFetcher {
    * 获取B站表情包列表
    */
   fetchEmojiList: NoParamMethodOverload<BilibiliReturnTypeMap['emojiList']>;
-} //#endregion
+}
+//#endregion
 //#region src/model/fetchers/douyin/types.d.ts
 /** 抖音作品请求参数 */
 interface DouyinWorkOptions extends BaseRequestOptions {
@@ -26714,7 +27143,8 @@ interface IDouyinFetcher {
    * 获取抖音动态表情列表
    */
   fetchDynamicEmojiList: NoParamMethodOverload<DouyinReturnTypeMap['dynamicEmojiList']>;
-} //#endregion
+}
+//#endregion
 //#region src/model/fetchers/kuaishou/types.d.ts
 /** 快手作品请求参数 */
 interface KuaishouVideoWorkOptions extends BaseRequestOptions {
@@ -26786,7 +27216,8 @@ interface IBoundKuaishouFetcher {
   fetchLiveRoomInfo: BoundMethodOverload<KuaishouLiveRoomInfoOptions, KuaishouReturnTypeMap['liveRoomInfo']>;
   /** 获取快手表情列表 */
   fetchEmojiList: BoundNoParamMethodOverload<KuaishouReturnTypeMap['emojiList']>;
-} //#endregion
+}
+//#endregion
 //#region src/model/fetchers/xiaohongshu/types.d.ts
 /** 小红书首页推荐请求参数 */
 interface XiaohongshuHomeFeedOptions extends BaseRequestOptions {
@@ -26887,7 +27318,8 @@ interface IBoundXiaohongshuFetcher {
   searchNotes: BoundMethodOverload<XiaohongshuSearchNotesOptions, XiaohongshuReturnTypeMap['searchNotes']>;
   /** 获取小红书表情列表 */
   fetchEmojiList: BoundNoParamMethodOverload<XiaohongshuReturnTypeMap['emojiList']>;
-} //#endregion
+}
+//#endregion
 //#region src/model/fetchers/types.d.ts
 /**
  * 类型精度模式
@@ -26915,7 +27347,8 @@ interface FetcherConfig {
   cookie?: string;
   /** 请求配置 */
   requestConfig?: RequestConfig;
-} //#endregion
+}
+//#endregion
 //#region src/model/fetchers/shared/overload-types.d.ts
 /**
  * 为单个方法生成函数重载类型
@@ -26978,7 +27411,8 @@ type BoundOptionalParamMethodOverload<TOptions, TStrictReturn, TRequestConfig ex
     typeMode: 'strict';
   }, requestConfig?: TRequestConfig): Promise<Result<TStrictReturn>>;
   (options?: TOptions, requestConfig?: TRequestConfig): Promise<Result<any>>;
-}; //#endregion
+};
+//#endregion
 //#region src/model/fetchers/bilibili/bound.d.ts
 /**
  * 绑定了 Cookie 的 B站 Fetcher 接口
@@ -27058,7 +27492,8 @@ interface IBoundBilibiliFetcher {
  * const strictResult = await fetcher.fetchVideoInfo({ bvid: 'BV1xx411c7mD', typeMode: 'strict' })
  * ```
  */
-declare function createBoundBilibiliFetcher(cookie: string, requestConfig?: RequestConfig): IBoundBilibiliFetcher; //#endregion
+declare function createBoundBilibiliFetcher(cookie: string, requestConfig?: RequestConfig): IBoundBilibiliFetcher;
+//#endregion
 //#region src/model/fetchers/bilibili/index.d.ts
 /**
  * B站数据获取器
@@ -27074,7 +27509,8 @@ declare const bilibiliFetcher: IBilibiliFetcher;
 /** B站 Fetcher 类型 */
 type BilibiliFetcher = typeof bilibiliFetcher;
 /** 绑定 Cookie 的 B站 Fetcher 类型 */
-type BoundBilibiliFetcher = IBoundBilibiliFetcher; //#endregion
+type BoundBilibiliFetcher = IBoundBilibiliFetcher;
+//#endregion
 //#region src/model/fetchers/douyin/bound.d.ts
 /**
  * 绑定了 Cookie 的抖音 Fetcher 接口
@@ -27133,7 +27569,8 @@ interface IBoundDouyinFetcher {
  * const strictResult = await fetcher.fetchVideoWork({ aweme_id: '7123456789', typeMode: 'strict' })
  * ```
  */
-declare function createBoundDouyinFetcher(cookie: string, requestConfig?: RequestConfig): IBoundDouyinFetcher; //#endregion
+declare function createBoundDouyinFetcher(cookie: string, requestConfig?: RequestConfig): IBoundDouyinFetcher;
+//#endregion
 //#region src/model/fetchers/douyin/index.d.ts
 /**
  * 抖音数据获取器
@@ -27149,7 +27586,8 @@ declare const douyinFetcher: IDouyinFetcher;
 /** 抖音 Fetcher 类型 */
 type DouyinFetcher = typeof douyinFetcher;
 /** 绑定 Cookie 的抖音 Fetcher 类型 */
-type BoundDouyinFetcher = IBoundDouyinFetcher; //#endregion
+type BoundDouyinFetcher = IBoundDouyinFetcher;
+//#endregion
 //#region src/model/fetchers/kuaishou/index.d.ts
 /**
  * 快手数据获取器
@@ -27179,7 +27617,8 @@ type KuaishouFetcher = typeof kuaishouFetcher;
  */
 declare function createBoundKuaishouFetcher(cookie: string, requestConfig?: RequestConfig): IBoundKuaishouFetcher;
 /** 绑定 Cookie 的快手 Fetcher 类型 */
-type BoundKuaishouFetcher = IBoundKuaishouFetcher; //#endregion
+type BoundKuaishouFetcher = IBoundKuaishouFetcher;
+//#endregion
 //#region src/model/fetchers/xiaohongshu/index.d.ts
 /**
  * 小红书数据获取器
@@ -27213,7 +27652,8 @@ type XiaohongshuFetcher = typeof xiaohongshuFetcher;
  */
 declare function createBoundXiaohongshuFetcher(cookie: string, requestConfig?: RequestConfig): IBoundXiaohongshuFetcher;
 /** 绑定 Cookie 的小红书 Fetcher 类型 */
-type BoundXiaohongshuFetcher = IBoundXiaohongshuFetcher; //#endregion
+type BoundXiaohongshuFetcher = IBoundXiaohongshuFetcher;
+//#endregion
 //#region src/model/events.d.ts
 /**
  * Amagi 支持的事件类型
@@ -27478,7 +27918,8 @@ declare const emitLogDebug: (message: string, ...args: unknown[]) => void;
  * @param message - 日志消息
  * @param args - 附加参数
  */
-declare const emitLogMark: (message: string, ...args: unknown[]) => void; //#endregion
+declare const emitLogMark: (message: string, ...args: unknown[]) => void;
+//#endregion
 //#region src/server/index.d.ts
 /**
  * 请求配置选项接口
@@ -27488,16 +27929,22 @@ type RequestConfig = Omit<AxiosRequestConfig, 'url' | 'method' | 'data'>;
  * Cookie配置选项接口
  */
 type CookieConfig = {
-  /** 抖音Cookie */douyin?: string; /** B站Cookie */
-  bilibili?: string; /** 快手Cookie */
-  kuaishou?: string; /** 小红书Cookie */
+  /** 抖音Cookie */
+  douyin?: string;
+  /** B站Cookie */
+  bilibili?: string;
+  /** 快手Cookie */
+  kuaishou?: string;
+  /** 小红书Cookie */
   xiaohongshu?: string;
 };
 /**
  * 客户端配置选项接口
  */
 type Options = {
-  /** Cookie配置 */cookies?: CookieConfig; /** 请求配置 */
+  /** Cookie配置 */
+  cookies?: CookieConfig;
+  /** 请求配置 */
   request?: Omit<AxiosRequestConfig, 'url' | 'method' | 'data'>;
 };
 /**
@@ -27506,23 +27953,25 @@ type Options = {
  * @returns 包含数据获取方法、服务器启动方法、绑定Cookie的平台工具集和API对象的对象
  */
 declare const createAmagiClient: (options?: Options) => {
-  /** 启动本地HTTP服务 */startServer: (port?: number) => express.Application; /** 事件系统 */
+  /** 启动本地HTTP服务 */
+  startServer: (port?: number) => express.Application;
+  /** 事件系统 */
   events: {
     emit<K extends AmagiEventType>(event: K, data: AmagiEventMap[K]): boolean;
-    on<K extends AmagiEventType>(event: K, listener: (data: AmagiEventMap[K]) => void): /*elided*/any;
-    once<K extends AmagiEventType>(event: K, listener: (data: AmagiEventMap[K]) => void): /*elided*/any;
-    off<K extends AmagiEventType>(event: K, listener: (data: AmagiEventMap[K]) => void): /*elided*/any;
+    on<K extends AmagiEventType>(event: K, listener: (data: AmagiEventMap[K]) => void): /*elided*/ any;
+    once<K extends AmagiEventType>(event: K, listener: (data: AmagiEventMap[K]) => void): /*elided*/ any;
+    off<K extends AmagiEventType>(event: K, listener: (data: AmagiEventMap[K]) => void): /*elided*/ any;
     [EventEmitter.captureRejectionSymbol]?<K>(error: Error, event: string | symbol, ...args: any[]): void;
-    addListener<K>(eventName: string | symbol, listener: (...args: any[]) => void): /*elided*/any;
-    removeListener<K>(eventName: string | symbol, listener: (...args: any[]) => void): /*elided*/any;
-    removeAllListeners(eventName?: string | symbol | undefined): /*elided*/any;
-    setMaxListeners(n: number): /*elided*/any;
+    addListener<K>(eventName: string | symbol, listener: (...args: any[]) => void): /*elided*/ any;
+    removeListener<K>(eventName: string | symbol, listener: (...args: any[]) => void): /*elided*/ any;
+    removeAllListeners(eventName?: string | symbol | undefined): /*elided*/ any;
+    setMaxListeners(n: number): /*elided*/ any;
     getMaxListeners(): number;
     listeners<K>(eventName: string | symbol): Function[];
     rawListeners<K>(eventName: string | symbol): Function[];
     listenerCount<K>(eventName: string | symbol, listener?: Function | undefined): number;
-    prependListener<K>(eventName: string | symbol, listener: (...args: any[]) => void): /*elided*/any;
-    prependOnceListener<K>(eventName: string | symbol, listener: (...args: any[]) => void): /*elided*/any;
+    prependListener<K>(eventName: string | symbol, listener: (...args: any[]) => void): /*elided*/ any;
+    prependOnceListener<K>(eventName: string | symbol, listener: (...args: any[]) => void): /*elided*/ any;
     eventNames(): (string | symbol)[];
   };
   /**
@@ -27532,20 +27981,20 @@ declare const createAmagiClient: (options?: Options) => {
    */
   on: <K extends AmagiEventType>(event: K, listener: (data: AmagiEventMap[K]) => void) => {
     emit<K_1 extends AmagiEventType>(event: K_1, data: AmagiEventMap[K_1]): boolean;
-    on<K_1 extends AmagiEventType>(event: K_1, listener: (data: AmagiEventMap[K_1]) => void): /*elided*/any;
-    once<K_1 extends AmagiEventType>(event: K_1, listener: (data: AmagiEventMap[K_1]) => void): /*elided*/any;
-    off<K_1 extends AmagiEventType>(event: K_1, listener: (data: AmagiEventMap[K_1]) => void): /*elided*/any;
+    on<K_1 extends AmagiEventType>(event: K_1, listener: (data: AmagiEventMap[K_1]) => void): /*elided*/ any;
+    once<K_1 extends AmagiEventType>(event: K_1, listener: (data: AmagiEventMap[K_1]) => void): /*elided*/ any;
+    off<K_1 extends AmagiEventType>(event: K_1, listener: (data: AmagiEventMap[K_1]) => void): /*elided*/ any;
     [EventEmitter.captureRejectionSymbol]?<K_1>(error: Error, event: string | symbol, ...args: any[]): void;
-    addListener<K_1>(eventName: string | symbol, listener: (...args: any[]) => void): /*elided*/any;
-    removeListener<K_1>(eventName: string | symbol, listener: (...args: any[]) => void): /*elided*/any;
-    removeAllListeners(eventName?: string | symbol | undefined): /*elided*/any;
-    setMaxListeners(n: number): /*elided*/any;
+    addListener<K_1>(eventName: string | symbol, listener: (...args: any[]) => void): /*elided*/ any;
+    removeListener<K_1>(eventName: string | symbol, listener: (...args: any[]) => void): /*elided*/ any;
+    removeAllListeners(eventName?: string | symbol | undefined): /*elided*/ any;
+    setMaxListeners(n: number): /*elided*/ any;
     getMaxListeners(): number;
     listeners<K_1>(eventName: string | symbol): Function[];
     rawListeners<K_1>(eventName: string | symbol): Function[];
     listenerCount<K_1>(eventName: string | symbol, listener?: Function | undefined): number;
-    prependListener<K_1>(eventName: string | symbol, listener: (...args: any[]) => void): /*elided*/any;
-    prependOnceListener<K_1>(eventName: string | symbol, listener: (...args: any[]) => void): /*elided*/any;
+    prependListener<K_1>(eventName: string | symbol, listener: (...args: any[]) => void): /*elided*/ any;
+    prependOnceListener<K_1>(eventName: string | symbol, listener: (...args: any[]) => void): /*elided*/ any;
     eventNames(): (string | symbol)[];
   };
   /**
@@ -27555,28 +28004,33 @@ declare const createAmagiClient: (options?: Options) => {
    */
   once: <K extends AmagiEventType>(event: K, listener: (data: AmagiEventMap[K]) => void) => {
     emit<K_1 extends AmagiEventType>(event: K_1, data: AmagiEventMap[K_1]): boolean;
-    on<K_1 extends AmagiEventType>(event: K_1, listener: (data: AmagiEventMap[K_1]) => void): /*elided*/any;
-    once<K_1 extends AmagiEventType>(event: K_1, listener: (data: AmagiEventMap[K_1]) => void): /*elided*/any;
-    off<K_1 extends AmagiEventType>(event: K_1, listener: (data: AmagiEventMap[K_1]) => void): /*elided*/any;
+    on<K_1 extends AmagiEventType>(event: K_1, listener: (data: AmagiEventMap[K_1]) => void): /*elided*/ any;
+    once<K_1 extends AmagiEventType>(event: K_1, listener: (data: AmagiEventMap[K_1]) => void): /*elided*/ any;
+    off<K_1 extends AmagiEventType>(event: K_1, listener: (data: AmagiEventMap[K_1]) => void): /*elided*/ any;
     [EventEmitter.captureRejectionSymbol]?<K_1>(error: Error, event: string | symbol, ...args: any[]): void;
-    addListener<K_1>(eventName: string | symbol, listener: (...args: any[]) => void): /*elided*/any;
-    removeListener<K_1>(eventName: string | symbol, listener: (...args: any[]) => void): /*elided*/any;
-    removeAllListeners(eventName?: string | symbol | undefined): /*elided*/any;
-    setMaxListeners(n: number): /*elided*/any;
+    addListener<K_1>(eventName: string | symbol, listener: (...args: any[]) => void): /*elided*/ any;
+    removeListener<K_1>(eventName: string | symbol, listener: (...args: any[]) => void): /*elided*/ any;
+    removeAllListeners(eventName?: string | symbol | undefined): /*elided*/ any;
+    setMaxListeners(n: number): /*elided*/ any;
     getMaxListeners(): number;
     listeners<K_1>(eventName: string | symbol): Function[];
     rawListeners<K_1>(eventName: string | symbol): Function[];
     listenerCount<K_1>(eventName: string | symbol, listener?: Function | undefined): number;
-    prependListener<K_1>(eventName: string | symbol, listener: (...args: any[]) => void): /*elided*/any;
-    prependOnceListener<K_1>(eventName: string | symbol, listener: (...args: any[]) => void): /*elided*/any;
+    prependListener<K_1>(eventName: string | symbol, listener: (...args: any[]) => void): /*elided*/ any;
+    prependOnceListener<K_1>(eventName: string | symbol, listener: (...args: any[]) => void): /*elided*/ any;
     eventNames(): (string | symbol)[];
-  }; /** @deprecated v6 已废弃，请使用 douyin.fetcher 替代 */
-  getDouyinData: (..._args: any[]) => never; /** @deprecated v6 已废弃，请使用 bilibili.fetcher 替代 */
-  getBilibiliData: (..._args: any[]) => never; /** @deprecated v6 已废弃，请使用 kuaishou.fetcher 替代 */
-  getKuaishouData: (..._args: any[]) => never; /** @deprecated v6 已废弃，请使用 xiaohongshu.fetcher 替代 */
+  };
+  /** @deprecated v6 已废弃，请使用 douyin.fetcher 替代 */
+  getDouyinData: (..._args: any[]) => never;
+  /** @deprecated v6 已废弃，请使用 bilibili.fetcher 替代 */
+  getBilibiliData: (..._args: any[]) => never;
+  /** @deprecated v6 已废弃，请使用 kuaishou.fetcher 替代 */
+  getKuaishouData: (..._args: any[]) => never;
+  /** @deprecated v6 已废弃，请使用 xiaohongshu.fetcher 替代 */
   getXiaohongshuData: (..._args: any[]) => never;
   douyin: {
-    /** @deprecated 请使用 fetcher 替代 */api: {
+    /** @deprecated 请使用 fetcher 替代 */
+    api: {
       getSearchData: (..._args: any[]) => never;
       getTextWorkInfo: (..._args: any[]) => never;
       getWorkInfo: (..._args: any[]) => never;
@@ -27595,13 +28049,15 @@ declare const createAmagiClient: (options?: Options) => {
       getLiveRoomInfo: (..._args: any[]) => never;
       getDanmaku: (..._args: any[]) => never;
       invoke: (..._args: any[]) => never;
-    }; /** fetcher */
+    };
+    /** fetcher */
     fetcher: IBoundDouyinFetcher;
     sign: typeof douyinSign;
     douyinApiUrls: typeof douyinApiUrls;
   };
   bilibili: {
-    /** @deprecated 请使用 fetcher 替代 */api: {
+    /** @deprecated 请使用 fetcher 替代 */
+    api: {
       getVideoInfo: (..._args: any[]) => never;
       getVideoStream: (..._args: any[]) => never;
       getComments: (..._args: any[]) => never;
@@ -27629,7 +28085,8 @@ declare const createAmagiClient: (options?: Options) => {
       applyVoucherCaptcha: (..._args: any[]) => never;
       validateCaptcha: (..._args: any[]) => never;
       getDanmaku: (..._args: any[]) => never;
-    }; /** fetcher */
+    };
+    /** fetcher */
     fetcher: IBoundBilibiliFetcher;
     sign: {
       wbi_sign: typeof wbi_sign;
@@ -27642,20 +28099,23 @@ declare const createAmagiClient: (options?: Options) => {
     bilibiliApiUrls: typeof bilibiliApiUrls;
   };
   kuaishou: {
-    /** @deprecated 请使用 fetcher 替代 */api: {
+    /** @deprecated 请使用 fetcher 替代 */
+    api: {
       getWorkInfo: (..._args: any[]) => never;
       getComments: (..._args: any[]) => never;
       getUserProfile: (..._args: any[]) => never;
       getUserWorkList: (..._args: any[]) => never;
       getLiveRoomInfo: (..._args: any[]) => never;
       getEmojiList: (..._args: any[]) => never;
-    }; /** fetcher */
+    };
+    /** fetcher */
     fetcher: IBoundKuaishouFetcher;
     sign: typeof kuaishouSign;
     kuaishouApiUrls: typeof kuaishouApiUrls;
   };
   xiaohongshu: {
-    /** @deprecated 请使用 fetcher 替代 */api: {
+    /** @deprecated 请使用 fetcher 替代 */
+    api: {
       getHomeFeed: (..._args: any[]) => never;
       getNote: (..._args: any[]) => never;
       getComments: (..._args: any[]) => never;
@@ -27663,12 +28123,14 @@ declare const createAmagiClient: (options?: Options) => {
       getUserNotes: (..._args: any[]) => never;
       getSearchNotes: (..._args: any[]) => never;
       getEmojiList: (..._args: any[]) => never;
-    }; /** fetcher */
+    };
+    /** fetcher */
     fetcher: IBoundXiaohongshuFetcher;
     sign: typeof xiaohongshuSign;
     xiaohongshuApiUrls: typeof xiaohongshuApiUrls;
   };
-}; //#endregion
+};
+//#endregion
 //#region src/platform/bilibili/BilibiliApi.d.ts
 /**
  * B站相关 API 的命名空间。
@@ -27676,32 +28138,59 @@ declare const createAmagiClient: (options?: Options) => {
  * @deprecated v6 已废弃，请使用 bilibiliFetcher 或 client.bilibili.fetcher 替代
  */
 declare const bilibili: {
-  /** @deprecated 请使用 bilibiliFetcher.fetchVideoInfo 替代 */getVideoInfo: (..._args: any[]) => never; /** @deprecated 请使用 bilibiliFetcher.fetchVideoStreamUrl 替代 */
-  getVideoStream: (..._args: any[]) => never; /** @deprecated 请使用 bilibiliFetcher.fetchComments 替代 */
-  getComments: (..._args: any[]) => never; /** @deprecated 请使用 bilibiliFetcher.fetchCommentReplies 替代 */
-  getCommentReply: (..._args: any[]) => never; /** @deprecated 请使用 bilibiliFetcher.fetchUserCard 替代 */
-  getUserProfile: (..._args: any[]) => never; /** @deprecated 请使用 bilibiliFetcher.fetchUserDynamicList 替代 */
-  getUserDynamic: (..._args: any[]) => never; /** @deprecated 请使用 bilibiliFetcher.fetchEmojiList 替代 */
-  getEmojiList: (..._args: any[]) => never; /** @deprecated 请使用 bilibiliFetcher.fetchBangumiInfo 替代 */
-  getBangumiInfo: (..._args: any[]) => never; /** @deprecated 请使用 bilibiliFetcher.fetchBangumiStreamUrl 替代 */
-  getBangumiStream: (..._args: any[]) => never; /** @deprecated 请使用 bilibiliFetcher.fetchDynamicDetail 替代 */
-  getDynamicInfo: (..._args: any[]) => never; /** @deprecated 请使用 bilibiliFetcher.fetchDynamicCard 替代 */
-  getDynamicCard: (..._args: any[]) => never; /** @deprecated 请使用 bilibiliFetcher.fetchLiveRoomInfo 替代 */
-  getLiveRoomDetail: (..._args: any[]) => never; /** @deprecated 请使用 bilibiliFetcher.fetchLiveRoomInitInfo 替代 */
-  getLiveRoomInitInfo: (..._args: any[]) => never; /** @deprecated 请使用 bilibiliFetcher.fetchLoginStatus 替代 */
-  getLoginBasicInfo: (..._args: any[]) => never; /** @deprecated 请使用 bilibiliFetcher.requestLoginQrcode 替代 */
-  getLoginQrcode: (..._args: any[]) => never; /** @deprecated 请使用 bilibiliFetcher.checkQrcodeStatus 替代 */
-  checkQrcodeStatus: (..._args: any[]) => never; /** @deprecated 请使用 bilibiliFetcher.fetchUploaderTotalViews 替代 */
-  getUserTotalPlayCount: (..._args: any[]) => never; /** @deprecated 请使用 bilibiliFetcher.convertAvToBv 替代 */
-  convertAvToBv: (..._args: any[]) => never; /** @deprecated 请使用 bilibiliFetcher.convertBvToAv 替代 */
-  convertBvToAv: (..._args: any[]) => never; /** @deprecated 请使用 bilibiliFetcher.fetchArticleContent 替代 */
-  getArticleContent: (..._args: any[]) => never; /** @deprecated 请使用 bilibiliFetcher.fetchArticleCards 替代 */
-  getArticleCard: (..._args: any[]) => never; /** @deprecated 请使用 bilibiliFetcher.fetchArticleInfo 替代 */
-  getArticleInfo: (..._args: any[]) => never; /** @deprecated 请使用 bilibiliFetcher.fetchArticleListInfo 替代 */
-  getColumnInfo: (..._args: any[]) => never; /** @deprecated 请使用 bilibiliFetcher.fetchUserSpaceInfo 替代 */
-  getUserProfileDetail: (..._args: any[]) => never; /** @deprecated 请使用 bilibiliFetcher.requestCaptchaFromVoucher 替代 */
-  applyVoucherCaptcha: (..._args: any[]) => never; /** @deprecated 请使用 bilibiliFetcher.validateCaptchaResult 替代 */
-  validateCaptcha: (..._args: any[]) => never; /** @deprecated 请使用 bilibiliFetcher.fetchVideoDanmaku 替代 */
+  /** @deprecated 请使用 bilibiliFetcher.fetchVideoInfo 替代 */
+  getVideoInfo: (..._args: any[]) => never;
+  /** @deprecated 请使用 bilibiliFetcher.fetchVideoStreamUrl 替代 */
+  getVideoStream: (..._args: any[]) => never;
+  /** @deprecated 请使用 bilibiliFetcher.fetchComments 替代 */
+  getComments: (..._args: any[]) => never;
+  /** @deprecated 请使用 bilibiliFetcher.fetchCommentReplies 替代 */
+  getCommentReply: (..._args: any[]) => never;
+  /** @deprecated 请使用 bilibiliFetcher.fetchUserCard 替代 */
+  getUserProfile: (..._args: any[]) => never;
+  /** @deprecated 请使用 bilibiliFetcher.fetchUserDynamicList 替代 */
+  getUserDynamic: (..._args: any[]) => never;
+  /** @deprecated 请使用 bilibiliFetcher.fetchEmojiList 替代 */
+  getEmojiList: (..._args: any[]) => never;
+  /** @deprecated 请使用 bilibiliFetcher.fetchBangumiInfo 替代 */
+  getBangumiInfo: (..._args: any[]) => never;
+  /** @deprecated 请使用 bilibiliFetcher.fetchBangumiStreamUrl 替代 */
+  getBangumiStream: (..._args: any[]) => never;
+  /** @deprecated 请使用 bilibiliFetcher.fetchDynamicDetail 替代 */
+  getDynamicInfo: (..._args: any[]) => never;
+  /** @deprecated 请使用 bilibiliFetcher.fetchDynamicCard 替代 */
+  getDynamicCard: (..._args: any[]) => never;
+  /** @deprecated 请使用 bilibiliFetcher.fetchLiveRoomInfo 替代 */
+  getLiveRoomDetail: (..._args: any[]) => never;
+  /** @deprecated 请使用 bilibiliFetcher.fetchLiveRoomInitInfo 替代 */
+  getLiveRoomInitInfo: (..._args: any[]) => never;
+  /** @deprecated 请使用 bilibiliFetcher.fetchLoginStatus 替代 */
+  getLoginBasicInfo: (..._args: any[]) => never;
+  /** @deprecated 请使用 bilibiliFetcher.requestLoginQrcode 替代 */
+  getLoginQrcode: (..._args: any[]) => never;
+  /** @deprecated 请使用 bilibiliFetcher.checkQrcodeStatus 替代 */
+  checkQrcodeStatus: (..._args: any[]) => never;
+  /** @deprecated 请使用 bilibiliFetcher.fetchUploaderTotalViews 替代 */
+  getUserTotalPlayCount: (..._args: any[]) => never;
+  /** @deprecated 请使用 bilibiliFetcher.convertAvToBv 替代 */
+  convertAvToBv: (..._args: any[]) => never;
+  /** @deprecated 请使用 bilibiliFetcher.convertBvToAv 替代 */
+  convertBvToAv: (..._args: any[]) => never;
+  /** @deprecated 请使用 bilibiliFetcher.fetchArticleContent 替代 */
+  getArticleContent: (..._args: any[]) => never;
+  /** @deprecated 请使用 bilibiliFetcher.fetchArticleCards 替代 */
+  getArticleCard: (..._args: any[]) => never;
+  /** @deprecated 请使用 bilibiliFetcher.fetchArticleInfo 替代 */
+  getArticleInfo: (..._args: any[]) => never;
+  /** @deprecated 请使用 bilibiliFetcher.fetchArticleListInfo 替代 */
+  getColumnInfo: (..._args: any[]) => never;
+  /** @deprecated 请使用 bilibiliFetcher.fetchUserSpaceInfo 替代 */
+  getUserProfileDetail: (..._args: any[]) => never;
+  /** @deprecated 请使用 bilibiliFetcher.requestCaptchaFromVoucher 替代 */
+  applyVoucherCaptcha: (..._args: any[]) => never;
+  /** @deprecated 请使用 bilibiliFetcher.validateCaptchaResult 替代 */
+  validateCaptcha: (..._args: any[]) => never;
+  /** @deprecated 请使用 bilibiliFetcher.fetchVideoDanmaku 替代 */
   getDanmaku: (..._args: any[]) => never;
 };
 /**
@@ -27710,38 +28199,66 @@ declare const bilibili: {
  * @deprecated v6 已废弃，请使用 createBoundBilibiliFetcher 替代
  */
 declare const createBoundBilibiliApi: (_cookie: string, _requestConfig: RequestConfig) => {
-  /** @deprecated 请使用 bilibiliFetcher.fetchVideoInfo 替代 */getVideoInfo: (..._args: any[]) => never; /** @deprecated 请使用 bilibiliFetcher.fetchVideoStreamUrl 替代 */
-  getVideoStream: (..._args: any[]) => never; /** @deprecated 请使用 bilibiliFetcher.fetchComments 替代 */
-  getComments: (..._args: any[]) => never; /** @deprecated 请使用 bilibiliFetcher.fetchCommentReplies 替代 */
-  getCommentReply: (..._args: any[]) => never; /** @deprecated 请使用 bilibiliFetcher.fetchUserCard 替代 */
-  getUserProfile: (..._args: any[]) => never; /** @deprecated 请使用 bilibiliFetcher.fetchUserDynamicList 替代 */
-  getUserDynamic: (..._args: any[]) => never; /** @deprecated 请使用 bilibiliFetcher.fetchEmojiList 替代 */
-  getEmojiList: (..._args: any[]) => never; /** @deprecated 请使用 bilibiliFetcher.fetchBangumiInfo 替代 */
-  getBangumiInfo: (..._args: any[]) => never; /** @deprecated 请使用 bilibiliFetcher.fetchBangumiStreamUrl 替代 */
-  getBangumiStream: (..._args: any[]) => never; /** @deprecated 请使用 bilibiliFetcher.fetchDynamicDetail 替代 */
-  getDynamicInfo: (..._args: any[]) => never; /** @deprecated 请使用 bilibiliFetcher.fetchDynamicCard 替代 */
-  getDynamicCard: (..._args: any[]) => never; /** @deprecated 请使用 bilibiliFetcher.fetchLiveRoomInfo 替代 */
-  getLiveRoomDetail: (..._args: any[]) => never; /** @deprecated 请使用 bilibiliFetcher.fetchLiveRoomInitInfo 替代 */
-  getLiveRoomInitInfo: (..._args: any[]) => never; /** @deprecated 请使用 bilibiliFetcher.fetchLoginStatus 替代 */
-  getLoginBasicInfo: (..._args: any[]) => never; /** @deprecated 请使用 bilibiliFetcher.requestLoginQrcode 替代 */
-  getLoginQrcode: (..._args: any[]) => never; /** @deprecated 请使用 bilibiliFetcher.checkQrcodeStatus 替代 */
-  checkQrcodeStatus: (..._args: any[]) => never; /** @deprecated 请使用 bilibiliFetcher.fetchUploaderTotalViews 替代 */
-  getUserTotalPlayCount: (..._args: any[]) => never; /** @deprecated 请使用 bilibiliFetcher.convertAvToBv 替代 */
-  convertAvToBv: (..._args: any[]) => never; /** @deprecated 请使用 bilibiliFetcher.convertBvToAv 替代 */
-  convertBvToAv: (..._args: any[]) => never; /** @deprecated 请使用 bilibiliFetcher.fetchArticleContent 替代 */
-  getArticleContent: (..._args: any[]) => never; /** @deprecated 请使用 bilibiliFetcher.fetchArticleCards 替代 */
-  getArticleCard: (..._args: any[]) => never; /** @deprecated 请使用 bilibiliFetcher.fetchArticleInfo 替代 */
-  getArticleInfo: (..._args: any[]) => never; /** @deprecated 请使用 bilibiliFetcher.fetchArticleListInfo 替代 */
-  getColumnInfo: (..._args: any[]) => never; /** @deprecated 请使用 bilibiliFetcher.fetchUserSpaceInfo 替代 */
-  getUserProfileDetail: (..._args: any[]) => never; /** @deprecated 请使用 bilibiliFetcher.requestCaptchaFromVoucher 替代 */
-  applyVoucherCaptcha: (..._args: any[]) => never; /** @deprecated 请使用 bilibiliFetcher.validateCaptchaResult 替代 */
-  validateCaptcha: (..._args: any[]) => never; /** @deprecated 请使用 bilibiliFetcher.fetchVideoDanmaku 替代 */
+  /** @deprecated 请使用 bilibiliFetcher.fetchVideoInfo 替代 */
+  getVideoInfo: (..._args: any[]) => never;
+  /** @deprecated 请使用 bilibiliFetcher.fetchVideoStreamUrl 替代 */
+  getVideoStream: (..._args: any[]) => never;
+  /** @deprecated 请使用 bilibiliFetcher.fetchComments 替代 */
+  getComments: (..._args: any[]) => never;
+  /** @deprecated 请使用 bilibiliFetcher.fetchCommentReplies 替代 */
+  getCommentReply: (..._args: any[]) => never;
+  /** @deprecated 请使用 bilibiliFetcher.fetchUserCard 替代 */
+  getUserProfile: (..._args: any[]) => never;
+  /** @deprecated 请使用 bilibiliFetcher.fetchUserDynamicList 替代 */
+  getUserDynamic: (..._args: any[]) => never;
+  /** @deprecated 请使用 bilibiliFetcher.fetchEmojiList 替代 */
+  getEmojiList: (..._args: any[]) => never;
+  /** @deprecated 请使用 bilibiliFetcher.fetchBangumiInfo 替代 */
+  getBangumiInfo: (..._args: any[]) => never;
+  /** @deprecated 请使用 bilibiliFetcher.fetchBangumiStreamUrl 替代 */
+  getBangumiStream: (..._args: any[]) => never;
+  /** @deprecated 请使用 bilibiliFetcher.fetchDynamicDetail 替代 */
+  getDynamicInfo: (..._args: any[]) => never;
+  /** @deprecated 请使用 bilibiliFetcher.fetchDynamicCard 替代 */
+  getDynamicCard: (..._args: any[]) => never;
+  /** @deprecated 请使用 bilibiliFetcher.fetchLiveRoomInfo 替代 */
+  getLiveRoomDetail: (..._args: any[]) => never;
+  /** @deprecated 请使用 bilibiliFetcher.fetchLiveRoomInitInfo 替代 */
+  getLiveRoomInitInfo: (..._args: any[]) => never;
+  /** @deprecated 请使用 bilibiliFetcher.fetchLoginStatus 替代 */
+  getLoginBasicInfo: (..._args: any[]) => never;
+  /** @deprecated 请使用 bilibiliFetcher.requestLoginQrcode 替代 */
+  getLoginQrcode: (..._args: any[]) => never;
+  /** @deprecated 请使用 bilibiliFetcher.checkQrcodeStatus 替代 */
+  checkQrcodeStatus: (..._args: any[]) => never;
+  /** @deprecated 请使用 bilibiliFetcher.fetchUploaderTotalViews 替代 */
+  getUserTotalPlayCount: (..._args: any[]) => never;
+  /** @deprecated 请使用 bilibiliFetcher.convertAvToBv 替代 */
+  convertAvToBv: (..._args: any[]) => never;
+  /** @deprecated 请使用 bilibiliFetcher.convertBvToAv 替代 */
+  convertBvToAv: (..._args: any[]) => never;
+  /** @deprecated 请使用 bilibiliFetcher.fetchArticleContent 替代 */
+  getArticleContent: (..._args: any[]) => never;
+  /** @deprecated 请使用 bilibiliFetcher.fetchArticleCards 替代 */
+  getArticleCard: (..._args: any[]) => never;
+  /** @deprecated 请使用 bilibiliFetcher.fetchArticleInfo 替代 */
+  getArticleInfo: (..._args: any[]) => never;
+  /** @deprecated 请使用 bilibiliFetcher.fetchArticleListInfo 替代 */
+  getColumnInfo: (..._args: any[]) => never;
+  /** @deprecated 请使用 bilibiliFetcher.fetchUserSpaceInfo 替代 */
+  getUserProfileDetail: (..._args: any[]) => never;
+  /** @deprecated 请使用 bilibiliFetcher.requestCaptchaFromVoucher 替代 */
+  applyVoucherCaptcha: (..._args: any[]) => never;
+  /** @deprecated 请使用 bilibiliFetcher.validateCaptchaResult 替代 */
+  validateCaptcha: (..._args: any[]) => never;
+  /** @deprecated 请使用 bilibiliFetcher.fetchVideoDanmaku 替代 */
   getDanmaku: (..._args: any[]) => never;
 };
 /**
  * 绑定cookie的B站API对象类型
  */
-type BoundBilibiliApi = ReturnType<typeof createBoundBilibiliApi>; //#endregion
+type BoundBilibiliApi = ReturnType<typeof createBoundBilibiliApi>;
+//#endregion
 //#region src/platform/bilibili/getdata.d.ts
 /**
  * 哔哩哔哩API官方HTTP请求错误码
@@ -27798,7 +28315,8 @@ declare const bilibiliErrorCodeMap: {
   '-8888': string;
   100000: string;
   100003: string;
-}; //#endregion
+};
+//#endregion
 //#region src/platform/bilibili/qtparam.d.ts
 /**
  * 生成B站视频流请求参数
@@ -27818,7 +28336,8 @@ declare const qtparam: (BASEURL: string, cookie: string) => Promise<{
   QUERY: string;
   STATUS: string;
   isvip: false;
-}>; //#endregion
+}>;
+//#endregion
 //#region src/platform/bilibili/routes.d.ts
 /**
  * 创建B站路由
@@ -27826,17 +28345,25 @@ declare const qtparam: (BASEURL: string, cookie: string) => Promise<{
  * @param requestConfig - 可选的请求配置
  * @returns Express路由器
  */
-declare const createBilibiliRoutes: (cookie: string, requestConfig?: RequestConfig) => express.Router; //#endregion
+declare const createBilibiliRoutes: (cookie: string, requestConfig?: RequestConfig) => express.Router;
+//#endregion
 //#region src/platform/bilibili/index.d.ts
 type bilibiliUtilsModel = {
-  /** 签名算法相关 */sign: {
-    /** WBI签名算法 */wbi_sign: typeof wbi_sign; /** AV号转BV号 */
-    av2bv: typeof av2bv; /** BV号转AV号 */
+  /** 签名算法相关 */
+  sign: {
+    /** WBI签名算法 */
+    wbi_sign: typeof wbi_sign;
+    /** AV号转BV号 */
+    av2bv: typeof av2bv;
+    /** BV号转AV号 */
     bv2av: typeof bv2av;
-  }; /** 弹幕解析相关 */
+  };
+  /** 弹幕解析相关 */
   danmaku: {
-    /** 解析弹幕 protobuf 数据 */parseDmSegMobileReply: typeof parseDmSegMobileReply;
-  }; /** 该类下的所有方法只会返回拼接好参数后的 Url 地址，需要手动请求该地址以获取数据 */
+    /** 解析弹幕 protobuf 数据 */
+    parseDmSegMobileReply: typeof parseDmSegMobileReply;
+  };
+  /** 该类下的所有方法只会返回拼接好参数后的 Url 地址，需要手动请求该地址以获取数据 */
   bilibiliApiUrls: typeof bilibiliApiUrls;
   /**
    * B站相关 API 的命名空间。
@@ -27850,7 +28377,8 @@ type bilibiliUtilsModel = {
   api: typeof bilibili;
 };
 /** B站相关功能模块 (工具集) */
-declare const bilibiliUtils: bilibiliUtilsModel; //#endregion
+declare const bilibiliUtils: bilibiliUtilsModel;
+//#endregion
 //#region src/platform/douyin/sign/index.d.ts
 declare class douyinSign {
   /**
@@ -27873,10 +28401,11 @@ declare class douyinSign {
   static XB(url: string, userAgent?: string): string;
   /** 生成一个唯一的验证字符串 */
   static VerifyFpManager(): string;
-} //#endregion
+}
+//#endregion
 //#region src/platform/douyin/API.d.ts
 /** 去除 methodType 字段后的参数类型 */
-type DouyinMethodOptionsWithoutMethodType = { [K in keyof DouyinDataOptionsMap]: OmitMethodType<DouyinDataOptionsMap[K]['opt']> };
+type DouyinMethodOptionsWithoutMethodType = { [K in keyof DouyinDataOptionsMap]: OmitMethodType<DouyinDataOptionsMap[K]['opt']>; };
 /**
  * 抖音 API URL 构建类
  *
@@ -27929,14 +28458,9 @@ declare class DouyinAPI {
   /** 获取弹幕数据 */
   getDanmakuList(data: DouyinMethodOptionsWithoutMethodType['danmakuList']): string;
 }
-/**
- * 创建 DouyinAPI 实例的工厂函数
- *
- * @param userAgent - 用户代理字符串
- * @returns DouyinAPI 实例
- */
 /** 默认的 DouyinAPI 实例（使用默认浏览器版本 125.0.0.0） */
-declare const douyinApiUrls: DouyinAPI; //#endregion
+declare const douyinApiUrls: DouyinAPI;
+//#endregion
 //#region src/platform/douyin/DouyinApi.d.ts
 /**
  * 封装了所有抖音相关的API请求，采用对象化的方式组织。
@@ -27944,22 +28468,39 @@ declare const douyinApiUrls: DouyinAPI; //#endregion
  * @deprecated v6 已废弃，请使用 douyinFetcher 或 client.douyin.fetcher 替代
  */
 declare const douyin: {
-  /** @deprecated 请使用 douyinFetcher.fetchTextWork 替代 */getTextWorkInfo: (..._args: any[]) => never; /** @deprecated 请使用 douyinFetcher.parseWork 替代 */
-  getWorkInfo: (..._args: any[]) => never; /** @deprecated 请使用 douyinFetcher.fetchVideoWork 替代 */
-  getVideoWorkInfo: (..._args: any[]) => never; /** @deprecated 请使用 douyinFetcher.fetchImageAlbumWork 替代 */
-  getImageAlbumWorkInfo: (..._args: any[]) => never; /** @deprecated 请使用 douyinFetcher.fetchSlidesWork 替代 */
-  getSlidesWorkInfo: (..._args: any[]) => never; /** @deprecated 请使用 douyinFetcher.fetchComments 替代 */
-  getComments: (..._args: any[]) => never; /** @deprecated 请使用 douyinFetcher.fetchCommentReplies 替代 */
-  getCommentReplies: (..._args: any[]) => never; /** @deprecated 请使用 douyinFetcher.fetchUserProfile 替代 */
-  getUserProfile: (..._args: any[]) => never; /** @deprecated 请使用 douyinFetcher.fetchEmojiList 替代 */
-  getEmojiList: (..._args: any[]) => never; /** @deprecated 请使用 douyinFetcher.fetchDynamicEmojiList 替代 */
-  getEmojiProList: (..._args: any[]) => never; /** @deprecated 请使用 douyinFetcher.fetchUserVideoList 替代 */
-  getUserVideos: (..._args: any[]) => never; /** @deprecated 请使用 douyinFetcher.fetchMusicInfo 替代 */
-  getMusicInfo: (..._args: any[]) => never; /** @deprecated 请使用 douyinFetcher.fetchSuggestWords 替代 */
-  getSuggestWords: (..._args: any[]) => never; /** @deprecated 请使用 douyinFetcher.searchContent 替代 */
-  search: (..._args: any[]) => never; /** @deprecated 请使用 douyinFetcher.fetchLiveRoomInfo 替代 */
-  getLiveRoomInfo: (..._args: any[]) => never; /** @deprecated 请使用 douyinFetcher.fetchDanmakuList 替代 */
-  getDanmaku: (..._args: any[]) => never; /** @deprecated 请使用 douyinFetcher 的具体方法替代 */
+  /** @deprecated 请使用 douyinFetcher.fetchTextWork 替代 */
+  getTextWorkInfo: (..._args: any[]) => never;
+  /** @deprecated 请使用 douyinFetcher.parseWork 替代 */
+  getWorkInfo: (..._args: any[]) => never;
+  /** @deprecated 请使用 douyinFetcher.fetchVideoWork 替代 */
+  getVideoWorkInfo: (..._args: any[]) => never;
+  /** @deprecated 请使用 douyinFetcher.fetchImageAlbumWork 替代 */
+  getImageAlbumWorkInfo: (..._args: any[]) => never;
+  /** @deprecated 请使用 douyinFetcher.fetchSlidesWork 替代 */
+  getSlidesWorkInfo: (..._args: any[]) => never;
+  /** @deprecated 请使用 douyinFetcher.fetchComments 替代 */
+  getComments: (..._args: any[]) => never;
+  /** @deprecated 请使用 douyinFetcher.fetchCommentReplies 替代 */
+  getCommentReplies: (..._args: any[]) => never;
+  /** @deprecated 请使用 douyinFetcher.fetchUserProfile 替代 */
+  getUserProfile: (..._args: any[]) => never;
+  /** @deprecated 请使用 douyinFetcher.fetchEmojiList 替代 */
+  getEmojiList: (..._args: any[]) => never;
+  /** @deprecated 请使用 douyinFetcher.fetchDynamicEmojiList 替代 */
+  getEmojiProList: (..._args: any[]) => never;
+  /** @deprecated 请使用 douyinFetcher.fetchUserVideoList 替代 */
+  getUserVideos: (..._args: any[]) => never;
+  /** @deprecated 请使用 douyinFetcher.fetchMusicInfo 替代 */
+  getMusicInfo: (..._args: any[]) => never;
+  /** @deprecated 请使用 douyinFetcher.fetchSuggestWords 替代 */
+  getSuggestWords: (..._args: any[]) => never;
+  /** @deprecated 请使用 douyinFetcher.searchContent 替代 */
+  search: (..._args: any[]) => never;
+  /** @deprecated 请使用 douyinFetcher.fetchLiveRoomInfo 替代 */
+  getLiveRoomInfo: (..._args: any[]) => never;
+  /** @deprecated 请使用 douyinFetcher.fetchDanmakuList 替代 */
+  getDanmaku: (..._args: any[]) => never;
+  /** @deprecated 请使用 douyinFetcher 的具体方法替代 */
   invoke: (..._args: any[]) => never;
 };
 /**
@@ -27968,29 +28509,47 @@ declare const douyin: {
  * @deprecated v6 已废弃，请使用 createBoundDouyinFetcher 替代
  */
 declare const createBoundDouyinApi: (_cookie: string, _requestConfig: RequestConfig) => {
-  getSearchData: (..._args: any[]) => never; /** @deprecated 请使用 douyinFetcher.fetchTextWork 替代 */
-  getTextWorkInfo: (..._args: any[]) => never; /** @deprecated 请使用 douyinFetcher.parseWork 替代 */
-  getWorkInfo: (..._args: any[]) => never; /** @deprecated 请使用 douyinFetcher.fetchVideoWork 替代 */
-  getVideoWorkInfo: (..._args: any[]) => never; /** @deprecated 请使用 douyinFetcher.fetchImageAlbumWork 替代 */
-  getImageAlbumWorkInfo: (..._args: any[]) => never; /** @deprecated 请使用 douyinFetcher.fetchSlidesWork 替代 */
-  getSlidesWorkInfo: (..._args: any[]) => never; /** @deprecated 请使用 douyinFetcher.fetchComments 替代 */
-  getComments: (..._args: any[]) => never; /** @deprecated 请使用 douyinFetcher.fetchCommentReplies 替代 */
-  getCommentReplies: (..._args: any[]) => never; /** @deprecated 请使用 douyinFetcher.fetchUserProfile 替代 */
-  getUserProfile: (..._args: any[]) => never; /** @deprecated 请使用 douyinFetcher.fetchEmojiList 替代 */
-  getEmojiList: (..._args: any[]) => never; /** @deprecated 请使用 douyinFetcher.fetchDynamicEmojiList 替代 */
-  getEmojiProList: (..._args: any[]) => never; /** @deprecated 请使用 douyinFetcher.fetchUserVideoList 替代 */
-  getUserVideos: (..._args: any[]) => never; /** @deprecated 请使用 douyinFetcher.fetchMusicInfo 替代 */
-  getMusicInfo: (..._args: any[]) => never; /** @deprecated 请使用 douyinFetcher.fetchSuggestWords 替代 */
-  getSuggestWords: (..._args: any[]) => never; /** @deprecated 请使用 douyinFetcher.searchContent 替代 */
-  search: (..._args: any[]) => never; /** @deprecated 请使用 douyinFetcher.fetchLiveRoomInfo 替代 */
-  getLiveRoomInfo: (..._args: any[]) => never; /** @deprecated 请使用 douyinFetcher.fetchDanmakuList 替代 */
-  getDanmaku: (..._args: any[]) => never; /** @deprecated 请使用 douyinFetcher 的具体方法替代 */
+  getSearchData: (..._args: any[]) => never;
+  /** @deprecated 请使用 douyinFetcher.fetchTextWork 替代 */
+  getTextWorkInfo: (..._args: any[]) => never;
+  /** @deprecated 请使用 douyinFetcher.parseWork 替代 */
+  getWorkInfo: (..._args: any[]) => never;
+  /** @deprecated 请使用 douyinFetcher.fetchVideoWork 替代 */
+  getVideoWorkInfo: (..._args: any[]) => never;
+  /** @deprecated 请使用 douyinFetcher.fetchImageAlbumWork 替代 */
+  getImageAlbumWorkInfo: (..._args: any[]) => never;
+  /** @deprecated 请使用 douyinFetcher.fetchSlidesWork 替代 */
+  getSlidesWorkInfo: (..._args: any[]) => never;
+  /** @deprecated 请使用 douyinFetcher.fetchComments 替代 */
+  getComments: (..._args: any[]) => never;
+  /** @deprecated 请使用 douyinFetcher.fetchCommentReplies 替代 */
+  getCommentReplies: (..._args: any[]) => never;
+  /** @deprecated 请使用 douyinFetcher.fetchUserProfile 替代 */
+  getUserProfile: (..._args: any[]) => never;
+  /** @deprecated 请使用 douyinFetcher.fetchEmojiList 替代 */
+  getEmojiList: (..._args: any[]) => never;
+  /** @deprecated 请使用 douyinFetcher.fetchDynamicEmojiList 替代 */
+  getEmojiProList: (..._args: any[]) => never;
+  /** @deprecated 请使用 douyinFetcher.fetchUserVideoList 替代 */
+  getUserVideos: (..._args: any[]) => never;
+  /** @deprecated 请使用 douyinFetcher.fetchMusicInfo 替代 */
+  getMusicInfo: (..._args: any[]) => never;
+  /** @deprecated 请使用 douyinFetcher.fetchSuggestWords 替代 */
+  getSuggestWords: (..._args: any[]) => never;
+  /** @deprecated 请使用 douyinFetcher.searchContent 替代 */
+  search: (..._args: any[]) => never;
+  /** @deprecated 请使用 douyinFetcher.fetchLiveRoomInfo 替代 */
+  getLiveRoomInfo: (..._args: any[]) => never;
+  /** @deprecated 请使用 douyinFetcher.fetchDanmakuList 替代 */
+  getDanmaku: (..._args: any[]) => never;
+  /** @deprecated 请使用 douyinFetcher 的具体方法替代 */
   invoke: (..._args: any[]) => never;
 };
 /**
  * 绑定cookie的抖音API对象类型
  */
-type BoundDouyinApi = ReturnType<typeof createBoundDouyinApi>; //#endregion
+type BoundDouyinApi = ReturnType<typeof createBoundDouyinApi>;
+//#endregion
 //#region src/platform/douyin/routes.d.ts
 /**
  * 创建抖音路由
@@ -27998,10 +28557,12 @@ type BoundDouyinApi = ReturnType<typeof createBoundDouyinApi>; //#endregion
  * @param requestConfig - 可选的请求配置
  * @returns Express路由器
  */
-declare const createDouyinRoutes: (cookie: string, requestConfig?: RequestConfig) => express.Router; //#endregion
+declare const createDouyinRoutes: (cookie: string, requestConfig?: RequestConfig) => express.Router;
+//#endregion
 //#region src/platform/douyin/index.d.ts
 type douyinUtilsModel = {
-  /** 签名算法相关 */sign: typeof douyinSign;
+  /** 签名算法相关 */
+  sign: typeof douyinSign;
   /**
    * 该类下的所有方法只会返回拼接好参数后的 Url 地址，需要手动请求该地址以获取数据
    *
@@ -28018,12 +28579,13 @@ type douyinUtilsModel = {
   api: typeof douyin;
 };
 /** 抖音相关功能模块 (工具集) */
-declare const douyinUtils: douyinUtilsModel; //#endregion
+declare const douyinUtils: douyinUtilsModel;
+//#endregion
 //#region src/platform/kuaishou/API.d.ts
 /**
  * 根据 KuaishouMethodOptionsMap 创建一个新的类型，去除每个字段中的 methodType
  */
-type KuaishouMethodOptionsWithoutMethodType = { [K in keyof KuaishouMethodOptionsMap]: OmitMethodType<KuaishouMethodOptionsMap[K]> };
+type KuaishouMethodOptionsWithoutMethodType = { [K in keyof KuaishouMethodOptionsMap]: OmitMethodType<KuaishouMethodOptionsMap[K]>; };
 type KuaishouUserProfileListRequest = KuaishouMethodOptionsWithoutMethodType['UserProfileParams'] | KuaishouMethodOptionsWithoutMethodType['UserWorkListParams'];
 type KuaishouBaseApiRequest = {
   type: string;
@@ -28228,7 +28790,8 @@ declare class API {
  *
  * 该对象只负责返回请求描述，不直接发起网络请求。
  */
-declare const kuaishouApiUrls: API; //#endregion
+declare const kuaishouApiUrls: API;
+//#endregion
 //#region src/platform/kuaishou/sign/helpers.d.ts
 /**
  * 快手 `__NS_hxfalcon` 组包所需的标准化载荷。
@@ -28240,7 +28803,8 @@ type KuaishouHxfalconPayload = {
   query: Record<string, string>;
   form: Record<string, string>;
   requestBody: Record<string, unknown>;
-}; //#endregion
+};
+//#endregion
 //#region src/platform/kuaishou/sign/index.d.ts
 /**
  * 快手 `live_api` 请求签名结果。
@@ -28297,7 +28861,8 @@ declare class kuaishouSign {
    * @returns 带签名 URL、附加请求头和调试信息
    */
   static signLiveApiRequest(request: KuaishouLiveApiRequest, cookie?: string): KuaishouLiveApiSignature;
-} //#endregion
+}
+//#endregion
 //#region src/platform/kuaishou/KuaishouApi.d.ts
 /**
  * 快手相关 API 的命名空间。
@@ -28305,11 +28870,17 @@ declare class kuaishouSign {
  * @deprecated v6 已废弃，请使用 kuaishouFetcher 或 client.kuaishou.fetcher 替代
  */
 declare const kuaishou: {
-  /** @deprecated 请使用 kuaishouFetcher.fetchVideoWork 替代 */getWorkInfo: (..._args: any[]) => never; /** @deprecated 请使用 kuaishouFetcher.fetchWorkComments 替代 */
-  getComments: (..._args: any[]) => never; /** @deprecated 请使用 kuaishouFetcher.fetchUserProfile 替代 */
-  getUserProfile: (..._args: any[]) => never; /** @deprecated 请使用 kuaishouFetcher.fetchUserWorkList 替代 */
-  getUserWorkList: (..._args: any[]) => never; /** @deprecated 请使用 kuaishouFetcher.fetchLiveRoomInfo 替代 */
-  getLiveRoomInfo: (..._args: any[]) => never; /** @deprecated 请使用 kuaishouFetcher.fetchEmojiList 替代 */
+  /** @deprecated 请使用 kuaishouFetcher.fetchVideoWork 替代 */
+  getWorkInfo: (..._args: any[]) => never;
+  /** @deprecated 请使用 kuaishouFetcher.fetchWorkComments 替代 */
+  getComments: (..._args: any[]) => never;
+  /** @deprecated 请使用 kuaishouFetcher.fetchUserProfile 替代 */
+  getUserProfile: (..._args: any[]) => never;
+  /** @deprecated 请使用 kuaishouFetcher.fetchUserWorkList 替代 */
+  getUserWorkList: (..._args: any[]) => never;
+  /** @deprecated 请使用 kuaishouFetcher.fetchLiveRoomInfo 替代 */
+  getLiveRoomInfo: (..._args: any[]) => never;
+  /** @deprecated 请使用 kuaishouFetcher.fetchEmojiList 替代 */
   getEmojiList: (..._args: any[]) => never;
 };
 /**
@@ -28318,17 +28889,24 @@ declare const kuaishou: {
  * @deprecated v6 已废弃，请使用 createBoundKuaishouFetcher 替代
  */
 declare const createBoundKuaishouApi: (_cookie: string, _requestConfig: RequestConfig) => {
-  /** @deprecated 请使用 kuaishouFetcher.fetchVideoWork 替代 */getWorkInfo: (..._args: any[]) => never; /** @deprecated 请使用 kuaishouFetcher.fetchWorkComments 替代 */
-  getComments: (..._args: any[]) => never; /** @deprecated 请使用 kuaishouFetcher.fetchUserProfile 替代 */
-  getUserProfile: (..._args: any[]) => never; /** @deprecated 请使用 kuaishouFetcher.fetchUserWorkList 替代 */
-  getUserWorkList: (..._args: any[]) => never; /** @deprecated 请使用 kuaishouFetcher.fetchLiveRoomInfo 替代 */
-  getLiveRoomInfo: (..._args: any[]) => never; /** @deprecated 请使用 kuaishouFetcher.fetchEmojiList 替代 */
+  /** @deprecated 请使用 kuaishouFetcher.fetchVideoWork 替代 */
+  getWorkInfo: (..._args: any[]) => never;
+  /** @deprecated 请使用 kuaishouFetcher.fetchWorkComments 替代 */
+  getComments: (..._args: any[]) => never;
+  /** @deprecated 请使用 kuaishouFetcher.fetchUserProfile 替代 */
+  getUserProfile: (..._args: any[]) => never;
+  /** @deprecated 请使用 kuaishouFetcher.fetchUserWorkList 替代 */
+  getUserWorkList: (..._args: any[]) => never;
+  /** @deprecated 请使用 kuaishouFetcher.fetchLiveRoomInfo 替代 */
+  getLiveRoomInfo: (..._args: any[]) => never;
+  /** @deprecated 请使用 kuaishouFetcher.fetchEmojiList 替代 */
   getEmojiList: (..._args: any[]) => never;
 };
 /**
  * 绑定cookie的快手API对象类型
  */
-type BoundKuaishouApi = ReturnType<typeof createBoundKuaishouApi>; //#endregion
+type BoundKuaishouApi = ReturnType<typeof createBoundKuaishouApi>;
+//#endregion
 //#region src/platform/kuaishou/routes.d.ts
 /**
  * 创建快手路由
@@ -28336,10 +28914,13 @@ type BoundKuaishouApi = ReturnType<typeof createBoundKuaishouApi>; //#endregion
  * @param requestConfig - 可选的请求配置
  * @returns Express路由器
  */
-declare const createKuaishouRoutes: (cookie: string, requestConfig?: RequestConfig) => express.Router; //#endregion
+declare const createKuaishouRoutes: (cookie: string, requestConfig?: RequestConfig) => express.Router;
+//#endregion
 //#region src/platform/kuaishou/index.d.ts
 type kuaishouUtilsModel = {
-  /** 签名算法相关 */sign: typeof kuaishouSign; /** 该类下的方法只会返回请求描述对象，需要手动请求对应地址以获取数据 */
+  /** 签名算法相关 */
+  sign: typeof kuaishouSign;
+  /** 该类下的方法只会返回请求描述对象，需要手动请求对应地址以获取数据 */
   kuaishouApiUrls: typeof kuaishouApiUrls;
   /**
    * 封装了所有快手相关的API请求，采用对象化的方式组织。
@@ -28351,7 +28932,8 @@ type kuaishouUtilsModel = {
   api: typeof kuaishou;
 };
 /** 快手相关功能模块 (工具集) */
-declare const kuaishouUtils: kuaishouUtilsModel; //#endregion
+declare const kuaishouUtils: kuaishouUtilsModel;
+//#endregion
 //#region src/platform/xiaohongshu/sign/index.d.ts
 /**
  * 小红书签名算法类
@@ -28409,7 +28991,8 @@ declare class xiaohongshuSign {
    * @returns 搜索ID字符串
    */
   static getSearchId: () => string;
-} //#endregion
+}
+//#endregion
 //#region src/platform/xiaohongshu/XiaohongshuApi.d.ts
 /**
  * 封装了所有小红书相关的API请求，采用对象化的方式组织。
@@ -28417,12 +29000,19 @@ declare class xiaohongshuSign {
  * @deprecated v6 已废弃，请使用 xiaohongshuFetcher 或 client.xiaohongshu.fetcher 替代
  */
 declare const xiaohongshu: {
-  /** @deprecated 请使用 xiaohongshuFetcher.fetchHomeFeed 替代 */getHomeFeed: (..._args: any[]) => never; /** @deprecated 请使用 xiaohongshuFetcher.fetchNoteDetail 替代 */
-  getNote: (..._args: any[]) => never; /** @deprecated 请使用 xiaohongshuFetcher.fetchNoteComments 替代 */
-  getComments: (..._args: any[]) => never; /** @deprecated 请使用 xiaohongshuFetcher.fetchUserProfile 替代 */
-  getUser: (..._args: any[]) => never; /** @deprecated 请使用 xiaohongshuFetcher.fetchUserNoteList 替代 */
-  getUserNotes: (..._args: any[]) => never; /** @deprecated 请使用 xiaohongshuFetcher.searchNotes 替代 */
-  getSearchNotes: (..._args: any[]) => never; /** @deprecated 请使用 xiaohongshuFetcher.fetchEmojiList 替代 */
+  /** @deprecated 请使用 xiaohongshuFetcher.fetchHomeFeed 替代 */
+  getHomeFeed: (..._args: any[]) => never;
+  /** @deprecated 请使用 xiaohongshuFetcher.fetchNoteDetail 替代 */
+  getNote: (..._args: any[]) => never;
+  /** @deprecated 请使用 xiaohongshuFetcher.fetchNoteComments 替代 */
+  getComments: (..._args: any[]) => never;
+  /** @deprecated 请使用 xiaohongshuFetcher.fetchUserProfile 替代 */
+  getUser: (..._args: any[]) => never;
+  /** @deprecated 请使用 xiaohongshuFetcher.fetchUserNoteList 替代 */
+  getUserNotes: (..._args: any[]) => never;
+  /** @deprecated 请使用 xiaohongshuFetcher.searchNotes 替代 */
+  getSearchNotes: (..._args: any[]) => never;
+  /** @deprecated 请使用 xiaohongshuFetcher.fetchEmojiList 替代 */
   getEmojiList: (..._args: any[]) => never;
 };
 /**
@@ -28431,18 +29021,26 @@ declare const xiaohongshu: {
  * @deprecated v6 已废弃，请使用 createBoundXiaohongshuFetcher 替代
  */
 declare const createBoundXiaohongshuApi: (_cookie: string, _requestConfig: RequestConfig) => {
-  /** @deprecated 请使用 xiaohongshuFetcher.fetchHomeFeed 替代 */getHomeFeed: (..._args: any[]) => never; /** @deprecated 请使用 xiaohongshuFetcher.fetchNoteDetail 替代 */
-  getNote: (..._args: any[]) => never; /** @deprecated 请使用 xiaohongshuFetcher.fetchNoteComments 替代 */
-  getComments: (..._args: any[]) => never; /** @deprecated 请使用 xiaohongshuFetcher.fetchUserProfile 替代 */
-  getUser: (..._args: any[]) => never; /** @deprecated 请使用 xiaohongshuFetcher.fetchUserNoteList 替代 */
-  getUserNotes: (..._args: any[]) => never; /** @deprecated 请使用 xiaohongshuFetcher.searchNotes 替代 */
-  getSearchNotes: (..._args: any[]) => never; /** @deprecated 请使用 xiaohongshuFetcher.fetchEmojiList 替代 */
+  /** @deprecated 请使用 xiaohongshuFetcher.fetchHomeFeed 替代 */
+  getHomeFeed: (..._args: any[]) => never;
+  /** @deprecated 请使用 xiaohongshuFetcher.fetchNoteDetail 替代 */
+  getNote: (..._args: any[]) => never;
+  /** @deprecated 请使用 xiaohongshuFetcher.fetchNoteComments 替代 */
+  getComments: (..._args: any[]) => never;
+  /** @deprecated 请使用 xiaohongshuFetcher.fetchUserProfile 替代 */
+  getUser: (..._args: any[]) => never;
+  /** @deprecated 请使用 xiaohongshuFetcher.fetchUserNoteList 替代 */
+  getUserNotes: (..._args: any[]) => never;
+  /** @deprecated 请使用 xiaohongshuFetcher.searchNotes 替代 */
+  getSearchNotes: (..._args: any[]) => never;
+  /** @deprecated 请使用 xiaohongshuFetcher.fetchEmojiList 替代 */
   getEmojiList: (..._args: any[]) => never;
 };
 /**
  * 绑定cookie的小红书API对象类型
  */
-type BoundXiaohongshuApi = ReturnType<typeof createBoundXiaohongshuApi>; //#endregion
+type BoundXiaohongshuApi = ReturnType<typeof createBoundXiaohongshuApi>;
+//#endregion
 //#region src/platform/xiaohongshu/routes.d.ts
 /**
  * 创建小红书路由
@@ -28450,10 +29048,12 @@ type BoundXiaohongshuApi = ReturnType<typeof createBoundXiaohongshuApi>; //#endr
  * @param requestConfig - 可选的请求配置
  * @returns Express路由器
  */
-declare const createXiaohongshuRoutes: (cookie: string, requestConfig?: RequestConfig) => express.Router; //#endregion
+declare const createXiaohongshuRoutes: (cookie: string, requestConfig?: RequestConfig) => express.Router;
+//#endregion
 //#region src/platform/xiaohongshu/index.d.ts
 type xiaohongshuUtilsModel = {
-  /** 签名算法相关 */sign: typeof xiaohongshuSign;
+  /** 签名算法相关 */
+  sign: typeof xiaohongshuSign;
   /**
    * 该类下的所有方法只会返回拼接好参数后的 Url 地址，需要手动请求该地址以获取数据
    */
@@ -28468,7 +29068,8 @@ type xiaohongshuUtilsModel = {
   api: typeof xiaohongshu;
 };
 /** 小红书相关功能模块 (工具集) */
-declare const xiaohongshuUtils: xiaohongshuUtilsModel; //#endregion
+declare const xiaohongshuUtils: xiaohongshuUtilsModel;
+//#endregion
 //#region src/model/DataFetchers.d.ts
 /**
  * 获取抖音数据
@@ -28532,7 +29133,8 @@ declare function getBilibiliData(..._args: any[]): never;
  * const data = await client.kuaishou.fetcher.fetchVideoWork({ photoId: '123' })
  * ```
  */
-declare function getKuaishouData(..._args: any[]): never; //#endregion
+declare function getKuaishouData(..._args: any[]): never;
+//#endregion
 //#region src/utils/errors.d.ts
 /**
  * API错误类
@@ -28591,7 +29193,8 @@ declare const handleError: (error: unknown, requestPath?: string) => {
   }>;
   platform?: string;
   requestPath?: string;
-}; //#endregion
+};
+//#endregion
 //#region src/model/networks.d.ts
 /**
  * 执行网络请求并返回数据（带自动重试）
@@ -28624,7 +29227,8 @@ declare const isNetworkErrorResult: (result: unknown) => result is ErrorResult;
 declare const getHeadersAndData: <T = any>(config: AxiosRequestConfig, maxRetries?: number) => Promise<{
   headers: RawAxiosResponseHeaders;
   data: T;
-} | ErrorResult>; //#endregion
+} | ErrorResult>;
+//#endregion
 //#region src/model/logger.d.ts
 /**
  * @deprecated v6 已废弃，请使用事件系统替代
@@ -28666,7 +29270,8 @@ declare const httpLogger: SimpleLogger;
  * @param pathsToLog 指定需要记录日志的请求路径数组如果未提供，则记录所有请求的日志
  * @returns
  */
-declare const logMiddleware: (pathsToLog?: string[]) => express.RequestHandler; //#endregion
+declare const logMiddleware: (pathsToLog?: string[]) => express.RequestHandler;
+//#endregion
 //#region src/types/api-spec.d.ts
 /**
  * Amagi v6 API 规范定义
@@ -28870,7 +29475,8 @@ declare function getEnglishMethodName<T extends Platform>(platform: T, chineseMe
 /**
  * 根据 methodType 获取 HTTP API 路由路径
  */
-declare function getApiRoute<T extends Platform>(platform: T, methodType: string): string | undefined; //#endregion
+declare function getApiRoute<T extends Platform>(platform: T, methodType: string): string | undefined;
+//#endregion
 //#region src/index.d.ts
 /**
  * @deprecated 请使用 createAmagiClient 替代
@@ -28879,11 +29485,16 @@ declare const amagiClient: typeof createAmagiClient;
 /** amagi 的构造函数类型 */
 type AmagiConstructor = {
   new (options?: Options): ReturnType<typeof createAmagiClient>;
-  (options?: Options): ReturnType<typeof createAmagiClient>; /** 当前版本号 */
-  readonly version: string; /** 抖音相关功能模块 (工具集) */
-  douyin: typeof douyinUtils; /** B站相关功能模块 (工具集) */
-  bilibili: typeof bilibiliUtils; /** 快手相关功能模块 (工具集) */
-  kuaishou: typeof kuaishouUtils; /** 小红书相关功能模块 (工具集) */
+  (options?: Options): ReturnType<typeof createAmagiClient>;
+  /** 当前版本号 */
+  readonly version: string;
+  /** 抖音相关功能模块 (工具集) */
+  douyin: typeof douyinUtils;
+  /** B站相关功能模块 (工具集) */
+  bilibili: typeof bilibiliUtils;
+  /** 快手相关功能模块 (工具集) */
+  kuaishou: typeof kuaishouUtils;
+  /** 小红书相关功能模块 (工具集) */
   xiaohongshu: typeof xiaohongshuUtils;
   /**
    * @deprecated v6 已废弃，请使用 douyinFetcher 替代
@@ -28904,7 +29515,8 @@ type AmagiConstructor = {
    * @deprecated v6 已废弃，请使用 xiaohongshuFetcher 替代
    * @throws {DeprecatedApiError} 调用时抛出废弃错误
    */
-  getXiaohongshuData: (...args: any[]) => never; /** 事件系统 */
+  getXiaohongshuData: (...args: any[]) => never;
+  /** 事件系统 */
   events: typeof amagiEvents;
   /**
    * 注册事件监听器
@@ -28917,14 +29529,22 @@ type AmagiConstructor = {
    * @param event - 事件名称
    * @param listener - 事件处理函数 (只触发一次)
    */
-  once: typeof amagiEvents.once; /** B站数据获取器 (需要传递 cookie) */
-  bilibiliFetcher: typeof bilibiliFetcher; /** 抖音数据获取器 (需要传递 cookie) */
-  douyinFetcher: typeof douyinFetcher; /** 快手数据获取器 (需要传递 cookie) */
-  kuaishouFetcher: typeof kuaishouFetcher; /** 小红书数据获取器 (需要传递 cookie) */
-  xiaohongshuFetcher: typeof xiaohongshuFetcher; /** 创建绑定 cookie 的 B站 fetcher */
-  createBoundBilibiliFetcher: typeof createBoundBilibiliFetcher; /** 创建绑定 cookie 的抖音 fetcher */
-  createBoundDouyinFetcher: typeof createBoundDouyinFetcher; /** 创建绑定 cookie 的快手 fetcher */
-  createBoundKuaishouFetcher: typeof createBoundKuaishouFetcher; /** 创建绑定 cookie 的小红书 fetcher */
+  once: typeof amagiEvents.once;
+  /** B站数据获取器 (需要传递 cookie) */
+  bilibiliFetcher: typeof bilibiliFetcher;
+  /** 抖音数据获取器 (需要传递 cookie) */
+  douyinFetcher: typeof douyinFetcher;
+  /** 快手数据获取器 (需要传递 cookie) */
+  kuaishouFetcher: typeof kuaishouFetcher;
+  /** 小红书数据获取器 (需要传递 cookie) */
+  xiaohongshuFetcher: typeof xiaohongshuFetcher;
+  /** 创建绑定 cookie 的 B站 fetcher */
+  createBoundBilibiliFetcher: typeof createBoundBilibiliFetcher;
+  /** 创建绑定 cookie 的抖音 fetcher */
+  createBoundDouyinFetcher: typeof createBoundDouyinFetcher;
+  /** 创建绑定 cookie 的快手 fetcher */
+  createBoundKuaishouFetcher: typeof createBoundKuaishouFetcher;
+  /** 创建绑定 cookie 的小红书 fetcher */
   createBoundXiaohongshuFetcher: typeof createBoundXiaohongshuFetcher;
 };
 /** After instantiation, it can interact with the specified platform API to quickly obtain data. */
@@ -28932,11 +29552,5 @@ declare const CreateApp: AmagiConstructor;
 /** After instantiation, it can interact with the specified platform API to quickly obtain data. */
 declare const Client: typeof CreateApp;
 declare const amagi: typeof Client;
-/*!
- * @ikenxuan/amagi
- * Copyright(c) 2023 ikenxuan
- * GPL-3.0 Licensed
- */
-//#endregion
 //#endregion
 export { APIErrorType, AdditionalType, AmagiEventMap, AmagiEventType, type ApiEndpoint, ApiError, ApiErrorEventData, ApiResponse, ApiSuccessEventData, ArticleCard, ArticleContent, ArticleInfo, ArticleWork, BaseRequestOptions, BaseResponse, BiliAv2Bv, BiliBangumiVideoInfo, BiliBangumiVideoPlayurlIsLogin, BiliBangumiVideoPlayurlNoLogin, BiliBiliVideoPlayurlNoLogin, BiliBv2AV, BiliCheckQrcode, BiliCommentReply, BiliDynamicCard, BiliDynamicInfo, BiliDynamicInfoUnion, BiliEmojiList, BiliLiveRoomDef, BiliLiveRoomDetail, BiliNewLoginQrcode, BiliOneWork, BiliProtobufDanmaku, BiliUserDynamic, BiliUserFullView, BiliUserProfile, BiliVideoPlayurlIsLogin, BiliWorkComments, BilibiliApiRoutes, type BilibiliApplyCaptchaOptions, BilibiliApplyCaptchaParamsSchema, type BilibiliArticleCardOptions, BilibiliArticleCardParamsSchema, BilibiliArticleInfoParamsSchema, type BilibiliArticleOptions, BilibiliArticleParamsSchema, type BilibiliAv2BvOptions, BilibiliAv2BvParamsSchema, type BilibiliBangumiInfoOptions, BilibiliBangumiInfoParamsSchema, type BilibiliBangumiStreamOptions, BilibiliBangumiStreamParamsSchema, type BilibiliBv2AvOptions, BilibiliBv2AvParamsSchema, BilibiliColumnInfoParamsSchema, BilibiliCommentParamsSchema, type BilibiliCommentRepliesOptions, BilibiliCommentReplyParamsSchema, type BilibiliCommentsOptions, type BilibiliDanmakuOptions, BilibiliDanmakuParamsSchema, BilibiliDataOptions, BilibiliDataOptionsMap, type BilibiliDynamicOptions, BilibiliDynamicParamsSchema, BilibiliEmojiParamsSchema, type BilibiliFetcher, BilibiliFetcherMethodKey, BilibiliFetcherMethods, BilibiliInternalMethodKey, BilibiliInternalMethods, BilibiliLiveParamsSchema, type BilibiliLiveRoomOptions, BilibiliLoginParamsSchema, type BilibiliMethodKey, BilibiliMethodMapping, BilibiliMethodOptMap, BilibiliMethodOptionsMap, BilibiliMethodRoutes, BilibiliMethodToFetcher, BilibiliMethodType, type BilibiliMethodValue, BilibiliQrcodeParamsSchema, type BilibiliQrcodeStatusOptions, BilibiliQrcodeStatusParamsSchema, BilibiliReturnTypeMap, type BilibiliUserOptions, BilibiliUserParamsSchema, type BilibiliValidateCaptchaOptions, BilibiliValidateCaptchaParamsSchema, BilibiliValidationSchemas, BilibiliVideoDownloadParamsSchema, type BilibiliVideoInfoOptions, BilibiliVideoParamsSchema, type BilibiliVideoStreamOptions, BoundBilibiliApi, type BoundBilibiliFetcher, BoundDouyinApi, type BoundDouyinFetcher, BoundKuaishouApi, type BoundKuaishouFetcher, BoundXiaohongshuApi, type BoundXiaohongshuFetcher, ColumnInfo, CommentReply, CommentType, ConditionalReturnType, CookieConfig, CreateApp, DouyinApiRoutes, DouyinCommentParamsSchema, type DouyinCommentRepliesOptions, DouyinCommentReplyParamsSchema, type DouyinCommentsOptions, type DouyinDanmakuOptions, DouyinDanmakuParamsSchema, DouyinDataOptions, DouyinDataOptionsMap, DouyinEmojiListParamsSchema, DouyinEmojiProParamsSchema, type DouyinFetcher, DouyinFetcherMethodKey, DouyinFetcherMethods, DouyinHotWordsParamsSchema, DouyinInternalMethodKey, DouyinInternalMethods, type DouyinLiveRoomOptions, DouyinLiveRoomParamsSchema, type DouyinMethodKey, DouyinMethodMapping, DouyinMethodOptMap, DouyinMethodOptionsMap, DouyinMethodRoutes, DouyinMethodToFetcher, DouyinMethodType, type DouyinMethodValue, type DouyinMusicOptions, DouyinMusicParamsSchema, type DouyinQrcodeOptions, DouyinQrcodeParamsSchema, DouyinReturnTypeMap, type DouyinSearchOptions, DouyinSearchParamsSchema, type DouyinSuggestWordsOptions, type DouyinUserListOptions, DouyinUserListParamsSchema, type DouyinUserOptions, DouyinUserParamsSchema, DouyinValidationSchemas, type DouyinWorkOptions, DouyinWorkParamsSchema, DyDanmakuList, DyEmojiList, DyEmojiProList, DyImageAlbumWork, DyMusicWork, DySearchInfo, DySlidesWork, DySuggestWords, DyUserInfo, DyUserLiveVideos, DyUserPostVideos, DyVideoWork, DyWorkComments, DynamicType, DynamicTypeAV, DynamicTypeArticle, DynamicTypeDraw, DynamicTypeForward, DynamicTypeForwardUnion, DynamicTypeLiveRcmd, DynamicTypeWord, ErrorResult, ExtractTypeMode, FetcherConfig, HomeFeed, type HttpMethod, HttpRequestEventData, HttpResponseEventData, type IBilibiliFetcher, type IBoundBilibiliFetcher, type IBoundDouyinFetcher, type IBoundKuaishouFetcher, type IBoundXiaohongshuFetcher, type IDouyinFetcher, type IKuaishouFetcher, type IXiaohongshuFetcher, type KsBannedStatus, KsEmojiList, KsLiveRoomInfo, KsOneWork, type KsUserHomeWork, KsUserProfile, type KsUserProfileCounts, type KsUserProfileGameInfo, type KsUserProfileLiveInfo, type KsUserProfileSensitiveInfo, type KsUserProfileUserInfo, KsUserWorkList, type KsVerifiedStatus, KsWorkComments, KuaishouApiRoutes, KuaishouCommentParamsSchema, type KuaishouCommentsOptions, KuaishouDataOptions, KuaishouDataOptionsMap, KuaishouEmojiParamsSchema, type KuaishouFetcher, KuaishouFetcherMethodKey, KuaishouFetcherMethods, type KuaishouGraphqlRequest, KuaishouInternalMethodKey, KuaishouInternalMethods, type KuaishouLiveApiRequest, type KuaishouLiveRoomInfoOptions, KuaishouLiveRoomInfoParamsSchema, type KuaishouMethodKey, KuaishouMethodMapping, KuaishouMethodOptMap, KuaishouMethodOptionsMap, KuaishouMethodRoutes, KuaishouMethodToFetcher, KuaishouMethodType, type KuaishouMethodValue, KuaishouReturnTypeMap, type KuaishouUserProfileOptions, KuaishouUserProfileParamsSchema, type KuaishouUserWorkListOptions, KuaishouUserWorkListParamsSchema, KuaishouValidationSchemas, KuaishouVideoParamsSchema, type KuaishouVideoWorkOptions, LogEventData, MajorType, MethodMaps, NetworkErrorEventData, NetworkRetryEventData, type NetworksConfigType, NoteComments, OmitMethodType, OneNote, Options, type Platform, RequestConfig, Result, SearchInfoGeneralData, SearchInfoUser, SearchInfoVideo, SearchNotes, SuccessResult, TypeControl, TypeMode, ValidationError, XiaohongshuApiRoutes, type XiaohongshuCommentsOptions, XiaohongshuDataOptions, XiaohongshuDataOptionsMap, XiaohongshuEmojiList, type XiaohongshuFetcher, XiaohongshuFetcherMethodKey, XiaohongshuFetcherMethods, type XiaohongshuHomeFeedOptions, XiaohongshuInternalMethodKey, XiaohongshuInternalMethods, type XiaohongshuMethodKey, XiaohongshuMethodMapping, XiaohongshuMethodOptMap, XiaohongshuMethodOptionsMap, XiaohongshuMethodRoutes, XiaohongshuMethodToFetcher, XiaohongshuMethodType, type XiaohongshuMethodValue, type XiaohongshuNoteDetailOptions, XiaohongshuReturnTypeMap, type XiaohongshuSearchNotesOptions, type XiaohongshuUserNotesOptions, XiaohongshuUserProfile, type XiaohongshuUserProfileOptions, XiaohongshuValidationSchemas, amagi, amagiClient, amagiEvents, av2bv, bilibili, bilibiliApiUrls, bilibiliErrorCodeMap, bilibiliFetcher, bilibiliUtils, bv2av, createAmagiClient, createBilibiliRoutes, createBilibiliRoutes as registerBilibiliRoutes, createBoundBilibiliApi, createBoundBilibiliFetcher, createBoundDouyinApi, createBoundDouyinFetcher, createBoundKuaishouApi, createBoundKuaishouFetcher, createBoundXiaohongshuApi, createBoundXiaohongshuFetcher, createDouyinRoutes, createDouyinRoutes as registerDouyinRoutes, createErrorResponse, createKuaishouRoutes, createKuaishouRoutes as registerKuaishouRoutes, createSuccessResponse, createXiaohongshuRoutes, createXiaohongshuRoutes as registerXiaohongshuRoutes, douyin, douyinApiUrls, douyinFetcher, douyinSign, douyinUtils, emitApiError, emitApiSuccess, emitHttpRequest, emitHttpResponse, emitLog, emitLogDebug, emitLogError, emitLogInfo, emitLogMark, emitLogWarn, emitNetworkError, emitNetworkRetry, fetchData, fetchResponse, getApiRoute, getBilibiliData, getDouyinData, getEnglishMethodName, getHeadersAndData, getKuaishouData, handleError, httpLogger, initLogger, isNetworkErrorResult, kuaishou, kuaishouApiUrls, kuaishouFetcher, kuaishouSign, kuaishouUtils, logMiddleware, logger, parseDmSegMobileReply, qtparam, toFetcherMethod, validateBilibiliParams, validateDouyinParams, validateKuaishouParams, validateXiaohongshuParams, wbi_sign, xiaohongshu, xiaohongshuApiUrls, xiaohongshuFetcher, xiaohongshuSign, xiaohongshuUtils };

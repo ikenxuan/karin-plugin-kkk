@@ -1,16 +1,7 @@
-/// <reference types="node" />
-import { A as RichTextDocument } from "./index-B2QgJ0_6.mjs";
+import { o as RichTextDocument } from "./index-CZWy-8Jl.mjs";
 import { EventEmitter as EventEmitter$1 } from "node:events";
 import { AxiosRequestConfig, AxiosResponse } from "axios";
 import React$1 from "react";
-import { EventEmitter as EventEmitter$2 } from "events";
-import { Agent, ClientRequest, ClientRequestArgs, IncomingMessage, OutgoingHttpHeaders, Server } from "http";
-import { Server as Server$1 } from "https";
-import { createConnection } from "net";
-import { SecureContextOptions } from "tls";
-import { URL } from "url";
-import { ZlibOptions } from "zlib";
-
 //#region ../template/src/types/platforms/douyin/articleWork.d.ts
 /**
  * 文章图片信息
@@ -29,21 +20,37 @@ interface ArticleImage {
  * 抖音文章作品组件属性接口
  */
 interface DouyinArticleWorkProps extends BaseComponentProps<{
-  /** 文章标题 */title: string; /** 文章Markdown内容 */
-  markdown: string; /** 文章图片列表 */
-  images: ArticleImage[]; /** 阅读时间(分钟) */
-  read_time: number; /** 点赞数 */
-  dianzan: string; /** 评论数 */
-  pinglun: string; /** 收藏数 */
-  shouchang: string; /** 分享数 */
-  share: string; /** 创建时间 */
-  create_time: string; /** 用户头像URL */
-  avater_url: string; /** 用户名 */
-  username: string; /** 抖音号 */
-  抖音号: string; /** 获赞数 */
-  获赞: string; /** 关注数 */
-  关注: string; /** 粉丝数 */
-  粉丝: string; /** 分享链接 */
+  /** 文章标题 */
+  title: string;
+  /** 文章Markdown内容 */
+  markdown: string;
+  /** 文章图片列表 */
+  images: ArticleImage[];
+  /** 阅读时间(分钟) */
+  read_time: number;
+  /** 点赞数 */
+  dianzan: string;
+  /** 评论数 */
+  pinglun: string;
+  /** 收藏数 */
+  shouchang: string;
+  /** 分享数 */
+  share: string;
+  /** 创建时间 */
+  create_time: string;
+  /** 用户头像URL */
+  avater_url: string;
+  /** 用户名 */
+  username: string;
+  /** 抖音号 */
+  抖音号: string;
+  /** 获赞数 */
+  获赞: string;
+  /** 关注数 */
+  关注: string;
+  /** 粉丝数 */
+  粉丝: string;
+  /** 分享链接 */
   share_url: string;
 }> {}
 //#endregion
@@ -52,46 +59,80 @@ interface DouyinArticleWorkProps extends BaseComponentProps<{
  * 抖音评论组件属性接口
  */
 interface DouyinCommentProps extends BaseComponentProps<{
-  /** 作品类型：视频/图集/合辑/文章 */Type: '视频' | '图集' | '合辑' | '文章'; /** 评论数量 */
-  CommentLength: number; /** 视频大小(MB) */
-  VideoSize?: string; /** 视频帧率(Hz) */
-  VideoFPS?: number; /** 图片数量 */
-  ImageLength?: number; /** 区域 */
-  Region: string; /** 相关搜索（大家都在搜） */
-  suggestWrod: string[]; /** 视频分辨率 */
-  Resolution: string | null; /** 分享链接 */
-  share_url: string; /** 作者昵称 */
-  Author: string; /** 作者头像 */
-  AuthorAvatar: string; /** 作品统计 */
+  /** 作品类型：视频/图集/合辑/文章 */
+  Type: '视频' | '图集' | '合辑' | '文章';
+  /** 评论数量 */
+  CommentLength: number;
+  /** 视频大小(MB) */
+  VideoSize?: string;
+  /** 视频帧率(Hz) */
+  VideoFPS?: number;
+  /** 图片数量 */
+  ImageLength?: number;
+  /** 区域 */
+  Region: string;
+  /** 相关搜索（大家都在搜） */
+  suggestWrod: string[];
+  /** 视频分辨率 */
+  Resolution: string | null;
+  /** 分享链接 */
+  share_url: string;
+  /** 作者昵称 */
+  Author: string;
+  /** 作者头像 */
+  AuthorAvatar: string;
+  /** 作品统计 */
   Statistics: {
     digg_count: number;
     comment_count: number;
     share_count: number;
     collect_count: number;
-  }; /** 发布时间戳（秒） */
-  CreateTime: number; /** 评论数据列表 */
+  };
+  /** 发布时间戳（秒） */
+  CreateTime: number;
+  /** 评论数据列表 */
   CommentsData: Array<{
-    /** 评论ID */id?: number; /** 评论CID */
-    cid?: string; /** 作品ID */
-    aweme_id?: string; /** 用户头像URL */
-    userimageurl: string; /** 用户昵称 */
-    nickname: string; /** 标签类型 (1=作者) */
-    label_type?: number; /** 状态标签 */
-    status_label?: string; /** 评论内容 */
-    text: RichTextDocument; /** 评论图片 */
-    commentimage?: string; /** 贴纸 */
-    sticker?: string; /** 创建时间戳（秒） */
-    create_time: number; /** IP标签 */
-    ip_label: string; /** 点赞数 */
-    digg_count: number; /** 搜索文本 */
+    /** 评论ID */
+    id?: number;
+    /** 评论CID */
+    cid?: string;
+    /** 作品ID */
+    aweme_id?: string;
+    /** 用户头像URL */
+    userimageurl: string;
+    /** 用户昵称 */
+    nickname: string;
+    /** 标签类型 (1=作者) */
+    label_type?: number;
+    /** 状态标签 */
+    status_label?: string;
+    /** 评论内容 */
+    text: RichTextDocument;
+    /** 评论图片 */
+    commentimage?: string;
+    /** 贴纸 */
+    sticker?: string;
+    /** 创建时间戳（秒） */
+    create_time: number;
+    /** IP标签 */
+    ip_label: string;
+    /** 点赞数 */
+    digg_count: number;
+    /** 搜索文本 */
     search_text?: Array<{
-      /** 搜索文本内容 */search_text: string; /** 搜索查询ID */
+      /** 搜索文本内容 */
+      search_text: string;
+      /** 搜索查询ID */
       search_query_id: string;
-    }> | null; /** 是否@用户ID */
-    is_At_user_id?: any; /** 回复评论数据 */
-    replyComment?: DouyinSubComment[]; /** 作者是否点赞 */
+    }> | null;
+    /** 是否@用户ID */
+    is_At_user_id?: any;
+    /** 回复评论数据 */
+    replyComment?: DouyinSubComment[];
+    /** 作者是否点赞 */
     is_author_digged?: boolean;
-  }>; /** 最大嵌套层级 */
+  }>;
+  /** 最大嵌套层级 */
   maxDepth?: number;
 }> {}
 /**
@@ -129,21 +170,37 @@ interface DouyinSubComment {
  * 抖音动态组件属性接口
  */
 interface DouyinDynamicProps extends BaseComponentProps<{
-  /** 图片URL */image_url: string; /** 描述内容 */
-  desc: string; /** 点赞数 */
-  dianzan: string; /** 评论数 */
-  pinglun: string; /** 收藏数 */
-  shouchang: string; /** 分享数 */
-  share: string; /** 创建时间 */
-  create_time: string; /** 用户头像URL */
-  avater_url: string; /** 用户名 */
-  username: string; /** 抖音号 */
-  抖音号: string; /** 获赞数 */
-  获赞: string; /** 关注数 */
-  关注: string; /** 粉丝数 */
-  粉丝: string; /** 分享链接 */
-  share_url: string; /** 动态类型 */
-  dynamicTYPE?: string; /** 合作信息 */
+  /** 图片URL */
+  image_url: string;
+  /** 描述内容 */
+  desc: string;
+  /** 点赞数 */
+  dianzan: string;
+  /** 评论数 */
+  pinglun: string;
+  /** 收藏数 */
+  shouchang: string;
+  /** 分享数 */
+  share: string;
+  /** 创建时间 */
+  create_time: string;
+  /** 用户头像URL */
+  avater_url: string;
+  /** 用户名 */
+  username: string;
+  /** 抖音号 */
+  抖音号: string;
+  /** 获赞数 */
+  获赞: string;
+  /** 关注数 */
+  关注: string;
+  /** 粉丝数 */
+  粉丝: string;
+  /** 分享链接 */
+  share_url: string;
+  /** 动态类型 */
+  dynamicTYPE?: string;
+  /** 合作信息 */
   cooperation_info?: {
     co_creator_nums: number;
     co_creators: Array<{
@@ -160,20 +217,35 @@ interface DouyinDynamicProps extends BaseComponentProps<{
  * 用于展示"谁喜欢了谁的作品"
  */
 interface DouyinFavoriteListProps extends BaseComponentProps<{
-  /** 作品封面图片URL */image_url: string; /** 作品描述内容 */
-  desc: string; /** 点赞数 */
-  dianzan: string; /** 评论数 */
-  pinglun: string; /** 收藏数 */
-  shouchang: string; /** 分享数 */
-  share: string; /** 推荐数 */
-  tuijian: string; /** 作品创建时间 */
-  create_time: string; /** 点赞者（订阅者）用户名 */
-  liker_username: string; /** 点赞者头像URL */
-  liker_avatar: string; /** 点赞者抖音号 */
-  liker_douyin_id: string; /** 作品作者用户名 */
-  author_username: string; /** 作品作者头像URL */
-  author_avatar: string; /** 作品作者抖音号 */
-  author_douyin_id: string; /** 分享链接 */
+  /** 作品封面图片URL */
+  image_url: string;
+  /** 作品描述内容 */
+  desc: string;
+  /** 点赞数 */
+  dianzan: string;
+  /** 评论数 */
+  pinglun: string;
+  /** 收藏数 */
+  shouchang: string;
+  /** 分享数 */
+  share: string;
+  /** 推荐数 */
+  tuijian: string;
+  /** 作品创建时间 */
+  create_time: string;
+  /** 点赞者（订阅者）用户名 */
+  liker_username: string;
+  /** 点赞者头像URL */
+  liker_avatar: string;
+  /** 点赞者抖音号 */
+  liker_douyin_id: string;
+  /** 作品作者用户名 */
+  author_username: string;
+  /** 作品作者头像URL */
+  author_avatar: string;
+  /** 作品作者抖音号 */
+  author_douyin_id: string;
+  /** 分享链接 */
   share_url: string;
 }> {}
 //#endregion
@@ -184,38 +256,65 @@ type DouyinImageMediaType = 'static' | 'live' | 'clip';
  * 抖音图文作品组件属性接口
  */
 interface DouyinImageWorkProps extends BaseComponentProps<{
-  /** 图文图片列表（首项为封面，后续最多 2 张预览图） */image_list: {
-    /** 图片列表，按原始顺序排列 */images: Array<{
-      /** 图片 URL */url: string; /** 媒体类型 */
+  /** 图文图片列表（首项为封面，后续最多 2 张预览图） */
+  image_list: {
+    /** 图片列表，按原始顺序排列 */
+    images: Array<{
+      /** 图片 URL */
+      url: string;
+      /** 媒体类型 */
       media_type: DouyinImageMediaType;
-    }>; /** 作品总图片数（包含封面） */
+    }>;
+    /** 作品总图片数（包含封面） */
     total_count: number;
-  }; /** 标题（从描述中按首个句号拆分，含有效 @ 用户与 topic 节点） */
-  title?: RichTextDocument; /** 描述内容（去除标题后的正文，含有效 @ 用户、topic/lineBreak 节点） */
-  desc: RichTextDocument; /** IP 属地 */
-  ip_location?: string; /** 热点搜索词 */
+  };
+  /** 标题（从描述中按首个句号拆分，含有效 @ 用户与 topic 节点） */
+  title?: RichTextDocument;
+  /** 描述内容（去除标题后的正文，含有效 @ 用户、topic/lineBreak 节点） */
+  desc: RichTextDocument;
+  /** IP 属地 */
+  ip_location?: string;
+  /** 热点搜索词 */
   suggest_word?: {
     hint_text: string;
     word: string;
-  }; /** 背景音乐信息 */
+  };
+  /** 背景音乐信息 */
   music?: {
-    /** 音乐作者 */author: string; /** 音乐标题 */
-    title: string; /** 音乐封面 URL */
+    /** 音乐作者 */
+    author: string;
+    /** 音乐标题 */
+    title: string;
+    /** 音乐封面 URL */
     cover?: string;
-  }; /** 点赞数 */
-  dianzan: string; /** 评论数 */
-  pinglun: string; /** 收藏数 */
-  shouchang: string; /** 分享数 */
-  share: string; /** 创建时间（Unix 时间戳，秒） */
-  create_time: number; /** 用户头像URL */
-  avater_url: string; /** 用户名 */
-  username: string; /** 抖音号 */
-  抖音号: string; /** 获赞数 */
-  获赞: string; /** 关注数 */
-  关注: string; /** 粉丝数 */
-  粉丝: string; /** 分享链接 */
-  share_url: string; /** 动态类型 */
-  dynamicTYPE?: string; /** 合作信息 */
+  };
+  /** 点赞数 */
+  dianzan: string;
+  /** 评论数 */
+  pinglun: string;
+  /** 收藏数 */
+  shouchang: string;
+  /** 分享数 */
+  share: string;
+  /** 创建时间（Unix 时间戳，秒） */
+  create_time: number;
+  /** 用户头像URL */
+  avater_url: string;
+  /** 用户名 */
+  username: string;
+  /** 抖音号 */
+  抖音号: string;
+  /** 获赞数 */
+  获赞: string;
+  /** 关注数 */
+  关注: string;
+  /** 粉丝数 */
+  粉丝: string;
+  /** 分享链接 */
+  share_url: string;
+  /** 动态类型 */
+  dynamicTYPE?: string;
+  /** 合作信息 */
   cooperation_info?: {
     co_creator_nums: number;
     co_creators: Array<{
@@ -231,25 +330,45 @@ interface DouyinImageWorkProps extends BaseComponentProps<{
  * 抖音直播组件属性接口
  */
 interface DouyinLiveProps extends BaseComponentProps<{
-  /** 直播封面图片URL */image_url: string; /** 直播标题/描述 */
-  text: string; /** 直播分区标题 */
-  partition_title: string; /** 房间号 */
-  room_id: string; /** 总观看次数 */
-  total_viewers: string; /** 在线观众数 */
-  online_viewers: string; /** 用户头像URL */
-  avater_url: string; /** 用户名 */
-  username: string; /** 粉丝数 */
-  fans: string; /** 动态类型 */
-  dynamicTYPE: string; /** 分享链接 */
-  share_url: string; /** 点赞数 */
-  like_count: string; /** 在线人数文本 */
-  user_count_str: string; /** 直播分辨率 */
-  resolution: string; /** 主播签名 */
-  signature: string; /** 城市 */
-  city: string; /** 作品数 */
-  aweme_count: string; /** 关注数 */
-  following_count: string; /** 获赞数 */
-  total_favorited: string; /** 是否有商品 */
+  /** 直播封面图片URL */
+  image_url: string;
+  /** 直播标题/描述 */
+  text: string;
+  /** 直播分区标题 */
+  partition_title: string;
+  /** 房间号 */
+  room_id: string;
+  /** 总观看次数 */
+  total_viewers: string;
+  /** 在线观众数 */
+  online_viewers: string;
+  /** 用户头像URL */
+  avater_url: string;
+  /** 用户名 */
+  username: string;
+  /** 粉丝数 */
+  fans: string;
+  /** 动态类型 */
+  dynamicTYPE: string;
+  /** 分享链接 */
+  share_url: string;
+  /** 点赞数 */
+  like_count: string;
+  /** 在线人数文本 */
+  user_count_str: string;
+  /** 直播分辨率 */
+  resolution: string;
+  /** 主播签名 */
+  signature: string;
+  /** 城市 */
+  city: string;
+  /** 作品数 */
+  aweme_count: string;
+  /** 关注数 */
+  following_count: string;
+  /** 获赞数 */
+  total_favorited: string;
+  /** 是否有商品 */
   has_commerce_goods: boolean;
 }> {}
 //#endregion
@@ -258,17 +377,29 @@ interface DouyinLiveProps extends BaseComponentProps<{
  * 抖音音乐信息组件属性接口
  */
 interface DouyinMusicInfoProps extends BaseComponentProps<{
-  /** 音乐封面图片URL */image_url: string; /** 音乐描述/标题 */
-  desc: string; /** 音乐ID */
-  music_id: string; /** 创建时间 */
-  create_time: string; /** 使用该音乐的用户数量 */
-  user_count: string; /** 用户头像URL */
-  avater_url: string; /** 用户名 */
-  username: string; /** 用户短ID */
-  user_shortid: string; /** 获赞数 */
-  total_favorited: number; /** 关注数 */
-  following_count: number; /** 粉丝数 */
-  fans: number; /** 分享链接 */
+  /** 音乐封面图片URL */
+  image_url: string;
+  /** 音乐描述/标题 */
+  desc: string;
+  /** 音乐ID */
+  music_id: string;
+  /** 创建时间 */
+  create_time: string;
+  /** 使用该音乐的用户数量 */
+  user_count: string;
+  /** 用户头像URL */
+  avater_url: string;
+  /** 用户名 */
+  username: string;
+  /** 用户短ID */
+  user_shortid: string;
+  /** 获赞数 */
+  total_favorited: number;
+  /** 关注数 */
+  following_count: number;
+  /** 粉丝数 */
+  fans: number;
+  /** 分享链接 */
   share_url: string;
 }> {}
 //#endregion
@@ -277,20 +408,35 @@ interface DouyinMusicInfoProps extends BaseComponentProps<{
  * 抖音推荐列表组件属性接口
  */
 interface DouyinRecommendListProps extends BaseComponentProps<{
-  /** 图片URL */image_url: string; /** 描述内容 */
-  desc: string; /** 点赞数 */
-  dianzan: string; /** 评论数 */
-  pinglun: string; /** 收藏数 */
-  shouchang: string; /** 推荐数 */
-  tuijian: string; /** 分享数 */
-  share: string; /** 创建时间 */
-  create_time: string; /** 推荐者（订阅者）用户名 */
-  recommender_username: string; /** 推荐者头像URL */
-  recommender_avatar: string; /** 推荐者抖音号 */
-  recommender_douyin_id: string; /** 作品作者用户名 */
-  author_username: string; /** 作品作者头像URL */
-  author_avatar: string; /** 作品作者抖音号 */
-  author_douyin_id: string; /** 分享链接 */
+  /** 图片URL */
+  image_url: string;
+  /** 描述内容 */
+  desc: string;
+  /** 点赞数 */
+  dianzan: string;
+  /** 评论数 */
+  pinglun: string;
+  /** 收藏数 */
+  shouchang: string;
+  /** 推荐数 */
+  tuijian: string;
+  /** 分享数 */
+  share: string;
+  /** 创建时间 */
+  create_time: string;
+  /** 推荐者（订阅者）用户名 */
+  recommender_username: string;
+  /** 推荐者头像URL */
+  recommender_avatar: string;
+  /** 推荐者抖音号 */
+  recommender_douyin_id: string;
+  /** 作品作者用户名 */
+  author_username: string;
+  /** 作品作者头像URL */
+  author_avatar: string;
+  /** 作品作者抖音号 */
+  author_douyin_id: string;
+  /** 分享链接 */
   share_url: string;
 }> {}
 //#endregion
@@ -299,19 +445,32 @@ interface DouyinRecommendListProps extends BaseComponentProps<{
  * 抖音用户列表组件属性接口
  */
 interface DouyinUserListProps extends BaseComponentProps<{
-  /** 群组信息 */groupInfo: {
-    /** 群号 */groupId: string; /** 群名称 */
-    groupName: string; /** 群头像 */
+  /** 群组信息 */
+  groupInfo: {
+    /** 群号 */
+    groupId: string;
+    /** 群名称 */
+    groupName: string;
+    /** 群头像 */
     groupAvatar: string;
-  }; /** 用户列表数据 */
+  };
+  /** 用户列表数据 */
   renderOpt: {
-    /** 用户头像图片URL */avatar_img: string; /** 用户名 */
-    username: string; /** 抖音短ID */
-    short_id: string; /** 粉丝数 */
-    fans: string; /** 获赞总数 */
-    total_favorited: string; /** 关注数 */
-    following_count: string; /** 全局推送开关状态 */
-    switch: boolean; /** 推送类型列表 */
+    /** 用户头像图片URL */
+    avatar_img: string;
+    /** 用户名 */
+    username: string;
+    /** 抖音短ID */
+    short_id: string;
+    /** 粉丝数 */
+    fans: string;
+    /** 获赞总数 */
+    total_favorited: string;
+    /** 关注数 */
+    following_count: string;
+    /** 全局推送开关状态 */
+    switch: boolean;
+    /** 推送类型列表 */
     pushTypes: string[];
   }[];
 }> {}
@@ -321,39 +480,68 @@ interface DouyinUserListProps extends BaseComponentProps<{
  * 用户视频列表页面的数据类型定义
  */
 type VideoListItem = {
-  /** 视频ID */aweme_id: string; /** 视频索引 */
-  index?: number; /** 是否置顶 */
-  is_top: boolean; /** 视频标题/描述 */
-  title: string; /** 视频封面URL */
-  cover: string; /** 视频时长（秒） */
-  duration: number; /** 创建时间戳 */
-  create_time: number; /** 统计数据 */
+  /** 视频ID */
+  aweme_id: string;
+  /** 视频索引 */
+  index?: number;
+  /** 是否置顶 */
+  is_top: boolean;
+  /** 视频标题/描述 */
+  title: string;
+  /** 视频封面URL */
+  cover: string;
+  /** 视频时长（秒） */
+  duration: number;
+  /** 创建时间戳 */
+  create_time: number;
+  /** 统计数据 */
   statistics: {
-    /** 点赞数 */like_count: number; /** 评论数 */
-    comment_count: number; /** 分享数 */
-    share_count: number; /** 收藏数 */
+    /** 点赞数 */
+    like_count: number;
+    /** 评论数 */
+    comment_count: number;
+    /** 分享数 */
+    share_count: number;
+    /** 收藏数 */
     collect_count: number;
-  }; /** 是否为视频(true)还是图集(false) */
-  is_video: boolean; /** 背景音乐信息 */
+  };
+  /** 是否为视频(true)还是图集(false) */
+  is_video: boolean;
+  /** 背景音乐信息 */
   music?: {
-    /** 音乐标题 */title: string; /** 音乐作者 */
+    /** 音乐标题 */
+    title: string;
+    /** 音乐作者 */
     author: string;
   };
 };
 type UserVideoListData = {
-  /** 用户基本信息 */user: {
-    /** 头像图片（可能为 null） */head_image: string | null; /** 用户昵称 */
-    nickname: string; /** 抖音号 */
-    short_id: string; /** 头像URL */
-    avatar: string; /** 用户签名/简介 */
-    signature: string; /** 粉丝数 */
-    follower_count: number; /** 关注数 */
-    following_count: number; /** 获赞总数 */
-    total_favorited: number; /** 是否认证 */
-    verified: boolean; /** IP属地 */
+  /** 用户基本信息 */
+  user: {
+    /** 头像图片（可能为 null） */
+    head_image: string | null;
+    /** 用户昵称 */
+    nickname: string;
+    /** 抖音号 */
+    short_id: string;
+    /** 头像URL */
+    avatar: string;
+    /** 用户签名/简介 */
+    signature: string;
+    /** 粉丝数 */
+    follower_count: number;
+    /** 关注数 */
+    following_count: number;
+    /** 获赞总数 */
+    total_favorited: number;
+    /** 是否认证 */
+    verified: boolean;
+    /** IP属地 */
     ip_location: string;
-  }; /** 视频列表 */
-  videos: Array<VideoListItem>; /** 超时秒数 */
+  };
+  /** 视频列表 */
+  videos: Array<VideoListItem>;
+  /** 超时秒数 */
   timeoutSeconds?: number;
 };
 interface DouyinUserVideoListProps {
@@ -462,33 +650,57 @@ interface DouyinVideoInfoProps {
  * 抖音视频作品组件属性接口
  */
 interface DouyinVideoWorkProps extends BaseComponentProps<{
-  /** 视频封面URL */image_url: string; /** 标题（视频作品主文案，含有效 @ 用户与 topic 节点） */
-  title?: RichTextDocument; /** 描述内容（视频作品通常为空文档） */
-  desc: RichTextDocument; /** IP 属地 */
-  ip_location?: string; /** 热点搜索词 */
+  /** 视频封面URL */
+  image_url: string;
+  /** 标题（视频作品主文案，含有效 @ 用户与 topic 节点） */
+  title?: RichTextDocument;
+  /** 描述内容（视频作品通常为空文档） */
+  desc: RichTextDocument;
+  /** IP 属地 */
+  ip_location?: string;
+  /** 热点搜索词 */
   suggest_word?: {
     hint_text: string;
     word: string;
-  }; /** 背景音乐信息 */
+  };
+  /** 背景音乐信息 */
   music?: {
-    /** 音乐作者 */author: string; /** 音乐标题 */
-    title: string; /** 音乐封面 URL */
+    /** 音乐作者 */
+    author: string;
+    /** 音乐标题 */
+    title: string;
+    /** 音乐封面 URL */
     cover?: string;
-  }; /** 视频时长（毫秒） */
-  duration?: number; /** 点赞数 */
-  dianzan: string; /** 评论数 */
-  pinglun: string; /** 收藏数 */
-  shouchang: string; /** 分享数 */
-  share: string; /** 创建时间（Unix 时间戳，秒） */
-  create_time: number; /** 用户头像URL */
-  avater_url: string; /** 用户名 */
-  username: string; /** 抖音号 */
-  抖音号: string; /** 获赞数 */
-  获赞: string; /** 关注数 */
-  关注: string; /** 粉丝数 */
-  粉丝: string; /** 分享链接 */
-  share_url: string; /** 动态类型 */
-  dynamicTYPE?: string; /** 合作信息 */
+  };
+  /** 视频时长（毫秒） */
+  duration?: number;
+  /** 点赞数 */
+  dianzan: string;
+  /** 评论数 */
+  pinglun: string;
+  /** 收藏数 */
+  shouchang: string;
+  /** 分享数 */
+  share: string;
+  /** 创建时间（Unix 时间戳，秒） */
+  create_time: number;
+  /** 用户头像URL */
+  avater_url: string;
+  /** 用户名 */
+  username: string;
+  /** 抖音号 */
+  抖音号: string;
+  /** 获赞数 */
+  获赞: string;
+  /** 关注数 */
+  关注: string;
+  /** 粉丝数 */
+  粉丝: string;
+  /** 分享链接 */
+  share_url: string;
+  /** 动态类型 */
+  dynamicTYPE?: string;
+  /** 合作信息 */
   cooperation_info?: {
     co_creator_nums: number;
     co_creators: Array<{
@@ -503,7 +715,8 @@ interface DouyinVideoWorkProps extends BaseComponentProps<{
 //#region ../template/src/types/platforms/douyin/index.d.ts
 /** 抖音二维码登录组件属性 */
 interface DouyinQrcodeImgProps extends BaseComponentProps<{
-  /** 分享链接（用于生成自定义二维码） */share_url?: string;
+  /** 分享链接（用于生成自定义二维码） */
+  share_url?: string;
 }> {
   /** 是否使用深色主题 */
   useDarkTheme?: boolean;
@@ -678,14 +891,23 @@ interface BilibiliBangumiProps extends BaseComponentProps<BangumiBilibiliData> {
  * B站评论组件属性接口
  */
 interface BilibiliCommentProps extends BaseComponentProps<{
-  /** 作品类型：视频/图集/动态 */Type: '视频' | '动态'; /** 评论数量 */
-  CommentLength: string; /** 视频大小(MB) */
-  VideoSize?: string; /** 视频画质 */
-  Clarity?: string; /** 图片数量 */
-  ImageLength?: number; /** 分享链接 */
-  shareurl: string; /** 分享URL */
-  share_url: string; /** 视频分辨率 */
-  Resolution: string | null; /** 评论数据 */
+  /** 作品类型：视频/图集/动态 */
+  Type: '视频' | '动态';
+  /** 评论数量 */
+  CommentLength: string;
+  /** 视频大小(MB) */
+  VideoSize?: string;
+  /** 视频画质 */
+  Clarity?: string;
+  /** 图片数量 */
+  ImageLength?: number;
+  /** 分享链接 */
+  shareurl: string;
+  /** 分享URL */
+  share_url: string;
+  /** 视频分辨率 */
+  Resolution: string | null;
+  /** 评论数据 */
   CommentsData: CommentItem[];
 }> {}
 /**
@@ -885,12 +1107,17 @@ interface BilibiliDynamicBaseData {
  * B站普通动态组件属性接口
  */
 interface BilibiliDynamicProps extends BaseComponentProps<BilibiliDynamicBaseData & {
-  /** 图文动态标题 */title?: string; /** 动态文本内容（富文本文档） */
-  text: RichTextDocument | null; /** 图片URL数组 */
+  /** 图文动态标题 */
+  title?: string;
+  /** 动态文本内容（富文本文档） */
+  text: RichTextDocument | null;
+  /** 图片URL数组 */
   image_url: Array<{
     image_src: string;
-  }>; /** 图片布局方式 */
-  imageLayout: string; /** 相关内容卡片 */
+  }>;
+  /** 图片布局方式 */
+  imageLayout: string;
+  /** 相关内容卡片 */
   additional?: BilibiliAdditionalData;
 }> {}
 /**
@@ -972,7 +1199,9 @@ interface BilibiliAdditionalData {
  * B站纯文动态组件属性接口
  */
 interface BilibiliWordDynamicProps extends BaseComponentProps<BilibiliDynamicBaseData & {
-  /** 动态文本内容（富文本文档） */text: RichTextDocument | null; /** 相关内容卡片 */
+  /** 动态文本内容（富文本文档） */
+  text: RichTextDocument | null;
+  /** 相关内容卡片 */
   additional?: BilibiliAdditionalData;
 }> {}
 //#endregion
@@ -981,36 +1210,62 @@ interface BilibiliWordDynamicProps extends BaseComponentProps<BilibiliDynamicBas
  * B站专栏动态组件属性接口
  */
 interface BilibiliArticleDynamicProps extends BaseComponentProps<{
-  /** 用户头像URL */avatar_url: string; /** 头像框 */
-  frame?: string; /** 用户名元数据 */
-  usernameMeta: UsernameMetadata; /** 动态创建时间 */
-  create_time: string; /** 装饰卡片 */
-  decoration_card?: DecorationCardData; /** 专栏标题 */
-  title: string; /** 专栏摘要 */
-  summary: string; /** 专栏封面图片URL */
-  banner_url?: string; /** 专栏分类 */
+  /** 用户头像URL */
+  avatar_url: string;
+  /** 头像框 */
+  frame?: string;
+  /** 用户名元数据 */
+  usernameMeta: UsernameMetadata;
+  /** 动态创建时间 */
+  create_time: string;
+  /** 装饰卡片 */
+  decoration_card?: DecorationCardData;
+  /** 专栏标题 */
+  title: string;
+  /** 专栏摘要 */
+  summary: string;
+  /** 专栏封面图片URL */
+  banner_url?: string;
+  /** 专栏分类 */
   categories: Array<{
     id: number;
     name: string;
     parent_id: number;
-  }>; /** 专栏字数 */
-  words: number; /** 专栏统计数据 */
+  }>;
+  /** 专栏字数 */
+  words: number;
+  /** 专栏统计数据 */
   stats: {
-    /** 阅读数 */view: number; /** 点赞数 */
-    like: number; /** 收藏数 */
-    favorite: number; /** 评论数 */
-    reply: number; /** 分享数 */
-    share: number; /** 投币数 */
-    coin: number; /** 转发动态 */
+    /** 阅读数 */
+    view: number;
+    /** 点赞数 */
+    like: number;
+    /** 收藏数 */
+    favorite: number;
+    /** 评论数 */
+    reply: number;
+    /** 分享数 */
+    share: number;
+    /** 投币数 */
+    coin: number;
+    /** 转发动态 */
     dynamic: number;
-  }; /** 专栏正文（richtext 格式） */
-  body: RichTextDocument; /** 渲染时间 */
-  render_time: string; /** 动态类型 */
-  dynamicTYPE: string; /** 分享链接 */
-  share_url: string; /** 用户短ID */
-  user_shortid: string | number; /** 获赞总数 */
-  total_favorited: string | number; /** 关注数 */
-  following_count: string | number; /** 粉丝数 */
+  };
+  /** 专栏正文（richtext 格式） */
+  body: RichTextDocument;
+  /** 渲染时间 */
+  render_time: string;
+  /** 动态类型 */
+  dynamicTYPE: string;
+  /** 分享链接 */
+  share_url: string;
+  /** 用户短ID */
+  user_shortid: string | number;
+  /** 获赞总数 */
+  total_favorited: string | number;
+  /** 关注数 */
+  following_count: string | number;
+  /** 粉丝数 */
   fans: string | number;
 }> {}
 //#endregion
@@ -1115,9 +1370,13 @@ interface OriginalContentLiveRcmd {
 interface BilibiliForwardOriginalContentProps {
   /** 原始内容 */
   original_content: {
-    /** AV类型内容 */DYNAMIC_TYPE_AV?: OriginalContentAV; /** 图文类型内容 */
-    DYNAMIC_TYPE_DRAW?: OriginalContentDraw; /** 文字类型内容 */
-    DYNAMIC_TYPE_WORD?: OriginalContentWord; /** 直播推荐类型内容 */
+    /** AV类型内容 */
+    DYNAMIC_TYPE_AV?: OriginalContentAV;
+    /** 图文类型内容 */
+    DYNAMIC_TYPE_DRAW?: OriginalContentDraw;
+    /** 文字类型内容 */
+    DYNAMIC_TYPE_WORD?: OriginalContentWord;
+    /** 直播推荐类型内容 */
     DYNAMIC_TYPE_LIVE_RCMD?: OriginalContentLiveRcmd;
   };
 }
@@ -1125,8 +1384,11 @@ interface BilibiliForwardOriginalContentProps {
  * B站转发动态组件属性接口
  */
 interface BilibiliForwardDynamicProps extends BaseComponentProps<BilibiliDynamicBaseData & {
-  /** 动态文本内容（富文本文档） */text: RichTextDocument; /** 原始内容 */
-  original_content: BilibiliForwardOriginalContentProps['original_content']; /** 图片URL */
+  /** 动态文本内容（富文本文档） */
+  text: RichTextDocument;
+  /** 原始内容 */
+  original_content: BilibiliForwardOriginalContentProps['original_content'];
+  /** 图片URL */
   imgList: string[] | null;
 }> {}
 //#endregion
@@ -1148,16 +1410,27 @@ interface BilibiliPosterPalettes {
  * B站直播动态组件属性接口
  */
 interface BilibiliLiveDynamicProps extends BaseComponentProps<{
-  /** 直播封面 */image_url: string; /** 直播标题 */
-  text: RichTextDocument; /** 直播房间信息（分区 | 房间号） */
-  liveinf: string; /** 用户名元数据 */
-  usernameMeta: UsernameMetadata; /** 用户头像URL */
-  avatar_url: string; /** 头像框 */
-  frame?: string; /** 粉丝数 */
-  fans: string; /** 时间信息 */
-  create_time: string; /** 直播开始时间 */
-  now_time: string; /** 分享和配置 */
-  share_url: string; /** 动态类型 */
+  /** 直播封面 */
+  image_url: string;
+  /** 直播标题 */
+  text: RichTextDocument;
+  /** 直播房间信息（分区 | 房间号） */
+  liveinf: string;
+  /** 用户名元数据 */
+  usernameMeta: UsernameMetadata;
+  /** 用户头像URL */
+  avatar_url: string;
+  /** 头像框 */
+  frame?: string;
+  /** 粉丝数 */
+  fans: string;
+  /** 时间信息 */
+  create_time: string;
+  /** 直播开始时间 */
+  now_time: string;
+  /** 分享和配置 */
+  share_url: string;
+  /** 动态类型 */
   dynamicTYPE: string;
 }> {
   /** 服务端预计算的海报色板（亮色/深色） */
@@ -1171,19 +1444,33 @@ interface BilibiliLiveDynamicProps extends BaseComponentProps<{
  * B站视频动态组件属性接口
  */
 interface BilibiliVideoDynamicProps extends BaseComponentProps<BilibiliDynamicBaseData & {
-  /** 视频标题 */text: RichTextDocument; /** 视频描述 */
-  desc: RichTextDocument; /** 动态正文（富文本文档） */
-  dynamic_text: RichTextDocument | null; /** 视频封面图片URL */
-  image_url: string; /** 硬币数 */
-  coin: string | number; /** 浏览量 */
-  view: string | number; /** 视频时长 */
-  duration_text: string; /** 视频分P数量 */
-  page_length: number; /** 共创者列表 (可选) */
+  /** 视频标题 */
+  text: RichTextDocument;
+  /** 视频描述 */
+  desc: RichTextDocument;
+  /** 动态正文（富文本文档） */
+  dynamic_text: RichTextDocument | null;
+  /** 视频封面图片URL */
+  image_url: string;
+  /** 硬币数 */
+  coin: string | number;
+  /** 浏览量 */
+  view: string | number;
+  /** 视频时长 */
+  duration_text: string;
+  /** 视频分P数量 */
+  page_length: number;
+  /** 共创者列表 (可选) */
   staff?: Array<{
-    /** 用户ID */mid: number; /** 职位标题 (UP主/参演) */
-    title: string; /** 用户名 */
-    name: string; /** 头像URL */
-    face: string; /** 粉丝数 */
+    /** 用户ID */
+    mid: number;
+    /** 职位标题 (UP主/参演) */
+    title: string;
+    /** 用户名 */
+    name: string;
+    /** 头像URL */
+    face: string;
+    /** 粉丝数 */
     follower: number;
   }>;
 }> {}
@@ -1193,19 +1480,32 @@ interface BilibiliVideoDynamicProps extends BaseComponentProps<BilibiliDynamicBa
  * B站用户列表组件属性接口
  */
 interface BilibiliUserListProps extends BaseComponentProps<{
-  /** 群组信息 */groupInfo: {
-    /** 群号 */groupId: string; /** 群名称 */
-    groupName: string; /** 群头像 */
+  /** 群组信息 */
+  groupInfo: {
+    /** 群号 */
+    groupId: string;
+    /** 群名称 */
+    groupName: string;
+    /** 群头像 */
     groupAvatar: string;
-  }; /** 用户列表数据 */
+  };
+  /** 用户列表数据 */
   renderOpt: {
-    /** 用户头像图片URL */avatar_img: string; /** 用户名 */
-    username: string; /** 用户UID */
-    host_mid: string; /** 粉丝数 */
-    fans: string; /** 获赞总数 */
-    total_favorited: string; /** 关注数 */
-    following_count: string; /** 全局推送开关状态 */
-    switch: boolean; /** 推送类型列表 */
+    /** 用户头像图片URL */
+    avatar_img: string;
+    /** 用户名 */
+    username: string;
+    /** 用户UID */
+    host_mid: string;
+    /** 粉丝数 */
+    fans: string;
+    /** 获赞总数 */
+    total_favorited: string;
+    /** 关注数 */
+    following_count: string;
+    /** 全局推送开关状态 */
+    switch: boolean;
+    /** 推送类型列表 */
     pushTypes?: ('video' | 'draw' | 'word' | 'live' | 'forward' | 'article')[];
   }[];
 }> {}
@@ -1297,7 +1597,8 @@ interface BilibiliVideoInfoProps extends BaseComponentProps<BilibiliVideoInfoDat
 //#region ../template/src/types/platforms/bilibili/index.d.ts
 /** B站二维码登录组件属性 */
 interface BilibiliQrcodeImgProps extends BaseComponentProps<{
-  /** 分享链接 */share_url: string;
+  /** 分享链接 */
+  share_url: string;
 }> {}
 //#endregion
 //#region ../template/src/types/platforms/kuaishou/comment.d.ts
@@ -1305,13 +1606,21 @@ interface BilibiliQrcodeImgProps extends BaseComponentProps<{
  * 快手评论组件属性接口
  */
 interface KuaishouCommentProps extends BaseComponentProps<{
-  /** 作品类型：视频/图集 */Type: '视频' | '图集'; /** 评论数量 */
-  CommentLength: number; /** 视频大小(MB) */
-  VideoSize?: string; /** 点赞数量 */
-  likeCount?: number; /** 观看次数 */
-  viewCount?: number; /** 图片数量 */
-  ImageLength?: number; /** 分享链接 */
-  share_url: string; /** 评论数据 */
+  /** 作品类型：视频/图集 */
+  Type: '视频' | '图集';
+  /** 评论数量 */
+  CommentLength: number;
+  /** 视频大小(MB) */
+  VideoSize?: string;
+  /** 点赞数量 */
+  likeCount?: number;
+  /** 观看次数 */
+  viewCount?: number;
+  /** 图片数量 */
+  ImageLength?: number;
+  /** 分享链接 */
+  share_url: string;
+  /** 评论数据 */
   CommentsData: KuaishouCommentItem[];
 }> {}
 /**
@@ -1347,10 +1656,15 @@ interface KuaishouCommentItem {
  * 小红书评论组件属性接口
  */
 interface XiaohongshuCommentProps extends BaseComponentProps<{
-  /** 笔记类型：图文/视频 */Type: '图文' | '视频'; /** 评论数量 */
-  CommentLength: number; /** 图片数量 */
-  ImageLength?: number; /** 分享链接 */
-  share_url: string; /** 评论数据 - 简化为直接的评论数组 */
+  /** 笔记类型：图文/视频 */
+  Type: '图文' | '视频';
+  /** 评论数量 */
+  CommentLength: number;
+  /** 图片数量 */
+  ImageLength?: number;
+  /** 分享链接 */
+  share_url: string;
+  /** 评论数据 - 简化为直接的评论数组 */
   CommentsData: XiaohongshuCommentItem[];
 }> {}
 /**
@@ -1511,9 +1825,13 @@ interface XiaohongshuNoteInfoProps extends BaseComponentProps<XiaohongshuNoteInf
  * 帮助页面组件属性接口
  */
 interface HelpProps extends BaseComponentProps<{
-  /** 页面标题 */title?: string; /** 角色：主人/普通 */
-  role?: 'master' | 'member'; /** 菜单数据：按角色筛选后的分组 */
-  menu?: MenuGroup[]; /** 简单的列表数据 (用于 Help.tsx 渲染) */
+  /** 页面标题 */
+  title?: string;
+  /** 角色：主人/普通 */
+  role?: 'master' | 'member';
+  /** 菜单数据：按角色筛选后的分组 */
+  menu?: MenuGroup[];
+  /** 简单的列表数据 (用于 Help.tsx 渲染) */
   list: {
     title: string;
     description: string;
@@ -1543,271 +1861,11 @@ interface MenuGroup {
   items: MenuItem[];
   /** 子分组（可选） */
   subGroups?: {
-    /** 子分组标题 */title: string; /** 子分组菜单项 */
+    /** 子分组标题 */
+    title: string;
+    /** 子分组菜单项 */
     items: MenuItem[];
   }[];
-}
-//#endregion
-//#region ../../node_modules/.pnpm/@karinjs+ws@1.0.4/node_modules/@karinjs/ws/dist/index.d.ts
-// can not get all overload of BufferConstructor['from'], need to copy all it's first arguments here
-// https://github.com/microsoft/TypeScript/issues/32164
-type BufferLike = string | Buffer | DataView | number | ArrayBufferView | Uint8Array | ArrayBuffer | SharedArrayBuffer | Blob | readonly any[] | readonly number[] | {
-  valueOf(): ArrayBuffer;
-} | {
-  valueOf(): SharedArrayBuffer;
-} | {
-  valueOf(): Uint8Array;
-} | {
-  valueOf(): readonly number[];
-} | {
-  valueOf(): string;
-} | {
-  [Symbol.toPrimitive](hint: string): string;
-}; // WebSocket socket.
-declare class WebSocket extends EventEmitter$2 {
-  /** The connection is not yet open. */
-  static readonly CONNECTING: 0;
-  /** The connection is open and ready to communicate. */
-  static readonly OPEN: 1;
-  /** The connection is in the process of closing. */
-  static readonly CLOSING: 2;
-  /** The connection is closed. */
-  static readonly CLOSED: 3;
-  binaryType: "nodebuffer" | "arraybuffer" | "fragments";
-  readonly bufferedAmount: number;
-  readonly extensions: string;
-  /** Indicates whether the websocket is paused */
-  readonly isPaused: boolean;
-  readonly protocol: string;
-  /** The current state of the connection */
-  readonly readyState: typeof WebSocket.CONNECTING | typeof WebSocket.OPEN | typeof WebSocket.CLOSING | typeof WebSocket.CLOSED;
-  readonly url: string;
-  /** The connection is not yet open. */
-  readonly CONNECTING: 0;
-  /** The connection is open and ready to communicate. */
-  readonly OPEN: 1;
-  /** The connection is in the process of closing. */
-  readonly CLOSING: 2;
-  /** The connection is closed. */
-  readonly CLOSED: 3;
-  onopen: ((event: WebSocket.Event) => void) | null;
-  onerror: ((event: WebSocket.ErrorEvent) => void) | null;
-  onclose: ((event: WebSocket.CloseEvent) => void) | null;
-  onmessage: ((event: WebSocket.MessageEvent) => void) | null;
-  constructor(address: null);
-  constructor(address: string | URL, options?: WebSocket.ClientOptions | ClientRequestArgs);
-  constructor(address: string | URL, protocols?: string | string[], options?: WebSocket.ClientOptions | ClientRequestArgs);
-  close(code?: number, data?: string | Buffer): void;
-  ping(data?: any, mask?: boolean, cb?: (err: Error) => void): void;
-  pong(data?: any, mask?: boolean, cb?: (err: Error) => void): void; // https://github.com/websockets/ws/issues/2076#issuecomment-1250354722
-  send(data: BufferLike, cb?: (err?: Error) => void): void;
-  send(data: BufferLike, options: {
-    mask?: boolean | undefined;
-    binary?: boolean | undefined;
-    compress?: boolean | undefined;
-    fin?: boolean | undefined;
-  }, cb?: (err?: Error) => void): void;
-  terminate(): void;
-  /**
-   * Pause the websocket causing it to stop emitting events. Some events can still be
-   * emitted after this is called, until all buffered data is consumed. This method
-   * is a noop if the ready state is `CONNECTING` or `CLOSED`.
-   */
-  pause(): void;
-  /**
-   * Make a paused socket resume emitting events. This method is a noop if the ready
-   * state is `CONNECTING` or `CLOSED`.
-   */
-  resume(): void; // HTML5 WebSocket events
-  addEventListener<K extends keyof WebSocket.WebSocketEventMap>(type: K, listener: ((event: WebSocket.WebSocketEventMap[K]) => void) | {
-    handleEvent(event: WebSocket.WebSocketEventMap[K]): void;
-  }, options?: WebSocket.EventListenerOptions): void;
-  removeEventListener<K extends keyof WebSocket.WebSocketEventMap>(type: K, listener: ((event: WebSocket.WebSocketEventMap[K]) => void) | {
-    handleEvent(event: WebSocket.WebSocketEventMap[K]): void;
-  }): void; // Events
-  on(event: "close", listener: (this: WebSocket, code: number, reason: Buffer) => void): this;
-  on(event: "error", listener: (this: WebSocket, error: Error) => void): this;
-  on(event: "upgrade", listener: (this: WebSocket, request: IncomingMessage) => void): this;
-  on(event: "message", listener: (this: WebSocket, data: WebSocket.RawData, isBinary: boolean) => void): this;
-  on(event: "open", listener: (this: WebSocket) => void): this;
-  on(event: "ping" | "pong", listener: (this: WebSocket, data: Buffer) => void): this;
-  on(event: "redirect", listener: (this: WebSocket, url: string, request: ClientRequest) => void): this;
-  on(event: "unexpected-response", listener: (this: WebSocket, request: ClientRequest, response: IncomingMessage) => void): this;
-  on(event: string | symbol, listener: (this: WebSocket, ...args: any[]) => void): this;
-  once(event: "close", listener: (this: WebSocket, code: number, reason: Buffer) => void): this;
-  once(event: "error", listener: (this: WebSocket, error: Error) => void): this;
-  once(event: "upgrade", listener: (this: WebSocket, request: IncomingMessage) => void): this;
-  once(event: "message", listener: (this: WebSocket, data: WebSocket.RawData, isBinary: boolean) => void): this;
-  once(event: "open", listener: (this: WebSocket) => void): this;
-  once(event: "ping" | "pong", listener: (this: WebSocket, data: Buffer) => void): this;
-  once(event: "redirect", listener: (this: WebSocket, url: string, request: ClientRequest) => void): this;
-  once(event: "unexpected-response", listener: (this: WebSocket, request: ClientRequest, response: IncomingMessage) => void): this;
-  once(event: string | symbol, listener: (this: WebSocket, ...args: any[]) => void): this;
-  off(event: "close", listener: (this: WebSocket, code: number, reason: Buffer) => void): this;
-  off(event: "error", listener: (this: WebSocket, error: Error) => void): this;
-  off(event: "upgrade", listener: (this: WebSocket, request: IncomingMessage) => void): this;
-  off(event: "message", listener: (this: WebSocket, data: WebSocket.RawData, isBinary: boolean) => void): this;
-  off(event: "open", listener: (this: WebSocket) => void): this;
-  off(event: "ping" | "pong", listener: (this: WebSocket, data: Buffer) => void): this;
-  off(event: "redirect", listener: (this: WebSocket, url: string, request: ClientRequest) => void): this;
-  off(event: "unexpected-response", listener: (this: WebSocket, request: ClientRequest, response: IncomingMessage) => void): this;
-  off(event: string | symbol, listener: (this: WebSocket, ...args: any[]) => void): this;
-  addListener(event: "close", listener: (code: number, reason: Buffer) => void): this;
-  addListener(event: "error", listener: (error: Error) => void): this;
-  addListener(event: "upgrade", listener: (request: IncomingMessage) => void): this;
-  addListener(event: "message", listener: (data: WebSocket.RawData, isBinary: boolean) => void): this;
-  addListener(event: "open", listener: () => void): this;
-  addListener(event: "ping" | "pong", listener: (data: Buffer) => void): this;
-  addListener(event: "redirect", listener: (url: string, request: ClientRequest) => void): this;
-  addListener(event: "unexpected-response", listener: (request: ClientRequest, response: IncomingMessage) => void): this;
-  addListener(event: string | symbol, listener: (...args: any[]) => void): this;
-  removeListener(event: "close", listener: (code: number, reason: Buffer) => void): this;
-  removeListener(event: "error", listener: (error: Error) => void): this;
-  removeListener(event: "upgrade", listener: (request: IncomingMessage) => void): this;
-  removeListener(event: "message", listener: (data: WebSocket.RawData, isBinary: boolean) => void): this;
-  removeListener(event: "open", listener: () => void): this;
-  removeListener(event: "ping" | "pong", listener: (data: Buffer) => void): this;
-  removeListener(event: "redirect", listener: (url: string, request: ClientRequest) => void): this;
-  removeListener(event: "unexpected-response", listener: (request: ClientRequest, response: IncomingMessage) => void): this;
-  removeListener(event: string | symbol, listener: (...args: any[]) => void): this;
-}
-declare namespace WebSocket {
-  /**
-   * Data represents the raw message payload received over the WebSocket.
-   */
-  type RawData = Buffer | ArrayBuffer | Buffer[];
-  /**
-   * Data represents the message payload received over the WebSocket.
-   */
-  type Data = string | Buffer | ArrayBuffer | Buffer[];
-  /**
-   * CertMeta represents the accepted types for certificate & key data.
-   */
-  type CertMeta = string | string[] | Buffer | Buffer[];
-  /**
-   * VerifyClientCallbackSync is a synchronous callback used to inspect the
-   * incoming message. The return value (boolean) of the function determines
-   * whether or not to accept the handshake.
-   */
-  type VerifyClientCallbackSync<Request extends IncomingMessage = IncomingMessage> = (info: {
-    origin: string;
-    secure: boolean;
-    req: Request;
-  }) => boolean;
-  /**
-   * VerifyClientCallbackAsync is an asynchronous callback used to inspect the
-   * incoming message. The return value (boolean) of the function determines
-   * whether or not to accept the handshake.
-   */
-  type VerifyClientCallbackAsync<Request extends IncomingMessage = IncomingMessage> = (info: {
-    origin: string;
-    secure: boolean;
-    req: Request;
-  }, callback: (res: boolean, code?: number, message?: string, headers?: OutgoingHttpHeaders) => void) => void;
-  /**
-   * FinishRequestCallback is a callback for last minute customization of the
-   * headers. If finishRequest is set, then it has the responsibility to call
-   * request.end() once it is done setting request headers.
-   */
-  type FinishRequestCallback = (request: ClientRequest, websocket: WebSocket) => void;
-  interface ClientOptions extends SecureContextOptions {
-    protocol?: string | undefined;
-    followRedirects?: boolean | undefined;
-    generateMask?(mask: Buffer): void;
-    handshakeTimeout?: number | undefined;
-    maxRedirects?: number | undefined;
-    perMessageDeflate?: boolean | PerMessageDeflateOptions | undefined;
-    localAddress?: string | undefined;
-    protocolVersion?: number | undefined;
-    headers?: {
-      [key: string]: string;
-    } | undefined;
-    origin?: string | undefined;
-    agent?: Agent | undefined;
-    host?: string | undefined;
-    family?: number | undefined;
-    checkServerIdentity?(servername: string, cert: CertMeta): boolean;
-    rejectUnauthorized?: boolean | undefined;
-    allowSynchronousEvents?: boolean | undefined;
-    autoPong?: boolean | undefined;
-    maxPayload?: number | undefined;
-    skipUTF8Validation?: boolean | undefined;
-    createConnection?: typeof createConnection | undefined;
-    finishRequest?: FinishRequestCallback | undefined;
-  }
-  interface PerMessageDeflateOptions {
-    serverNoContextTakeover?: boolean | undefined;
-    clientNoContextTakeover?: boolean | undefined;
-    serverMaxWindowBits?: number | undefined;
-    clientMaxWindowBits?: number | undefined;
-    zlibDeflateOptions?: {
-      flush?: number | undefined;
-      finishFlush?: number | undefined;
-      chunkSize?: number | undefined;
-      windowBits?: number | undefined;
-      level?: number | undefined;
-      memLevel?: number | undefined;
-      strategy?: number | undefined;
-      dictionary?: Buffer | Buffer[] | DataView | undefined;
-      info?: boolean | undefined;
-    } | undefined;
-    zlibInflateOptions?: ZlibOptions | undefined;
-    threshold?: number | undefined;
-    concurrencyLimit?: number | undefined;
-  }
-  interface Event {
-    type: string;
-    target: WebSocket;
-  }
-  interface ErrorEvent {
-    error: any;
-    message: string;
-    type: string;
-    target: WebSocket;
-  }
-  interface CloseEvent {
-    wasClean: boolean;
-    code: number;
-    reason: string;
-    type: string;
-    target: WebSocket;
-  }
-  interface MessageEvent {
-    data: Data;
-    type: string;
-    target: WebSocket;
-  }
-  interface WebSocketEventMap {
-    open: Event;
-    error: ErrorEvent;
-    close: CloseEvent;
-    message: MessageEvent;
-  }
-  interface EventListenerOptions {
-    once?: boolean | undefined;
-  }
-  interface ServerOptions<U extends typeof WebSocket = typeof WebSocket, V extends typeof IncomingMessage = typeof IncomingMessage> {
-    host?: string | undefined;
-    port?: number | undefined;
-    backlog?: number | undefined;
-    server?: Server<V> | Server$1<V> | undefined;
-    verifyClient?: VerifyClientCallbackAsync<InstanceType<V>> | VerifyClientCallbackSync<InstanceType<V>> | undefined;
-    handleProtocols?: (protocols: Set<string>, request: InstanceType<V>) => string | false;
-    path?: string | undefined;
-    noServer?: boolean | undefined;
-    allowSynchronousEvents?: boolean | undefined;
-    autoPong?: boolean | undefined;
-    clientTracking?: boolean | undefined;
-    perMessageDeflate?: boolean | PerMessageDeflateOptions | undefined;
-    maxPayload?: number | undefined;
-    skipUTF8Validation?: boolean | undefined;
-    WebSocket?: U | undefined;
-  }
-  interface AddressInfo {
-    address: string;
-    family: string;
-    port: number;
-  }
 }
 //#endregion
 //#region ../../node_modules/.pnpm/node-karin@1.16.2/node_modules/node-karin/dist/index.d.ts
@@ -1893,11 +1951,7 @@ interface AdapterInfo$1 {
   connectTime: number;
   /** 鉴权秘钥 */
   secret: string | null;
-} //#endregion
-//#region src/types/event/account.d.ts
-/**
- * 适配器账号信息
- */
+}
 //#endregion
 //#region ../template/src/types/platforms/other/handlerError.d.ts
 /**
@@ -1938,20 +1992,35 @@ type AdapterInfo = Omit<AdapterInfo$1, 'index' | 'secret' | 'connectTime' | 'add
  * API错误组件属性接口
  */
 interface ApiErrorProps extends BaseComponentProps<{
-  /** 错误类型 */type: 'business_error'; /** 平台名称 */
-  platform: 'douyin' | 'bilibili' | 'kuaishou' | 'system' | 'unknown'; /** 错误信息 */
-  error: BusinessError; /** 调用的方法名 */
-  method: string; /** 错误发生时间 */
-  timestamp: string; /** 收集到的日志信息 */
-  logs?: LogEntry[]; /** 触发命令 */
-  triggerCommand?: string; /** 框架版本 */
-  frameworkVersion: string; /** 插件版本 */
-  pluginVersion: string; /** 构建时间 */
-  buildTime?: string; /** Commit ID */
-  commitHash?: string; /** 适配器信息 */
-  adapterInfo?: AdapterInfo; /** 是否为验证流程 */
-  isVerification?: boolean; /** 验证链接 */
-  verificationUrl?: string; /** 分享链接（用于生成二维码） */
+  /** 错误类型 */
+  type: 'business_error';
+  /** 平台名称 */
+  platform: 'douyin' | 'bilibili' | 'kuaishou' | 'system' | 'unknown';
+  /** 错误信息 */
+  error: BusinessError;
+  /** 调用的方法名 */
+  method: string;
+  /** 错误发生时间 */
+  timestamp: string;
+  /** 收集到的日志信息 */
+  logs?: LogEntry[];
+  /** 触发命令 */
+  triggerCommand?: string;
+  /** 框架版本 */
+  frameworkVersion: string;
+  /** 插件版本 */
+  pluginVersion: string;
+  /** 构建时间 */
+  buildTime?: string;
+  /** Commit ID */
+  commitHash?: string;
+  /** 适配器信息 */
+  adapterInfo?: AdapterInfo;
+  /** 是否为验证流程 */
+  isVerification?: boolean;
+  /** 验证链接 */
+  verificationUrl?: string;
+  /** 分享链接（用于生成二维码） */
   share_url?: string;
 }> {}
 //#endregion
@@ -1960,31 +2029,44 @@ interface ApiErrorProps extends BaseComponentProps<{
  * 更新日志组件属性接口
  */
 interface ChangelogProps extends BaseComponentProps<{
-  /** 是否包含更新提示 */Tip?: boolean; /** 后端传入的 Markdown 源码 */
-  markdown: string; /** 本地版本号 */
-  localVersion: string; /** 远程版本号 */
-  remoteVersion: string; /** 落后的版本数量 */
-  lagVersionCount?: number; /** 构建时间 */
-  buildTime?: string; /** 版本差异对比页面分享链接 */
+  /** 是否包含更新提示 */
+  Tip?: boolean;
+  /** 后端传入的 Markdown 源码 */
+  markdown: string;
+  /** 本地版本号 */
+  localVersion: string;
+  /** 远程版本号 */
+  remoteVersion: string;
+  /** 落后的版本数量 */
+  lagVersionCount?: number;
+  /** 构建时间 */
+  buildTime?: string;
+  /** 版本差异对比页面分享链接 */
   share_url?: string;
 }> {}
 //#endregion
 //#region ../template/src/types/platforms/other/VersionWarningProps.d.ts
 interface VersionWarningProps extends BaseComponentProps<{
-  /** 插件构建时的 karin 版本 */requireVersion: string; /** 当前运行的 karin 版本 */
+  /** 插件构建时的 karin 版本 */
+  requireVersion: string;
+  /** 当前运行的 karin 版本 */
   currentVersion: string;
 }> {}
 //#endregion
 //#region ../template/src/types/platforms/other/qrlogin.d.ts
 /** APP 扫码登录组件属性 */
 interface QrLoginProps extends BaseComponentProps<{
-  /** 服务器地址 */serverUrl: string; /** 分享链接（用于生成二维码） */
+  /** 服务器地址 */
+  serverUrl: string;
+  /** 分享链接（用于生成二维码） */
   share_url: string;
 }> {}
 //#endregion
 //#region ../template/src/types/platforms/other/livePhotoTip.d.ts
 interface LivePhotoTipProps extends BaseComponentProps<{
-  /** 提示标题 */title?: string; /** 附加说明 */
+  /** 提示标题 */
+  title?: string;
+  /** 附加说明 */
   description?: string;
 }> {}
 //#endregion
@@ -1993,26 +2075,36 @@ interface LivePhotoTipProps extends BaseComponentProps<{
  * 群组解析统计数据接口
  */
 interface GroupStatisticsProps extends BaseComponentProps<{
-  /** 群组ID */groupId: string; /** 群组名称 */
-  groupName?: string; /** 群组人数 */
-  groupMemberCount?: number; /** 群组头像 */
-  groupAvatar?: string; /** 群组总解析次数 */
-  groupTotalParses: number; /** 群组唯一用户数 */
-  groupUniqueUsers: number; /** 各平台解析数据 */
+  /** 群组ID */
+  groupId: string;
+  /** 群组名称 */
+  groupName?: string;
+  /** 群组人数 */
+  groupMemberCount?: number;
+  /** 群组头像 */
+  groupAvatar?: string;
+  /** 群组总解析次数 */
+  groupTotalParses: number;
+  /** 群组唯一用户数 */
+  groupUniqueUsers: number;
+  /** 各平台解析数据 */
   platformData: {
     douyin: number;
     bilibili: number;
     kuaishou: number;
     xiaohongshu: number;
-  }; /** 全局总群组数 */
-  globalTotalGroups: number; /** 全局总解析次数 */
+  };
+  /** 全局总群组数 */
+  globalTotalGroups: number;
+  /** 全局总解析次数 */
   globalTotalParses: number;
 }> {}
 /**
  * 全局解析统计数据接口
  */
 interface GlobalStatisticsProps extends BaseComponentProps<{
-  /** 所有统计数据 */allStats: Array<{
+  /** 所有统计数据 */
+  allStats: Array<{
     id: number;
     groupId: string;
     userId: string;
@@ -2020,7 +2112,8 @@ interface GlobalStatisticsProps extends BaseComponentProps<{
     parseCount: number;
     createdAt: string;
     updatedAt: string;
-  }>; /** 历史数据（最近30天） */
+  }>;
+  /** 历史数据（最近30天） */
   historyData: Array<{
     date: string;
     totalParses: number;
@@ -2028,7 +2121,8 @@ interface GlobalStatisticsProps extends BaseComponentProps<{
     bilibili: number;
     kuaishou: number;
     xiaohongshu: number;
-  }>; /** 群组信息映射 */
+  }>;
+  /** 群组信息映射 */
   groupInfoMap: Record<string, {
     groupName?: string;
     groupAvatar?: string;
@@ -2050,19 +2144,28 @@ interface RenderRequest<T = Record<string, unknown>> {
   useDarkTheme: boolean;
   /** 版本信息 */
   version?: {
-    /** 框架插件 */plugin: string; /** 插件名称 */
-    pluginName: string; /** 插件版本 */
-    pluginVersion: string; /** 发布类型 */
-    releaseType: 'Stable' | 'Preview'; /** 驱动框架 */
-    poweredBy: string; /** 框架版本 */
-    frameworkVersion: string; /** 是否有可用更新 */
+    /** 框架插件 */
+    plugin: string;
+    /** 插件名称 */
+    pluginName: string;
+    /** 插件版本 */
+    pluginVersion: string;
+    /** 发布类型 */
+    releaseType: 'Stable' | 'Preview';
+    /** 驱动框架 */
+    poweredBy: string;
+    /** 框架版本 */
+    frameworkVersion: string;
+    /** 是否有可用更新 */
     hasUpdate?: boolean;
   };
   /** 水印比特大小 */
   watermarkTextBitSize: number;
   /** 渲染数据 */
   data: T & {
-    /** 是否使用深色主题 */useDarkTheme?: boolean; /** 二维码分享链接 */
+    /** 是否使用深色主题 */
+    useDarkTheme?: boolean;
+    /** 二维码分享链接 */
     share_url?: string;
   };
 }
@@ -2086,7 +2189,8 @@ interface BaseComponentProps<T = Record<string, any>> extends Pick<RenderRequest
   watermarkTextBitSize?: RenderRequest['watermarkTextBitSize'];
   /** 渲染数据 - 子组件的具体参数 */
   data: T & {
-    /** 是否使用深色主题 */useDarkTheme: boolean;
+    /** 是否使用深色主题 */
+    useDarkTheme: boolean;
   };
 }
 /**
