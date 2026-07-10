@@ -2,6 +2,31 @@
 
 # Changelog
 
+## [2.37.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.36.3...v2.37.0) (2026-07-10)
+
+
+### ✨ 新功能
+
+* 实验性添加智能场景主题色选项，优化封面主题色渲染逻辑 ([5cb1885](https://github.com/ikenxuan/karin-plugin-kkk/commit/5cb1885d9e62f56495b498d2241466830fc0c268))
+
+
+### 💄 UI 优化
+
+* 优化渐变过渡 ([5e88d82](https://github.com/ikenxuan/karin-plugin-kkk/commit/5e88d82111b39e8d536d9e796266e9586ccee03b))
+* 优化渐变过渡 ([ef91476](https://github.com/ikenxuan/karin-plugin-kkk/commit/ef91476fd6de4242fc65b165f92e65b2150d8169))
+* 抖音部分模板推送使用新的设计系统 ([a27946a](https://github.com/ikenxuan/karin-plugin-kkk/commit/a27946a1daf9bacc0d40c94e196ddfa67d7ed267))
+* 细节优化 ([7e10a86](https://github.com/ikenxuan/karin-plugin-kkk/commit/7e10a86a1e0509b8cb21c2bb7b4f1bc22c5637ee))
+
+
+### ♻️ 代码重构
+
+* 优化抖音平台的作品渲染逻辑，移除冗余代码并更新相关接口描述 ([4a5cc63](https://github.com/ikenxuan/karin-plugin-kkk/commit/4a5cc635e167a7db36ce5a228042bfa22b4120fa))
+
+
+### 📦 依赖更新
+
+* update ([142b759](https://github.com/ikenxuan/karin-plugin-kkk/commit/142b759f9827b2232d9967d6bcaa9c46e36863e4))
+
 ## [2.36.3](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.36.2...v2.36.3) (2026-07-07)
 
 
