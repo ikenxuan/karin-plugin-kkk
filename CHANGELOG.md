@@ -2,6 +2,19 @@
 
 # Changelog
 
+## [2.38.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.37.1...v2.38.0) (2026-07-10)
+
+
+### ✨ 新功能
+
+* **douyin:** 优化作品分享链接生成逻辑，支持不同类型作品的短链接 ([206927b](https://github.com/ikenxuan/karin-plugin-kkk/commit/206927bb68d3a3c7f24224c7fea2d76f5d067486))
+* 替换二维码生成逻辑，支持带头像的二维码组件，并更新相关依赖 ([5428123](https://github.com/ikenxuan/karin-plugin-kkk/commit/5428123b71e33c5109714f3f0cc16d5dd438ecb8))
+
+
+### 💄 UI 优化
+
+* **dy:** 增强噪点层视觉效果 ([37b2e1c](https://github.com/ikenxuan/karin-plugin-kkk/commit/37b2e1cb38f9243109533caabe7f462dd2d9a852))
+
 ## [2.37.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.37.0...v2.37.1) (2026-07-10)
 
 
