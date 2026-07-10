@@ -288,9 +288,6 @@ jobs:
         with:
           version: 9.15.9
 
-      - name: ⏫ 升级 npm 版本
-        run: npm install -g npm@latest
-
       - name: 🚀 发布到 NPM 官方源
         id: publish-to-npm
         working-directory: packages/core
@@ -337,9 +334,6 @@ jobs:
         with:
           node-version: 24
           registry-url: 'https://npm.pkg.github.com'
-
-      - name: ⏫ 升级 npm 版本
-        run: npm install -g npm@latest
 
       - name: ✏️ 修改包名 (添加 Scope)
         working-directory: packages/core
