@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 import React from 'react'
-import { renderToString } from 'react-dom/server'
+import { renderToReadableStream, renderToString } from 'react-dom/server'
 
 import { PreviewLayout } from './dev/preview/components/PreviewLayout'
 import type { PreviewState as DevPreviewState } from './dev/preview/types'
@@ -780,7 +780,10 @@ class SSRRender {
       // 渲染时插件（可包裹或替换组件）
       await this.pluginContainer.runDuring(ctx)
 
-      const htmlContent = renderToString(ctx.state.component ?? component)
+      // 使用可等待 Suspense/async Server Component 的流式 SSR；等待 allReady 后再落成完整静态 HTML。
+      const stream = await renderToReadableStream(ctx.state.component ?? component)
+      await stream.allReady
+      const htmlContent = await new Response(stream).text()
 
       ctx.state.html = htmlContent
 

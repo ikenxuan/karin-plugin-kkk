@@ -80,6 +80,10 @@ export interface MusicAuthorInfoProps {
  * 音乐二维码组件属性接口
  */
 export interface MusicQRCodeProps {
+  /** 二维码内容。 */
+  share_url: string
+  /** 音乐作者头像 URL。 */
+  avatarUrl: string
   /** 是否使用深色主题 */
   useDarkTheme?: boolean
 }

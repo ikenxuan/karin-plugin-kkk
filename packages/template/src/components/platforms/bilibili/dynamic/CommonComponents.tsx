@@ -3,7 +3,7 @@ import { Link } from 'lucide-react'
 import React from 'react'
 
 import type { BilibiliDynamicBaseData, BilibiliDynamicFooterProps } from '../../../../types/platforms/bilibili'
-import { generateQRCode } from '../../../../utils/QRcode'
+import { QRCodeWithAvatar } from '../../../common/QRCodeWithAvatar'
 import { CommentIcon, ShareIcon, ThumbUpIcon, ViewIcon } from '../Icons'
 import { DecorationCard, EnhancedImage, UsernameDisplay } from '../shared'
 
@@ -129,7 +129,13 @@ export const BilibiliDynamicFooter: React.FC<BilibiliDynamicFooterProps> = (prop
 
       {/* 右侧：二维码 */}
       <div className="flex flex-col items-center gap-4">
-        <img src={generateQRCode(props.share_url, props.useDarkTheme)} alt="二维码" className="h-auto w-75 rounded-2xl" />
+        <QRCodeWithAvatar
+          value={props.share_url}
+          avatarUrl={props.avatar_url}
+          useDarkTheme={props.useDarkTheme}
+          alt="二维码"
+          className="h-auto w-75 rounded-2xl"
+        />
       </div>
     </div>
   )

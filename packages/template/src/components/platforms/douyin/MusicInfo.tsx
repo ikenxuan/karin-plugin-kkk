@@ -8,7 +8,7 @@ import type {
   MusicInfoProps,
   MusicQRCodeProps
 } from '../../../types/platforms/douyin/musicinfo'
-import { generateQRCode } from '../../../utils/QRcode'
+import { QRCodeWithAvatar } from '../../common/QRCodeWithAvatar'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 import { DouyinLikeIcon } from './Icons'
 
@@ -126,7 +126,7 @@ const MusicAuthorInfoSection: React.FC<MusicAuthorInfoProps> = ({
  * @param props 组件属性
  * @returns JSX元素
  */
-const MusicQRCodeSection: React.FC<MusicQRCodeProps> = ({ share_url, useDarkTheme }) => {
+const MusicQRCodeSection: React.FC<MusicQRCodeProps> = ({ share_url, avatarUrl, useDarkTheme }) => {
   return (
     <div className="flex flex-col-reverse items-center -mb-12 mr-18">
       <div className="flex items-center gap-2 text-[45px] text-right mt-5 text-muted select-text">
@@ -134,7 +134,13 @@ const MusicQRCodeSection: React.FC<MusicQRCodeProps> = ({ share_url, useDarkThem
         <span>文件直链：永久有效</span>
       </div>
       <div className="p-2.5 rounded-sm border-[7px] border-dashed border-border">
-        <img src={generateQRCode(share_url, useDarkTheme)} alt="二维码" className="w-87.5 h-87.5 select-text" />
+        <QRCodeWithAvatar
+          value={share_url}
+          avatarUrl={avatarUrl}
+          useDarkTheme={useDarkTheme}
+          alt="二维码"
+          className="w-87.5 h-87.5 select-text"
+        />
       </div>
     </div>
   )
@@ -181,7 +187,7 @@ export const DouyinMusicInfo: React.FC<Omit<DouyinMusicInfoProps, 'templateType'
             fans={data.fans}
             useDarkTheme={data.useDarkTheme}
           />
-          <MusicQRCodeSection share_url={data.share_url} useDarkTheme={data.useDarkTheme} />
+          <MusicQRCodeSection share_url={data.share_url} avatarUrl={data.avater_url} useDarkTheme={data.useDarkTheme} />
         </div>
       </div>
     </DefaultLayout>

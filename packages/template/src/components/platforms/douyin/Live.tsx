@@ -2,7 +2,7 @@ import { Eye, FileVideo, MapPin, Monitor, ShoppingBag, UserPlus, Users } from 'l
 import React from 'react'
 
 import type { DouyinLiveProps } from '../../../types/platforms/douyin'
-import { generateQRCode } from '../../../utils/QRcode'
+import { QRCodeWithAvatar } from '../../common/QRCodeWithAvatar'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 import { DouyinLikeIcon } from './Icons'
 
@@ -191,8 +191,14 @@ const BottomSection: React.FC<{ data: DouyinLiveProps['data'] }> = ({ data }) =>
           alt="抖音"
           className="w-60 h-auto opacity-80 dark:opacity-70"
         />
-        {generateQRCode(data.share_url, data.useDarkTheme) ? (
-          <img src={generateQRCode(data.share_url, data.useDarkTheme)} alt="二维码" className="h-auto w-75" />
+        {data.share_url ? (
+          <QRCodeWithAvatar
+            value={data.share_url}
+            avatarUrl={data.avater_url}
+            useDarkTheme={data.useDarkTheme}
+            alt="二维码"
+            className="h-auto w-75"
+          />
         ) : (
           <div className="flex justify-center items-center bg-surface w-75 h-75">
             <span className="text-foreground/50">二维码</span>

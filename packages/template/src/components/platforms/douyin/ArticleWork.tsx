@@ -5,7 +5,7 @@ import React from 'react'
 import ReactMarkdown from 'react-markdown'
 
 import type { DouyinArticleWorkProps } from '../../../types/platforms/douyin/articleWork'
-import { generateQRCode } from '../../../utils/QRcode'
+import { QRCodeWithAvatar } from '../../common/QRCodeWithAvatar'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 import { DouyinCommentIcon, DouyinFavoriteIcon, DouyinLikeIcon, DouyinShareIcon } from './Icons'
 
@@ -274,7 +274,13 @@ const DouyinPosterFooter: React.FC<Props> = ({ data }) => {
 
       <div className="shrink-0 text-center">
         <div className="drop-shadow-2xl">
-          <img src={generateQRCode(share_url, useDarkTheme)} alt="二维码" className="h-[300px] w-[300px]" />
+          <QRCodeWithAvatar
+            value={share_url}
+            avatarUrl={avater_url}
+            useDarkTheme={useDarkTheme}
+            alt="二维码"
+            className="h-[300px] w-[300px]"
+          />
         </div>
         <div className="mt-2 text-[28px] font-black text-foreground/80">扫码查看作品详情</div>
       </div>

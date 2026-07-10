@@ -7,7 +7,7 @@ import React, { type ReactNode } from 'react'
 
 import type { DouyinCommentProps, DouyinSubComment } from '../../../types/platforms/douyin'
 import { cn } from '../../../utils/cn'
-import { generateQRCode } from '../../../utils/QRcode'
+import { QRCodeWithAvatar } from '../../common/QRCodeWithAvatar'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 import { DouyinCommentIcon, DouyinFavoriteIcon, DouyinLikeIcon, DouyinMoreIcon, DouyinShareIcon } from './Icons'
 
@@ -90,7 +90,13 @@ const QRCodeSection: React.FC<Omit<DouyinCommentProps['data'], 'CommentsData'>> 
   return (
     <div className="flex flex-col items-center">
       <div className="flex justify-center items-center w-100 h-100 p-4">
-        <img src={generateQRCode(props.share_url, props.useDarkTheme)} alt="二维码" className="object-contain w-full h-full rounded-lg" />
+        <QRCodeWithAvatar
+          value={props.share_url}
+          avatarUrl={props.AuthorAvatar}
+          useDarkTheme={props.useDarkTheme}
+          alt="二维码"
+          className="object-contain w-full h-full rounded-lg"
+        />
       </div>
     </div>
   )

@@ -416,8 +416,8 @@ importers:
         specifier: ^13.13.0
         version: 13.13.0(react@19.2.7)
       '@ikenxuan/qrcode':
-        specifier: 1.4.0
-        version: 1.4.0
+        specifier: 1.5.0
+        version: 1.5.0
       '@kkk/richtext':
         specifier: workspace:*
         version: link:../richtext
@@ -1358,9 +1358,6 @@ packages:
     engines: {node: '>=24', pnpm: '>=10'}
     peerDependencies:
       react: ^16.13 || ^17 || ^18 || ^19
-
-  '@ikenxuan/qrcode@1.4.0':
-    resolution: {integrity: sha512-swIjI4B4oksd19FbLsHdLnxIghOpqAZ4lCFhdxP3LjbI/L2DAQVwUmQPYQ7a9rCVAjtyf5druEgNEu/llNCFcw==}
 
   '@ikenxuan/qrcode@1.5.0':
     resolution: {integrity: sha512-tF7q9LVVWGlG9KJQx1AiY313lrR2uFjTzkQGpmTC2msZ+vArgnjgSIFvUjv7WMl2nPR9hySl6/NkAU2Wwn1iZg==}
@@ -10876,8 +10873,6 @@ snapshots:
   '@icons-pack/react-simple-icons@13.13.0(react@19.2.7)':
     dependencies:
       react: 19.2.7
-
-  '@ikenxuan/qrcode@1.4.0': {}
 
   '@ikenxuan/qrcode@1.5.0': {}
 

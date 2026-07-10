@@ -5,9 +5,11 @@ import { generateSync } from '@ikenxuan/qrcode'
  *
  * @param {string} text - The text to encode in the QR code.
  * @param {boolean} [useDarkTheme=false] - Whether to use a dark theme for the QR code.
+ * @param {Uint8Array} [image] - Optional binary logo image embedded in the center of the QR code.
  * @return {string} The base64-encoded QR code image.
  */
-export const generateQRCode = (text: string, useDarkTheme: boolean = false) => {
+export const generateQRCode = (text: string, useDarkTheme: boolean = false, image?: Uint8Array) => {
+  const hasImage = Boolean(image?.byteLength)
   const base64 = generateSync(
     {
       data: text,
@@ -26,7 +28,16 @@ export const generateQRCode = (text: string, useDarkTheme: boolean = false) => {
       },
       backgroundOptions: {
         transparent: true
-      }
+      },
+      image: hasImage ? image : undefined,
+      imageOptions: hasImage
+        ? {
+            imageSize: 0.2,
+            margin: 24,
+            round: 0.2,
+            hideBackgroundDots: true
+          }
+        : undefined
     },
     'webp',
     'base64'

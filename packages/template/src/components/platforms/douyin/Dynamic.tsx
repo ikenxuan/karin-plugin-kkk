@@ -3,7 +3,7 @@ import { Clock, Eye, Hash, Maximize, Users } from 'lucide-react'
 import React from 'react'
 
 import type { DouyinDynamicProps } from '../../../types/platforms/douyin'
-import { generateQRCode } from '../../../utils/QRcode'
+import { QRCodeWithAvatar } from '../../common/QRCodeWithAvatar'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 import { DouyinCommentIcon, DouyinFavoriteIcon, DouyinLikeIcon, DouyinShareIcon } from './Icons'
 
@@ -263,7 +263,13 @@ export const DouyinDynamic: React.FC<Omit<DouyinDynamicProps, 'templateType' | '
 
             {/* 右侧：二维码 */}
             <div className="flex flex-col items-center gap-4">
-              <img src={generateQRCode(props.data.share_url, props.data.useDarkTheme)} alt="二维码" className="h-auto w-75 rounded-xl" />
+              <QRCodeWithAvatar
+                value={props.data.share_url}
+                avatarUrl={props.data.avater_url}
+                useDarkTheme={props.data.useDarkTheme}
+                alt="二维码"
+                className="h-auto w-75 rounded-xl"
+              />
             </div>
           </div>
         </div>

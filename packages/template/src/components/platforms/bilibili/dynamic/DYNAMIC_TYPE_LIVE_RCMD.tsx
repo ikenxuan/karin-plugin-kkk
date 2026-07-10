@@ -3,7 +3,7 @@ import { Clock, Radio, UsersRound } from 'lucide-react'
 import React from 'react'
 
 import type { BilibiliLiveDynamicProps, BilibiliPosterPalette } from '../../../../types/platforms/bilibili'
-import { generateQRCode } from '../../../../utils/QRcode'
+import { QRCodeWithAvatar } from '../../../common/QRCodeWithAvatar'
 import { DefaultLayout } from '../../../layouts/DefaultLayout'
 import { EnhancedImage, UsernameDisplay } from '../shared'
 
@@ -439,8 +439,10 @@ export const BilibiliLiveDynamic: React.FC<Omit<BilibiliLiveDynamicProps, 'templ
                 style={{ backgroundColor: withAlphaFromCss(accentColor, isDark ? 0.16 : 0.1) }}
               />
               {data.share_url ? (
-                <img
-                  src={generateQRCode(data.share_url, isDark)}
+                <QRCodeWithAvatar
+                  value={data.share_url}
+                  avatarUrl={data.avatar_url}
+                  useDarkTheme={isDark}
                   alt="二维码"
                   className="relative h-100 w-100 object-contain drop-shadow-[0_20px_38px_rgba(0,0,0,0.18)]"
                 />

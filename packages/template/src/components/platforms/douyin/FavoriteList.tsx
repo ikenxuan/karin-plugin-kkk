@@ -3,7 +3,7 @@ import { Quote } from 'lucide-react'
 import React from 'react'
 
 import type { DouyinFavoriteListProps } from '../../../types/platforms/douyin'
-import { generateQRCode } from '../../../utils/QRcode'
+import { QRCodeWithAvatar } from '../../common/QRCodeWithAvatar'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 import { DouyinCommentIcon, DouyinFavoriteIcon, DouyinLikeIcon, DouyinRecommendIcon, DouyinShareIcon } from './Icons'
 
@@ -117,8 +117,10 @@ export const DouyinFavoriteList: React.FC<DouyinFavoriteListProps> = (props) => 
 
             <div className="h-px w-full bg-linear-to-r from-surface-secondary via-border to-transparent"></div>
             <div className="flex items-end gap-6">
-              <img
-                src={generateQRCode(props.data.share_url, props.data.useDarkTheme)}
+              <QRCodeWithAvatar
+                value={props.data.share_url}
+                avatarUrl={props.data.author_avatar}
+                useDarkTheme={props.data.useDarkTheme}
                 className="w-65 h-auto rounded-2xl mix-blend-multiply"
                 alt="QR"
               />
