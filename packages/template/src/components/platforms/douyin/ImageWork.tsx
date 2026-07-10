@@ -47,6 +47,15 @@ const getTitleClassName = (titleLength: number): string => {
   return 'text-[62px] leading-[1.18]'
 }
 
+/**
+ * 多段透明度停靠点用于模拟 smoothstep，让封面从环境柔光进入清晰主体时没有明显的线性渐变拐点。
+ */
+const ambientCoverMask =
+  'linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.08) 6%, rgba(0,0,0,0.32) 16%, rgba(0,0,0,0.68) 28%, black 42%, black 58%, rgba(0,0,0,0.68) 72%, rgba(0,0,0,0.32) 84%, rgba(0,0,0,0.08) 94%, transparent 100%)'
+
+const foregroundCoverMask =
+  'linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.1) 4%, rgba(0,0,0,0.35) 10%, rgba(0,0,0,0.68) 17%, rgba(0,0,0,0.9) 23%, black 30%, black 70%, rgba(0,0,0,0.9) 77%, rgba(0,0,0,0.68) 83%, rgba(0,0,0,0.35) 90%, rgba(0,0,0,0.1) 96%, transparent 100%)'
+
 const getCoverUrl = (data: Props['data']): string | undefined => data.image_list.images[0]?.url
 
 const DouyinDiffuseBackground: React.FC<Props> = ({ data }) => {
@@ -196,16 +205,16 @@ const DouyinImageCover: React.FC<Props> = ({ data }) => {
   return (
     <section className="relative -mx-20 mt-12 overflow-visible">
       <div
-        className="absolute -inset-x-16 -inset-y-24 z-0 overflow-hidden"
+        className="absolute -inset-x-20 -inset-y-32 z-0 overflow-hidden"
         style={{
-          maskImage: 'linear-gradient(to bottom, transparent 0%, black 28%, black 72%, transparent 100%)',
-          WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 28%, black 72%, transparent 100%)'
+          maskImage: ambientCoverMask,
+          WebkitMaskImage: ambientCoverMask
         }}
       >
         <img
           src={cover.url}
           alt=""
-          className="h-full w-full scale-[1.08] object-cover opacity-62 blur-[46px] saturate-[1.15]"
+          className="h-full w-full scale-[1.16] object-cover opacity-48 blur-[72px] saturate-[1.2]"
           referrerPolicy="no-referrer"
           crossOrigin="anonymous"
         />
@@ -214,16 +223,16 @@ const DouyinImageCover: React.FC<Props> = ({ data }) => {
       <img
         src={cover.url}
         alt="图文封面"
-        className="relative z-10 block h-auto w-full drop-shadow-2xl"
+        className="relative z-10 block h-auto w-full drop-shadow-xl"
         style={{
-          maskImage: 'linear-gradient(to bottom, transparent 0%, black 18%, black 82%, transparent 100%)',
-          WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 18%, black 82%, transparent 100%)'
+          maskImage: foregroundCoverMask,
+          WebkitMaskImage: foregroundCoverMask
         }}
         referrerPolicy="no-referrer"
         crossOrigin="anonymous"
       />
 
-      <div className="absolute inset-x-0 bottom-0 z-20 h-[42%] bg-linear-to-b from-transparent via-black/50 to-transparent" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-[6%] z-20 h-[38%] bg-linear-to-b from-transparent via-black/38 to-transparent" />
 
       <div className="absolute left-24 top-12 z-30 flex items-center gap-4 text-white drop-shadow-2xl">
         <MediaIcon size={72} weight="fill" />
