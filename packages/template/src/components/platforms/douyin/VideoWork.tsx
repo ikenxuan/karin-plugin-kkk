@@ -7,6 +7,7 @@ import React from 'react'
 
 import type { DouyinVideoWorkProps } from '../../../types/platforms/douyin/videoWork'
 import { generateQRCode } from '../../../utils/QRcode'
+import { GlowImage } from '../../common/GlowImage'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 import { DouyinCommentIcon, DouyinFavoriteIcon, DouyinLikeIcon, DouyinShareIcon } from './Icons'
 
@@ -16,7 +17,7 @@ const getTitleClassName = (titleLength: number): string => {
   if (titleLength > 96) return 'text-[42px] leading-[1.34]'
   if (titleLength > 72) return 'text-[48px] leading-[1.3]'
   if (titleLength > 48) return 'text-[54px] leading-[1.26]'
-  return 'text-[62px] leading-[1.18]'
+  return 'text-[62px] leading-tight'
 }
 
 function formatDuration(duration?: number): string | undefined {
@@ -55,9 +56,9 @@ const DouyinDiffuseBackground: React.FC<Props> = ({ data }) => (
     <div className="absolute inset-0 opacity-[0.35] mix-blend-overlay dark:mix-blend-soft-light">
       <svg className="h-full w-full" xmlns="http://www.w3.org/2000/svg">
         <defs>
-          <filter id="douyinVideoWorkNoise">
-            <feTurbulence type="fractalNoise" baseFrequency="1.2" numOctaves="3" stitchTiles="stitch" />
-            <feColorMatrix type="saturate" values="0" />
+          <filter id="douyinVideoWorkNoise" >
+            <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" stitchTiles="stitch" />
+            <feColorMatrix type="saturate" values="0" result="gray" />
             <feComponentTransfer>
               <feFuncR type="discrete" tableValues="0 1" />
               <feFuncG type="discrete" tableValues="0 1" />
@@ -67,16 +68,6 @@ const DouyinDiffuseBackground: React.FC<Props> = ({ data }) => (
               <feFuncA type="linear" slope="2" intercept="-0.5" />
             </feComponentTransfer>
           </filter>
-          <mask id="douyinVideoWorkNoiseMask">
-            <linearGradient id="douyinVideoWorkNoiseGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="white" stopOpacity="1" />
-              <stop offset="15%" stopColor="white" stopOpacity="0.6" />
-              <stop offset="50%" stopColor="white" stopOpacity="0.15" />
-              <stop offset="85%" stopColor="white" stopOpacity="0.6" />
-              <stop offset="100%" stopColor="white" stopOpacity="1" />
-            </linearGradient>
-            <rect width="100%" height="100%" fill="url(#douyinVideoWorkNoiseGradient)" />
-          </mask>
         </defs>
         <rect width="100%" height="100%" filter="url(#douyinVideoWorkNoise)" mask="url(#douyinVideoWorkNoiseMask)" fill="white" />
       </svg>
@@ -175,13 +166,7 @@ const DouyinVideoCover: React.FC<Props> = ({ data }) => {
         <div className="absolute bottom-12 left-24 z-30 flex max-w-[850px] items-center gap-5 text-white drop-shadow-xl">
           {music.cover ? (
             <div className="relative h-20 w-20 shrink-0">
-              <img
-                src={music.cover}
-                alt=""
-                className="absolute inset-0 h-full w-full scale-110 rounded-2xl object-cover opacity-65 blur-md"
-                referrerPolicy="no-referrer"
-                crossOrigin="anonymous"
-              />
+              <GlowImage glowStrength={1} blurRadius={20}>
               <img
                 src={music.cover}
                 alt="BGM封面"
@@ -189,6 +174,7 @@ const DouyinVideoCover: React.FC<Props> = ({ data }) => {
                 referrerPolicy="no-referrer"
                 crossOrigin="anonymous"
               />
+              </GlowImage>
             </div>
           ) : (
             <MusicNoteIcon size={44} weight="fill" className="shrink-0" />

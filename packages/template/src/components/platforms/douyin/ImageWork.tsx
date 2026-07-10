@@ -6,6 +6,8 @@ import { Clock3, Hash } from 'lucide-react'
 import React from 'react'
 
 import type { DouyinImageMediaType, DouyinImageWorkProps } from '../../../types/platforms/douyin/imageWork'
+import { cn } from '../../../utils/cn'
+import { GlowImage } from '../../common/GlowImage'
 import { generateQRCode } from '../../../utils/QRcode'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 import { DouyinCommentIcon, DouyinFavoriteIcon, DouyinLikeIcon, DouyinShareIcon } from './Icons'
@@ -78,8 +80,8 @@ const DouyinDiffuseBackground: React.FC<Props> = ({ data }) => {
         <svg className="h-full w-full" xmlns="http://www.w3.org/2000/svg">
           <defs>
             <filter id="douyinImageWorkNoise">
-              <feTurbulence type="fractalNoise" baseFrequency="1.2" numOctaves="3" stitchTiles="stitch" />
-              <feColorMatrix type="saturate" values="0" />
+              <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" stitchTiles="stitch" />
+              <feColorMatrix type="saturate" values="0" result="gray" />
               <feComponentTransfer>
                 <feFuncR type="discrete" tableValues="0 1" />
                 <feFuncG type="discrete" tableValues="0 1" />
@@ -89,16 +91,6 @@ const DouyinDiffuseBackground: React.FC<Props> = ({ data }) => {
                 <feFuncA type="linear" slope="2" intercept="-0.5" />
               </feComponentTransfer>
             </filter>
-            <mask id="douyinImageWorkNoiseMask">
-              <linearGradient id="douyinImageWorkNoiseGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stopColor="white" stopOpacity="1" />
-                <stop offset="15%" stopColor="white" stopOpacity="0.6" />
-                <stop offset="50%" stopColor="white" stopOpacity="0.15" />
-                <stop offset="85%" stopColor="white" stopOpacity="0.6" />
-                <stop offset="100%" stopColor="white" stopOpacity="1" />
-              </linearGradient>
-              <rect width="100%" height="100%" fill="url(#douyinImageWorkNoiseGradient)" />
-            </mask>
           </defs>
           <rect width="100%" height="100%" filter="url(#douyinImageWorkNoise)" mask="url(#douyinImageWorkNoiseMask)" fill="white" />
         </svg>
@@ -157,7 +149,7 @@ const DouyinPosterTitle: React.FC<Props> = ({ data }) => {
   const titleClassName = getTitleClassName(titleLength)
   const richTextOptions = {
     hashtag: {
-      className: 'text-inherit opacity-60'
+      className: cn('text-inherit opacity-60', !hasTitle && 'text-6xl')
     },
     mention: {
       className: 'text-inherit'
@@ -180,7 +172,10 @@ const DouyinPosterTitle: React.FC<Props> = ({ data }) => {
       )}
       {hasDesc && (
         <div
-          className="mt-7 whitespace-pre-wrap text-[42px] font-medium leading-[1.48] select-text"
+          className={cn(
+            "mt-7 whitespace-pre-wrap select-text",
+            !hasTitle ? 'text-6xl font-bold leading-tight' : 'text-5xl font-medium'
+          )}
           style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}
         >
           {renderRichTextToReact(desc, richTextOptions)}
@@ -268,13 +263,7 @@ const DouyinImageCover: React.FC<Props> = ({ data }) => {
         <div className="absolute bottom-12 left-24 z-30 flex max-w-[850px] items-center gap-5 text-white drop-shadow-xl">
           {music.cover ? (
             <div className="relative h-20 w-20 shrink-0">
-              <img
-                src={music.cover}
-                alt=""
-                className="absolute inset-0 h-full w-full scale-110 rounded-2xl object-cover opacity-65 blur-md"
-                referrerPolicy="no-referrer"
-                crossOrigin="anonymous"
-              />
+              <GlowImage glowStrength={1} blurRadius={20}>
               <img
                 src={music.cover}
                 alt="BGM封面"
@@ -282,6 +271,7 @@ const DouyinImageCover: React.FC<Props> = ({ data }) => {
                 referrerPolicy="no-referrer"
                 crossOrigin="anonymous"
               />
+              </GlowImage>
             </div>
           ) : (
             <MusicNoteIcon size={44} weight="fill" className="shrink-0" />
