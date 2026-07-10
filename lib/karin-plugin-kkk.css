@@ -13305,10 +13305,6 @@
     bottom: 0;
   }
 
-  .bottom-1 {
-    bottom: var(--spacing);
-  }
-
   .bottom-2 {
     bottom: calc(var(--spacing) * 2);
   }
