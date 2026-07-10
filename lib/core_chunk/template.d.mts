@@ -548,103 +548,6 @@ interface DouyinUserVideoListProps {
   data: UserVideoListData;
 }
 //#endregion
-//#region ../template/src/types/platforms/douyin/videoInfo.d.ts
-/**
- * 抖音视频统计信息接口
- */
-interface DouyinVideoStatistics {
-  /** 点赞数 */
-  admire_count: number;
-  /** 视频ID */
-  aweme_id: string;
-  /** 收藏数 */
-  collect_count: number;
-  /** 评论数 */
-  comment_count: number;
-  /** 点赞数 */
-  digg_count: number;
-  /** 播放数 */
-  play_count: number;
-  /** 推荐数 */
-  recommend_count?: number;
-  /** 分享数 */
-  share_count: number;
-}
-/**
- * 抖音作者信息接口
- */
-interface DouyinAuthor {
-  /** 作者名称 */
-  name: string;
-  /** 作者头像URL */
-  avatar: string;
-  /** 抖音号 */
-  short_id: string;
-}
-/**
- * 抖音用户主页扩展信息接口
- */
-interface DouyinUserProfile {
-  /** IP属地 */
-  ip_location: string;
-  /** 粉丝数 */
-  follower_count: number;
-  /** 获赞数 */
-  total_favorited: number;
-  /** 作品数 */
-  aweme_count: number;
-  /** 性别 1:男 2:女 0:未知 */
-  gender: number;
-  /** 年龄 */
-  user_age: number;
-}
-/**
- * 抖音视频信息数据接口
- */
-interface DouyinVideoInfoData {
-  /** 视频描述 */
-  desc: string;
-  /** 统计信息 */
-  statistics: DouyinVideoStatistics;
-  /** 视频ID */
-  aweme_id: string;
-  /** 作者信息 */
-  author: DouyinAuthor;
-  /** 用户主页扩展信息 */
-  user_profile?: DouyinUserProfile;
-  /** 视频封面图片URL */
-  image_url: string;
-  /** 封面图片尺寸 */
-  cover_size?: {
-    width: number;
-    height: number;
-  };
-  /** 创建时间戳 */
-  create_time: number;
-  /** 音乐信息 */
-  music?: {
-    author: string;
-    title: string;
-    cover: string;
-  };
-  /** 视频原始信息 */
-  video?: {
-    duration: number;
-    width: number;
-    height: number;
-    ratio: string;
-  };
-  /** 是否使用深色主题 */
-  useDarkTheme?: boolean;
-}
-/**
- * 抖音视频信息组件属性接口
- */
-interface DouyinVideoInfoProps {
-  /** 视频数据 */
-  data: DouyinVideoInfoData;
-}
-//#endregion
 //#region ../template/src/types/platforms/douyin/videoWork.d.ts
 /**
  * 抖音视频作品组件属性接口
@@ -2196,7 +2099,7 @@ interface BaseComponentProps<T = Record<string, any>> extends Pick<RenderRequest
 /**
  * 抖音平台组件ID
  */
-type DouyinComponentIds = 'article-work' | 'comment' | 'dynamic' | 'favorite-list' | 'image-work' | 'live' | 'musicinfo' | 'recommend-list' | 'user_profile' | 'userlist' | 'video-work' | 'videoInfo' | 'user_videolist' | 'qrcodeImg';
+type DouyinComponentIds = 'article-work' | 'comment' | 'dynamic' | 'favorite-list' | 'image-work' | 'live' | 'musicinfo' | 'recommend-list' | 'user_profile' | 'userlist' | 'video-work' | 'user_videolist' | 'qrcodeImg';
 /**
  * B站平台组件ID
  */
@@ -2236,7 +2139,6 @@ interface PathToDataTypeMap {
   'douyin/user_profile': DouyinUserVideoListProps['data'];
   'douyin/userlist': DouyinUserListProps['data'];
   'douyin/video-work': DouyinVideoWorkProps['data'];
-  'douyin/videoInfo': DouyinVideoInfoProps['data'];
   'douyin/qrcodeImg': DouyinQrcodeImgProps['data'];
   'bilibili/comment': BilibiliCommentProps['data'];
   'bilibili/userlist': BilibiliUserListProps['data'];
