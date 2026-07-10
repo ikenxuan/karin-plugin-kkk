@@ -260,7 +260,7 @@ const DouyinImageCover: React.FC<Props> = ({ data }) => {
         </div>
       )}
 
-      <div className="absolute  bottom-1 right-24 z-30 flex items-center gap-5 text-white drop-shadow-lg">
+      <div className="absolute  bottom-12 right-24 z-30 flex items-center gap-5 text-white drop-shadow-lg">
         <span className="text-[34px] font-black tabular-nums">共 {totalCount} 张</span>
       </div>
 
