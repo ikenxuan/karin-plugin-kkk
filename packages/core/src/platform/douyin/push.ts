@@ -253,6 +253,7 @@ export class DouYinpush extends Base {
         `)
 
       const Detail_Data = pushItem.Detail_Data
+      const workTypeInfo = getWorkTypeInfo(Detail_Data as any)
       const skip = await skipDynamic(pushItem)
       if (skip) {
         logger.warn(`作品 https://www.douyin.com/video/${actualAwemeId} 已被处理，跳过`)
@@ -272,6 +273,7 @@ export class DouYinpush extends Base {
       if (!skip) {
         const realUrl =
           pushItem.pushType !== 'live' &&
+          workTypeInfo.isVideo &&
           Config.douyin.push.shareType === 'web' &&
           (await new Networks({
             url: Detail_Data.share_url,
@@ -282,6 +284,22 @@ export class DouYinpush extends Base {
               Connection: 'keep-alive'
             }
           }).getLocation())
+
+        let workShareLink: string | undefined
+        if (pushItem.pushType !== 'live') {
+          if (workTypeInfo.isArticle) {
+            workShareLink = `https://www.douyin.com/article/${actualAwemeId}`
+          } else if (workTypeInfo.isImage) {
+            // 图文和合辑使用无追踪参数的短链接，降低二维码密度并提高扫描识别率。
+            workShareLink = `https://www.douyin.com/note/${actualAwemeId}`
+          } else if (Config.douyin.push.shareType === 'web') {
+            workShareLink = realUrl || `https://www.douyin.com/video/${actualAwemeId}`
+          } else {
+            workShareLink = Detail_Data.video?.play_addr?.uri
+              ? `https://aweme.snssdk.com/aweme/v1/play/?video_id=${Detail_Data.video.play_addr.uri}&ratio=1080p&line=0`
+              : `https://www.douyin.com/video/${actualAwemeId}`
+          }
+        }
 
         switch (pushItem.pushType) {
           case 'live': {
@@ -296,15 +314,11 @@ export class DouYinpush extends Base {
           }
 
           case 'favorite': {
-            const shareLink =
-              Config.douyin.push.shareType === 'web'
-                ? realUrl!
-                : `https://aweme.snssdk.com/aweme/v1/play/?video_id=${Detail_Data.video.play_addr.uri}&ratio=1080p&line=0`
             img = await renderFavoriteImage({
               e: this.e,
               Detail_Data,
               create_time: pushItem.create_time,
-              shareLink,
+              shareLink: workShareLink!,
               remark: pushItem.remark,
               skipWatermark: true
             })
@@ -312,15 +326,11 @@ export class DouYinpush extends Base {
           }
 
           case 'recommend': {
-            const shareLink =
-              Config.douyin.push.shareType === 'web'
-                ? realUrl!
-                : `https://aweme.snssdk.com/aweme/v1/play/?video_id=${Detail_Data.video.play_addr.uri}&ratio=1080p&line=0`
             img = await renderRecommendImage({
               e: this.e,
               Detail_Data,
               create_time: pushItem.create_time,
-              shareLink,
+              shareLink: workShareLink!,
               remark: pushItem.remark,
               skipWatermark: true
             })
@@ -329,16 +339,11 @@ export class DouYinpush extends Base {
 
           case 'post':
           default: {
-            const shareLink =
-              Config.douyin.push.shareType === 'web'
-                ? realUrl!
-                : `https://aweme.snssdk.com/aweme/v1/play/?video_id=${Detail_Data.video.play_addr.uri}&ratio=1080p&line=0`
-
             img = await renderWorkImage({
               e: this.e,
               Detail_Data,
               create_time: pushItem.create_time,
-              shareLink,
+              shareLink: workShareLink!,
               skipWatermark: true
             })
             break
@@ -382,7 +387,6 @@ export class DouYinpush extends Base {
 
           // 是否一同解析该新作品？
           if (Config.douyin.push.parsedynamic && status.message_id) {
-            const workTypeInfo = getWorkTypeInfo(Detail_Data as any)
             logger.debug(`开始解析作品，类型为：${getWorkTypeDisplayName(workTypeInfo)}`)
             // 如果新作品是视频
             if (workTypeInfo.isVideo) {

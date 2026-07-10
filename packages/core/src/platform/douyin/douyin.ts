@@ -590,9 +590,10 @@ export class DouYin extends Base {
               sec_uid: aweme.author.sec_uid,
               typeMode: 'strict'
             })
+            // 非视频作品使用不带追踪参数的规范短链接，避免二维码内容过长影响扫描识别。
             const shareLink = isVideo
               ? `https://aweme.snssdk.com/aweme/v1/play/?video_id=${aweme.video.play_addr.uri}&ratio=1080p&line=0`
-              : aweme.share_url
+              : `https://www.douyin.com/${isArticle ? 'article' : 'note'}/${aweme.aweme_id}`
             const workInfoImg = await renderWorkImage({
               e: this.e,
               Detail_Data: { ...aweme, user_info: userProfile },

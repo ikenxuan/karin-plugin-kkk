@@ -5,6 +5,17 @@ import { Config } from '@/module/utils/Config'
 import { wrapWithErrorHandler } from '@/module/utils/ErrorHandler'
 import { getDouyinID } from '@/platform/douyin/getID'
 import { renderFavoriteImage, renderLiveImage, renderRecommendImage, renderWorkImage } from '@/platform/douyin/push/render'
+import { getWorkTypeInfo } from '@/platform/douyin/workType'
+
+/** 构建与生产推送一致的作品二维码链接。 */
+function buildWorkShareLink(aweme: any): string {
+  const workTypeInfo = getWorkTypeInfo(aweme)
+  if (workTypeInfo.isArticle) return `https://www.douyin.com/article/${aweme.aweme_id}`
+  if (workTypeInfo.isImage) return `https://www.douyin.com/note/${aweme.aweme_id}`
+  return aweme.video?.play_addr?.uri
+    ? `https://aweme.snssdk.com/aweme/v1/play/?video_id=${aweme.video.play_addr.uri}&ratio=1080p&line=0`
+    : `https://www.douyin.com/video/${aweme.aweme_id}`
+}
 
 /**
  * 测试抖音推送命令处理器
@@ -55,9 +66,7 @@ const handleTestPush = wrapWithErrorHandler(
         const aweme = workData.data.aweme_detail
         const userinfo = await douyinFetcher.fetchUserProfile({ sec_uid: aweme.author.sec_uid, typeMode: 'strict' })
         const Detail_Data = { ...aweme, user_info: userinfo }
-        const shareLink = Detail_Data.video?.play_addr?.uri
-          ? `https://aweme.snssdk.com/aweme/v1/play/?video_id=${Detail_Data.video.play_addr.uri}&ratio=1080p&line=0`
-          : Detail_Data.share_url || url
+        const shareLink = buildWorkShareLink(Detail_Data)
         images = await renderWorkImage({ e, Detail_Data, create_time: aweme.create_time, shareLink })
         if (images.length === 0) {
           e.reply('未能识别该作品类型，无法渲染推送图片')
@@ -91,9 +100,7 @@ const handleTestPush = wrapWithErrorHandler(
           /* ignore */
         }
         const Detail_Data = { ...aweme, user_info: userinfo, author_user_info: authorUserInfo }
-        const shareLink = Detail_Data.video?.play_addr?.uri
-          ? `https://aweme.snssdk.com/aweme/v1/play/?video_id=${Detail_Data.video.play_addr.uri}&ratio=1080p&line=0`
-          : aweme.share_url
+        const shareLink = buildWorkShareLink(Detail_Data)
         images = await renderFavoriteImage({
           e,
           Detail_Data,
@@ -133,9 +140,7 @@ const handleTestPush = wrapWithErrorHandler(
           /* ignore */
         }
         const Detail_Data = { ...aweme, user_info: userinfo, author_user_info: authorUserInfo }
-        const shareLink = Detail_Data.video?.play_addr?.uri
-          ? `https://aweme.snssdk.com/aweme/v1/play/?video_id=${Detail_Data.video.play_addr.uri}&ratio=1080p&line=0`
-          : aweme.share_url
+        const shareLink = buildWorkShareLink(Detail_Data)
         images = await renderRecommendImage({
           e,
           Detail_Data,

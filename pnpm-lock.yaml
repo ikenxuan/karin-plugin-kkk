@@ -155,8 +155,8 @@ importers:
   packages/core:
     dependencies:
       '@ikenxuan/qrcode':
-        specifier: 1.4.0
-        version: 1.4.0
+        specifier: 1.5.0
+        version: 1.5.0
       '@ikenxuan/watermark':
         specifier: 1.3.0
         version: 1.3.0
@@ -171,8 +171,8 @@ importers:
         specifier: workspace:*
         version: link:../amagi/packages/core
       '@karinjs/adapter-qqbot':
-        specifier: 2.1.0
-        version: 2.1.0
+        specifier: 2.2.1
+        version: 2.2.1
       '@karinjs/plugin-adapter-discordbot':
         specifier: https://pkg.pr.new/@karinjs/plugin-adapter-discordbot@1feb687
         version: https://pkg.pr.new/@karinjs/plugin-adapter-discordbot@1feb687
@@ -1362,6 +1362,9 @@ packages:
   '@ikenxuan/qrcode@1.4.0':
     resolution: {integrity: sha512-swIjI4B4oksd19FbLsHdLnxIghOpqAZ4lCFhdxP3LjbI/L2DAQVwUmQPYQ7a9rCVAjtyf5druEgNEu/llNCFcw==}
 
+  '@ikenxuan/qrcode@1.5.0':
+    resolution: {integrity: sha512-tF7q9LVVWGlG9KJQx1AiY313lrR2uFjTzkQGpmTC2msZ+vArgnjgSIFvUjv7WMl2nPR9hySl6/NkAU2Wwn1iZg==}
+
   '@ikenxuan/watermark-darwin-arm64@1.3.0':
     resolution: {integrity: sha512-NM0WF1IXLeGuIAeTnU2Tm4g/riDe9jxOQXgRK4xpKXyMJezN4UiOVX+xjI3HNt3WIsrYbDIk0K1dAhivb/MSTQ==}
     cpu: [arm64]
@@ -1588,8 +1591,8 @@ packages:
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
 
-  '@karinjs/adapter-qqbot@2.1.0':
-    resolution: {integrity: sha512-YAvvMh9uPtCwZjshpT+zTLLCnl4yqVa1GjhLWSahxkR3cFKsLYu/JKLrJd4c3p143vJyt6dXwNOY7GAZICKQBA==}
+  '@karinjs/adapter-qqbot@2.2.1':
+    resolution: {integrity: sha512-V6CQ2VOrgHM9+Mkc9gZ2oJu/kkP+3YN9yBrEOiq20S6sW1MCQVQhDZ5wz0YNm9+znGuO8k32YtWAsOABzuHfIA==}
 
   '@karinjs/art-template@1.1.0':
     resolution: {integrity: sha512-OKf0WZ61SAs9J/K19nzx1XtmLQKc+lbbxiP7AH34TLIM46L3/wSUybV2hcFl001B3zwRcUlrCOZgDlcxyVcScA==}
@@ -5701,8 +5704,8 @@ packages:
     resolution: {integrity: sha512-0je+qPKHEMohvfRTCEo3CrPG6cAzAYgmzKyxRiYSSDkS6eGJdyVJm7WaYA5ECaAD9wLB2T4EEeymA5aFVcYXCA==}
     engines: {node: '>=6'}
 
-  deslop-js@0.7.3:
-    resolution: {integrity: sha512-SsrIu4ud41rSn7PnU8IjHlcd9cAfSeJWcRxKB0yPw7Q224XokD+fDbLf58LCCmckiVnnM8SVZEdBvbRE/4bRTg==}
+  deslop-js@0.7.4:
+    resolution: {integrity: sha512-OKhLEBDFk3wYgfSUz65O/1SP2L/jcMOYym5EB9wvEuDUrJrg+32X3tnUHHvlB/2sSGDU6wCSMqy1006EToOptA==}
 
   destr@2.0.5:
     resolution: {integrity: sha512-ugFTXCtDZunbzasqBxrK93Ik/DRYsO6S/fedkWEMKqt04xZ4csmnmwGDBAb07QWNaGMAmnTIemsYZCksjATwsA==}
@@ -7727,8 +7730,8 @@ packages:
       vite-plus:
         optional: true
 
-  oxlint-plugin-react-doctor@0.7.3:
-    resolution: {integrity: sha512-efbhWdD/FCsRnaEPKbf356B8ek5oqHjUXBRax0QJZoi/zT6UqlU9EL+o3r8J48qp9s/xKPVmW7wr5bKVpQu9pA==}
+  oxlint-plugin-react-doctor@0.7.4:
+    resolution: {integrity: sha512-0JK+5KdT3maDvcXH9Qe79z5wVbWHax6dpqzdEM83e5uMLLZfqI6WVpCJvdtVoknMYLvJY0hdyFTf3adpzZlrQw==}
     engines: {node: ^20.19.0 || >=22.13.0}
 
   oxlint@1.66.0:
@@ -8140,8 +8143,8 @@ packages:
       react: '>=16.8.0'
       react-dom: '>=16.8.0'
 
-  react-doctor@0.7.3:
-    resolution: {integrity: sha512-N/aeVyOaMXe4MNCdQ8IQZUbpI23Z2fPSpDRhCLL1bvYEFD2MIco6CslJWMtOlkA9RVSKPhWCbPT4wf2AA+BWVg==}
+  react-doctor@0.7.4:
+    resolution: {integrity: sha512-OcNqh3joJ6ihycni2d/IgZq/aJBgn5XXsztwRpt9bvb195jM76PyYgK5M2LjWnzIScvPFZu3GzQjHqzoKmjLaA==}
     engines: {node: ^20.19.0 || >=22.13.0}
     hasBin: true
 
@@ -10876,6 +10879,8 @@ snapshots:
 
   '@ikenxuan/qrcode@1.4.0': {}
 
+  '@ikenxuan/qrcode@1.5.0': {}
+
   '@ikenxuan/watermark-darwin-arm64@1.3.0':
     optional: true
 
@@ -11050,7 +11055,7 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  '@karinjs/adapter-qqbot@2.1.0':
+  '@karinjs/adapter-qqbot@2.2.1':
     dependencies:
       '@karinjs/geturls': 1.0.2
       form-data: 4.0.6
@@ -13773,7 +13778,7 @@ snapshots:
       pathe: 2.0.3
       perfect-debounce: 2.1.0
       tinyexec: 1.2.4
-      vite: 8.1.4(@types/node@24.13.3)(@vitejs/devtools@0.3.4)(esbuild@0.28.1)(jiti@2.7.0)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.48.0)(tsx@4.23.0)(yaml@2.9.0)
+      vite: 8.1.4(@types/node@24.13.2)(@vitejs/devtools@0.3.4)(esbuild@0.28.1)(jiti@2.7.0)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)
     transitivePeerDependencies:
       - '@modelcontextprotocol/sdk'
       - bufferutil
@@ -13944,7 +13949,7 @@ snapshots:
       pathe: 2.0.3
       perfect-debounce: 2.1.0
       tinyexec: 1.2.4
-      vite: 8.1.4(@types/node@24.13.3)(@vitejs/devtools@0.3.4)(esbuild@0.28.1)(jiti@2.7.0)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.48.0)(tsx@4.23.0)(yaml@2.9.0)
+      vite: 8.1.4(@types/node@24.13.2)(@vitejs/devtools@0.3.4)(esbuild@0.28.1)(jiti@2.7.0)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)
       vue: 3.5.39(typescript@6.0.3)
       ws: 8.21.0
     transitivePeerDependencies:
@@ -15052,7 +15057,7 @@ snapshots:
 
   dequal@2.0.3: {}
 
-  deslop-js@0.7.3:
+  deslop-js@0.7.4:
     dependencies:
       '@oxc-project/types': 0.132.0
       fast-glob: 3.3.3
@@ -17570,7 +17575,7 @@ snapshots:
       '@oxfmt/binding-win32-ia32-msvc': 0.58.0
       '@oxfmt/binding-win32-x64-msvc': 0.58.0
 
-  oxlint-plugin-react-doctor@0.7.3:
+  oxlint-plugin-react-doctor@0.7.4:
     dependencies:
       '@typescript-eslint/types': 8.62.1
       eslint-scope: 9.1.2
@@ -18078,19 +18083,19 @@ snapshots:
       react: 19.2.7
       react-dom: 19.2.7(react@19.2.7)
 
-  react-doctor@0.7.3(eslint@10.4.1(jiti@2.7.0)):
+  react-doctor@0.7.4(eslint@10.4.1(jiti@2.7.0)):
     dependencies:
       '@babel/code-frame': 7.29.7
       '@sentry/node': 10.57.0
       agent-install: 0.0.5
       conf: 15.1.0
       confbox: 0.2.4
-      deslop-js: 0.7.3
+      deslop-js: 0.7.4
       eslint-plugin-react-hooks: 7.1.1(eslint@10.4.1(jiti@2.7.0))
       jiti: 2.7.0
       magicast: 0.5.3
       oxlint: 1.66.0
-      oxlint-plugin-react-doctor: 0.7.3
+      oxlint-plugin-react-doctor: 0.7.4
       prompts: 2.4.2
       typescript: 6.0.3
       vscode-languageserver: 9.0.1
@@ -18228,7 +18233,7 @@ snapshots:
       preact: 10.29.2
       prompts: 2.4.2
       react: 19.2.7
-      react-doctor: 0.7.3(eslint@10.4.1(jiti@2.7.0))
+      react-doctor: 0.7.4(eslint@10.4.1(jiti@2.7.0))
       react-dom: 19.2.7(react@19.2.7)
       react-grab: 0.1.48(react@19.2.7)
     optionalDependencies:
@@ -19832,6 +19837,25 @@ snapshots:
   vite-plugin-wasm@3.6.0(vite@8.1.4):
     dependencies:
       vite: 8.1.4(@types/node@24.13.3)(@vitejs/devtools@0.3.4)(esbuild@0.28.1)(jiti@2.7.0)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.48.0)(tsx@4.23.0)(yaml@2.9.0)
+
+  vite@8.1.4(@types/node@24.13.2)(@vitejs/devtools@0.3.4)(esbuild@0.28.1)(jiti@2.7.0)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0):
+    dependencies:
+      lightningcss: 1.32.0
+      picomatch: 4.0.5
+      postcss: 8.5.16
+      rolldown: 1.1.5
+      tinyglobby: 0.2.17
+    optionalDependencies:
+      '@types/node': 24.13.2
+      '@vitejs/devtools': 0.3.4(@modelcontextprotocol/sdk@1.29.0(zod@4.4.3))(typescript@6.0.3)(vite@8.1.4)
+      esbuild: 0.28.1
+      fsevents: 2.3.3
+      jiti: 2.7.0
+      sass: 1.100.0
+      sass-embedded: 1.100.0
+      terser: 5.48.0
+      tsx: 4.22.4
+      yaml: 2.9.0
 
   vite@8.1.4(@types/node@24.13.2)(@vitejs/devtools@0.3.4)(esbuild@0.28.1)(jiti@2.7.0)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.48.0)(tsx@4.23.0)(yaml@2.9.0):
     dependencies:
