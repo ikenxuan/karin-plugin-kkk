@@ -67,7 +67,7 @@ export const baseComponentConfigs: BasePlatformConfig[] = [
       {
         id: 'video-work',
         name: '视频作品',
-        description: '抖音视频作品推送模板',
+        description: '抖音视频作品解析与推送模板',
         enabled: true,
         componentPath: 'platforms/douyin/VideoWork',
         exportName: 'DouyinVideoWork'
@@ -75,7 +75,7 @@ export const baseComponentConfigs: BasePlatformConfig[] = [
       {
         id: 'image-work',
         name: '图文作品',
-        description: '抖音图文作品推送模板',
+        description: '抖音图文作品解析与推送模板',
         enabled: true,
         componentPath: 'platforms/douyin/ImageWork',
         exportName: 'DouyinImageWork'
@@ -83,7 +83,7 @@ export const baseComponentConfigs: BasePlatformConfig[] = [
       {
         id: 'article-work',
         name: '文章作品',
-        description: '抖音文章作品推送模板',
+        description: '抖音文章作品解析与推送模板',
         enabled: true,
         componentPath: 'platforms/douyin/ArticleWork',
         exportName: 'DouyinArticleWork'
@@ -135,14 +135,6 @@ export const baseComponentConfigs: BasePlatformConfig[] = [
         enabled: true,
         componentPath: 'platforms/douyin/UserList',
         exportName: 'default'
-      },
-      {
-        id: 'videoInfo',
-        name: '视频信息',
-        description: '抖音视频信息展示模板',
-        enabled: true,
-        componentPath: 'platforms/douyin/videoInfo',
-        exportName: 'DouyinVideoInfo'
       },
       {
         id: 'qrcodeImg',

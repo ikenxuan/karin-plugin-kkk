@@ -5,11 +5,11 @@ import { PlatformType } from '../types/platforms'
 export const version = {
   plugin: 'karin-plugin',
   pluginName: 'kkk',
-  pluginVersion: '2.20.x',
+  pluginVersion: '1.145.14',
   releaseType: 'Stable',
   poweredBy: 'Karin',
-  frameworkVersion: '1.12.3',
-  hasUpdate: true
+  frameworkVersion: '19.198.10',
+  hasUpdate: false
 }
 
 export const watermarkTextBitSize = 1024

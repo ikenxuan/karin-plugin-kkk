@@ -45,9 +45,10 @@ function buildCooperationInfo(Detail_Data: any):
   if (!raw) return undefined
 
   const rawCreators = Array.isArray(raw.co_creators) ? raw.co_creators : []
+  const subscriber = Detail_Data.user_info?.data?.user ?? Detail_Data.author
 
-  const subscriberUid = Detail_Data.user_info.data.user.uid
-  const subscriberSecUid = Detail_Data.user_info.data.user.sec_uid
+  const subscriberUid = subscriber?.uid
+  const subscriberSecUid = subscriber?.sec_uid
 
   const subscriberInCreators = rawCreators.find(
     (c: { uid: string; sec_uid: string }) =>
@@ -92,9 +93,7 @@ function buildCooperationInfo(Detail_Data: any):
       subscriberInCreators?.role_title ??
       ((subscriberUid && Detail_Data.author?.uid && subscriberUid === Detail_Data.author.uid) ||
       (subscriberSecUid && Detail_Data.author?.sec_uid && subscriberSecUid === Detail_Data.author.sec_uid) ||
-      (Detail_Data.user_info.data.user.nickname &&
-        Detail_Data.author?.nickname &&
-        Detail_Data.user_info.data.user.nickname === Detail_Data.author.nickname)
+      (subscriber?.nickname && Detail_Data.author?.nickname && subscriber.nickname === Detail_Data.author.nickname)
         ? '作者'
         : undefined)
   }
@@ -107,6 +106,14 @@ function buildCooperationInfo(Detail_Data: any):
  */
 function cdnAvatar(uri: string): string {
   return 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + uri
+}
+
+/**
+ * 获取作品作者头像，优先沿用用户主页的高清头像，解析侧缺少主页数据时回退到作品作者头像。
+ */
+function getUserAvatar(user: any): string {
+  if (user?.avatar_larger?.uri) return cdnAvatar(user.avatar_larger.uri)
+  return pickImageUrl(user?.avatar_larger, user?.avatar_medium, user?.avatar_thumb) ?? ''
 }
 
 /** 图文内单张媒体的模板类型。 */
@@ -462,15 +469,15 @@ function buildMusicInfo(music: any): { author: string; title: string; cover?: st
  * @param user - 用户对象，包含 unique_id 和 short_id
  * @returns 优先返回抖音号（unique_id），为空则返回短 ID
  */
-function douyinId(user: { unique_id: string; short_id: string }): string {
-  return user.unique_id === '' ? user.short_id : user.unique_id
+function douyinId(user: { unique_id?: string; short_id?: string }): string {
+  return user.unique_id || user.short_id || ''
 }
 
-/** 作品推送图片渲染参数 */
+/** 作品信息图片渲染参数，供普通解析与推送共用。 */
 export interface RenderWorkImageOptions {
   /** Karin 消息事件，传递给 Render 用于获取 bot 信息 */
   e: Message
-  /** 作品详情数据，包含 user_info、statistics、author 等字段 */
+  /** 作品详情数据，包含 statistics、author，可选包含用户主页 user_info */
   Detail_Data: any
   /** 作品创建时间（Unix 时间戳，秒） */
   create_time: number
@@ -478,7 +485,7 @@ export interface RenderWorkImageOptions {
   shareLink: string
   /** 是否跳过水印嵌入（推送场景为 true，避免重复水印） */
   skipWatermark?: boolean
-  /** 推送类型标签，显示在图片头部 */
+  /** 作品类型标签，显示在图片头部 */
   dynamicTypeLabel?: string
 }
 
@@ -497,9 +504,9 @@ function getDefaultPushLabel(workTypeInfo: DouyinWorkTypeInfo): string {
 }
 
 /**
- * 渲染作品推送图片
+ * 渲染作品信息图片
  * 根据作品类型（文章/视频/图文/合辑）自动选择对应模板进行渲染
- * 推送类型标签按优先级：调用方显式传入 → 根据作品主/子类型自动计算
+ * 类型标签按优先级：调用方显式传入 → 根据作品主/子类型自动计算推送标签
  * @param options - 渲染参数
  * @returns 渲染后的图片元素数组
  */
@@ -509,9 +516,10 @@ export async function renderWorkImage(options: RenderWorkImageOptions): Promise<
   const dynamicTypeLabel = options.dynamicTypeLabel ?? getDefaultPushLabel(workTypeInfo)
   const coverUrl = getWorkCoverUrl(workTypeInfo, Detail_Data)
   const formatTime = format(fromUnixTime(create_time), 'yyyy-MM-dd HH:mm')
-  const user = Detail_Data.user_info.data.user
+  const user = Detail_Data.user_info?.data?.user ?? Detail_Data.author
+  if (!user) return []
   const userDouyinId = douyinId(user)
-  const avatarUrl = cdnAvatar(user.avatar_larger.uri)
+  const avatarUrl = getUserAvatar(user) || getUserAvatar(Detail_Data.author)
   const authorNickname = Detail_Data.author?.nickname ?? user.nickname
   const cooperationInfo = buildCooperationInfo(Detail_Data)
   const mentionCache = new Map<string, string | null>()
@@ -541,7 +549,7 @@ export async function renderWorkImage(options: RenderWorkImageOptions): Promise<
           获赞: Count(user.total_favorited),
           关注: Count(user.following_count),
           粉丝: Count(user.follower_count),
-          share_url: Detail_Data.share_url
+          share_url: shareLink
         },
         renderOpts
       )

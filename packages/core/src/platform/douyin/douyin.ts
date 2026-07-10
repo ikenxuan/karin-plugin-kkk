@@ -1,8 +1,7 @@
 import fs from 'node:fs'
 
-import { ArticleWork, type DyEmojiList, DyVideoWork } from '@ikenxuan/amagi'
-import { Result } from '@ikenxuan/amagi'
-import { format, fromUnixTime } from 'date-fns'
+import { type DyEmojiList, DyVideoWork } from '@ikenxuan/amagi'
+import { format } from 'date-fns'
 import karin, { type Elements, Message, SendMessage } from 'node-karin'
 import { common, logger, mkdirSync, segment } from 'node-karin'
 import { DouyinUserVideoListProps } from 'template/types/platforms/douyin/UserVideoList'
@@ -28,6 +27,7 @@ import { Config } from '@/module/utils/Config'
 import { EmojiReactionManager, getEmojiId } from '@/module/utils/EmojiReaction'
 import { douyinComments } from '@/platform/douyin'
 import { burnDouyinDanmaku, type DouyinDanmakuElem } from '@/platform/douyin/danmaku'
+import { renderWorkImage } from '@/platform/douyin/push/render'
 import { DouyinDataTypes, DouyinIdData } from '@/types'
 
 let mp4size = ''
@@ -73,50 +73,6 @@ export class DouYin extends Base {
     this.is_slides = false
     this.forceBurnDanmaku = options?.forceBurnDanmaku ?? false
     this.hasProcessedLiveImage = false
-  }
-
-  /**
-   * 处理文章类型作品
-   */
-  async handleArticleWork(VideoData: Result<ArticleWork>, _data: DouyinIdData) {
-    const aweme = VideoData.data.aweme_detail
-    const content = JSON.parse(aweme.article_info.article_content)
-    const fe_data = JSON.parse(aweme.article_info.fe_data)
-
-    logger.debug('文章数据提取完成')
-    logger.debug(`文章标题: ${aweme.article_info.article_title}`)
-    logger.debug(`图片数量: ${fe_data.image_list?.length || 0}`)
-
-    // 渲染文章作品
-    const img = await Render(this.e, 'douyin/article-work', {
-      title: aweme.article_info.article_title,
-      markdown: content.markdown,
-      images: fe_data.image_list || [],
-      read_time: fe_data.read_time || 0,
-
-      // 互动数据
-      dianzan: Count(aweme.statistics.digg_count),
-      pinglun: Count(aweme.statistics.comment_count),
-      shouchang: Count(aweme.statistics.collect_count),
-      share: Count(aweme.statistics.share_count),
-
-      // 时间信息
-      create_time: format(fromUnixTime(aweme.create_time), 'yyyy-MM-dd HH:mm'),
-
-      // 用户信息
-      avater_url: aweme.author.avatar_thumb.url_list[0],
-      username: aweme.author.nickname,
-      抖音号: aweme.author.unique_id || aweme.author.short_id,
-      获赞: Count(aweme.author.total_favorited),
-      关注: Count(aweme.author.following_count),
-      粉丝: Count(aweme.author.follower_count),
-
-      // 分享链接
-      share_url: `https://www.douyin.com/article/${aweme.aweme_id}`
-    })
-
-    await this.e.reply(img)
-    return true
   }
 
   async DouyinHandler(data: DouyinIdData) {
@@ -629,86 +585,23 @@ export class DouYin extends Base {
               this.e.reply(replyContent)
             }
           } else {
+            const aweme = VideoData.data.aweme_detail
             const userProfile = await this.amagi.douyin.fetcher.fetchUserProfile({
-              sec_uid: VideoData.data.aweme_detail.author.sec_uid,
+              sec_uid: aweme.author.sec_uid,
               typeMode: 'strict'
             })
-            // 渲染为图片
-            const videoInfoImg = await Render(this.e, 'douyin/videoInfo', {
-              desc: isArticle ? VideoData.data.aweme_detail.preview_title : VideoData.data.aweme_detail.desc,
-              statistics: VideoData.data.aweme_detail.statistics,
-              aweme_id: VideoData.data.aweme_detail.aweme_id,
-              author: {
-                name: VideoData.data.aweme_detail.author.nickname,
-                avatar: VideoData.data.aweme_detail.author.avatar_thumb.url_list[0],
-                short_id:
-                  VideoData.data.aweme_detail.author.unique_id === ''
-                    ? VideoData.data.aweme_detail.author.short_id
-                    : VideoData.data.aweme_detail.author.unique_id
-              },
-              user_profile: userProfile.success
-                ? {
-                    ip_location: userProfile.data.user.ip_location,
-                    follower_count: userProfile.data.user.follower_count,
-                    total_favorited: userProfile.data.user.total_favorited,
-                    aweme_count: userProfile.data.user.aweme_count,
-                    gender: userProfile.data.user.gender ?? 0,
-                    user_age: userProfile.data.user.user_age ?? 0
-                  }
-                : undefined,
-              image_url: isArticle
-                ? VideoData.data.aweme_detail.video.origin_cover.url_list[0]
-                : isVideo
-                  ? (VideoData.data.aweme_detail.video.animated_cover?.url_list[0] ??
-                    VideoData.data.aweme_detail.video.dynamic_cover?.url_list[0] ??
-                    VideoData.data.aweme_detail.video.cover_original_scale?.url_list[0] ??
-                    VideoData.data.aweme_detail.video.cover.url_list[0])
-                  : VideoData.data.aweme_detail.images![0].url_list![0],
-              cover_size: isArticle
-                ? VideoData.data.aweme_detail.video.origin_cover
-                  ? {
-                      width: VideoData.data.aweme_detail.video.origin_cover.width,
-                      height: VideoData.data.aweme_detail.video.origin_cover.height
-                    }
-                  : undefined
-                : isVideo
-                  ? VideoData.data.aweme_detail.video.cover
-                    ? {
-                        width: VideoData.data.aweme_detail.video.cover_original_scale.width,
-                        height: VideoData.data.aweme_detail.video.cover_original_scale.height
-                      }
-                    : undefined
-                  : VideoData.data.aweme_detail.images?.[0]
-                    ? {
-                        width: VideoData.data.aweme_detail.images[0].width,
-                        height: VideoData.data.aweme_detail.images[0].height
-                      }
-                    : undefined,
-              create_time: VideoData.data.aweme_detail.create_time,
-              music: VideoData.data.aweme_detail.music
-                ? {
-                    author: VideoData.data.aweme_detail.music.author,
-                    title: VideoData.data.aweme_detail.music.title,
-                    cover:
-                      VideoData.data.aweme_detail.music.cover_hd?.url_list[0] ?? VideoData.data.aweme_detail.music.cover_large?.url_list[0]
-                  }
-                : undefined,
-              video: isVideo
-                ? {
-                    duration: VideoData.data.aweme_detail.video.duration,
-                    width: VideoData.data.aweme_detail.video.width,
-                    height: VideoData.data.aweme_detail.video.height,
-                    ratio: VideoData.data.aweme_detail.video.ratio
-                  }
-                : undefined
+            const shareLink = isVideo
+              ? `https://aweme.snssdk.com/aweme/v1/play/?video_id=${aweme.video.play_addr.uri}&ratio=1080p&line=0`
+              : aweme.share_url
+            const workInfoImg = await renderWorkImage({
+              e: this.e,
+              Detail_Data: { ...aweme, user_info: userProfile },
+              create_time: aweme.create_time,
+              shareLink,
+              dynamicTypeLabel: isArticle ? '文章作品' : isVideo ? '视频作品' : this.is_slides ? '合辑作品' : '图文作品'
             })
-            this.e.reply(videoInfoImg)
+            await this.e.reply(workInfoImg)
           }
-        }
-
-        /** 处理文章类型作品 */
-        if (isArticle) {
-          await this.handleArticleWork(VideoData as Result<ArticleWork>, data)
         }
 
         if (Config.douyin.sendContent.includes('comment')) {

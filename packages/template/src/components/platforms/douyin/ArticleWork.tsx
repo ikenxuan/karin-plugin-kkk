@@ -238,7 +238,7 @@ const DouyinPosterFooter: React.FC<Props> = ({ data }) => {
 
   return (
     <footer className="mt-16 flex items-start justify-between gap-16">
-      <div className="min-w-0 flex-1 pt-4">
+      <div className="min-w-0 flex-1 pt-10">
         <div className="flex items-center gap-6">
           <img
             src={avater_url}

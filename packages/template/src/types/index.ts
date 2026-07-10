@@ -79,7 +79,6 @@ type DouyinComponentIds =
   | 'user_profile'
   | 'userlist'
   | 'video-work'
-  | 'videoInfo'
   | 'user_videolist'
   | 'qrcodeImg'
 
@@ -146,7 +145,6 @@ interface PathToDataTypeMap {
   'douyin/user_profile': import('./platforms/douyin/UserVideoList').DouyinUserVideoListProps['data']
   'douyin/userlist': import('./platforms/douyin').DouyinUserListProps['data']
   'douyin/video-work': import('./platforms/douyin').DouyinVideoWorkProps['data']
-  'douyin/videoInfo': import('./platforms/douyin').DouyinVideoInfoProps['data']
   'douyin/qrcodeImg': import('./platforms/douyin').DouyinQrcodeImgProps['data']
 
   // B站相关路径

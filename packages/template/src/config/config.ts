@@ -28,7 +28,6 @@ import { DouyinQrcodeImg } from '../components/platforms/douyin/qrcodeImg'
 import { DouyinRecommendList } from '../components/platforms/douyin/RecommendList'
 import DouyinUserList from '../components/platforms/douyin/UserList'
 import { DouyinUserVideoList } from '../components/platforms/douyin/UserVideoList'
-import { DouyinVideoInfo } from '../components/platforms/douyin/videoInfo'
 import { DouyinVideoWork } from '../components/platforms/douyin/VideoWork'
 // Kuaishou components
 import { KuaishouComment } from '../components/platforms/kuaishou/Comment'
@@ -153,10 +152,6 @@ export const componentConfigs: ExtendedPlatformConfig[] = baseComponentConfigs.m
                 return data && Array.isArray(data.renderOpt)
               },
               component: DouyinUserList
-            })
-          case 'videoInfo':
-            return createComponentConfig(baseComponent, {
-              component: DouyinVideoInfo
             })
           case 'qrcodeImg':
             return createComponentConfig(baseComponent, {
