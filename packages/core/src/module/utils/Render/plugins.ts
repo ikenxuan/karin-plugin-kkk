@@ -364,12 +364,20 @@ const isBilibiliPosterPaletteRequest = (request: ApplyRequest): boolean => {
   return request.templateType === 'bilibili' && request.templateName === 'dynamic/DYNAMIC_TYPE_LIVE_RCMD'
 }
 
-const isDouyinCoverThemeRequest = (request: ApplyRequest): boolean => {
+const isCoverThemeRequest = (request: ApplyRequest): boolean => {
+  if (request.templateType === 'bilibili') {
+    return request.templateName === 'videoInfo'
+  }
+
   return request.templateType === 'douyin' && (request.templateName === 'video-work' || request.templateName === 'image-work')
 }
 
-const getDouyinCoverUrl = (request: ApplyRequest): string => {
+const getCoverUrl = (request: ApplyRequest): string => {
   const data = request.data || {}
+
+  if (request.templateType === 'bilibili' && request.templateName === 'videoInfo') {
+    return typeof data.pic === 'string' ? data.pic : ''
+  }
 
   if (request.templateName === 'video-work') {
     return typeof data.image_url === 'string' ? data.image_url : ''
@@ -384,8 +392,8 @@ const getDouyinCoverUrl = (request: ApplyRequest): string => {
   return ''
 }
 
-const applyDouyinCoverTheme = async (ctx: BeforeRenderContext): Promise<void> => {
-  const imageUrl = getDouyinCoverUrl(ctx.request)
+const applyCoverTheme = async (ctx: BeforeRenderContext): Promise<void> => {
+  const imageUrl = getCoverUrl(ctx.request)
   if (!imageUrl) return
 
   const sample = await resolvePosterImageSample(imageUrl)
@@ -399,7 +407,7 @@ const applyDouyinCoverTheme = async (ctx: BeforeRenderContext): Promise<void> =>
   data.useDarkTheme = decision.useDarkTheme
 
   logger.debug(
-    `[Render] 抖音封面智能主题: ${ctx.request.templateName} -> ${decision.useDarkTheme ? '深色' : '浅色'} ` +
+    `[Render] 封面智能主题: ${ctx.request.templateType}/${ctx.request.templateName} -> ${decision.useDarkTheme ? '深色' : '浅色'} ` +
       `(luma=${decision.averageLuma.toFixed(2)}, dark=${decision.darkRatio.toFixed(2)}, bright=${decision.brightRatio.toFixed(2)}, vivid=${decision.vividRatio.toFixed(2)})`
   )
 }
@@ -409,11 +417,11 @@ export const createPosterPalettePlugin = (): Plugin => {
     name: '封面动态取色与智能主题',
     enforce: 'pre',
     apply(request: ApplyRequest) {
-      return isBilibiliPosterPaletteRequest(request) || (Config.app.Theme === 3 && isDouyinCoverThemeRequest(request))
+      return isBilibiliPosterPaletteRequest(request) || (Config.app.Theme === 3 && isCoverThemeRequest(request))
     },
     async beforeRender(ctx: BeforeRenderContext) {
-      if (Config.app.Theme === 3 && isDouyinCoverThemeRequest(ctx.request)) {
-        await applyDouyinCoverTheme(ctx)
+      if (Config.app.Theme === 3 && isCoverThemeRequest(ctx.request)) {
+        await applyCoverTheme(ctx)
       }
 
       if (!isBilibiliPosterPaletteRequest(ctx.request)) {
