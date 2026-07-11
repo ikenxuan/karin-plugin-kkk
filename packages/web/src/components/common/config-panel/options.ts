@@ -38,6 +38,12 @@ export const bilibiliQualityOptions: SelectOption[] = [
   { label: '8K 超高清', value: '127', description: '需大会员&视频支持' }
 ]
 
+export const bilibiliPushParseDynamicTypeOptions: SelectOption[] = [
+  { label: '视频动态', value: 'DYNAMIC_TYPE_AV' },
+  { label: '图文动态', value: 'DYNAMIC_TYPE_DRAW' },
+  { label: '文章动态', value: 'DYNAMIC_TYPE_ARTICLE' }
+]
+
 export const permissionOptions: SelectOption[] = [
   { label: '所有人', value: 'all' },
   { label: '管理员', value: 'admin' },

@@ -1,4 +1,5 @@
 import {
+  bilibiliPushParseDynamicTypeOptions,
   bilibiliQualityOptions,
   danmakuAreaOptions,
   displayContentOptions,
@@ -189,6 +190,13 @@ const BilibiliConfigPage = ({ config, renderers, classes }: ConfigPageProps) => 
             !bilibiliPushEnabled
           )}
           {renderSwitch(['bilibili', 'push', 'parsedynamic'], '作品解析', '触发推送时是否一同解析该作品。', !bilibiliPushEnabled)}
+          {renderCheckboxGroup(
+            ['bilibili', 'push', 'parseDynamicTypes'],
+            '需要解析的动态类型',
+            '选择推送时需要进一步解析的动态类型；未选择的类型只发送动态卡片。',
+            bilibiliPushParseDynamicTypeOptions,
+            !bilibiliPushEnabled || !bilibiliPushParsedynamic
+          )}
           {renderSelectField(
             ['bilibili', 'push', 'pushVideoQuality'],
             '解析视频动态时的画质偏好',

@@ -99,6 +99,8 @@ export interface bilibiliConfig {
     cron: string
     /** 推送时是否一同解析该动态 */
     parsedynamic: boolean
+    /** 开启推送解析后，需要进一步解析的动态类型 */
+    parseDynamicTypes: ('DYNAMIC_TYPE_AV' | 'DYNAMIC_TYPE_DRAW' | 'DYNAMIC_TYPE_ARTICLE')[]
     /** 推送时遇到视频动态时解析的画质偏好设置，0 为自动根据「pushMaxAutoVideoSize」大小选择，其他为固定画质，仅「parsedynamic」为 true 时生效
      * - 0: 自动根据大小选择
      * - 6: 240P 极速 (仅MP4格式支持)

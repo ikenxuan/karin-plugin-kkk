@@ -153,6 +153,7 @@ export interface ConfigType {
       permission: 'all' | 'admin' | 'master' | 'group.owner' | 'group.admin'
       cron: string
       parsedynamic: boolean
+      parseDynamicTypes: Array<'DYNAMIC_TYPE_AV' | 'DYNAMIC_TYPE_DRAW' | 'DYNAMIC_TYPE_ARTICLE'>
       pushVideoQuality: 0 | 6 | 16 | 32 | 64 | 74 | 80 | 112 | 116 | 120
       pushMaxAutoVideoSize: number
     }

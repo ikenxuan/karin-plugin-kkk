@@ -748,7 +748,13 @@ export class Bilibilipush extends Base {
               : []
 
           status = await karin.sendMsg(botId, Contact, [...watermarkedImg, ...parseButton])
-          if (Config.bilibili.push.parsedynamic && status.messageId) {
+          const shouldParseDynamic =
+            Config.bilibili.push.parsedynamic &&
+            Config.bilibili.push.parseDynamicTypes.includes(
+              data[dynamicId].dynamic_type as 'DYNAMIC_TYPE_AV' | 'DYNAMIC_TYPE_DRAW' | 'DYNAMIC_TYPE_ARTICLE'
+            )
+
+          if (shouldParseDynamic && status.messageId) {
             switch (data[dynamicId].dynamic_type) {
               case 'DYNAMIC_TYPE_AV': {
                 if (send_video) {

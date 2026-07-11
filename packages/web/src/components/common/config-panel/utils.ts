@@ -105,6 +105,10 @@ export const normalizeConfigArrays = (config: ConfigType): ConfigType => {
   const arrayFields: Array<{ path: ConfigPath; options: string[] }> = [
     { path: ['bilibili', 'sendContent'], options: ['info', 'comment', 'video', 'image'] },
     { path: ['bilibili', 'displayContent'], options: ['cover', 'title', 'author', 'stats', 'desc'] },
+    {
+      path: ['bilibili', 'push', 'parseDynamicTypes'],
+      options: ['DYNAMIC_TYPE_AV', 'DYNAMIC_TYPE_DRAW', 'DYNAMIC_TYPE_ARTICLE']
+    },
     { path: ['douyin', 'sendContent'], options: ['info', 'comment', 'video', 'image'] },
     { path: ['xiaohongshu', 'sendContent'], options: ['info', 'comment', 'video', 'image'] },
     { path: ['kuaishou', 'sendContent'], options: ['info', 'comment', 'video', 'image'] }

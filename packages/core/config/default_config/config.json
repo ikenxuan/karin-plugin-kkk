@@ -112,6 +112,7 @@
       "permission": "all",
       "cron": "*/10 * * * *",
       "parsedynamic": true,
+      "parseDynamicTypes": ["DYNAMIC_TYPE_AV", "DYNAMIC_TYPE_DRAW", "DYNAMIC_TYPE_ARTICLE"],
       "pushVideoQuality": 120,
       "pushMaxAutoVideoSize": 1000
     }

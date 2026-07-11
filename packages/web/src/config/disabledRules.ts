@@ -695,6 +695,19 @@ export const disabledRules: DisabledRule[] = [
     ]
   },
   {
+    path: ['bilibili', 'push', 'parseDynamicTypes'],
+    rules: [
+      {
+        condition: (cfg) => !getValue<boolean>(cfg, ['bilibili', 'push', 'switch'], false),
+        message: '修改此配置项需要先将「推送开关」打开'
+      },
+      {
+        condition: (cfg) => !getValue<boolean>(cfg, ['bilibili', 'push', 'parsedynamic'], false),
+        message: '修改此配置项需要先将「作品解析」打开'
+      }
+    ]
+  },
+  {
     path: ['bilibili', 'push', 'pushVideoQuality'],
     rules: [
       {
