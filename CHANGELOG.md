@@ -2,6 +2,23 @@
 
 # Changelog
 
+## [2.39.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.38.0...v2.39.0) (2026-07-13)
+
+
+### ✨ 新功能
+
+* **bilibili:** 添加推送解析动态类型配置，支持视频、图文和文章动态 ([fb5f075](https://github.com/ikenxuan/karin-plugin-kkk/commit/fb5f0752aa67a686e8855de77906f627a4dec2e3))
+
+
+### 🐛 错误修复
+
+* 重构封面主题请求处理，统一抖音和哔哩哔哩封面逻辑 ([5b333f1](https://github.com/ikenxuan/karin-plugin-kkk/commit/5b333f1f2d2529c0e8176862c63e17c66de36215))
+
+
+### 💄 UI 优化
+
+* 优化部分模板字号 ([517ef25](https://github.com/ikenxuan/karin-plugin-kkk/commit/517ef258d510557a6ce2a1b5932a886b32fda251))
+
 ## [2.38.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.37.1...v2.38.0) (2026-07-10)
 
 
