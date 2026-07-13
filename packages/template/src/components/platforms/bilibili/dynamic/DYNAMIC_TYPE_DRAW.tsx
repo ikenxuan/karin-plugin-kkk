@@ -44,9 +44,9 @@ const BilibiliDynamicContent: React.FC<BilibiliDynamicContentProps> = (props) =>
           </div>
         )}
 
-        <div className="relative items-center text-5xl tracking-wider wrap-break-word text-foreground">
+        <div className="relative items-center text-6xl tracking-wider wrap-break-word text-foreground">
           <div
-            className="text-[60px] tracking-[0.5px] leading-[1.6] whitespace-pre-wrap text-foreground select-text"
+            className="tracking-[0.5px] leading-[1.6] whitespace-pre-wrap text-foreground select-text"
             style={{
               wordBreak: 'break-word',
               overflowWrap: 'break-word'

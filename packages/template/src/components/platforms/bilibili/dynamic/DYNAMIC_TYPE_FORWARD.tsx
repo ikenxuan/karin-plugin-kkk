@@ -271,7 +271,7 @@ const BilibiliForwardContent: React.FC<BilibiliForwardDynamicProps['data']> = (p
     <>
       {/* 转发文本内容 */}
       <div className="flex flex-col px-20 w-full">
-        <div className="relative items-center text-5xl tracking-wider wrap-break-word text-foreground leading-relaxed">
+        <div className="relative items-center text-6xl tracking-wider wrap-break-word text-foreground leading-relaxed">
           {props.text &&
             renderRichTextToReact(props.text, {
               at: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
