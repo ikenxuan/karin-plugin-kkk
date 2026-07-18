@@ -1,125 +1,148 @@
 name: 🐛 Bug 报告
-description: 报告项目中的错误或问题
+description: 报告可复现的插件缺陷；使用咨询与配置排查请前往 Discussions
 title: 'Bug: '
 labels: ['bug']
 body:
   - type: markdown
     attributes:
       value: |
-        ## 感谢你提交 Bug 报告！
+        ## 提交前请先花一分钟确认
 
-        > ⚠️ **请务必修改上方标题**，简要描述你遇到的问题（例如：`Bug: 解析抖音视频时报错`）
-        > 
-        > 标题格式不正确的 issue 可能会被直接关闭
+        Issue 用于跟踪**可复现、可定位的插件缺陷**。安装咨询、配置求助、平台偶发风控、失效链接等问题，请先查阅[项目文档](https://karin-plugin-kkk-docs.vercel.app)并前往 [Discussions](https://github.com/ikenxuan/karin-plugin-kkk/discussions) 交流。
+
+        > 强烈推荐阅读 [《提问的智慧》](https://github.com/ryanhanwu/How-To-Ask-Questions-The-Smart-Way)、[《如何向开源社区提问题》](https://github.com/seajs/seajs/issues/545)、[《如何有效地报告 Bug》](http://www.chiark.greenend.org.uk/%7Esgtatham/bugs-cn.html) 和 [《如何向开源项目提交无法解答的问题》](https://zhuanlan.zhihu.com/p/25795393)。描述越准确、证据越完整，问题越容易得到有效处理。
+
+        > [!IMPORTANT]
+        > 请把“发生了什么、如何复现、完整日志、运行环境”一次写清。仅填写“如题”“如图”“报错了”，或使用 `*`、`test` 等内容占位，会被自动标记为 `needs-info`。
+
+        > [!CAUTION]
+        > 日志、截图和配置必须先脱敏。请勿提交 Cookie、Token、账号、群号、代理认证或其他隐私信息。
 
   - type: checkboxes
-    id: checklist
+    id: preflight
     attributes:
-      label: 提交前检查
-      description: 请确认以下事项
+      label: 提交前确认
+      description: 以下项目全部完成后再提交；勾选不代表可以省略下方证据。
       options:
-        - label: 我已经搜索过现有的 Issues，确认没有重复的问题
+        - label: '我已查阅项目文档，并确认这不是文档已有答案的使用或配置问题 <!-- kkk-issue-form: bug-v2 -->'
           required: true
-        - label: 我已经修改了上方的标题，填写了具体的问题描述
+        - label: 我已搜索现有 Issues 和 Discussions，确认没有相同问题
           required: true
-        - label: 我使用的是最新版本的插件
+        - label: 我已更新到当前最新稳定版，并在更新后重新复现
+          required: true
+        - label: 我确认下方日志、截图和配置均已移除敏感信息
+          required: true
+        - label: 我理解信息不足的 Issue 会被标记，超过 7 天仍未补充可能被自动关闭
           required: true
 
-  - type: input
-    id: title-summary
+  - type: dropdown
+    id: problem-type
     attributes:
-      label: 问题简述
-      description: 用一句话概括你遇到的问题（这将帮助我们快速定位）
-      placeholder: 例如：解析 B 站视频时提示 Cookie 失效
-    validations:
-      required: true
-
-  - type: textarea
-    id: describe-the-bug
-    attributes:
-      label: 问题描述
-      description: 清晰、简洁地描述你遇到的问题
-      placeholder: 请详细描述你遇到的问题...
-    validations:
-      required: true
-
-  - type: textarea
-    id: reproduce-steps
-    attributes:
-      label: 复现步骤
-      description: 列出复现该问题的步骤
-      placeholder: |
-        1. 发送链接 xxx
-        2. 等待解析
-        3. 出现错误 xxx
-    validations:
-      required: true
-
-  - type: textarea
-    id: expected-behavior
-    attributes:
-      label: 预期行为
-      description: 描述你期望发生的行为
-      placeholder: 请描述你期望的行为...
-    validations:
-      required: true
-
-  - type: textarea
-    id: screenshots
-    attributes:
-      label: 错误日志或截图
-      description: |
-        请提供完整的错误日志或截图，这能帮助我更快定位问题
-        - 日志请使用代码块包裹
-        - 截图请直接粘贴
-      placeholder: 请粘贴错误日志或上传截图...
+      label: 问题类型
+      description: 选择最接近的类型，便于快速分流。
+      options:
+        - 链接解析、视频或图集发送
+        - 动态推送
+        - 安装、启动或更新
+        - WebUI 或配置管理
+        - 模板渲染或截图
+        - 登录、Cookie 或平台风控
+        - 统计或数据库
+        - 其他或暂不确定
     validations:
       required: true
 
   - type: dropdown
     id: platform
     attributes:
-      label: 相关平台
-      description: 这个问题涉及哪个平台？
+      label: 涉及平台
+      description: 选择问题直接涉及的平台。
       options:
+        - 通用或不确定
         - 抖音
         - B站
         - 快手
         - 小红书
-        - 推送功能
-        - 其他/不确定
     validations:
       required: true
 
-  - type: input
-    id: version
+  - type: textarea
+    id: description
     attributes:
-      label: 插件版本
-      description: 你所使用的插件版本（可通过 `#kkk版本` 查看）
-      placeholder: 例如：1.0.0
+      label: 问题描述
+      description: 说明问题出现的位置、触发条件、首次出现时间和影响；不要只重复标题或只贴截图。
+      placeholder: |
+        例如：从 2.x.x 更新到 2.x.x 后，所有 B 站视频动态都会重复发送两次；普通图文动态不受影响。
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: 复现步骤
+      description: 提供最小、完整、可重复执行的步骤；若依赖特定链接或配置，请一并给出脱敏后的最小样例。
+      placeholder: |
+        1. 在 WebUI 中将……设置为……
+        2. 发送或等待处理链接……
+        3. 观察到……
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual-result
+    attributes:
+      label: 实际结果与完整日志
+      description: 粘贴错误发生前后的完整文本日志，或上传能说明问题的截图/日志文件。请勿只提供被裁掉上下文的报错截图。
+      placeholder: |
+        请粘贴日志或拖入截图/日志文件，并标出问题发生的时间点。没有异常堆栈时，也请写明机器人实际发送或返回了什么。
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-result
+    attributes:
+      label: 预期行为
+      description: 说明你认为正确的输入、处理过程或输出是什么。
+      placeholder: 例如：同一条动态只应推送一次，且图片和视频各发送一次。
+    validations:
+      required: true
+
+  - type: textarea
+    id: related-config
+    attributes:
+      label: 相关配置
+      description: 仅粘贴与问题有关的脱敏配置。若确认与配置无关，请写明判断依据，不要填写 `无` 或 `*`。
+      placeholder: |
+        例如：
+        - push.cron: */10 * * * *
+        - sendContent: [info, video]
+        - 与配置无关：安装阶段尚未生成配置文件
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: 运行环境
+      description: 请完整填写实际版本，不要写“最新版”或“默认”。插件版本可通过 `#kkk版本` 查看。
+      value: |
+        - 插件版本（#kkk版本）：
+        - Karin 版本：
+        - Node.js 版本：
+        - 操作系统：
+        - 适配器 / 协议端：
+        - 安装方式（插件市场 / npm / Git / Docker）：
     validations:
       required: true
 
   - type: dropdown
-    id: adapter
+    id: reproducibility
     attributes:
-      label: 使用的适配器
-      description: 你使用的是什么适配器连接机器人？
+      label: 复现频率
       options:
-        - ICQQ
-        - NapCat
-        - LLOneBot
-        - Lagrange
-        - Koishi
-        - 其他
+        - 必现（每次都能复现）
+        - 高频（多数情况下可复现）
+        - 偶发（已复现多次但不稳定）
+        - 仅出现一次
     validations:
       required: true
-
-  - type: input
-    id: os
-    attributes:
-      label: 操作系统
-      description: 你的服务器/电脑操作系统
-      placeholder: 例如：Windows 11、Ubuntu 24.04、Debian 12
-    validations:
-      required: false

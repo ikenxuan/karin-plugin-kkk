@@ -1,114 +1,179 @@
 name: Issue Management
 
 on:
+  issues:
+    types: [opened, edited]
   schedule:
     - cron: '30 1 * * *'
-  issues:
-    types: [labeled, opened, edited]
+
+permissions:
+  contents: read
+  issues: write
 
 jobs:
-  # Issue 格式验证
   validate-issue:
-    if: github.event_name == 'issues' && github.event.action == 'opened'
+    name: 检查 Issue 信息完整性
+    if: github.event_name == 'issues'
+    runs-on: ubuntu-latest
+    outputs:
+      valid: ${{ steps.quality.outputs.result }}
+    steps:
+      - name: Checkout default branch
+        uses: actions/checkout@v4
+
+      - name: Validate issue content
+        id: quality
+        uses: actions/github-script@v7
+        with:
+          result-encoding: string
+          script: |
+            const {
+              QUALITY_COMMENT_MARKER,
+              buildQualityComment,
+              validateIssue
+            } = require('./.github/scripts/issue-quality.cjs')
+
+            const issue = context.payload.issue
+            const { problems } = validateIssue(issue)
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue.number,
+              per_page: 100
+            })
+            const qualityComment = comments.find((comment) => comment.body?.includes(QUALITY_COMMENT_MARKER))
+            const labels = issue.labels.map((label) => typeof label === 'string' ? label : label.name)
+
+            if (problems.length > 0) {
+              const body = buildQualityComment(issue.user.login, problems)
+
+              if (qualityComment) {
+                if (qualityComment.body !== body) {
+                  await github.rest.issues.updateComment({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    comment_id: qualityComment.id,
+                    body
+                  })
+                }
+              } else {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issue.number,
+                  body
+                })
+              }
+
+              if (!labels.includes('needs-info')) {
+                await github.rest.issues.addLabels({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issue.number,
+                  labels: ['needs-info']
+                })
+              }
+
+              return 'false'
+            }
+
+            // 只撤销本工作流自己添加的 needs-info，避免覆盖维护者的人工判断。
+            if (qualityComment) {
+              await github.rest.issues.deleteComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: qualityComment.id
+              })
+
+              if (labels.includes('needs-info')) {
+                await github.rest.issues.removeLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issue.number,
+                  name: 'needs-info'
+                })
+              }
+            }
+
+            return 'true'
+
+  similarity-analysis:
+    name: 检查可能的重复 Issue
+    needs: validate-issue
+    if: github.event_name == 'issues' && needs.validate-issue.outputs.valid == 'true'
     runs-on: ubuntu-latest
     steps:
-      - name: Check issue title
+      - name: Analyze similar titles
+        uses: actions-cool/issues-similarity-analysis@v1
+        with:
+          filter-threshold: 0.86
+          title-excludes: 'Bug, bug, Feature, feature, Request, request, 问题, 功能, 请求, 建议, 支持, 解析'
+          comment-title: '### 可能的重复 Issue（请先核对）'
+          comment-body: '${index}. ${similarity} · #${number} ${title}'
+          show-footer: false
+          show-mentioned: false
+          since-days: 365
+          exclude-labels: 'duplicate,invalid,needs-info,question,wontfix'
+
+  close-stale-needs-info:
+    name: 关闭长期未补充的 Issue
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout default branch
+        uses: actions/checkout@v4
+
+      - name: Close inactive quality failures
         uses: actions/github-script@v7
         with:
           script: |
-            const issue = context.payload.issue;
-            const title = issue.title;
-            const body = issue.body || '';
+            const { QUALITY_COMMENT_MARKER } = require('./.github/scripts/issue-quality.cjs')
+            const inactiveDays = 7
+            const cutoff = new Date(Date.now() - inactiveDays * 24 * 60 * 60 * 1000).toISOString().slice(0, 10)
+            const query = `repo:${context.repo.owner}/${context.repo.repo} is:issue is:open label:"needs-info" updated:<${cutoff}`
+            const candidates = await github.paginate(github.rest.search.issuesAndPullRequests, {
+              q: query,
+              per_page: 100
+            })
 
-            const problems = [];
+            for (const issue of candidates) {
+              if (issue.pull_request) continue
 
-            // 检查标题是否只有前缀没有实际内容
-            const bugPrefixOnly = /^Bug:\s*$/i.test(title);
-            const featurePrefixOnly = /^Feature:\s*$/i.test(title);
-            const emptyTitle = title.trim().length === 0;
-            const tooShort = title.replace(/^(Bug|Feature):\s*/i, '').trim().length < 5;
+              const comments = await github.paginate(github.rest.issues.listComments, {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                per_page: 100
+              })
+              const managedByQualityCheck = comments.some((comment) => comment.body?.includes(QUALITY_COMMENT_MARKER))
+              if (!managedByQualityCheck) continue
 
-            if (emptyTitle || bugPrefixOnly || featurePrefixOnly) {
-              problems.push('❌ **标题为空**：请在标题中简要描述你的问题或建议');
-            } else if (tooShort) {
-              problems.push('⚠️ **标题过短**：请提供更具体的标题描述（至少 5 个字符）');
-            }
-
-            // 检查是否填写了问题简述
-            const hasSummary = body.includes('### 问题简述') || body.includes('### 功能简述');
-            const summaryMatch = body.match(/### (?:问题|功能)简述\s*\n\s*(.+?)(?:\n|$)/);
-            if (hasSummary && (!summaryMatch || summaryMatch[1].trim().length < 5)) {
-              problems.push('⚠️ **简述过短**：请在「问题简述」或「功能简述」中提供更详细的描述');
-            }
-
-            if (problems.length > 0) {
-              const warningBody = `
-            你好 @${issue.user.login}，感谢你提交 Issue！
-
-            但是我们发现了一些格式问题：
-
-            ${problems.join('\n')}
-
-            ---
-
-            📝 **请编辑此 Issue**，补充以上信息后我们会尽快处理。
-
-            > 💡 提示：一个好的标题应该简洁明了地描述问题，例如：
-            > - \`Bug: 解析抖音视频时提示 Cookie 失效\`
-            > - \`Feature: 支持解析微博视频\`
-            `;
-              
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: issue.number,
-                body: warningBody
-              });
-              
-              // 添加 needs-info 标签
+                body: `### 因信息不足自动关闭\n\n此 Issue 被标记为 \`needs-info\` 后超过 ${inactiveDays} 天仍未补充，且期间没有新活动，因此自动关闭。\n\n如果问题仍然存在，请先按模板补齐复现步骤、完整日志和运行环境，再请求重新打开。`
+              })
+
               await github.rest.issues.addLabels({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: issue.number,
-                labels: ['needs-info']
-              });
+                labels: ['invalid']
+              })
+
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                state: 'closed',
+                state_reason: 'not_planned'
+              })
+
+              await github.rest.issues.removeLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                name: 'needs-info'
+              })
             }
-
-  # 标签回复
-  label-greetings:
-    if: github.event_name == 'issues' && github.event.action == 'labeled'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Create comment for enhancement
-        if: github.event.label.name == 'enhancement'
-        uses: actions-cool/issues-helper@v3
-        with:
-          actions: 'create-comment'
-          token: ${{ secrets.GITHUB_TOKEN }}
-          body: |
-            你好 @${{ github.event.issue.user.login }}，我们已经记录了你的新功能提议。如果你有任何具体的实现想法或设计草图，欢迎随时分享给我们。
-
-      - name: Create comment for bug
-        if: github.event.label.name == 'bug'
-        uses: actions-cool/issues-helper@v3
-        with:
-          actions: 'create-comment'
-          token: ${{ secrets.GITHUB_TOKEN }}
-          body: |
-            你好 @${{ github.event.issue.user.login }}，看来我们的代码不小心打了个盹儿。别担心，我们已经唤醒了开发团队，他们正快马加鞭地赶来修复！🔨🐞
-
-  # 相似性分析
-  similarity-analysis:
-    if: github.event_name == 'issues' && (github.event.action == 'opened' || github.event.action == 'edited')
-    runs-on: ubuntu-latest
-    steps:
-      - name: analysis
-        uses: actions-cool/issues-similarity-analysis@v1
-        with:
-          filter-threshold: 0.8
-          comment-title: '### 似乎有相似的问题'
-          comment-body: '${index}. ${similarity} #${number}'
-          show-footer: false
-          show-mentioned: true
-          since-days: 730
-          exclude-labels: 'duplicate,invalid,needs-info'

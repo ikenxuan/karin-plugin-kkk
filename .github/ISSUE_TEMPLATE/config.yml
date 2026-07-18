@@ -1,8 +1,11 @@
 blank_issues_enabled: false
 contact_links:
-  - name: 💬 讨论区
-    url: https://github.com/ikenxuan/karin-plugin-kkk/discussions
-    about: 有问题想讨论？欢迎到讨论区交流
-  - name: 📖 文档
+  - name: 🔎 搜索已有问题
+    url: https://github.com/ikenxuan/karin-plugin-kkk/issues?q=is%3Aissue
+    about: 提交前先搜索标题、报错关键词和涉及的平台，避免重复 Issue
+  - name: 📖 项目文档
     url: https://karin-plugin-kkk-docs.vercel.app
-    about: 查看项目文档和使用说明
+    about: 安装、配置、命令和常见问题请先查阅文档
+  - name: 💬 使用咨询与故障排查
+    url: https://github.com/ikenxuan/karin-plugin-kkk/discussions
+    about: 不确定是否为插件缺陷，或需要安装、配置、使用帮助时，请先在 Discussions 交流
