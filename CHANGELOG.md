@@ -2,6 +2,18 @@
 
 # Changelog
 
+## [2.40.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.39.0...v2.40.0) (2026-07-18)
+
+
+### ✨ 新功能
+
+* 重写 `#kkk版本` 相关UI ([782cf58](https://github.com/ikenxuan/karin-plugin-kkk/commit/782cf58d6dacdf7494a681c51b4417c28568071c))
+
+
+### 📝 文档更新
+
+* update readme ([b20b53b](https://github.com/ikenxuan/karin-plugin-kkk/commit/b20b53bfefb74375ff2a1448ce0935e5e0d9993d))
+
 ## [2.39.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.38.0...v2.39.0) (2026-07-13)
 
 ### ✨ 新功能
