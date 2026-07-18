@@ -77,11 +77,11 @@
     "@karinjs/adapter-qqbot": "2.2.1",
     "@karinjs/plugin-adapter-discordbot": "https://pkg.pr.new/@karinjs/plugin-adapter-discordbot@1feb687",
     "@karinjs/plugin-adapter-milky": "^1.3.0",
-    "@karinjs/plugin-basic": "1.4.11",
+    "@karinjs/plugin-basic": "1.4.13",
     "@karinjs/plugin-ffmpeg": "^0.1.3",
     "@karinjs/plugin-puppeteer": "^2.3.1",
     "@kkk/richtext": "workspace:*",
-    "@tailwindcss/vite": "4.3.2",
+    "@tailwindcss/vite": "4.3.3",
     "@types/cors": "^2.8.19",
     "@types/express": "5.0.6",
     "@types/heic-decode": "^2.0.0",
@@ -92,7 +92,7 @@
     "http-proxy-middleware": "4.2.0",
     "jpeg-js": "^0.4.4",
     "template": "workspace:*",
-    "tsdown": "^0.22.4",
+    "tsdown": "^0.22.9",
     "vite-plugin-top-level-await": "^1.6.0",
     "vite-plugin-wasm": "^3.6.0",
     "vitest": "^4.1.10"
@@ -124,5 +124,5 @@
     "web": "./lib/web.config.js",
     "ts-web": "./src/web.config.ts"
   },
-  "timestamp": "2026-07-13T03:33:16.900Z"
+  "timestamp": "2026-07-18T20:29:34.500Z"
 }

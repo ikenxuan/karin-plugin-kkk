@@ -15,9 +15,18 @@ type DiffusePosterProps = {
 export function DiffusePosterExample(props: DiffusePosterProps) {
   return (
     <main className="relative overflow-hidden bg-[#101114] text-white" style={{ width: 1440, minHeight: 2100 }}>
-      <div className="pointer-events-none absolute -left-80 -top-72 h-[1180px] w-[1350px] rounded-full blur-[180px]" style={{ background: `radial-gradient(ellipse at 40% 40%, ${props.accent}66 0%, transparent 70%)` }} />
-      <div className="pointer-events-none absolute -right-72 top-[520px] h-[900px] w-[860px] rounded-full blur-[150px]" style={{ background: 'radial-gradient(ellipse at 50% 50%, rgba(56,189,248,0.28) 0%, transparent 72%)' }} />
-      <div className="pointer-events-none absolute bottom-[-260px] left-40 h-[760px] w-[1100px] rounded-full blur-[220px]" style={{ background: `radial-gradient(ellipse at 50% 60%, ${props.accent}44 0%, transparent 75%)` }} />
+      <div
+        className="pointer-events-none absolute -left-80 -top-72 h-[1180px] w-[1350px] rounded-full blur-[180px]"
+        style={{ background: `radial-gradient(ellipse at 40% 40%, ${props.accent}66 0%, transparent 70%)` }}
+      />
+      <div
+        className="pointer-events-none absolute -right-72 top-[520px] h-[900px] w-[860px] rounded-full blur-[150px]"
+        style={{ background: 'radial-gradient(ellipse at 50% 50%, rgba(56,189,248,0.28) 0%, transparent 72%)' }}
+      />
+      <div
+        className="pointer-events-none absolute bottom-[-260px] left-40 h-[760px] w-[1100px] rounded-full blur-[220px]"
+        style={{ background: `radial-gradient(ellipse at 50% 60%, ${props.accent}44 0%, transparent 75%)` }}
+      />
 
       <svg className="pointer-events-none absolute inset-0 h-full w-full opacity-[0.12] mix-blend-overlay">
         <filter id="poster-noise">

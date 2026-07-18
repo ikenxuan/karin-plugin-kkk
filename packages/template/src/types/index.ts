@@ -111,7 +111,7 @@ type XiaohongshuComponentIds = 'noteInfo' | 'comment'
 /**
  * 其他平台组件ID
  */
-type OtherComponentIds = 'help' | 'handlerError' | 'changelog' | 'version_warning' | 'qrlogin' | 'live-photo-tip'
+type OtherComponentIds = 'help' | 'handlerError' | 'changelog' | 'runtime' | 'version_warning' | 'qrlogin' | 'live-photo-tip'
 
 /**
  * 统计平台组件ID
@@ -171,6 +171,7 @@ interface PathToDataTypeMap {
   'other/help': import('./platforms/other/help').HelpProps['data']
   'other/handlerError': import('./platforms/other/handlerError').ApiErrorProps['data']
   'other/changelog': import('./platforms/other/changelog').ChangelogProps['data']
+  'other/runtime': import('./platforms/other/runtime').RuntimeReportProps['data']
   'other/version_warning': import('./platforms/other/VersionWarningProps').VersionWarningProps['data']
   'other/qrlogin': import('./platforms/other/qrlogin').QrLoginProps['data']
   'other/live-photo-tip': import('./platforms/other/livePhotoTip').LivePhotoTipProps['data']
@@ -207,7 +208,10 @@ export interface DataTypeMap {
   /** 快手平台数据类型 */
   kuaishou: import('./platforms/kuaishou').KuaishouCommentProps['data']
   /** 其他类型数据 */
-  other: import('./platforms/other/help').HelpProps['data'] | import('./platforms/other/livePhotoTip').LivePhotoTipProps['data']
+  other:
+    | import('./platforms/other/help').HelpProps['data']
+    | import('./platforms/other/livePhotoTip').LivePhotoTipProps['data']
+    | import('./platforms/other/runtime').RuntimeReportProps['data']
 }
 
 /**

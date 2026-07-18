@@ -8,7 +8,6 @@ import { DevTools } from '@vitejs/devtools'
 import react from '@vitejs/plugin-react'
 import { codeInspectorPlugin } from 'code-inspector-plugin'
 import { defineConfig } from 'vite'
-import checker from 'vite-plugin-checker'
 
 import { mockApiPlugin } from './src/dev/vite-mock-plugin'
 
@@ -103,16 +102,7 @@ export default defineConfig(({ command }) => {
           ...nodeKarinDevAliases
         }
       },
-      plugins: [
-        ...baseConfig.plugins,
-        DevTools(),
-        mockApiPlugin(),
-        fontProxyPlugin(),
-        checker({
-          // e.g. use TypeScript check
-          typescript: true
-        })
-      ],
+      plugins: [...baseConfig.plugins, DevTools(), mockApiPlugin(), fontProxyPlugin()],
       root: path.resolve(__dirname, './src/dev'),
       publicDir: path.resolve(__dirname, './public'),
       server: {

@@ -32,7 +32,7 @@
     "sort": "sort-package-json"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.110.0",
+    "@anthropic-ai/sdk": "^0.112.3",
     "@heroui/react": "3.2.2",
     "@heroui/styles": "3.2.2",
     "@icons-pack/react-simple-icons": "^13.13.0",
@@ -42,37 +42,36 @@
     "@pansy/watermark": "^2.3.0",
     "@phosphor-icons/react": "^2.1.10",
     "@thesvg/icons": "^3.0.18",
-    "@zumer/snapdom": "^2.15.0",
+    "@zumer/snapdom": "^2.16.0",
     "ahooks": "^3.9.7",
     "axios": "1.18.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.4.0",
     "gsap": "^3.15.0",
     "highlight.js": "^11.11.1",
-    "lucide-react": "^1.23.0",
-    "openai": "^6.45.0",
+    "lucide-react": "^1.25.0",
+    "openai": "^6.48.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "react-icons": "^5.7.0",
     "react-markdown": "^10.1.0",
-    "react-resizable-panels": "^4.12.1",
+    "react-resizable-panels": "^4.12.2",
     "react-zoom-pan-pinch": "^4.0.3",
     "rehype-highlight": "^7.0.2",
     "tailwind-merge": "3.6.0",
     "victory": "^37.3.6"
   },
   "devDependencies": {
-    "@tailwindcss/vite": "4.3.2",
+    "@tailwindcss/vite": "4.3.3",
     "@types/express": "5.0.6",
     "@types/js-beautify": "^1.14.3",
     "@types/lodash": "^4.17.24",
     "@types/react": "19.2.17",
     "@types/react-dom": "19.2.3",
-    "@vitejs/devtools": "^0.3.4",
+    "@vitejs/devtools": "^0.4.1",
     "@vitejs/plugin-react": "^6.0.3",
     "code-inspector-plugin": "^1.6.6",
     "cross-env": "10.1.0",
-    "react-scan": "^0.5.7",
-    "vite-plugin-checker": "^0.14.4"
+    "react-scan": "^0.5.7"
   }
 }

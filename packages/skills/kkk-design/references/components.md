@@ -46,9 +46,7 @@
 ## 玻璃面板
 
 ```tsx
-<div className="rounded-[3rem] border border-white/15 bg-white/10 p-12 backdrop-blur-xl shadow-2xl">
-  ...
-</div>
+<div className="rounded-[3rem] border border-white/15 bg-white/10 p-12 backdrop-blur-xl shadow-2xl">...</div>
 ```
 
 - 浅色背景：可用 `rgba(255,255,255,0.45-0.70)`。

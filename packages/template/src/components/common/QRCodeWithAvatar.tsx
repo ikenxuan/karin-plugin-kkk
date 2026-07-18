@@ -47,7 +47,6 @@ const QRCodeWithAvatarClient: React.FC<QRCodeWithAvatarProps> = (props) => {
   return <QRCodeImage {...props} avatar={avatar} />
 }
 
-export const QRCodeWithAvatar =
-  typeof window === 'undefined' ? React.memo(QRCodeWithAvatarServer) : React.memo(QRCodeWithAvatarClient)
+export const QRCodeWithAvatar = typeof window === 'undefined' ? React.memo(QRCodeWithAvatarServer) : React.memo(QRCodeWithAvatarClient)
 
 QRCodeWithAvatar.displayName = 'QRCodeWithAvatar'

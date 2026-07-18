@@ -172,10 +172,7 @@ const DouyinPosterTitle: React.FC<Props> = ({ data }) => {
       )}
       {hasDesc && (
         <div
-          className={cn(
-            "mt-7 whitespace-pre-wrap select-text",
-            !hasTitle ? 'text-6xl font-bold leading-tight' : 'text-5xl font-medium'
-          )}
+          className={cn('mt-7 whitespace-pre-wrap select-text', !hasTitle ? 'text-6xl font-bold leading-tight' : 'text-5xl font-medium')}
           style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}
         >
           {renderRichTextToReact(desc, richTextOptions)}
@@ -264,13 +261,13 @@ const DouyinImageCover: React.FC<Props> = ({ data }) => {
           {music.cover ? (
             <div className="relative h-20 w-20 shrink-0">
               <GlowImage glowStrength={1} blurRadius={20}>
-              <img
-                src={music.cover}
-                alt="BGM封面"
-                className="relative z-10 h-full w-full rounded-2xl object-cover"
-                referrerPolicy="no-referrer"
-                crossOrigin="anonymous"
-              />
+                <img
+                  src={music.cover}
+                  alt="BGM封面"
+                  className="relative z-10 h-full w-full rounded-2xl object-cover"
+                  referrerPolicy="no-referrer"
+                  crossOrigin="anonymous"
+                />
               </GlowImage>
             </div>
           ) : (

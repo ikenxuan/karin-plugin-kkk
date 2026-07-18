@@ -321,6 +321,14 @@ export const baseComponentConfigs: BasePlatformConfig[] = [
         exportName: 'changelog'
       },
       {
+        id: 'runtime',
+        name: '运行环境诊断',
+        description: 'KKK插件运行环境诊断页面',
+        enabled: true,
+        componentPath: 'platforms/other/runtime',
+        exportName: 'RuntimeReport'
+      },
+      {
         id: 'version_warning',
         name: '版本警告',
         description: '版本不兼容警告页面',

@@ -1,10 +1,9 @@
-import fs from 'node:fs'
+import karin, { config } from 'node-karin'
 
-import karin, { config, logs } from 'node-karin'
-
-import { Render, Root } from '@/module'
+import { Render } from '@/module'
 import { Config } from '@/module/utils/Config'
 import { wrapWithErrorHandler } from '@/module/utils/ErrorHandler'
+import { collectRuntimeReport, getLocalChangelog } from '@/module/utils/runtime-report'
 
 type Role = 'master' | 'member'
 type RoleItem = { title: string; description: string; icon?: string | { name: string; color?: string }; roles?: Role[] }
@@ -123,8 +122,14 @@ const HELP_MENU_CONFIG: RoleMenuGroup[] = [
     title: '其他',
     items: [
       {
+        title: '#kkk版本',
+        description: '查看插件、Karin、Node.js、适配器与系统资源等运行环境诊断信息',
+        icon: 'ph:monitor-fill',
+        roles: ['member', 'master']
+      },
+      {
         title: '「#kkk更新日志」「#kkk更新」',
-        description: '字面意思~',
+        description: '查看更新日志或执行插件更新',
         icon: 'ph:arrows-clockwise-fill',
         roles: ['master']
       }
@@ -185,20 +190,8 @@ const handleHelp = wrapWithErrorHandler(
 // 包装版本命令
 const handleVersion = wrapWithErrorHandler(
   async (e) => {
-    const changelogContent = fs.readFileSync(Root.pluginPath + '/CHANGELOG.md', 'utf8')
-    const forwardLogs = logs({
-      version: Root.pluginVersion,
-      data: changelogContent,
-      length: 10
-    })
-
-    const img = await Render(e, 'other/changelog', {
-      markdown: forwardLogs,
-      Tip: false,
-      localVersion: '',
-      remoteVersion: ''
-    })
-    e.reply(img)
+    const img = await Render(e, 'other/runtime', collectRuntimeReport(e))
+    await e.reply(img)
     return true
   },
   {
@@ -206,6 +199,30 @@ const handleVersion = wrapWithErrorHandler(
   }
 )
 
+// 包装更新日志命令
+const handleChangelog = wrapWithErrorHandler(
+  async (e) => {
+    const forwardLogs = getLocalChangelog(10)
+    if (!forwardLogs) {
+      throw new Error('当前构建未携带可用的 CHANGELOG.md')
+    }
+
+    const img = await Render(e, 'other/changelog', {
+      markdown: forwardLogs,
+      Tip: false,
+      localVersion: '',
+      remoteVersion: ''
+    })
+    await e.reply(img)
+    return true
+  },
+  {
+    businessName: 'KKK更新日志'
+  }
+)
+
 export const help = karin.command(/^#?kkk帮助$/, handleHelp, { name: 'kkk-帮助' })
 
-export const version = karin.command(/^#?kkk(版本|更新日志)$/, handleVersion, { name: 'kkk-版本' })
+export const version = karin.command(/^#?kkk版本$/, handleVersion, { name: 'kkk-版本' })
+
+export const changelog = karin.command(/^#?kkk更新日志$/, handleChangelog, { name: 'kkk-更新日志' })

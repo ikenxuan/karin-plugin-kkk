@@ -56,7 +56,7 @@ const DouyinDiffuseBackground: React.FC<Props> = ({ data }) => (
     <div className="absolute inset-0 opacity-[0.35] mix-blend-overlay dark:mix-blend-soft-light">
       <svg className="h-full w-full" xmlns="http://www.w3.org/2000/svg">
         <defs>
-          <filter id="douyinVideoWorkNoise" >
+          <filter id="douyinVideoWorkNoise">
             <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" stitchTiles="stitch" />
             <feColorMatrix type="saturate" values="0" result="gray" />
             <feComponentTransfer>
@@ -167,13 +167,13 @@ const DouyinVideoCover: React.FC<Props> = ({ data }) => {
           {music.cover ? (
             <div className="relative h-20 w-20 shrink-0">
               <GlowImage glowStrength={1} blurRadius={20}>
-              <img
-                src={music.cover}
-                alt="BGM封面"
-                className="relative z-10 h-full w-full rounded-2xl object-cover"
-                referrerPolicy="no-referrer"
-                crossOrigin="anonymous"
-              />
+                <img
+                  src={music.cover}
+                  alt="BGM封面"
+                  className="relative z-10 h-full w-full rounded-2xl object-cover"
+                  referrerPolicy="no-referrer"
+                  crossOrigin="anonymous"
+                />
               </GlowImage>
             </div>
           ) : (
@@ -376,16 +376,16 @@ export const DouyinVideoWork: React.FC<Props> = React.memo((props) => {
 
   return (
     <DefaultLayout {...props} className="relative overflow-hidden">
-        <DouyinDiffuseBackground {...props} />
+      <DouyinDiffuseBackground {...props} />
 
-        <section className="relative z-10 px-20 pt-18">
-          <DouyinPosterHeader {...props} />
-          <DouyinPosterTitle {...props} />
-          <DouyinVideoCover {...props} />
-          <DouyinSignalLine {...props} />
-          {hasCoCreators && <DouyinCoCreatorList {...props} coCreatorCount={coCreatorCount} />}
-          <DouyinPosterFooter {...props} />
-        </section>
+      <section className="relative z-10 px-20 pt-18">
+        <DouyinPosterHeader {...props} />
+        <DouyinPosterTitle {...props} />
+        <DouyinVideoCover {...props} />
+        <DouyinSignalLine {...props} />
+        {hasCoCreators && <DouyinCoCreatorList {...props} coCreatorCount={coCreatorCount} />}
+        <DouyinPosterFooter {...props} />
+      </section>
     </DefaultLayout>
   )
 })

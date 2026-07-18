@@ -40,6 +40,7 @@ import { handlerError } from '../components/platforms/other/handlerError'
 import Help from '../components/platforms/other/Help'
 import { LivePhotoTip } from '../components/platforms/other/LivePhotoTip'
 import { QrLogin } from '../components/platforms/other/qrlogin'
+import { RuntimeReport } from '../components/platforms/other/runtime'
 import { VersionWarning } from '../components/platforms/other/VersionWarning'
 import { XiaohongshuComment } from '../components/platforms/xiaohongshu/Comment'
 // Xiaohongshu components
@@ -272,6 +273,10 @@ export const componentConfigs: ExtendedPlatformConfig[] = baseComponentConfigs.m
           case 'changelog':
             return createComponentConfig(baseComponent, {
               component: Changelog
+            })
+          case 'runtime':
+            return createComponentConfig(baseComponent, {
+              component: RuntimeReport
             })
           case 'version_warning':
             return createComponentConfig(baseComponent, {
