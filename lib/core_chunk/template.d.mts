@@ -1771,7 +1771,7 @@ interface MenuGroup {
   }[];
 }
 //#endregion
-//#region ../../node_modules/.pnpm/node-karin@1.16.2/node_modules/node-karin/dist/index.d.ts
+//#region ../../node_modules/.pnpm/node-karin@1.16.3/node_modules/node-karin/dist/index.d.ts
 //#endregion
 //#region src/types/adapter/info.d.ts
 /**
@@ -1948,6 +1948,77 @@ interface ChangelogProps extends BaseComponentProps<{
   share_url?: string;
 }> {}
 //#endregion
+//#region ../template/src/types/platforms/other/runtime.d.ts
+type RuntimeBuildState = 'matched' | 'mismatched' | 'unavailable';
+/**
+ * 运行环境诊断海报属性。
+ *
+ * 所有字段均由 core 在消息触发时采集，模板只负责展示经过脱敏的可序列化数据。
+ */
+interface RuntimeReportProps extends BaseComponentProps<{
+  /** 快照生成时间 */
+  snapshotAt: string;
+  /** 插件、框架与构建身份 */
+  identity: {
+    pluginName: string;
+    pluginVersion: string;
+    karinVersion: string;
+    releaseType: 'Stable' | 'Preview';
+    requiredNodeVersion: string;
+    requiredKarinVersion: string;
+  };
+  /** 当前构建指纹 */
+  build: {
+    state: RuntimeBuildState;
+    version?: string;
+    buildTime?: string;
+    shortCommitHash?: string;
+  };
+  /** Node.js 与操作系统运行时 */
+  runtime: {
+    nodeVersion: string;
+    nodeEnv: string;
+    os: string;
+    platform: string;
+    arch: string;
+    timezone: string;
+    container: boolean;
+    systemUptime: string;
+    processUptime: string;
+  };
+  /** 当前消息所使用的适配器 */
+  adapter: {
+    name: string;
+    version: string;
+    platform: string;
+    protocol: string;
+    standard: string;
+    communication: string;
+    connectedFor: string;
+  };
+  /** 截图渲染配置 */
+  renderer: {
+    scale: string;
+    timeout: string;
+    multiPage: boolean;
+  };
+  /** 不含主机身份信息的资源快照 */
+  resources: {
+    cpuModel: string;
+    cpuCores: number;
+    totalMemory: string;
+    usedMemory: string;
+    memoryUsagePercent: string;
+    processRss: string;
+    heapUsed: string;
+  };
+  /** 当前插件版本的变更日志 */
+  releaseNotes: {
+    markdown: string;
+    available: boolean;
+  };
+}> {}
+//#endregion
 //#region ../template/src/types/platforms/other/VersionWarningProps.d.ts
 interface VersionWarningProps extends BaseComponentProps<{
   /** 插件构建时的 karin 版本 */
@@ -2115,7 +2186,7 @@ type XiaohongshuComponentIds = 'noteInfo' | 'comment';
 /**
  * 其他平台组件ID
  */
-type OtherComponentIds = 'help' | 'handlerError' | 'changelog' | 'version_warning' | 'qrlogin' | 'live-photo-tip';
+type OtherComponentIds = 'help' | 'handlerError' | 'changelog' | 'runtime' | 'version_warning' | 'qrlogin' | 'live-photo-tip';
 /**
  * 统计平台组件ID
  */
@@ -2157,6 +2228,7 @@ interface PathToDataTypeMap {
   'other/help': HelpProps['data'];
   'other/handlerError': ApiErrorProps['data'];
   'other/changelog': ChangelogProps['data'];
+  'other/runtime': RuntimeReportProps['data'];
   'other/version_warning': VersionWarningProps['data'];
   'other/qrlogin': QrLoginProps['data'];
   'other/live-photo-tip': LivePhotoTipProps['data'];
@@ -2179,7 +2251,7 @@ interface DataTypeMap {
   /** 快手平台数据类型 */
   kuaishou: KuaishouCommentProps['data'];
   /** 其他类型数据 */
-  other: HelpProps['data'] | LivePhotoTipProps['data'];
+  other: HelpProps['data'] | LivePhotoTipProps['data'] | RuntimeReportProps['data'];
 }
 /**
  * 渲染请求接口
