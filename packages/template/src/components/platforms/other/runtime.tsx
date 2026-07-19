@@ -87,26 +87,26 @@ export const RuntimeReport: React.FC<RuntimeReportComponentProps> = React.memo((
       }
 
   return (
-    <DefaultLayout {...props} className="relative min-h-[1820px] overflow-hidden" style={{ backgroundColor: palette.background }}>
+    <DefaultLayout {...props} className="relative min-h-455 overflow-hidden" style={{ backgroundColor: palette.background }}>
       <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
         <div
-          className="absolute -left-[520px] -top-[480px] h-[1350px] w-[1500px] rounded-full blur-[230px]"
+          className="absolute -left-130 -top-120 h-337.5 w-375 rounded-full blur-[230px]"
           style={{ background: `radial-gradient(ellipse at center, ${palette.glowPrimary} 0%, transparent 70%)` }}
         />
         <div
-          className="absolute -right-[520px] top-[32%] h-[1250px] w-[1200px] rounded-full blur-[240px]"
+          className="absolute -right-130 top-[32%] h-312.5 w-300 rounded-full blur-[240px]"
           style={{ background: `radial-gradient(ellipse at center, ${palette.glowSecondary} 0%, transparent 72%)` }}
         />
         <div
-          className="absolute -bottom-[480px] -left-[320px] h-[1150px] w-[1350px] rounded-full blur-[260px]"
+          className="absolute -bottom-120 -left-80 h-287.5 w-337.5 rounded-full blur-[260px]"
           style={{ background: `radial-gradient(ellipse at center, ${palette.glowWarm} 0%, transparent 72%)` }}
         />
         <div
-          className="absolute -bottom-[360px] -right-[420px] h-[900px] w-[1000px] rounded-full blur-[240px]"
+          className="absolute -bottom-90 -right-105 h-225 w-250 rounded-full blur-[240px]"
           style={{ background: `radial-gradient(ellipse at center, ${palette.glowPrimary} 0%, transparent 72%)` }}
         />
         <div
-          className="absolute -right-16 top-[110px] select-none text-[240px] font-black leading-none tracking-[-0.06em] opacity-[0.03]"
+          className="absolute left-115 top-200 select-none text-[400px] -rotate-90 font-black leading-none tracking-[-0.06em] opacity-[0.03]"
           style={{ color: palette.bgWord }}
         >
           RUNTIME
@@ -129,7 +129,7 @@ export const RuntimeReport: React.FC<RuntimeReportComponentProps> = React.memo((
         </svg>
       </div>
 
-      <main className="relative z-10 px-[88px] pb-[64px] pt-[80px]">
+      <main className="relative z-10 px-22 pb-16 pt-20">
         <header className="relative">
           <div className="flex items-center justify-between gap-12">
             <div className="flex items-center gap-4">
@@ -144,14 +144,14 @@ export const RuntimeReport: React.FC<RuntimeReportComponentProps> = React.memo((
             </span>
           </div>
 
-          <div className="mt-[76px]">
+          <div className="mt-19">
             <h1 className="whitespace-nowrap text-[136px] font-black leading-none tracking-[-0.05em] text-foreground">运行环境</h1>
             <p className="mt-8 whitespace-nowrap text-[32px] font-semibold text-foreground/48">插件、框架与本地宿主的精简诊断快照</p>
           </div>
 
-          <div className="relative mt-[92px]">
+          <div className="relative mt-23">
             <div
-              className="pointer-events-none absolute -left-16 -top-24 h-[420px] w-[820px] rounded-full blur-[150px]"
+              className="pointer-events-none absolute -left-16 -top-24 h-105 w-205 rounded-full blur-[150px]"
               style={{ background: palette.versionGlow }}
             />
             <div className="relative text-[24px] font-bold tracking-[0.2em] text-foreground/36">插件版本</div>
@@ -171,22 +171,22 @@ export const RuntimeReport: React.FC<RuntimeReportComponentProps> = React.memo((
                 {buildStatus.label}
               </span>
             </div>
-            <div className="relative mt-[44px] whitespace-nowrap font-mono text-[22px] font-semibold text-foreground/28">
+            <div className="relative mt-11 whitespace-nowrap font-mono text-[22px] font-semibold text-foreground/28">
               构建 {data.build.shortCommitHash ?? '未知'} · {data.build.buildTime ?? '时间未知'}
             </div>
           </div>
         </header>
 
-        <section className="relative mt-[120px]">
+        <section className="relative mt-30">
           <div className="relative flex items-center gap-5">
             <span className="h-3 w-3 rounded-full" style={{ background: palette.statusDot }} />
             <span className="text-[24px] font-black tracking-[0.28em]" style={{ color: palette.accentText }}>
               环境摘要
             </span>
-            <span className="ml-2 h-2 w-[88px] rounded-full" style={{ background: palette.barAccent }} />
+            <span className="ml-2 h-2 w-22 rounded-full" style={{ background: palette.barAccent }} />
           </div>
 
-          <div className="relative mt-[64px] grid grid-cols-2 gap-x-[72px] gap-y-[64px]">
+          <div className="relative mt-16 grid grid-cols-2 gap-x-18 gap-y-16">
             <div>
               <div className="text-[22px] font-bold tracking-[0.18em] text-foreground/36">操作系统</div>
               <div className="mt-3 truncate whitespace-nowrap text-[48px] font-black tracking-[-0.02em] text-foreground">
@@ -234,7 +234,7 @@ export const RuntimeReport: React.FC<RuntimeReportComponentProps> = React.memo((
                   {data.resources.usedMemory} / {data.resources.totalMemory}
                 </span>
               </div>
-              <div className="mt-5 h-[12px] w-full max-w-[420px] overflow-hidden rounded-full bg-foreground/8">
+              <div className="mt-5 h-3 w-full max-w-105 overflow-hidden rounded-full bg-foreground/8">
                 <div
                   className="h-full rounded-full"
                   style={{ width: data.resources.memoryUsagePercent, background: palette.meterGradient }}
@@ -244,7 +244,7 @@ export const RuntimeReport: React.FC<RuntimeReportComponentProps> = React.memo((
 
             <div>
               <div className="text-[22px] font-bold tracking-[0.18em] text-foreground/36">处理器</div>
-              <div className="mt-3 line-clamp-2 break-words text-[32px] font-black leading-[1.4] text-foreground/78">
+              <div className="mt-3 line-clamp-2 wrap-break-word text-[32px] font-black leading-[1.4] text-foreground/78">
                 {data.resources.cpuModel}
               </div>
               <div className="mt-4 whitespace-nowrap font-mono text-[24px] font-bold text-foreground/40">
@@ -254,20 +254,20 @@ export const RuntimeReport: React.FC<RuntimeReportComponentProps> = React.memo((
           </div>
         </section>
 
-        <section className="relative mt-[130px]">
+        <section className="relative mt-32.5">
           <div className="relative flex items-center gap-5">
             <span className="h-3 w-3 rounded-full" style={{ background: palette.statusDot }} />
             <span className="text-[24px] font-black tracking-[0.28em]" style={{ color: palette.accentText }}>
               仅展示当前版本
             </span>
-            <span className="ml-2 h-2 w-[88px] rounded-full" style={{ background: palette.barAccent }} />
+            <span className="ml-2 h-2 w-22 rounded-full" style={{ background: palette.barAccent }} />
           </div>
           <h2 className="mt-7 text-[76px] font-black leading-none" style={{ color: palette.noteStrong }}>
             本版变更
           </h2>
 
           {data.releaseNotes.available ? (
-            <div className="runtime-release-notes relative mt-[60px]">
+            <div className="runtime-release-notes relative mt-15">
               <ReactMarkdown
                 components={{
                   h2: ({ children }) => (
@@ -293,7 +293,7 @@ export const RuntimeReport: React.FC<RuntimeReportComponentProps> = React.memo((
                   ol: ({ children }) => <ol className="mb-8 list-decimal space-y-5 pl-12">{children}</ol>,
                   li: ({ children }) => (
                     <li
-                      className={`relative break-words text-[32px] font-semibold leading-[1.65] before:absolute before:-left-8 before:top-[0.74em] before:h-2.5 before:w-2.5 before:rounded-full ${palette.noteBulletClass}`}
+                      className={`relative wrap-break-word text-[32px] font-semibold leading-[1.65] before:absolute before:-left-8 before:top-[0.74em] before:h-2.5 before:w-2.5 before:rounded-full ${palette.noteBulletClass}`}
                       style={{ color: palette.noteBody }}
                     >
                       {children}
@@ -323,7 +323,7 @@ export const RuntimeReport: React.FC<RuntimeReportComponentProps> = React.memo((
               </ReactMarkdown>
             </div>
           ) : (
-            <div className="relative mt-[60px] flex items-start gap-6" style={{ color: palette.warnText }}>
+            <div className="relative mt-15 flex items-start gap-6" style={{ color: palette.warnText }}>
               <TriangleAlert className="mt-1 h-11 w-11 shrink-0" />
               <div>
                 <div className="text-[34px] font-black">当前构建没有可用的变更日志</div>
@@ -333,7 +333,7 @@ export const RuntimeReport: React.FC<RuntimeReportComponentProps> = React.memo((
           )}
         </section>
 
-        <footer className="mt-[80px] flex items-end justify-between gap-12 whitespace-nowrap text-[22px] font-semibold text-foreground/32">
+        <footer className="mt-20 flex items-end justify-between gap-12 whitespace-nowrap text-[22px] font-semibold text-foreground/32">
           <span>仅包含经过脱敏的本地运行信息</span>
           <span className="font-mono">{data.snapshotAt}</span>
         </footer>
