@@ -8,6 +8,7 @@ import { newInjectedPage } from 'fingerprint-injector'
 import { karin, karinPathTemp, logger, Message } from 'node-karin'
 
 import { Common, Render, Root } from '@/module'
+import { reloadAmagiConfig } from '@/module/utils/amagiClient'
 import { Config } from '@/module/utils/Config'
 
 type Page = Awaited<ReturnType<Awaited<ReturnType<typeof snapka.launch>>['browser']['newPage']>>
@@ -288,8 +289,9 @@ export const douyinLogin = async (e: Message) => {
                 }
 
                 logger.debug('开始保存 cookies...')
-                Config.Modify('amagi', 'cookies.douyin', cookieString)
-                logger.debug('cookies 保存完成')
+                await Config.Modify('amagi', 'cookies.douyin', cookieString)
+                const reloaded = reloadAmagiConfig()
+                logger.debug(`cookies 保存完成，Amagi Client ${reloaded ? '已重载' : '配置未变化'}`)
                 await e.reply('登录成功！用户登录凭证已保存至配置', { reply: true })
 
                 // 批量撤回之前的消息

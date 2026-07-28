@@ -26,11 +26,17 @@ export class AmagiError extends Error {
 export class AmagiBase {
   /** 解析库实例 */
   amagi: ReturnType<typeof Client>
+  /** 当前客户端使用的配置快照，用于避免文件监听与显式重载造成重复初始化 */
+  private configSignature: string
 
   constructor() {
     const client = this.createAmagiClient()
     this.amagi = this.wrapAmagiClient(client)
+    this.configSignature = this.getConfigSignature()
   }
+
+  /** 获取会影响 Amagi 运行状态的配置快照 */
+  private getConfigSignature = () => JSON.stringify(Config.amagi)
 
   /** 创建解析库实例 */
   protected createAmagiClient = (): ReturnType<typeof Client> => {
@@ -47,12 +53,21 @@ export class AmagiBase {
 
   /**
    * 重载配置 - 重新创建 Amagi Client 实例
+   * @returns 配置发生变化并完成重载时返回 true
    */
   reloadConfig() {
+    const nextConfigSignature = this.getConfigSignature()
+    if (nextConfigSignature === this.configSignature) {
+      logger.debug('[AmagiClient] 配置未变化，跳过重复重载')
+      return false
+    }
+
     logger.debug('[AmagiClient] 检测到配置变化，正在重载...')
     const client = this.createAmagiClient()
     this.amagi = this.wrapAmagiClient(client)
+    this.configSignature = nextConfigSignature
     logger.debug('[AmagiClient] 配置重载完成')
+    return true
   }
 
   /** 包装解析库实例，递归代理所有嵌套对象的方法 */
@@ -138,16 +153,47 @@ export const softFetch = async <T>(fn: () => Promise<Result<T>>, allowedCodes: n
 
 const amagiClientInstance = new AmagiBase()
 
-const amagiClient = amagiClientInstance.amagi
+type AmagiReloadListener = () => void
 
-export const reloadAmagiConfig = () => {
-  amagiClientInstance.reloadConfig()
+/** 需要随 Amagi Client 一同刷新的运行时资源，例如已经挂载的 HTTP Router */
+const amagiReloadListeners = new Set<AmagiReloadListener>()
+
+/**
+ * 注册 Amagi 配置重载监听器。
+ * @returns 注销当前监听器的函数
+ */
+export const registerAmagiReloadListener = (listener: AmagiReloadListener) => {
+  amagiReloadListeners.add(listener)
+  return () => amagiReloadListeners.delete(listener)
 }
 
-export const bilibiliFetcher = amagiClient.bilibili.fetcher
+export let bilibiliFetcher = amagiClientInstance.amagi.bilibili.fetcher
 
-export const douyinFetcher = amagiClient.douyin.fetcher
+export let douyinFetcher = amagiClientInstance.amagi.douyin.fetcher
 
-export const kuaishouFetcher = amagiClient.kuaishou.fetcher
+export let kuaishouFetcher = amagiClientInstance.amagi.kuaishou.fetcher
 
-export const xiaohongshuFetcher = amagiClient.xiaohongshu.fetcher
+export let xiaohongshuFetcher = amagiClientInstance.amagi.xiaohongshu.fetcher
+
+export const reloadAmagiConfig = () => {
+  if (!amagiClientInstance.reloadConfig()) return false
+
+  /**
+   * ESM 的 `export let` 是实时绑定。这里必须在 Client 重建后同步替换各平台
+   * Fetcher，避免调用方继续持有模块初始化阶段截取的旧 Client 引用。
+   */
+  bilibiliFetcher = amagiClientInstance.amagi.bilibili.fetcher
+  douyinFetcher = amagiClientInstance.amagi.douyin.fetcher
+  kuaishouFetcher = amagiClientInstance.amagi.kuaishou.fetcher
+  xiaohongshuFetcher = amagiClientInstance.amagi.xiaohongshu.fetcher
+
+  for (const listener of amagiReloadListeners) {
+    try {
+      listener()
+    } catch (error) {
+      logger.error(`[AmagiClient] 运行时资源重载失败: ${error}`)
+    }
+  }
+
+  return true
+}
