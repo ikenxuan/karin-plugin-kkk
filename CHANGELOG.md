@@ -2,6 +2,13 @@
 
 # Changelog
 
+## [2.40.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.40.1...v2.40.2) (2026-07-28)
+
+
+### 🐛 错误修复
+
+* 优化接口库客户端热重载功能 ([3e3bd9d](https://github.com/ikenxuan/karin-plugin-kkk/commit/3e3bd9d5e2c40a40158a4a6db034367895f3fd8d))
+
 ## [2.40.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.40.0...v2.40.1) (2026-07-19)
 
 
