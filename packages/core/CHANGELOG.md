@@ -2,6 +2,13 @@
 
 # Changelog
 
+## [2.40.3](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.40.2...v2.40.3) (2026-07-29)
+
+
+### 💄 UI 优化
+
+* **douyiin:** 优化图文作品详情组件中描述板块的行间距 ([43d6cdc](https://github.com/ikenxuan/karin-plugin-kkk/commit/43d6cdcefc51986a0ffb6feb18c32d3bbdcd9375))
+
 ## [2.40.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.40.1...v2.40.2) (2026-07-28)
 
 
