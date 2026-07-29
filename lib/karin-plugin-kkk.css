@@ -14250,6 +14250,10 @@
     height: calc(var(--spacing) * 16);
   }
 
+  .h-17 {
+    height: calc(var(--spacing) * 17);
+  }
+
   .h-18 {
     height: calc(var(--spacing) * 18);
   }
@@ -14486,20 +14490,8 @@
     height: 60%;
   }
 
-  .h-\[68px\] {
-    height: 68px;
-  }
-
-  .h-\[72px\] {
-    height: 72px;
-  }
-
   .h-\[187\.5px\] {
     height: 187.5px;
-  }
-
-  .h-\[300px\] {
-    height: 300px;
   }
 
   .h-\[calc\(100\%-160px\)\] {
@@ -14692,6 +14684,10 @@
 
   .w-16 {
     width: calc(var(--spacing) * 16);
+  }
+
+  .w-18 {
+    width: calc(var(--spacing) * 18);
   }
 
   .w-20 {
@@ -14942,10 +14938,6 @@
     width: 44%;
   }
 
-  .w-\[72px\] {
-    width: 72px;
-  }
-
   .w-\[90\%\] {
     width: 90%;
   }
@@ -14956,10 +14948,6 @@
 
   .w-\[187\.5px\] {
     width: 187.5px;
-  }
-
-  .w-\[300px\] {
-    width: 300px;
   }
 
   .w-\[calc\(100\%-160px\)\] {
@@ -15006,6 +14994,10 @@
     max-width: var(--container-6xl);
   }
 
+  .max-w-77\.5 {
+    max-width: calc(var(--spacing) * 77.5);
+  }
+
   .max-w-80 {
     max-width: calc(var(--spacing) * 80);
   }
@@ -15026,12 +15018,28 @@
     max-width: calc(var(--spacing) * 150);
   }
 
+  .max-w-162\.5 {
+    max-width: calc(var(--spacing) * 162.5);
+  }
+
+  .max-w-165 {
+    max-width: calc(var(--spacing) * 165);
+  }
+
   .max-w-200 {
     max-width: calc(var(--spacing) * 200);
   }
 
+  .max-w-212\.5 {
+    max-width: calc(var(--spacing) * 212.5);
+  }
+
   .max-w-225 {
     max-width: calc(var(--spacing) * 225);
+  }
+
+  .max-w-290 {
+    max-width: calc(var(--spacing) * 290);
   }
 
   .max-w-300 {
@@ -15046,26 +15054,6 @@
     max-width: 72%;
   }
 
-  .max-w-\[310px\] {
-    max-width: 310px;
-  }
-
-  .max-w-\[650px\] {
-    max-width: 650px;
-  }
-
-  .max-w-\[660px\] {
-    max-width: 660px;
-  }
-
-  .max-w-\[850px\] {
-    max-width: 850px;
-  }
-
-  .max-w-\[1160px\] {
-    max-width: 1160px;
-  }
-
   .max-w-full {
     max-width: 100%;
   }
@@ -15078,16 +15066,16 @@
     min-width: 0;
   }
 
+  .min-w-37\.5 {
+    min-width: calc(var(--spacing) * 37.5);
+  }
+
   .min-w-38 {
     min-width: calc(var(--spacing) * 38);
   }
 
   .min-w-42 {
     min-width: calc(var(--spacing) * 42);
-  }
-
-  .min-w-\[150px\] {
-    min-width: 150px;
   }
 
   .flex-1 {
@@ -18233,11 +18221,6 @@
   .leading-\[1\.45\] {
     --tw-leading: 1.45;
     line-height: 1.45;
-  }
-
-  .leading-\[1\.48\] {
-    --tw-leading: 1.48;
-    line-height: 1.48;
   }
 
   .leading-\[1\.55\] {
