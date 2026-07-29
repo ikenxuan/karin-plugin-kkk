@@ -1,4 +1,4 @@
-import { extractRichTextPlainText, renderRichTextToReact } from '@kkk/richtext'
+import { extractRichTextPlainText, renderRichTextToReact, type RichTextRenderOptions } from '@kkk/richtext'
 import { ImageIcon, MapPinIcon, MusicNoteIcon, UserPlusIcon, UsersIcon, UsersThreeIcon, VideoCameraIcon } from '@phosphor-icons/react'
 import { format, formatDistanceToNow, fromUnixTime } from 'date-fns'
 import { zhCN } from 'date-fns/locale'
@@ -117,7 +117,7 @@ const DouyinPosterHeader: React.FC<Props> = ({ data }) => {
           crossOrigin="anonymous"
         />
         <div className="min-w-0">
-          <div className="max-w-[660px] truncate text-[44px] font-black leading-tight text-foreground select-text">{username}</div>
+          <div className="max-w-165 truncate text-[44px] font-black leading-tight text-foreground select-text">{username}</div>
           <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-[30px] text-muted">
             <span className="inline-flex items-center gap-2">
               <Clock3 size={28} />
@@ -135,7 +135,7 @@ const DouyinPosterHeader: React.FC<Props> = ({ data }) => {
       <img
         src={useDarkTheme ? '/image/douyin/dylogo-light.svg' : '/image/douyin/dylogo-dark.svg'}
         alt="抖音"
-        className="mt-2 h-[68px] w-auto shrink-0 object-contain opacity-90"
+        className="mt-2 h-17 w-auto shrink-0 object-contain opacity-90"
       />
     </header>
   )
@@ -147,7 +147,7 @@ const DouyinPosterTitle: React.FC<Props> = ({ data }) => {
   const hasDesc = Boolean(desc?.nodes.length)
   const titleLength = title ? extractRichTextPlainText(title).length : 0
   const titleClassName = getTitleClassName(titleLength)
-  const richTextOptions = {
+  const richTextOptions: RichTextRenderOptions = {
     hashtag: {
       className: cn('text-inherit opacity-60', !hasTitle && 'text-6xl')
     },
@@ -172,7 +172,7 @@ const DouyinPosterTitle: React.FC<Props> = ({ data }) => {
       )}
       {hasDesc && (
         <div
-          className={cn('mt-7 whitespace-pre-wrap select-text', !hasTitle ? 'text-6xl font-bold leading-tight' : 'text-5xl font-medium')}
+          className={cn('mt-7 whitespace-pre-wrap select-text', !hasTitle ? 'text-6xl font-bold' : 'text-5xl font-medium', 'leading-tight')}
           style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}
         >
           {renderRichTextToReact(desc, richTextOptions)}
@@ -257,7 +257,7 @@ const DouyinImageCover: React.FC<Props> = ({ data }) => {
       </div>
 
       {music && (
-        <div className="absolute bottom-12 left-24 z-30 flex max-w-[850px] items-center gap-5 text-white drop-shadow-xl">
+        <div className="absolute bottom-12 left-24 z-30 flex max-w-212.5 items-center gap-5 text-white drop-shadow-xl">
           {music.cover ? (
             <div className="relative h-20 w-20 shrink-0">
               <GlowImage glowStrength={1} blurRadius={20}>
@@ -299,7 +299,7 @@ const DouyinSignalLine: React.FC<Props> = ({ data }) => {
         {stats.map((stat) => {
           const Icon = stat.icon
           return (
-            <div key={stat.label} className="min-w-[150px]">
+            <div key={stat.label} className="min-w-37.5">
               <div className="flex items-center gap-3 text-[28px] font-semibold text-muted">
                 <Icon size={36} weight="fill" className="text-foreground/80" />
                 <span>{stat.label}</span>
@@ -341,11 +341,11 @@ const DouyinCoCreatorList: React.FC<Props & { coCreatorCount: number }> = ({ dat
       </div>
       <div className="mt-6 flex min-w-0 flex-wrap items-center gap-x-10 gap-y-6 overflow-hidden">
         {visibleCreators.map((creator, index) => (
-          <div key={`${creator.nickname || 'creator'}-${index}`} className="flex min-w-0 max-w-[310px] items-center gap-4">
+          <div key={`${creator.nickname || 'creator'}-${index}`} className="flex min-w-0 max-w-77.5 items-center gap-4">
             <img
               src={creator.avatar_url || data.avater_url}
               alt="共创者头像"
-              className="h-[72px] w-[72px] shrink-0 rounded-full object-cover shadow-xl"
+              className="h-18 w-18 shrink-0 rounded-full object-cover shadow-xl"
               referrerPolicy="no-referrer"
               crossOrigin="anonymous"
             />
@@ -383,7 +383,7 @@ const DouyinPosterFooter: React.FC<Props> = ({ data }) => {
             crossOrigin="anonymous"
           />
           <div className="min-w-0">
-            <div className="max-w-[650px] truncate text-[48px] font-black leading-tight text-foreground select-text">{username}</div>
+            <div className="max-w-162.5 truncate text-[48px] font-black leading-tight text-foreground select-text">{username}</div>
             <div className="mt-3 flex items-center gap-2 text-[30px] text-muted">
               <Hash size={28} />
               <span className="truncate select-text">抖音号: {抖音号}</span>
@@ -395,7 +395,7 @@ const DouyinPosterFooter: React.FC<Props> = ({ data }) => {
           {stats.map((stat) => {
             const Icon = stat.icon
             return (
-              <div key={stat.label} className="min-w-[150px]">
+              <div key={stat.label} className="min-w-37.5">
                 <div className="flex items-center gap-3 text-[25px] font-semibold text-muted">
                   <Icon size={stat.iconSize} weight="fill" className="text-foreground/80" />
                   <span>{stat.label}</span>
@@ -409,13 +409,7 @@ const DouyinPosterFooter: React.FC<Props> = ({ data }) => {
 
       <div className="shrink-0 text-center">
         <div className="drop-shadow-2xl">
-          <QRCodeWithAvatar
-            value={share_url}
-            avatarUrl={avater_url}
-            useDarkTheme={useDarkTheme}
-            alt="二维码"
-            className="h-[300px] w-[300px]"
-          />
+          <QRCodeWithAvatar value={share_url} avatarUrl={avater_url} useDarkTheme={useDarkTheme} alt="二维码" className="h-75 w-75" />
         </div>
         <div className="mt-2 text-[28px] font-black text-foreground/80">扫码查看作品详情</div>
       </div>

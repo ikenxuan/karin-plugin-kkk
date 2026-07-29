@@ -87,7 +87,7 @@ const DouyinPosterHeader: React.FC<Props> = ({ data }) => {
           crossOrigin="anonymous"
         />
         <div className="min-w-0">
-          <div className="max-w-[660px] truncate text-[44px] font-black leading-tight text-foreground select-text">{username}</div>
+          <div className="max-w-165 truncate text-[44px] font-black leading-tight text-foreground select-text">{username}</div>
           <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-[30px] text-muted">
             <span className="inline-flex items-center gap-2">
               <Clock3 size={28} />
@@ -103,7 +103,7 @@ const DouyinPosterHeader: React.FC<Props> = ({ data }) => {
       <img
         src={useDarkTheme ? '/image/douyin/dylogo-light.svg' : '/image/douyin/dylogo-dark.svg'}
         alt="抖音"
-        className="mt-2 h-[68px] w-auto shrink-0 object-contain opacity-90"
+        className="mt-2 h-17 w-auto shrink-0 object-contain opacity-90"
       />
     </header>
   )
@@ -211,7 +211,7 @@ const DouyinSignalLine: React.FC<Props> = ({ data }) => {
         {stats.map((stat) => {
           const Icon = stat.icon
           return (
-            <div key={stat.label} className="min-w-[150px]">
+            <div key={stat.label} className="min-w-37.5">
               <div className="flex items-center gap-3 text-[28px] font-semibold text-muted">
                 <Icon size={36} weight="fill" className="text-foreground/80" />
                 <span>{stat.label}</span>
@@ -248,7 +248,7 @@ const DouyinPosterFooter: React.FC<Props> = ({ data }) => {
             crossOrigin="anonymous"
           />
           <div className="min-w-0">
-            <div className="max-w-[650px] truncate text-[48px] font-black leading-tight text-foreground select-text">{username}</div>
+            <div className="max-w-162.5 truncate text-[48px] font-black leading-tight text-foreground select-text">{username}</div>
             <div className="mt-3 flex items-center gap-2 text-[30px] text-muted">
               <Hash size={28} />
               <span className="truncate select-text">抖音号: {抖音号}</span>
@@ -260,7 +260,7 @@ const DouyinPosterFooter: React.FC<Props> = ({ data }) => {
           {stats.map((stat) => {
             const Icon = stat.icon
             return (
-              <div key={stat.label} className="min-w-[150px]">
+              <div key={stat.label} className="min-w-37.5">
                 <div className="flex items-center gap-3 text-[25px] font-semibold text-muted">
                   <Icon size={stat.iconSize} weight="fill" className="text-foreground/80" />
                   <span>{stat.label}</span>
@@ -279,7 +279,7 @@ const DouyinPosterFooter: React.FC<Props> = ({ data }) => {
             avatarUrl={avater_url}
             useDarkTheme={useDarkTheme}
             alt="二维码"
-            className="h-[300px] w-[300px]"
+            className="h-75 w-75"
           />
         </div>
         <div className="mt-2 text-[28px] font-black text-foreground/80">扫码查看作品详情</div>
