@@ -1,6 +1,15 @@
 import fs from 'node:fs'
 
-import { BiliUserDynamic, BiliUserProfile, BiliVideoPlayurlIsLogin, DynamicType, MajorType, Result } from '@ikenxuan/amagi'
+import {
+  type BiliLiveRoomDetail,
+  BiliUserDynamic,
+  type BiliUserLiveStatus,
+  BiliUserProfile,
+  BiliVideoPlayurlIsLogin,
+  DynamicType,
+  MajorType,
+  Result
+} from '@ikenxuan/amagi'
 import type { AdapterType, ImageElement, Message, SendMsgResults } from 'node-karin'
 import karin, { common, logger, segment } from 'node-karin'
 import { BilibiliUserListProps } from 'template/types/platforms/bilibili'
@@ -35,6 +44,7 @@ import {
   buildBilibiliVideoDescRichText,
   getUsernameMetadata
 } from '@/platform/bilibili/dynamic-text'
+import { buildBilibiliLiveSessionId, parseBilibiliLiveStartedAt } from '@/platform/bilibili/live-status'
 import type { bilibiliPushItem, BilibiliPushType } from '@/types/config/pushlist'
 
 /** BilibiliPushType 到 DynamicType 的映射 */
@@ -76,6 +86,7 @@ export type BilibiliPushItem = BilibiliPushItemMap[DynamicType]
 
 /** 推送列表的类型定义 */
 type WillBePushList = Record<string, BilibiliPushItem>
+
 const bilibiliBaseHeaders: downLoadFileOptions['headers'] = {
   ...baseHeaders,
   Referer: 'https://www.bilibili.com',
@@ -205,6 +216,103 @@ export class Bilibilipush extends Base {
     }
 
     return filteredList
+  }
+
+  /** 将 UID 直播状态接口的结果接入原有动态推送列表。 */
+  private async getDirectLivePushItems(
+    userList: bilibiliPushItem[]
+  ): Promise<{ handledUids: Set<number>; willBePushList: WillBePushList }> {
+    const handledUids = new Set<number>()
+    const willBePushList: WillBePushList = {}
+    const liveSubscriptions = userList.filter((item) => item.switch !== false && (item.pushTypes || allBilibiliPushTypes).includes('live'))
+
+    for (const item of liveSubscriptions) {
+      let liveStatus: BiliUserLiveStatus['data']
+      try {
+        const liveStatusResult = await this.amagi.bilibili.fetcher.fetchUserLiveStatus({
+          host_mid: item.host_mid,
+          typeMode: 'strict'
+        })
+        if (!liveStatusResult.success) {
+          throw new Error(`code=${liveStatusResult.code}：${liveStatusResult.message}`)
+        }
+        liveStatus = liveStatusResult.data.data
+      } catch (error) {
+        logger.warn(
+          `[Bilibili 推送] UP主 ${item.remark}（${item.host_mid}）直播状态直查失败，本轮停止直查并让剩余订阅回退到直播动态检测：${formatErrorMessage(error)}`
+        )
+        break
+      }
+
+      if (liveStatus.roomStatus !== 1 || liveStatus.liveStatus !== 1 || liveStatus.roomid <= 0) {
+        handledUids.add(item.host_mid)
+        continue
+      }
+
+      try {
+        const liveInfoResult = await this.amagi.bilibili.fetcher.fetchLiveRoomInfo({
+          room_id: String(liveStatus.roomid),
+          typeMode: 'strict'
+        })
+        const liveInfo = liveInfoResult.data.data
+
+        /** 两个直播接口状态不一致时，以直播间详情为准。 */
+        if (liveInfo.live_status !== 1) {
+          handledUids.add(item.host_mid)
+          continue
+        }
+
+        const sessionId = buildBilibiliLiveSessionId(item.host_mid, liveInfo.room_id, liveInfo.live_time)
+        const liveStartedAt = parseBilibiliLiveStartedAt(liveInfo.live_time)
+        if (!sessionId || !liveStartedAt) {
+          throw new Error(`直播间 ${liveInfo.room_id} 未返回可用于场次去重的开播时间`)
+        }
+
+        const dynamic = createLiveDynamicItem(sessionId, liveStartedAt, liveInfo, liveStatus)
+        willBePushList[sessionId] = {
+          remark: item.remark,
+          host_mid: item.host_mid,
+          create_time: dynamic.modules.module_author.pub_ts,
+          targets: item.group_id.map((groupWithBot) => {
+            const [groupId, botId] = groupWithBot.split(':')
+            return { groupId, botId }
+          }),
+          Dynamic_Data: dynamic,
+          avatar_img: '',
+          dynamic_type: DynamicType.LIVE_RCMD
+        } as BilibiliPushItem
+        handledUids.add(item.host_mid)
+      } catch (error) {
+        logger.warn(
+          `[Bilibili 推送] UP主 ${item.remark}（${item.host_mid}）直播场次信息不完整，本轮回退到直播动态检测：${formatErrorMessage(error)}`
+        )
+      }
+    }
+
+    return { handledUids, willBePushList }
+  }
+
+  /**
+   * 为降级路径中的直播动态解析与直查路径一致的场次缓存键。
+   *
+   * @param dynamic B站空间动态中的直播推荐项。
+   * @param hostMid UP 主 UID。
+   * @returns 可用时返回直播场次键，否则退回原始动态ID。
+   */
+  private async resolveLiveDynamicCacheId(dynamic: Extract<DataItem, { type: DynamicType.LIVE_RCMD }>, hostMid: number): Promise<string> {
+    try {
+      const liveData = JSON.parse(dynamic.modules.module_dynamic.major.live_rcmd.content)
+      const roomId = Number(liveData.live_play_info.room_id)
+      const liveInfo = await this.amagi.bilibili.fetcher.fetchLiveRoomInfo({
+        room_id: String(roomId),
+        typeMode: 'strict'
+      })
+      const cacheId = buildBilibiliLiveSessionId(hostMid, liveInfo.data.data.room_id, liveInfo.data.data.live_time)
+      return cacheId || dynamic.id_str
+    } catch (error) {
+      logger.warn(`[Bilibili 推送] 直播动态 ${dynamic.id_str} 无法解析统一场次键，将使用动态ID去重：${formatErrorMessage(error)}`)
+      return dynamic.id_str
+    }
   }
 
   /**
@@ -1042,19 +1150,26 @@ export class Bilibilipush extends Base {
 
   /**
    * 根据配置文件获取UP当天的动态列表。
+   * @param userList B站订阅列表。
    * @returns
    */
   async getDynamicList(userList: bilibiliPushItem[]) {
-    const willbepushlist: WillBePushList = {}
+    const directLiveItems = await this.getDirectLivePushItems(userList)
+    const willbepushlist: WillBePushList = { ...directLiveItems.willBePushList }
 
     try {
       /** 过滤掉不启用的订阅项 */
       const filteredUserList = userList.filter((item) => item.switch !== false)
       for (const item of filteredUserList) {
-        await common.sleep(2000)
-        logger.debug(`[Bilibili 推送] 开始获取UP: ${item.remark}（${item.host_mid}） 的动态列表`)
         const pushTypes = item.pushTypes || allBilibiliPushTypes
         const allowedDynamicTypes = new Set(pushTypes.map((pt) => pushTypeToDynamicType[pt]))
+        if (directLiveItems.handledUids.has(item.host_mid)) {
+          allowedDynamicTypes.delete(DynamicType.LIVE_RCMD)
+        }
+        if (allowedDynamicTypes.size === 0) continue
+
+        await common.sleep(2000)
+        logger.debug(`[Bilibili 推送] 开始获取UP: ${item.remark}（${item.host_mid}） 的动态列表`)
         const dynamic_list = await this.amagi.bilibili.fetcher.fetchUserDynamicList({
           host_mid: item.host_mid,
           typeMode: 'strict'
@@ -1105,10 +1220,14 @@ export class Bilibilipush extends Base {
                 const [groupId, botId] = groupWithBot.split(':')
                 return { groupId, botId }
               })
+              const pushId =
+                dynamic.type === DynamicType.LIVE_RCMD
+                  ? await this.resolveLiveDynamicCacheId(dynamic as Extract<DataItem, { type: DynamicType.LIVE_RCMD }>, item.host_mid)
+                  : dynamic.id_str
 
-              // 确保 willbepushlist[dynamic.id_str] 是一个对象
-              if (!willbepushlist[dynamic.id_str]) {
-                willbepushlist[dynamic.id_str] = {
+              // 确保 willbepushlist[pushId] 是一个对象
+              if (!willbepushlist[pushId]) {
+                willbepushlist[pushId] = {
                   remark: item.remark,
                   host_mid: item.host_mid,
                   create_time: dynamic.modules.module_author.pub_ts,
@@ -1394,6 +1513,51 @@ export class Bilibilipush extends Base {
     await this.e.reply(img)
   }
 }
+
+/**
+ * 把直播状态接口的数据适配为现有直播动态分支实际读取的字段。
+ *
+ * 后续过滤、渲染、发送和缓存均继续使用统一的动态推送链路。
+ */
+const createLiveDynamicItem = (
+  sessionId: string,
+  liveStartedAt: string,
+  liveInfo: BiliLiveRoomDetail['data'],
+  liveStatus: BiliUserLiveStatus['data']
+): Extract<DataItem, { type: DynamicType.LIVE_RCMD }> => {
+  const content = JSON.stringify({
+    live_play_info: {
+      area_name: liveInfo.area_name,
+      cover: liveInfo.user_cover || liveStatus.cover,
+      room_id: liveInfo.room_id,
+      title: liveInfo.title || liveStatus.title
+    }
+  })
+
+  return {
+    id_str: sessionId,
+    type: DynamicType.LIVE_RCMD,
+    modules: {
+      module_author: {
+        face: '',
+        pendant: { image: '' },
+        pub_ts: Math.floor(Date.parse(liveStartedAt) / 1000)
+      },
+      module_dynamic: {
+        additional: null,
+        desc: null,
+        major: {
+          live_rcmd: { content, reserve_type: 0 },
+          type: MajorType.LIVE_RCMD
+        },
+        topic: null
+      }
+    }
+  } as unknown as Extract<DataItem, { type: DynamicType.LIVE_RCMD }>
+}
+
+/** 将未知异常转换为适合业务日志展示的文本。 */
+const formatErrorMessage = (error: unknown): string => (error instanceof Error ? error.message : String(error))
 
 /**
  * 将换行符替换为HTML的<br>标签。
