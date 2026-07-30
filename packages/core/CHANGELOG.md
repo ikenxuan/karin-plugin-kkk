@@ -2,6 +2,18 @@
 
 # Changelog
 
+## [2.41.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.40.3...v2.41.0) (2026-07-30)
+
+
+### ✨ 新功能
+
+* **bilibili:** 添加匿名评论请求配置并更新相关请求逻辑 ([#341](https://github.com/ikenxuan/karin-plugin-kkk/issues/341)) ([f578413](https://github.com/ikenxuan/karin-plugin-kkk/commit/f5784133e8eb116c716e1d63c67f89cab44cec0e))
+
+
+### 🐛 错误修复
+
+* **bilibili:** 优化开播推送逻辑 ([b704c11](https://github.com/ikenxuan/karin-plugin-kkk/commit/b704c11b2683b6d78cee868676e01bd258e3945c))
+
 ## [2.40.3](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.40.2...v2.40.3) (2026-07-29)
 
 
