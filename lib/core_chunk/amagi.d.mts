@@ -217,11 +217,11 @@ declare const bv2av: (bvid: string) => number;
 //#region src/types/ReturnDataType/Bilibili/ProtobufDanmaku/ProtobufDanmaku_V0.d.ts
 type BiliProtobufDanmaku_V0 = {
   code: number;
-  data: DataData$29;
+  data: DataData$30;
   message: string;
   [property: string]: any;
 };
-type DataData$29 = {
+type DataData$30 = {
   elems: Elem[];
   [property: string]: any;
 };
@@ -338,7 +338,7 @@ interface BilibiliMethodOptionsMap {
   };
   /** 获取用户相关数据 */
   UserParams: {
-    methodType: 'userCard' | 'userDynamicList' | 'uploaderTotalViews' | 'userSpaceInfo';
+    methodType: 'userCard' | 'userDynamicList' | 'userLiveStatus' | 'uploaderTotalViews' | 'userSpaceInfo';
     /** UP主UID */
     host_mid: number;
   };
@@ -544,6 +544,7 @@ type BilibiliMethodOptMap = {
   commentReplies: BilibiliMethodOptionsMap['CommentReplyParams'];
   userCard: BilibiliMethodOptionsMap['UserParams'];
   userDynamicList: BilibiliMethodOptionsMap['UserParams'];
+  userLiveStatus: BilibiliMethodOptionsMap['UserParams'];
   userSpaceInfo: BilibiliMethodOptionsMap['UserParams'];
   uploaderTotalViews: BilibiliMethodOptionsMap['UserParams'];
   emojiList: BilibiliMethodOptionsMap['EmojiParams'];
@@ -665,24 +666,31 @@ declare const BilibiliValidationSchemas: {
     number?: number;
   }, unknown>>;
   readonly userCard: zod.ZodType<{
-    methodType: "userCard" | "userDynamicList" | "uploaderTotalViews" | "userSpaceInfo";
+    methodType: "userCard" | "userDynamicList" | "userLiveStatus" | "uploaderTotalViews" | "userSpaceInfo";
     host_mid: number;
   }, unknown, zod.core.$ZodTypeInternals<{
-    methodType: "userCard" | "userDynamicList" | "uploaderTotalViews" | "userSpaceInfo";
+    methodType: "userCard" | "userDynamicList" | "userLiveStatus" | "uploaderTotalViews" | "userSpaceInfo";
     host_mid: number;
   }, unknown>>;
   readonly userDynamicList: zod.ZodType<{
-    methodType: "userCard" | "userDynamicList" | "uploaderTotalViews" | "userSpaceInfo";
+    methodType: "userCard" | "userDynamicList" | "userLiveStatus" | "uploaderTotalViews" | "userSpaceInfo";
     host_mid: number;
   }, unknown, zod.core.$ZodTypeInternals<{
-    methodType: "userCard" | "userDynamicList" | "uploaderTotalViews" | "userSpaceInfo";
+    methodType: "userCard" | "userDynamicList" | "userLiveStatus" | "uploaderTotalViews" | "userSpaceInfo";
+    host_mid: number;
+  }, unknown>>;
+  readonly userLiveStatus: zod.ZodType<{
+    methodType: "userCard" | "userDynamicList" | "userLiveStatus" | "uploaderTotalViews" | "userSpaceInfo";
+    host_mid: number;
+  }, unknown, zod.core.$ZodTypeInternals<{
+    methodType: "userCard" | "userDynamicList" | "userLiveStatus" | "uploaderTotalViews" | "userSpaceInfo";
     host_mid: number;
   }, unknown>>;
   readonly userSpaceInfo: zod.ZodType<{
-    methodType: "userCard" | "userDynamicList" | "uploaderTotalViews" | "userSpaceInfo";
+    methodType: "userCard" | "userDynamicList" | "userLiveStatus" | "uploaderTotalViews" | "userSpaceInfo";
     host_mid: number;
   }, unknown, zod.core.$ZodTypeInternals<{
-    methodType: "userCard" | "userDynamicList" | "uploaderTotalViews" | "userSpaceInfo";
+    methodType: "userCard" | "userDynamicList" | "userLiveStatus" | "uploaderTotalViews" | "userSpaceInfo";
     host_mid: number;
   }, unknown>>;
   readonly emojiList: zod.ZodType<{
@@ -754,10 +762,10 @@ declare const BilibiliValidationSchemas: {
     qrcode_key: string;
   }, unknown>>;
   readonly uploaderTotalViews: zod.ZodType<{
-    methodType: "userCard" | "userDynamicList" | "uploaderTotalViews" | "userSpaceInfo";
+    methodType: "userCard" | "userDynamicList" | "userLiveStatus" | "uploaderTotalViews" | "userSpaceInfo";
     host_mid: number;
   }, unknown, zod.core.$ZodTypeInternals<{
-    methodType: "userCard" | "userDynamicList" | "uploaderTotalViews" | "userSpaceInfo";
+    methodType: "userCard" | "userDynamicList" | "userLiveStatus" | "uploaderTotalViews" | "userSpaceInfo";
     host_mid: number;
   }, unknown>>;
   readonly avToBv: zod.ZodType<{
@@ -844,6 +852,7 @@ declare const BilibiliMethodRoutes: {
   readonly commentReplies: "/fetch_comment_reply";
   readonly userCard: "/fetch_user_profile";
   readonly userDynamicList: "/fetch_user_dynamic";
+  readonly userLiveStatus: "/fetch_user_live_status";
   readonly userSpaceInfo: "/fetch_user_space_info";
   readonly emojiList: "/fetch_emoji_list";
   readonly bangumiInfo: "/fetch_bangumi_video_info";
@@ -2024,12 +2033,12 @@ declare const createErrorResponse: (error: APIErrorType, message: string, code?:
 //#region src/types/ReturnDataType/Bilibili/ArticleCard/ArticleCard_V0.d.ts
 type ArticleCard_V0 = {
   code: number;
-  data: DataData$28;
+  data: DataData$29;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type DataData$28 = {
+type DataData$29 = {
   av2: Av2;
   cv1: Cv1;
   cv2: Cv2;
@@ -2391,12 +2400,12 @@ type ArticleCard = ArticleCard_V0;
 //#region src/types/ReturnDataType/Bilibili/ArticleContent/ArticleContent.d.ts
 type ArticleContent_V0 = {
   code: number;
-  data: DataData$27;
+  data: DataData$28;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type DataData$27 = {
+type DataData$28 = {
   act_id: number;
   apply_time: string;
   authenMark: null;
@@ -2611,12 +2620,12 @@ type ArticleContent = ArticleContent_V0;
 //#region src/types/ReturnDataType/Bilibili/ArticleInfo/ArticleInfo_V0.d.ts
 type ArticleInfo_V0 = {
   code: number;
-  data: DataData$26;
+  data: DataData$27;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type DataData$26 = {
+type DataData$27 = {
   attention: boolean;
   author_name: string;
   banner_url: string;
@@ -3400,12 +3409,12 @@ type BiliEmojiList = BiliEmojiList_V0;
 //#region src/types/ReturnDataType/Bilibili/BiliCommentReply/BiliCommentReply_V0.d.ts
 type BiliCommentReply_V0 = {
   code: number;
-  data: DataData$25;
+  data: DataData$26;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type DataData$25 = {
+type DataData$26 = {
   assist: number;
   blacklist: number;
   callbacks: {
@@ -3916,12 +3925,12 @@ type BiliBv2AV = BiliBv2AV_V0;
 //#region src/types/ReturnDataType/Bilibili/Captcha/ApplyCaptcha/ApplyCaptcha_V0.d.ts
 type ApplyCaptcha_V0 = {
   code: number;
-  data: DataData$24;
+  data: DataData$25;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type DataData$24 = {
+type DataData$25 = {
   biliword: null;
   geetest: Geetest;
   phone: null;
@@ -3943,12 +3952,12 @@ type ApplyCaptcha = ApplyCaptcha_V0;
 //#region src/types/ReturnDataType/Bilibili/Captcha/ValidateCaptcha/ValidateCaptcha_V0.d.ts
 type ValidateCaptcha_V0 = {
   code: number;
-  data: DataData$23;
+  data: DataData$24;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type DataData$23 = {
+type DataData$24 = {
   grisk_id: string;
   is_valid: number;
   [property: string]: any;
@@ -3960,12 +3969,12 @@ type ValidateCaptcha = ValidateCaptcha_V0;
 //#region src/types/ReturnDataType/Bilibili/ColumnInfo/ColumnInfo_V0.d.ts
 type ColumnInfo_V0 = {
   code: number;
-  data: DataData$22;
+  data: DataData$23;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type DataData$22 = {
+type DataData$23 = {
   articles: null;
   attention: boolean;
   author: Author$9;
@@ -4071,12 +4080,12 @@ type ColumnInfo = ColumnInfo_V0;
 //#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_ARTICLE/DYNAMIC_TYPE_ARTICLE_V0.d.ts
 type DynamicTypeArticle_V0 = {
   code: number;
-  data: DataData$21;
+  data: DataData$22;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type DataData$21 = {
+type DataData$22 = {
   item: Item$16;
   [property: string]: any;
 };
@@ -4335,12 +4344,12 @@ type DynamicTypeArticle = DynamicTypeArticle_V0;
 //#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_AV/DYNAMIC_TYPE_AV_V0.d.ts
 type DynamicTypeAV_V0$1 = {
   code: number;
-  data: DataData$20;
+  data: DataData$21;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type DataData$20 = {
+type DataData$21 = {
   item: Item$15;
   [property: string]: any;
 };
@@ -4616,12 +4625,12 @@ type DynamicTypeAV = DynamicTypeAV_V0$1;
 //#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_DRAW/DYNAMIC_TYPE_DRAW_V0.d.ts
 type DynamicTypeDraw_V0$1 = {
   code: number;
-  data: DataData$19;
+  data: DataData$20;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type DataData$19 = {
+type DataData$20 = {
   item: Item$14;
   [property: string]: any;
 };
@@ -4976,12 +4985,12 @@ type DynamicTypeDraw = DynamicTypeDraw_V0$1;
 //#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_FORWARD/Forward/DYNAMIC_TYPE_AV/DYNAMIC_TYPE_AV_V0.d.ts
 type DynamicTypeAV_V0 = {
   code: number;
-  data: DataData$18;
+  data: DataData$19;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type DataData$18 = {
+type DataData$19 = {
   item: Item$13;
   [property: string]: any;
 };
@@ -5511,12 +5520,12 @@ type Stat$2 = {
 //#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_FORWARD/Forward/DYNAMIC_TYPE_AV/DYNAMIC_TYPE_AV_V1.d.ts
 type DynamicTypeAV_V1 = {
   code: number;
-  data: DataData$17;
+  data: DataData$18;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type DataData$17 = {
+type DataData$18 = {
   item: Item$12;
   [property: string]: any;
 };
@@ -6018,12 +6027,12 @@ type DynamicTypeAV$1 = DynamicTypeAV_V0 | DynamicTypeAV_V1;
 //#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_FORWARD/Forward/DYNAMIC_TYPE_DRAW/DYNAMIC_TYPE_DRAW_V0.d.ts
 type DynamicTypeDraw_V0 = {
   code: number;
-  data: DataData$16;
+  data: DataData$17;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type DataData$16 = {
+type DataData$17 = {
   item: Item$11;
   [property: string]: any;
 };
@@ -6556,12 +6565,12 @@ type SummaryRichTextNode$2 = {
 //#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_FORWARD/Forward/DYNAMIC_TYPE_DRAW/DYNAMIC_TYPE_DRAW_V1.d.ts
 type DynamicTypeDraw_V1 = {
   code: number;
-  data: DataData$15;
+  data: DataData$16;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type DataData$15 = {
+type DataData$16 = {
   item: Item$10;
   [property: string]: any;
 };
@@ -7097,12 +7106,12 @@ type DynamicTypeDraw$1 = DynamicTypeDraw_V0 | DynamicTypeDraw_V1;
 //#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_FORWARD/Forward/DYNAMIC_TYPE_LIVE_RCMD/DYNAMIC_TYPE_LIVE_RCMD_V0.d.ts
 type DynamicTypeLiveRcmd_V0$1 = {
   code: number;
-  data: DataData$14;
+  data: DataData$15;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type DataData$14 = {
+type DataData$15 = {
   item: Item$9;
   [property: string]: any;
 };
@@ -7581,12 +7590,12 @@ type DynamicTypeLiveRcmd$1 = DynamicTypeLiveRcmd_V0$1;
 //#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_FORWARD/Forward/DYNAMIC_TYPE_WORD/DYNAMIC_TYPE_WORD_V0.d.ts
 type DynamicTypeWord_V0$1 = {
   code: number;
-  data: DataData$13;
+  data: DataData$14;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type DataData$13 = {
+type DataData$14 = {
   item: Item$8;
   [property: string]: any;
 };
@@ -8179,7 +8188,7 @@ type OriginalDynamicItemMap = {
 };
 type ItemBasic = DynamicTypeWord$1['data']['item']['basic'] | DynamicTypeLiveRcmd$1['data']['item']['basic'] | DynamicTypeDraw$1['data']['item']['basic'] | DynamicTypeAV$1['data']['item']['basic'];
 type ItemModules = DynamicTypeWord$1['data']['item']['modules'] | DynamicTypeLiveRcmd$1['data']['item']['modules'] | DynamicTypeDraw$1['data']['item']['modules'] | DynamicTypeAV$1['data']['item']['modules'];
-type DataData$12<T extends keyof OriginalDynamicItemMap> = {
+type DataData$13<T extends keyof OriginalDynamicItemMap> = {
   item: {
     basic: ItemBasic;
     id_str: string;
@@ -8193,7 +8202,7 @@ type DataData$12<T extends keyof OriginalDynamicItemMap> = {
 };
 type DynamicTypeForward<T extends keyof OriginalDynamicItemMap> = {
   code: number;
-  data: DataData$12<T>;
+  data: DataData$13<T>;
   message: string;
   ttl: number;
   [property: string]: any;
@@ -8203,12 +8212,12 @@ type DynamicTypeForwardUnion = DynamicTypeForward<DynamicType.AV> | DynamicTypeF
 //#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_LIVE_RCMD/DYNAMIC_TYPE_LIVE_RCMD_V0.d.ts
 type DynamicTypeLiveRcmd_V0 = {
   code: number;
-  data: DataData$11;
+  data: DataData$12;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type DataData$11 = {
+type DataData$12 = {
   item: Item$7;
   [property: string]: any;
 };
@@ -8483,12 +8492,12 @@ type DynamicTypeLiveRcmd = DynamicTypeLiveRcmd_V0;
 //#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_WORD/DYNAMIC_TYPE_WORD_V0.d.ts
 type DynamicTypeWord_V0 = {
   code: number;
-  data: DataData$10;
+  data: DataData$11;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type DataData$10 = {
+type DataData$11 = {
   item: Item$6;
   [property: string]: any;
 };
@@ -8896,12 +8905,12 @@ type DynamicTypeItemMap$1 = {
   [DynamicType.FORWARD]: DynamicTypeForwardUnion['data']['item'];
   [DynamicType.ARTICLE]: DynamicTypeArticle['data']['item'];
 };
-type DataData$9<T extends DynamicType> = {
+type DataData$10<T extends DynamicType> = {
   item: DynamicTypeItemMap$1[T];
 };
 type BiliDynamicInfo<T extends DynamicType> = {
   code: number;
-  data: DataData$9<T>;
+  data: DataData$10<T>;
   message: string;
   ttl: number;
   [property: string]: any;
@@ -9225,7 +9234,7 @@ type BiliOneWork = BiliOneWork_V0;
 //#region src/types/ReturnDataType/Bilibili/UserDynamic/index.d.ts
 type BiliUserDynamic = {
   code: number;
-  data: DataData$8;
+  data: DataData$9;
   message: string;
   ttl: number;
   [property: string]: any;
@@ -9244,7 +9253,7 @@ type DynamicTypeItemMap = {
   [DynamicType.FORWARD]: ForwardItem;
   [DynamicType.ARTICLE]: ArticleItem;
 };
-type DataData$8<T extends DynamicType = DynamicType> = {
+type DataData$9<T extends DynamicType = DynamicType> = {
   has_more: boolean;
   items: DynamicTypeItemMap[T][];
   offset: string;
@@ -9280,6 +9289,32 @@ type Article = {
 //#endregion
 //#region src/types/ReturnDataType/Bilibili/UserFullView/index.d.ts
 type BiliUserFullView = BiliUserFullView_V0;
+//#endregion
+//#region src/types/ReturnDataType/Bilibili/UserLiveStatus/UserLiveStatus_V0.d.ts
+type BiliUserLiveStatus_V0 = {
+  code: number;
+  data: DataData$8;
+  message: string;
+  ttl: number;
+  [property: string]: any;
+};
+type DataData$8 = {
+  broadcast_type: number;
+  cover: string;
+  link: string;
+  liveStatus: number;
+  online: number;
+  online_hidden: number;
+  roomid: number;
+  roomStatus: number;
+  roundStatus: number;
+  title: string;
+  url: string;
+  [property: string]: any;
+};
+//#endregion
+//#region src/types/ReturnDataType/Bilibili/UserLiveStatus/index.d.ts
+type BiliUserLiveStatus = BiliUserLiveStatus_V0;
 //#endregion
 //#region src/types/ReturnDataType/Bilibili/UserProfile/UserProfile_V0.d.ts
 type BiliUserProfile_V0 = {
@@ -11768,6 +11803,7 @@ interface BilibiliReturnTypeMap {
   commentReplies: BiliCommentReply;
   userCard: BiliUserProfile;
   userDynamicList: BiliUserDynamic;
+  userLiveStatus: BiliUserLiveStatus;
   userSpaceInfo: UserSpaceInfo;
   emojiList: BiliEmojiList;
   bangumiInfo: BiliBangumiVideoInfo;
@@ -26297,6 +26333,7 @@ declare const BilibiliInternalMethods: {
   readonly COMMENT_REPLIES: "指定评论的回复";
   readonly USER_CARD: "用户主页数据";
   readonly USER_DYNAMICS: "用户主页动态列表数据";
+  readonly USER_LIVE_STATUS: "用户直播状态";
   readonly USER_SPACE_INFO: "用户空间详细信息";
   readonly USER_TOTAL_VIEWS: "获取UP主总播放量";
   readonly DYNAMIC_DETAIL: "动态详情数据";
@@ -26327,6 +26364,7 @@ declare const BilibiliFetcherMethods: {
   readonly COMMENT_REPLIES: "fetchCommentReplies";
   readonly USER_CARD: "fetchUserCard";
   readonly USER_DYNAMICS: "fetchUserDynamicList";
+  readonly USER_LIVE_STATUS: "fetchUserLiveStatus";
   readonly USER_SPACE_INFO: "fetchUserSpaceInfo";
   readonly USER_TOTAL_VIEWS: "fetchUploaderTotalViews";
   readonly DYNAMIC_DETAIL: "fetchDynamicDetail";
@@ -26462,6 +26500,7 @@ declare const MethodMaps: {
       readonly COMMENT_REPLIES: "指定评论的回复";
       readonly USER_CARD: "用户主页数据";
       readonly USER_DYNAMICS: "用户主页动态列表数据";
+      readonly USER_LIVE_STATUS: "用户直播状态";
       readonly USER_SPACE_INFO: "用户空间详细信息";
       readonly USER_TOTAL_VIEWS: "获取UP主总播放量";
       readonly DYNAMIC_DETAIL: "动态详情数据";
@@ -26491,6 +26530,7 @@ declare const MethodMaps: {
       readonly COMMENT_REPLIES: "fetchCommentReplies";
       readonly USER_CARD: "fetchUserCard";
       readonly USER_DYNAMICS: "fetchUserDynamicList";
+      readonly USER_LIVE_STATUS: "fetchUserLiveStatus";
       readonly USER_SPACE_INFO: "fetchUserSpaceInfo";
       readonly USER_TOTAL_VIEWS: "fetchUploaderTotalViews";
       readonly DYNAMIC_DETAIL: "fetchDynamicDetail";
@@ -26696,6 +26736,13 @@ declare class BilibiliAPI {
   getDynamicCard(data: BilibiliMethodOptionsWithoutMethodType['DynamicParams']): string;
   /** 获取用户名片信息 */
   getUserCard(data: BilibiliMethodOptionsWithoutMethodType['UserParams']): string;
+  /**
+   * 按用户 UID 获取直播状态。
+   *
+   * @remarks
+   * 该接口直接返回用户当前直播状态，不依赖空间动态中的直播推荐卡片。
+   */
+  getUserLiveStatus(data: BilibiliMethodOptionsWithoutMethodType['UserParams']): string;
   /** 获取直播间信息 */
   getLiveRoomInfo(data: BilibiliMethodOptionsWithoutMethodType['LiveRoomParams']): string;
   /** 获取直播间初始化信息 */
@@ -26895,6 +26942,10 @@ interface IBilibiliFetcher {
    * 获取B站用户动态列表
    */
   fetchUserDynamicList: MethodOverload<BilibiliUserOptions, BilibiliReturnTypeMap['userDynamicList']>;
+  /**
+   * 按用户 UID 获取B站直播状态
+   */
+  fetchUserLiveStatus: MethodOverload<BilibiliUserOptions, BilibiliReturnTypeMap['userLiveStatus']>;
   /**
    * 获取B站用户空间详细信息
    */
@@ -27433,6 +27484,8 @@ interface IBoundBilibiliFetcher {
   fetchUserCard: BoundMethodOverload<BilibiliUserOptions, BilibiliReturnTypeMap['userCard']>;
   /** 获取B站用户动态列表 */
   fetchUserDynamicList: BoundMethodOverload<BilibiliUserOptions, BilibiliReturnTypeMap['userDynamicList']>;
+  /** 按用户 UID 获取B站直播状态 */
+  fetchUserLiveStatus: BoundMethodOverload<BilibiliUserOptions, BilibiliReturnTypeMap['userLiveStatus']>;
   /** 获取B站用户空间详细信息 */
   fetchUserSpaceInfo: BoundMethodOverload<BilibiliUserOptions, BilibiliReturnTypeMap['userSpaceInfo']>;
   /** 获取B站 UP 主总播放量 */
@@ -29339,6 +29392,7 @@ declare const BilibiliMethodMapping: {
   readonly 指定评论的回复: "fetchCommentReplies";
   readonly 用户主页数据: "fetchUserCard";
   readonly 用户主页动态列表数据: "fetchUserDynamicList";
+  readonly 用户直播状态: "fetchUserLiveStatus";
   readonly 用户空间详细信息: "fetchUserSpaceInfo";
   readonly 获取UP主总播放量: "fetchUploaderTotalViews";
   readonly 动态详情数据: "fetchDynamicDetail";
@@ -29424,6 +29478,7 @@ declare const BilibiliApiRoutes: {
   readonly commentReplies: "/comment-replies";
   readonly userCard: "/user";
   readonly userDynamicList: "/user/dynamics";
+  readonly userLiveStatus: "/user/live-status";
   readonly userSpaceInfo: "/user/space";
   readonly uploaderTotalViews: "/user/total-views";
   readonly dynamicDetail: "/dynamic";
@@ -29553,4 +29608,4 @@ declare const CreateApp: AmagiConstructor;
 declare const Client: typeof CreateApp;
 declare const amagi: typeof Client;
 //#endregion
-export { APIErrorType, AdditionalType, AmagiEventMap, AmagiEventType, type ApiEndpoint, ApiError, ApiErrorEventData, ApiResponse, ApiSuccessEventData, ArticleCard, ArticleContent, ArticleInfo, ArticleWork, BaseRequestOptions, BaseResponse, BiliAv2Bv, BiliBangumiVideoInfo, BiliBangumiVideoPlayurlIsLogin, BiliBangumiVideoPlayurlNoLogin, BiliBiliVideoPlayurlNoLogin, BiliBv2AV, BiliCheckQrcode, BiliCommentReply, BiliDynamicCard, BiliDynamicInfo, BiliDynamicInfoUnion, BiliEmojiList, BiliLiveRoomDef, BiliLiveRoomDetail, BiliNewLoginQrcode, BiliOneWork, BiliProtobufDanmaku, BiliUserDynamic, BiliUserFullView, BiliUserProfile, BiliVideoPlayurlIsLogin, BiliWorkComments, BilibiliApiRoutes, type BilibiliApplyCaptchaOptions, BilibiliApplyCaptchaParamsSchema, type BilibiliArticleCardOptions, BilibiliArticleCardParamsSchema, BilibiliArticleInfoParamsSchema, type BilibiliArticleOptions, BilibiliArticleParamsSchema, type BilibiliAv2BvOptions, BilibiliAv2BvParamsSchema, type BilibiliBangumiInfoOptions, BilibiliBangumiInfoParamsSchema, type BilibiliBangumiStreamOptions, BilibiliBangumiStreamParamsSchema, type BilibiliBv2AvOptions, BilibiliBv2AvParamsSchema, BilibiliColumnInfoParamsSchema, BilibiliCommentParamsSchema, type BilibiliCommentRepliesOptions, BilibiliCommentReplyParamsSchema, type BilibiliCommentsOptions, type BilibiliDanmakuOptions, BilibiliDanmakuParamsSchema, BilibiliDataOptions, BilibiliDataOptionsMap, type BilibiliDynamicOptions, BilibiliDynamicParamsSchema, BilibiliEmojiParamsSchema, type BilibiliFetcher, BilibiliFetcherMethodKey, BilibiliFetcherMethods, BilibiliInternalMethodKey, BilibiliInternalMethods, BilibiliLiveParamsSchema, type BilibiliLiveRoomOptions, BilibiliLoginParamsSchema, type BilibiliMethodKey, BilibiliMethodMapping, BilibiliMethodOptMap, BilibiliMethodOptionsMap, BilibiliMethodRoutes, BilibiliMethodToFetcher, BilibiliMethodType, type BilibiliMethodValue, BilibiliQrcodeParamsSchema, type BilibiliQrcodeStatusOptions, BilibiliQrcodeStatusParamsSchema, BilibiliReturnTypeMap, type BilibiliUserOptions, BilibiliUserParamsSchema, type BilibiliValidateCaptchaOptions, BilibiliValidateCaptchaParamsSchema, BilibiliValidationSchemas, BilibiliVideoDownloadParamsSchema, type BilibiliVideoInfoOptions, BilibiliVideoParamsSchema, type BilibiliVideoStreamOptions, BoundBilibiliApi, type BoundBilibiliFetcher, BoundDouyinApi, type BoundDouyinFetcher, BoundKuaishouApi, type BoundKuaishouFetcher, BoundXiaohongshuApi, type BoundXiaohongshuFetcher, ColumnInfo, CommentReply, CommentType, ConditionalReturnType, CookieConfig, CreateApp, DouyinApiRoutes, DouyinCommentParamsSchema, type DouyinCommentRepliesOptions, DouyinCommentReplyParamsSchema, type DouyinCommentsOptions, type DouyinDanmakuOptions, DouyinDanmakuParamsSchema, DouyinDataOptions, DouyinDataOptionsMap, DouyinEmojiListParamsSchema, DouyinEmojiProParamsSchema, type DouyinFetcher, DouyinFetcherMethodKey, DouyinFetcherMethods, DouyinHotWordsParamsSchema, DouyinInternalMethodKey, DouyinInternalMethods, type DouyinLiveRoomOptions, DouyinLiveRoomParamsSchema, type DouyinMethodKey, DouyinMethodMapping, DouyinMethodOptMap, DouyinMethodOptionsMap, DouyinMethodRoutes, DouyinMethodToFetcher, DouyinMethodType, type DouyinMethodValue, type DouyinMusicOptions, DouyinMusicParamsSchema, type DouyinQrcodeOptions, DouyinQrcodeParamsSchema, DouyinReturnTypeMap, type DouyinSearchOptions, DouyinSearchParamsSchema, type DouyinSuggestWordsOptions, type DouyinUserListOptions, DouyinUserListParamsSchema, type DouyinUserOptions, DouyinUserParamsSchema, DouyinValidationSchemas, type DouyinWorkOptions, DouyinWorkParamsSchema, DyDanmakuList, DyEmojiList, DyEmojiProList, DyImageAlbumWork, DyMusicWork, DySearchInfo, DySlidesWork, DySuggestWords, DyUserInfo, DyUserLiveVideos, DyUserPostVideos, DyVideoWork, DyWorkComments, DynamicType, DynamicTypeAV, DynamicTypeArticle, DynamicTypeDraw, DynamicTypeForward, DynamicTypeForwardUnion, DynamicTypeLiveRcmd, DynamicTypeWord, ErrorResult, ExtractTypeMode, FetcherConfig, HomeFeed, type HttpMethod, HttpRequestEventData, HttpResponseEventData, type IBilibiliFetcher, type IBoundBilibiliFetcher, type IBoundDouyinFetcher, type IBoundKuaishouFetcher, type IBoundXiaohongshuFetcher, type IDouyinFetcher, type IKuaishouFetcher, type IXiaohongshuFetcher, type KsBannedStatus, KsEmojiList, KsLiveRoomInfo, KsOneWork, type KsUserHomeWork, KsUserProfile, type KsUserProfileCounts, type KsUserProfileGameInfo, type KsUserProfileLiveInfo, type KsUserProfileSensitiveInfo, type KsUserProfileUserInfo, KsUserWorkList, type KsVerifiedStatus, KsWorkComments, KuaishouApiRoutes, KuaishouCommentParamsSchema, type KuaishouCommentsOptions, KuaishouDataOptions, KuaishouDataOptionsMap, KuaishouEmojiParamsSchema, type KuaishouFetcher, KuaishouFetcherMethodKey, KuaishouFetcherMethods, type KuaishouGraphqlRequest, KuaishouInternalMethodKey, KuaishouInternalMethods, type KuaishouLiveApiRequest, type KuaishouLiveRoomInfoOptions, KuaishouLiveRoomInfoParamsSchema, type KuaishouMethodKey, KuaishouMethodMapping, KuaishouMethodOptMap, KuaishouMethodOptionsMap, KuaishouMethodRoutes, KuaishouMethodToFetcher, KuaishouMethodType, type KuaishouMethodValue, KuaishouReturnTypeMap, type KuaishouUserProfileOptions, KuaishouUserProfileParamsSchema, type KuaishouUserWorkListOptions, KuaishouUserWorkListParamsSchema, KuaishouValidationSchemas, KuaishouVideoParamsSchema, type KuaishouVideoWorkOptions, LogEventData, MajorType, MethodMaps, NetworkErrorEventData, NetworkRetryEventData, type NetworksConfigType, NoteComments, OmitMethodType, OneNote, Options, type Platform, RequestConfig, Result, SearchInfoGeneralData, SearchInfoUser, SearchInfoVideo, SearchNotes, SuccessResult, TypeControl, TypeMode, ValidationError, XiaohongshuApiRoutes, type XiaohongshuCommentsOptions, XiaohongshuDataOptions, XiaohongshuDataOptionsMap, XiaohongshuEmojiList, type XiaohongshuFetcher, XiaohongshuFetcherMethodKey, XiaohongshuFetcherMethods, type XiaohongshuHomeFeedOptions, XiaohongshuInternalMethodKey, XiaohongshuInternalMethods, type XiaohongshuMethodKey, XiaohongshuMethodMapping, XiaohongshuMethodOptMap, XiaohongshuMethodOptionsMap, XiaohongshuMethodRoutes, XiaohongshuMethodToFetcher, XiaohongshuMethodType, type XiaohongshuMethodValue, type XiaohongshuNoteDetailOptions, XiaohongshuReturnTypeMap, type XiaohongshuSearchNotesOptions, type XiaohongshuUserNotesOptions, XiaohongshuUserProfile, type XiaohongshuUserProfileOptions, XiaohongshuValidationSchemas, amagi, amagiClient, amagiEvents, av2bv, bilibili, bilibiliApiUrls, bilibiliErrorCodeMap, bilibiliFetcher, bilibiliUtils, bv2av, createAmagiClient, createBilibiliRoutes, createBilibiliRoutes as registerBilibiliRoutes, createBoundBilibiliApi, createBoundBilibiliFetcher, createBoundDouyinApi, createBoundDouyinFetcher, createBoundKuaishouApi, createBoundKuaishouFetcher, createBoundXiaohongshuApi, createBoundXiaohongshuFetcher, createDouyinRoutes, createDouyinRoutes as registerDouyinRoutes, createErrorResponse, createKuaishouRoutes, createKuaishouRoutes as registerKuaishouRoutes, createSuccessResponse, createXiaohongshuRoutes, createXiaohongshuRoutes as registerXiaohongshuRoutes, douyin, douyinApiUrls, douyinFetcher, douyinSign, douyinUtils, emitApiError, emitApiSuccess, emitHttpRequest, emitHttpResponse, emitLog, emitLogDebug, emitLogError, emitLogInfo, emitLogMark, emitLogWarn, emitNetworkError, emitNetworkRetry, fetchData, fetchResponse, getApiRoute, getBilibiliData, getDouyinData, getEnglishMethodName, getHeadersAndData, getKuaishouData, handleError, httpLogger, initLogger, isNetworkErrorResult, kuaishou, kuaishouApiUrls, kuaishouFetcher, kuaishouSign, kuaishouUtils, logMiddleware, logger, parseDmSegMobileReply, qtparam, toFetcherMethod, validateBilibiliParams, validateDouyinParams, validateKuaishouParams, validateXiaohongshuParams, wbi_sign, xiaohongshu, xiaohongshuApiUrls, xiaohongshuFetcher, xiaohongshuSign, xiaohongshuUtils };
+export { APIErrorType, AdditionalType, AmagiEventMap, AmagiEventType, type ApiEndpoint, ApiError, ApiErrorEventData, ApiResponse, ApiSuccessEventData, ArticleCard, ArticleContent, ArticleInfo, ArticleWork, BaseRequestOptions, BaseResponse, BiliAv2Bv, BiliBangumiVideoInfo, BiliBangumiVideoPlayurlIsLogin, BiliBangumiVideoPlayurlNoLogin, BiliBiliVideoPlayurlNoLogin, BiliBv2AV, BiliCheckQrcode, BiliCommentReply, BiliDynamicCard, BiliDynamicInfo, BiliDynamicInfoUnion, BiliEmojiList, BiliLiveRoomDef, BiliLiveRoomDetail, BiliNewLoginQrcode, BiliOneWork, BiliProtobufDanmaku, BiliUserDynamic, BiliUserFullView, BiliUserLiveStatus, BiliUserProfile, BiliVideoPlayurlIsLogin, BiliWorkComments, BilibiliApiRoutes, type BilibiliApplyCaptchaOptions, BilibiliApplyCaptchaParamsSchema, type BilibiliArticleCardOptions, BilibiliArticleCardParamsSchema, BilibiliArticleInfoParamsSchema, type BilibiliArticleOptions, BilibiliArticleParamsSchema, type BilibiliAv2BvOptions, BilibiliAv2BvParamsSchema, type BilibiliBangumiInfoOptions, BilibiliBangumiInfoParamsSchema, type BilibiliBangumiStreamOptions, BilibiliBangumiStreamParamsSchema, type BilibiliBv2AvOptions, BilibiliBv2AvParamsSchema, BilibiliColumnInfoParamsSchema, BilibiliCommentParamsSchema, type BilibiliCommentRepliesOptions, BilibiliCommentReplyParamsSchema, type BilibiliCommentsOptions, type BilibiliDanmakuOptions, BilibiliDanmakuParamsSchema, BilibiliDataOptions, BilibiliDataOptionsMap, type BilibiliDynamicOptions, BilibiliDynamicParamsSchema, BilibiliEmojiParamsSchema, type BilibiliFetcher, BilibiliFetcherMethodKey, BilibiliFetcherMethods, BilibiliInternalMethodKey, BilibiliInternalMethods, BilibiliLiveParamsSchema, type BilibiliLiveRoomOptions, BilibiliLoginParamsSchema, type BilibiliMethodKey, BilibiliMethodMapping, BilibiliMethodOptMap, BilibiliMethodOptionsMap, BilibiliMethodRoutes, BilibiliMethodToFetcher, BilibiliMethodType, type BilibiliMethodValue, BilibiliQrcodeParamsSchema, type BilibiliQrcodeStatusOptions, BilibiliQrcodeStatusParamsSchema, BilibiliReturnTypeMap, type BilibiliUserOptions, BilibiliUserParamsSchema, type BilibiliValidateCaptchaOptions, BilibiliValidateCaptchaParamsSchema, BilibiliValidationSchemas, BilibiliVideoDownloadParamsSchema, type BilibiliVideoInfoOptions, BilibiliVideoParamsSchema, type BilibiliVideoStreamOptions, BoundBilibiliApi, type BoundBilibiliFetcher, BoundDouyinApi, type BoundDouyinFetcher, BoundKuaishouApi, type BoundKuaishouFetcher, BoundXiaohongshuApi, type BoundXiaohongshuFetcher, ColumnInfo, CommentReply, CommentType, ConditionalReturnType, CookieConfig, CreateApp, DouyinApiRoutes, DouyinCommentParamsSchema, type DouyinCommentRepliesOptions, DouyinCommentReplyParamsSchema, type DouyinCommentsOptions, type DouyinDanmakuOptions, DouyinDanmakuParamsSchema, DouyinDataOptions, DouyinDataOptionsMap, DouyinEmojiListParamsSchema, DouyinEmojiProParamsSchema, type DouyinFetcher, DouyinFetcherMethodKey, DouyinFetcherMethods, DouyinHotWordsParamsSchema, DouyinInternalMethodKey, DouyinInternalMethods, type DouyinLiveRoomOptions, DouyinLiveRoomParamsSchema, type DouyinMethodKey, DouyinMethodMapping, DouyinMethodOptMap, DouyinMethodOptionsMap, DouyinMethodRoutes, DouyinMethodToFetcher, DouyinMethodType, type DouyinMethodValue, type DouyinMusicOptions, DouyinMusicParamsSchema, type DouyinQrcodeOptions, DouyinQrcodeParamsSchema, DouyinReturnTypeMap, type DouyinSearchOptions, DouyinSearchParamsSchema, type DouyinSuggestWordsOptions, type DouyinUserListOptions, DouyinUserListParamsSchema, type DouyinUserOptions, DouyinUserParamsSchema, DouyinValidationSchemas, type DouyinWorkOptions, DouyinWorkParamsSchema, DyDanmakuList, DyEmojiList, DyEmojiProList, DyImageAlbumWork, DyMusicWork, DySearchInfo, DySlidesWork, DySuggestWords, DyUserInfo, DyUserLiveVideos, DyUserPostVideos, DyVideoWork, DyWorkComments, DynamicType, DynamicTypeAV, DynamicTypeArticle, DynamicTypeDraw, DynamicTypeForward, DynamicTypeForwardUnion, DynamicTypeLiveRcmd, DynamicTypeWord, ErrorResult, ExtractTypeMode, FetcherConfig, HomeFeed, type HttpMethod, HttpRequestEventData, HttpResponseEventData, type IBilibiliFetcher, type IBoundBilibiliFetcher, type IBoundDouyinFetcher, type IBoundKuaishouFetcher, type IBoundXiaohongshuFetcher, type IDouyinFetcher, type IKuaishouFetcher, type IXiaohongshuFetcher, type KsBannedStatus, KsEmojiList, KsLiveRoomInfo, KsOneWork, type KsUserHomeWork, KsUserProfile, type KsUserProfileCounts, type KsUserProfileGameInfo, type KsUserProfileLiveInfo, type KsUserProfileSensitiveInfo, type KsUserProfileUserInfo, KsUserWorkList, type KsVerifiedStatus, KsWorkComments, KuaishouApiRoutes, KuaishouCommentParamsSchema, type KuaishouCommentsOptions, KuaishouDataOptions, KuaishouDataOptionsMap, KuaishouEmojiParamsSchema, type KuaishouFetcher, KuaishouFetcherMethodKey, KuaishouFetcherMethods, type KuaishouGraphqlRequest, KuaishouInternalMethodKey, KuaishouInternalMethods, type KuaishouLiveApiRequest, type KuaishouLiveRoomInfoOptions, KuaishouLiveRoomInfoParamsSchema, type KuaishouMethodKey, KuaishouMethodMapping, KuaishouMethodOptMap, KuaishouMethodOptionsMap, KuaishouMethodRoutes, KuaishouMethodToFetcher, KuaishouMethodType, type KuaishouMethodValue, KuaishouReturnTypeMap, type KuaishouUserProfileOptions, KuaishouUserProfileParamsSchema, type KuaishouUserWorkListOptions, KuaishouUserWorkListParamsSchema, KuaishouValidationSchemas, KuaishouVideoParamsSchema, type KuaishouVideoWorkOptions, LogEventData, MajorType, MethodMaps, NetworkErrorEventData, NetworkRetryEventData, type NetworksConfigType, NoteComments, OmitMethodType, OneNote, Options, type Platform, RequestConfig, Result, SearchInfoGeneralData, SearchInfoUser, SearchInfoVideo, SearchNotes, SuccessResult, TypeControl, TypeMode, ValidationError, XiaohongshuApiRoutes, type XiaohongshuCommentsOptions, XiaohongshuDataOptions, XiaohongshuDataOptionsMap, XiaohongshuEmojiList, type XiaohongshuFetcher, XiaohongshuFetcherMethodKey, XiaohongshuFetcherMethods, type XiaohongshuHomeFeedOptions, XiaohongshuInternalMethodKey, XiaohongshuInternalMethods, type XiaohongshuMethodKey, XiaohongshuMethodMapping, XiaohongshuMethodOptMap, XiaohongshuMethodOptionsMap, XiaohongshuMethodRoutes, XiaohongshuMethodToFetcher, XiaohongshuMethodType, type XiaohongshuMethodValue, type XiaohongshuNoteDetailOptions, XiaohongshuReturnTypeMap, type XiaohongshuSearchNotesOptions, type XiaohongshuUserNotesOptions, XiaohongshuUserProfile, type XiaohongshuUserProfileOptions, XiaohongshuValidationSchemas, amagi, amagiClient, amagiEvents, av2bv, bilibili, bilibiliApiUrls, bilibiliErrorCodeMap, bilibiliFetcher, bilibiliUtils, bv2av, createAmagiClient, createBilibiliRoutes, createBilibiliRoutes as registerBilibiliRoutes, createBoundBilibiliApi, createBoundBilibiliFetcher, createBoundDouyinApi, createBoundDouyinFetcher, createBoundKuaishouApi, createBoundKuaishouFetcher, createBoundXiaohongshuApi, createBoundXiaohongshuFetcher, createDouyinRoutes, createDouyinRoutes as registerDouyinRoutes, createErrorResponse, createKuaishouRoutes, createKuaishouRoutes as registerKuaishouRoutes, createSuccessResponse, createXiaohongshuRoutes, createXiaohongshuRoutes as registerXiaohongshuRoutes, douyin, douyinApiUrls, douyinFetcher, douyinSign, douyinUtils, emitApiError, emitApiSuccess, emitHttpRequest, emitHttpResponse, emitLog, emitLogDebug, emitLogError, emitLogInfo, emitLogMark, emitLogWarn, emitNetworkError, emitNetworkRetry, fetchData, fetchResponse, getApiRoute, getBilibiliData, getDouyinData, getEnglishMethodName, getHeadersAndData, getKuaishouData, handleError, httpLogger, initLogger, isNetworkErrorResult, kuaishou, kuaishouApiUrls, kuaishouFetcher, kuaishouSign, kuaishouUtils, logMiddleware, logger, parseDmSegMobileReply, qtparam, toFetcherMethod, validateBilibiliParams, validateDouyinParams, validateKuaishouParams, validateXiaohongshuParams, wbi_sign, xiaohongshu, xiaohongshuApiUrls, xiaohongshuFetcher, xiaohongshuSign, xiaohongshuUtils };
