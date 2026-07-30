@@ -27400,22 +27400,70 @@ interface FetcherConfig {
   requestConfig?: RequestConfig;
 }
 //#endregion
+//#region src/model/fetchers/shared/request-types.d.ts
+type RequestHeaders = NonNullable<RequestConfig['headers']>;
+/**
+ * 未显式覆盖 Cookie 的单次请求配置。
+ *
+ * Cookie 请求头必须使用大写 `Cookie`。小写 `cookie` 会被类型系统拒绝，
+ * 避免 Axios 请求头与平台签名逻辑读取到不同字段。
+ */
+type FetcherRequestConfigWithoutCookie = Omit<RequestConfig, 'headers'> & {
+  headers?: RequestHeaders & {
+    Cookie?: never;
+    cookie?: never;
+  };
+};
+/**
+ * 显式覆盖 Cookie 的单次请求配置。
+ *
+ * 裸 Fetcher 会把 `Cookie` 的字符串字面量与 cookie 参数关联起来：
+ * 两处必须传入相同的值。
+ */
+type FetcherRequestConfigWithCookie<TCookie extends string> = Omit<RequestConfig, 'headers'> & {
+  headers: RequestHeaders & {
+    Cookie: TCookie;
+    cookie?: never;
+  };
+};
+/** 裸 Fetcher 匿名请求使用的严格配置。 */
+type AnonymousFetcherRequestConfig = FetcherRequestConfigWithCookie<''>;
+/**
+ * 根据裸 Fetcher 的单次请求配置推导 cookie 参数类型。
+ *
+ * - 大写 `Cookie`：cookie 参数必须与请求头字符串字面量一致。
+ * - 小写 `cookie`：返回 `never`，拒绝大小写错误。
+ * - 未显式声明 Cookie：保持原有的可选字符串参数。
+ */
+type FetcherCookieForRequestConfig<TRequestConfig extends RequestConfig> = TRequestConfig extends {
+  headers: infer THeaders;
+} ? THeaders extends {
+  cookie: unknown;
+} ? never : THeaders extends {
+  Cookie: infer TCookie;
+} ? TCookie extends string ? TCookie : never : string | undefined : string | undefined;
+//#endregion
 //#region src/model/fetchers/shared/overload-types.d.ts
 /**
  * 为单个方法生成函数重载类型
  * @template TOptions - 方法的选项参数类型
  * @template TStrictReturn - typeMode='strict' 时的返回类型
- * @template TCookie - Cookie 参数类型（可选）
- * @template TRequestConfig - 请求配置参数类型（可选）
  */
-type MethodOverload<TOptions, TStrictReturn, TCookie extends string | undefined = string | undefined, TRequestConfig extends RequestConfig | undefined = RequestConfig | undefined> = {
+type MethodOverload<TOptions, TStrictReturn> = {
   (options: TOptions & {
     typeMode: 'strict';
-  }, ...args: TCookie extends undefined ? TRequestConfig extends undefined ? [] : [requestConfig?: TRequestConfig] : TRequestConfig extends undefined ? [cookie?: TCookie] : [cookie?: TCookie, requestConfig?: TRequestConfig]): Promise<Result<TStrictReturn>>;
-  (options: TOptions, ...args: TCookie extends undefined ? TRequestConfig extends undefined ? [] : [requestConfig?: TRequestConfig] : TRequestConfig extends undefined ? [cookie?: TCookie] : [cookie?: TCookie, requestConfig?: TRequestConfig]): Promise<Result<any>>;
+  }, cookie?: string): Promise<Result<TStrictReturn>>;
+  <const TRequestConfig extends RequestConfig>(options: TOptions & {
+    typeMode: 'strict';
+  }, cookie: NoInfer<FetcherCookieForRequestConfig<TRequestConfig>>, requestConfig: TRequestConfig): Promise<Result<TStrictReturn>>;
+  (options: TOptions, cookie?: string): Promise<Result<any>>;
+  <const TRequestConfig extends RequestConfig>(options: TOptions, cookie: NoInfer<FetcherCookieForRequestConfig<TRequestConfig>>, requestConfig: TRequestConfig): Promise<Result<any>>;
 };
 /**
  * 为绑定 Cookie 的方法生成函数重载类型（少了 cookie 参数）
+ *
+ * 第二个参数用于覆盖当前调用的请求配置。绑定 Fetcher 的实现会将它与
+ * 实例级配置合并，不会修改实例本身。
  */
 type BoundMethodOverload<TOptions, TStrictReturn, TRequestConfig extends RequestConfig | undefined = RequestConfig | undefined> = {
   (options: TOptions & {
@@ -27426,16 +27474,24 @@ type BoundMethodOverload<TOptions, TStrictReturn, TRequestConfig extends Request
 /**
  * 为无参数方法生成函数重载类型
  */
-type NoParamMethodOverload<TStrictReturn, TCookie extends string | undefined = string | undefined, TRequestConfig extends RequestConfig | undefined = RequestConfig | undefined> = {
+type NoParamMethodOverload<TStrictReturn> = {
   (options: {
     typeMode: 'strict';
-  }, ...args: TCookie extends undefined ? TRequestConfig extends undefined ? [] : [requestConfig?: TRequestConfig] : TRequestConfig extends undefined ? [cookie?: TCookie] : [cookie?: TCookie, requestConfig?: TRequestConfig]): Promise<Result<TStrictReturn>>;
+  }, cookie?: string): Promise<Result<TStrictReturn>>;
+  <const TRequestConfig extends RequestConfig>(options: {
+    typeMode: 'strict';
+  }, cookie: NoInfer<FetcherCookieForRequestConfig<TRequestConfig>>, requestConfig: TRequestConfig): Promise<Result<TStrictReturn>>;
   (options?: {
     typeMode?: TypeMode;
-  }, ...args: TCookie extends undefined ? TRequestConfig extends undefined ? [] : [requestConfig?: TRequestConfig] : TRequestConfig extends undefined ? [cookie?: TCookie] : [cookie?: TCookie, requestConfig?: TRequestConfig]): Promise<Result<any>>;
+  }, cookie?: string): Promise<Result<any>>;
+  <const TRequestConfig extends RequestConfig>(options: {
+    typeMode?: TypeMode;
+  } | undefined, cookie: NoInfer<FetcherCookieForRequestConfig<TRequestConfig>>, requestConfig: TRequestConfig): Promise<Result<any>>;
 };
 /**
  * 为绑定 Cookie 的无参数方法生成函数重载类型
+ *
+ * `requestConfig` 只影响当前调用，并由绑定 Fetcher 与实例级配置合并。
  */
 type BoundNoParamMethodOverload<TStrictReturn, TRequestConfig extends RequestConfig | undefined = RequestConfig | undefined> = {
   (options: {
@@ -27448,14 +27504,20 @@ type BoundNoParamMethodOverload<TStrictReturn, TRequestConfig extends RequestCon
 /**
  * 为带可选参数的方法生成函数重载类型（参数可选但可能包含额外字段）
  */
-type OptionalParamMethodOverload<TOptions, TStrictReturn, TCookie extends string | undefined = string | undefined, TRequestConfig extends RequestConfig | undefined = RequestConfig | undefined> = {
+type OptionalParamMethodOverload<TOptions, TStrictReturn> = {
   (options: TOptions & {
     typeMode: 'strict';
-  }, ...args: TCookie extends undefined ? TRequestConfig extends undefined ? [] : [requestConfig?: TRequestConfig] : TRequestConfig extends undefined ? [cookie?: TCookie] : [cookie?: TCookie, requestConfig?: TRequestConfig]): Promise<Result<TStrictReturn>>;
-  (options?: TOptions, ...args: TCookie extends undefined ? TRequestConfig extends undefined ? [] : [requestConfig?: TRequestConfig] : TRequestConfig extends undefined ? [cookie?: TCookie] : [cookie?: TCookie, requestConfig?: TRequestConfig]): Promise<Result<any>>;
+  }, cookie?: string): Promise<Result<TStrictReturn>>;
+  <const TRequestConfig extends RequestConfig>(options: TOptions & {
+    typeMode: 'strict';
+  }, cookie: NoInfer<FetcherCookieForRequestConfig<TRequestConfig>>, requestConfig: TRequestConfig): Promise<Result<TStrictReturn>>;
+  (options?: TOptions, cookie?: string): Promise<Result<any>>;
+  <const TRequestConfig extends RequestConfig>(options: TOptions | undefined, cookie: NoInfer<FetcherCookieForRequestConfig<TRequestConfig>>, requestConfig: TRequestConfig): Promise<Result<any>>;
 };
 /**
  * 为绑定 Cookie 的带可选参数方法生成函数重载类型
+ *
+ * `requestConfig` 只影响当前调用，并由绑定 Fetcher 与实例级配置合并。
  */
 type BoundOptionalParamMethodOverload<TOptions, TStrictReturn, TRequestConfig extends RequestConfig | undefined = RequestConfig | undefined> = {
   (options: TOptions & {
@@ -29608,4 +29670,4 @@ declare const CreateApp: AmagiConstructor;
 declare const Client: typeof CreateApp;
 declare const amagi: typeof Client;
 //#endregion
-export { APIErrorType, AdditionalType, AmagiEventMap, AmagiEventType, type ApiEndpoint, ApiError, ApiErrorEventData, ApiResponse, ApiSuccessEventData, ArticleCard, ArticleContent, ArticleInfo, ArticleWork, BaseRequestOptions, BaseResponse, BiliAv2Bv, BiliBangumiVideoInfo, BiliBangumiVideoPlayurlIsLogin, BiliBangumiVideoPlayurlNoLogin, BiliBiliVideoPlayurlNoLogin, BiliBv2AV, BiliCheckQrcode, BiliCommentReply, BiliDynamicCard, BiliDynamicInfo, BiliDynamicInfoUnion, BiliEmojiList, BiliLiveRoomDef, BiliLiveRoomDetail, BiliNewLoginQrcode, BiliOneWork, BiliProtobufDanmaku, BiliUserDynamic, BiliUserFullView, BiliUserLiveStatus, BiliUserProfile, BiliVideoPlayurlIsLogin, BiliWorkComments, BilibiliApiRoutes, type BilibiliApplyCaptchaOptions, BilibiliApplyCaptchaParamsSchema, type BilibiliArticleCardOptions, BilibiliArticleCardParamsSchema, BilibiliArticleInfoParamsSchema, type BilibiliArticleOptions, BilibiliArticleParamsSchema, type BilibiliAv2BvOptions, BilibiliAv2BvParamsSchema, type BilibiliBangumiInfoOptions, BilibiliBangumiInfoParamsSchema, type BilibiliBangumiStreamOptions, BilibiliBangumiStreamParamsSchema, type BilibiliBv2AvOptions, BilibiliBv2AvParamsSchema, BilibiliColumnInfoParamsSchema, BilibiliCommentParamsSchema, type BilibiliCommentRepliesOptions, BilibiliCommentReplyParamsSchema, type BilibiliCommentsOptions, type BilibiliDanmakuOptions, BilibiliDanmakuParamsSchema, BilibiliDataOptions, BilibiliDataOptionsMap, type BilibiliDynamicOptions, BilibiliDynamicParamsSchema, BilibiliEmojiParamsSchema, type BilibiliFetcher, BilibiliFetcherMethodKey, BilibiliFetcherMethods, BilibiliInternalMethodKey, BilibiliInternalMethods, BilibiliLiveParamsSchema, type BilibiliLiveRoomOptions, BilibiliLoginParamsSchema, type BilibiliMethodKey, BilibiliMethodMapping, BilibiliMethodOptMap, BilibiliMethodOptionsMap, BilibiliMethodRoutes, BilibiliMethodToFetcher, BilibiliMethodType, type BilibiliMethodValue, BilibiliQrcodeParamsSchema, type BilibiliQrcodeStatusOptions, BilibiliQrcodeStatusParamsSchema, BilibiliReturnTypeMap, type BilibiliUserOptions, BilibiliUserParamsSchema, type BilibiliValidateCaptchaOptions, BilibiliValidateCaptchaParamsSchema, BilibiliValidationSchemas, BilibiliVideoDownloadParamsSchema, type BilibiliVideoInfoOptions, BilibiliVideoParamsSchema, type BilibiliVideoStreamOptions, BoundBilibiliApi, type BoundBilibiliFetcher, BoundDouyinApi, type BoundDouyinFetcher, BoundKuaishouApi, type BoundKuaishouFetcher, BoundXiaohongshuApi, type BoundXiaohongshuFetcher, ColumnInfo, CommentReply, CommentType, ConditionalReturnType, CookieConfig, CreateApp, DouyinApiRoutes, DouyinCommentParamsSchema, type DouyinCommentRepliesOptions, DouyinCommentReplyParamsSchema, type DouyinCommentsOptions, type DouyinDanmakuOptions, DouyinDanmakuParamsSchema, DouyinDataOptions, DouyinDataOptionsMap, DouyinEmojiListParamsSchema, DouyinEmojiProParamsSchema, type DouyinFetcher, DouyinFetcherMethodKey, DouyinFetcherMethods, DouyinHotWordsParamsSchema, DouyinInternalMethodKey, DouyinInternalMethods, type DouyinLiveRoomOptions, DouyinLiveRoomParamsSchema, type DouyinMethodKey, DouyinMethodMapping, DouyinMethodOptMap, DouyinMethodOptionsMap, DouyinMethodRoutes, DouyinMethodToFetcher, DouyinMethodType, type DouyinMethodValue, type DouyinMusicOptions, DouyinMusicParamsSchema, type DouyinQrcodeOptions, DouyinQrcodeParamsSchema, DouyinReturnTypeMap, type DouyinSearchOptions, DouyinSearchParamsSchema, type DouyinSuggestWordsOptions, type DouyinUserListOptions, DouyinUserListParamsSchema, type DouyinUserOptions, DouyinUserParamsSchema, DouyinValidationSchemas, type DouyinWorkOptions, DouyinWorkParamsSchema, DyDanmakuList, DyEmojiList, DyEmojiProList, DyImageAlbumWork, DyMusicWork, DySearchInfo, DySlidesWork, DySuggestWords, DyUserInfo, DyUserLiveVideos, DyUserPostVideos, DyVideoWork, DyWorkComments, DynamicType, DynamicTypeAV, DynamicTypeArticle, DynamicTypeDraw, DynamicTypeForward, DynamicTypeForwardUnion, DynamicTypeLiveRcmd, DynamicTypeWord, ErrorResult, ExtractTypeMode, FetcherConfig, HomeFeed, type HttpMethod, HttpRequestEventData, HttpResponseEventData, type IBilibiliFetcher, type IBoundBilibiliFetcher, type IBoundDouyinFetcher, type IBoundKuaishouFetcher, type IBoundXiaohongshuFetcher, type IDouyinFetcher, type IKuaishouFetcher, type IXiaohongshuFetcher, type KsBannedStatus, KsEmojiList, KsLiveRoomInfo, KsOneWork, type KsUserHomeWork, KsUserProfile, type KsUserProfileCounts, type KsUserProfileGameInfo, type KsUserProfileLiveInfo, type KsUserProfileSensitiveInfo, type KsUserProfileUserInfo, KsUserWorkList, type KsVerifiedStatus, KsWorkComments, KuaishouApiRoutes, KuaishouCommentParamsSchema, type KuaishouCommentsOptions, KuaishouDataOptions, KuaishouDataOptionsMap, KuaishouEmojiParamsSchema, type KuaishouFetcher, KuaishouFetcherMethodKey, KuaishouFetcherMethods, type KuaishouGraphqlRequest, KuaishouInternalMethodKey, KuaishouInternalMethods, type KuaishouLiveApiRequest, type KuaishouLiveRoomInfoOptions, KuaishouLiveRoomInfoParamsSchema, type KuaishouMethodKey, KuaishouMethodMapping, KuaishouMethodOptMap, KuaishouMethodOptionsMap, KuaishouMethodRoutes, KuaishouMethodToFetcher, KuaishouMethodType, type KuaishouMethodValue, KuaishouReturnTypeMap, type KuaishouUserProfileOptions, KuaishouUserProfileParamsSchema, type KuaishouUserWorkListOptions, KuaishouUserWorkListParamsSchema, KuaishouValidationSchemas, KuaishouVideoParamsSchema, type KuaishouVideoWorkOptions, LogEventData, MajorType, MethodMaps, NetworkErrorEventData, NetworkRetryEventData, type NetworksConfigType, NoteComments, OmitMethodType, OneNote, Options, type Platform, RequestConfig, Result, SearchInfoGeneralData, SearchInfoUser, SearchInfoVideo, SearchNotes, SuccessResult, TypeControl, TypeMode, ValidationError, XiaohongshuApiRoutes, type XiaohongshuCommentsOptions, XiaohongshuDataOptions, XiaohongshuDataOptionsMap, XiaohongshuEmojiList, type XiaohongshuFetcher, XiaohongshuFetcherMethodKey, XiaohongshuFetcherMethods, type XiaohongshuHomeFeedOptions, XiaohongshuInternalMethodKey, XiaohongshuInternalMethods, type XiaohongshuMethodKey, XiaohongshuMethodMapping, XiaohongshuMethodOptMap, XiaohongshuMethodOptionsMap, XiaohongshuMethodRoutes, XiaohongshuMethodToFetcher, XiaohongshuMethodType, type XiaohongshuMethodValue, type XiaohongshuNoteDetailOptions, XiaohongshuReturnTypeMap, type XiaohongshuSearchNotesOptions, type XiaohongshuUserNotesOptions, XiaohongshuUserProfile, type XiaohongshuUserProfileOptions, XiaohongshuValidationSchemas, amagi, amagiClient, amagiEvents, av2bv, bilibili, bilibiliApiUrls, bilibiliErrorCodeMap, bilibiliFetcher, bilibiliUtils, bv2av, createAmagiClient, createBilibiliRoutes, createBilibiliRoutes as registerBilibiliRoutes, createBoundBilibiliApi, createBoundBilibiliFetcher, createBoundDouyinApi, createBoundDouyinFetcher, createBoundKuaishouApi, createBoundKuaishouFetcher, createBoundXiaohongshuApi, createBoundXiaohongshuFetcher, createDouyinRoutes, createDouyinRoutes as registerDouyinRoutes, createErrorResponse, createKuaishouRoutes, createKuaishouRoutes as registerKuaishouRoutes, createSuccessResponse, createXiaohongshuRoutes, createXiaohongshuRoutes as registerXiaohongshuRoutes, douyin, douyinApiUrls, douyinFetcher, douyinSign, douyinUtils, emitApiError, emitApiSuccess, emitHttpRequest, emitHttpResponse, emitLog, emitLogDebug, emitLogError, emitLogInfo, emitLogMark, emitLogWarn, emitNetworkError, emitNetworkRetry, fetchData, fetchResponse, getApiRoute, getBilibiliData, getDouyinData, getEnglishMethodName, getHeadersAndData, getKuaishouData, handleError, httpLogger, initLogger, isNetworkErrorResult, kuaishou, kuaishouApiUrls, kuaishouFetcher, kuaishouSign, kuaishouUtils, logMiddleware, logger, parseDmSegMobileReply, qtparam, toFetcherMethod, validateBilibiliParams, validateDouyinParams, validateKuaishouParams, validateXiaohongshuParams, wbi_sign, xiaohongshu, xiaohongshuApiUrls, xiaohongshuFetcher, xiaohongshuSign, xiaohongshuUtils };
+export { APIErrorType, AdditionalType, AmagiEventMap, AmagiEventType, type AnonymousFetcherRequestConfig, type ApiEndpoint, ApiError, ApiErrorEventData, ApiResponse, ApiSuccessEventData, ArticleCard, ArticleContent, ArticleInfo, ArticleWork, BaseRequestOptions, BaseResponse, BiliAv2Bv, BiliBangumiVideoInfo, BiliBangumiVideoPlayurlIsLogin, BiliBangumiVideoPlayurlNoLogin, BiliBiliVideoPlayurlNoLogin, BiliBv2AV, BiliCheckQrcode, BiliCommentReply, BiliDynamicCard, BiliDynamicInfo, BiliDynamicInfoUnion, BiliEmojiList, BiliLiveRoomDef, BiliLiveRoomDetail, BiliNewLoginQrcode, BiliOneWork, BiliProtobufDanmaku, BiliUserDynamic, BiliUserFullView, BiliUserLiveStatus, BiliUserProfile, BiliVideoPlayurlIsLogin, BiliWorkComments, BilibiliApiRoutes, type BilibiliApplyCaptchaOptions, BilibiliApplyCaptchaParamsSchema, type BilibiliArticleCardOptions, BilibiliArticleCardParamsSchema, BilibiliArticleInfoParamsSchema, type BilibiliArticleOptions, BilibiliArticleParamsSchema, type BilibiliAv2BvOptions, BilibiliAv2BvParamsSchema, type BilibiliBangumiInfoOptions, BilibiliBangumiInfoParamsSchema, type BilibiliBangumiStreamOptions, BilibiliBangumiStreamParamsSchema, type BilibiliBv2AvOptions, BilibiliBv2AvParamsSchema, BilibiliColumnInfoParamsSchema, BilibiliCommentParamsSchema, type BilibiliCommentRepliesOptions, BilibiliCommentReplyParamsSchema, type BilibiliCommentsOptions, type BilibiliDanmakuOptions, BilibiliDanmakuParamsSchema, BilibiliDataOptions, BilibiliDataOptionsMap, type BilibiliDynamicOptions, BilibiliDynamicParamsSchema, BilibiliEmojiParamsSchema, type BilibiliFetcher, BilibiliFetcherMethodKey, BilibiliFetcherMethods, BilibiliInternalMethodKey, BilibiliInternalMethods, BilibiliLiveParamsSchema, type BilibiliLiveRoomOptions, BilibiliLoginParamsSchema, type BilibiliMethodKey, BilibiliMethodMapping, BilibiliMethodOptMap, BilibiliMethodOptionsMap, BilibiliMethodRoutes, BilibiliMethodToFetcher, BilibiliMethodType, type BilibiliMethodValue, BilibiliQrcodeParamsSchema, type BilibiliQrcodeStatusOptions, BilibiliQrcodeStatusParamsSchema, BilibiliReturnTypeMap, type BilibiliUserOptions, BilibiliUserParamsSchema, type BilibiliValidateCaptchaOptions, BilibiliValidateCaptchaParamsSchema, BilibiliValidationSchemas, BilibiliVideoDownloadParamsSchema, type BilibiliVideoInfoOptions, BilibiliVideoParamsSchema, type BilibiliVideoStreamOptions, BoundBilibiliApi, type BoundBilibiliFetcher, BoundDouyinApi, type BoundDouyinFetcher, BoundKuaishouApi, type BoundKuaishouFetcher, BoundXiaohongshuApi, type BoundXiaohongshuFetcher, ColumnInfo, CommentReply, CommentType, ConditionalReturnType, CookieConfig, CreateApp, DouyinApiRoutes, DouyinCommentParamsSchema, type DouyinCommentRepliesOptions, DouyinCommentReplyParamsSchema, type DouyinCommentsOptions, type DouyinDanmakuOptions, DouyinDanmakuParamsSchema, DouyinDataOptions, DouyinDataOptionsMap, DouyinEmojiListParamsSchema, DouyinEmojiProParamsSchema, type DouyinFetcher, DouyinFetcherMethodKey, DouyinFetcherMethods, DouyinHotWordsParamsSchema, DouyinInternalMethodKey, DouyinInternalMethods, type DouyinLiveRoomOptions, DouyinLiveRoomParamsSchema, type DouyinMethodKey, DouyinMethodMapping, DouyinMethodOptMap, DouyinMethodOptionsMap, DouyinMethodRoutes, DouyinMethodToFetcher, DouyinMethodType, type DouyinMethodValue, type DouyinMusicOptions, DouyinMusicParamsSchema, type DouyinQrcodeOptions, DouyinQrcodeParamsSchema, DouyinReturnTypeMap, type DouyinSearchOptions, DouyinSearchParamsSchema, type DouyinSuggestWordsOptions, type DouyinUserListOptions, DouyinUserListParamsSchema, type DouyinUserOptions, DouyinUserParamsSchema, DouyinValidationSchemas, type DouyinWorkOptions, DouyinWorkParamsSchema, DyDanmakuList, DyEmojiList, DyEmojiProList, DyImageAlbumWork, DyMusicWork, DySearchInfo, DySlidesWork, DySuggestWords, DyUserInfo, DyUserLiveVideos, DyUserPostVideos, DyVideoWork, DyWorkComments, DynamicType, DynamicTypeAV, DynamicTypeArticle, DynamicTypeDraw, DynamicTypeForward, DynamicTypeForwardUnion, DynamicTypeLiveRcmd, DynamicTypeWord, ErrorResult, ExtractTypeMode, FetcherConfig, type FetcherCookieForRequestConfig, type FetcherRequestConfigWithCookie, type FetcherRequestConfigWithoutCookie, HomeFeed, type HttpMethod, HttpRequestEventData, HttpResponseEventData, type IBilibiliFetcher, type IBoundBilibiliFetcher, type IBoundDouyinFetcher, type IBoundKuaishouFetcher, type IBoundXiaohongshuFetcher, type IDouyinFetcher, type IKuaishouFetcher, type IXiaohongshuFetcher, type KsBannedStatus, KsEmojiList, KsLiveRoomInfo, KsOneWork, type KsUserHomeWork, KsUserProfile, type KsUserProfileCounts, type KsUserProfileGameInfo, type KsUserProfileLiveInfo, type KsUserProfileSensitiveInfo, type KsUserProfileUserInfo, KsUserWorkList, type KsVerifiedStatus, KsWorkComments, KuaishouApiRoutes, KuaishouCommentParamsSchema, type KuaishouCommentsOptions, KuaishouDataOptions, KuaishouDataOptionsMap, KuaishouEmojiParamsSchema, type KuaishouFetcher, KuaishouFetcherMethodKey, KuaishouFetcherMethods, type KuaishouGraphqlRequest, KuaishouInternalMethodKey, KuaishouInternalMethods, type KuaishouLiveApiRequest, type KuaishouLiveRoomInfoOptions, KuaishouLiveRoomInfoParamsSchema, type KuaishouMethodKey, KuaishouMethodMapping, KuaishouMethodOptMap, KuaishouMethodOptionsMap, KuaishouMethodRoutes, KuaishouMethodToFetcher, KuaishouMethodType, type KuaishouMethodValue, KuaishouReturnTypeMap, type KuaishouUserProfileOptions, KuaishouUserProfileParamsSchema, type KuaishouUserWorkListOptions, KuaishouUserWorkListParamsSchema, KuaishouValidationSchemas, KuaishouVideoParamsSchema, type KuaishouVideoWorkOptions, LogEventData, MajorType, MethodMaps, NetworkErrorEventData, NetworkRetryEventData, type NetworksConfigType, NoteComments, OmitMethodType, OneNote, Options, type Platform, RequestConfig, Result, SearchInfoGeneralData, SearchInfoUser, SearchInfoVideo, SearchNotes, SuccessResult, TypeControl, TypeMode, ValidationError, XiaohongshuApiRoutes, type XiaohongshuCommentsOptions, XiaohongshuDataOptions, XiaohongshuDataOptionsMap, XiaohongshuEmojiList, type XiaohongshuFetcher, XiaohongshuFetcherMethodKey, XiaohongshuFetcherMethods, type XiaohongshuHomeFeedOptions, XiaohongshuInternalMethodKey, XiaohongshuInternalMethods, type XiaohongshuMethodKey, XiaohongshuMethodMapping, XiaohongshuMethodOptMap, XiaohongshuMethodOptionsMap, XiaohongshuMethodRoutes, XiaohongshuMethodToFetcher, XiaohongshuMethodType, type XiaohongshuMethodValue, type XiaohongshuNoteDetailOptions, XiaohongshuReturnTypeMap, type XiaohongshuSearchNotesOptions, type XiaohongshuUserNotesOptions, XiaohongshuUserProfile, type XiaohongshuUserProfileOptions, XiaohongshuValidationSchemas, amagi, amagiClient, amagiEvents, av2bv, bilibili, bilibiliApiUrls, bilibiliErrorCodeMap, bilibiliFetcher, bilibiliUtils, bv2av, createAmagiClient, createBilibiliRoutes, createBilibiliRoutes as registerBilibiliRoutes, createBoundBilibiliApi, createBoundBilibiliFetcher, createBoundDouyinApi, createBoundDouyinFetcher, createBoundKuaishouApi, createBoundKuaishouFetcher, createBoundXiaohongshuApi, createBoundXiaohongshuFetcher, createDouyinRoutes, createDouyinRoutes as registerDouyinRoutes, createErrorResponse, createKuaishouRoutes, createKuaishouRoutes as registerKuaishouRoutes, createSuccessResponse, createXiaohongshuRoutes, createXiaohongshuRoutes as registerXiaohongshuRoutes, douyin, douyinApiUrls, douyinFetcher, douyinSign, douyinUtils, emitApiError, emitApiSuccess, emitHttpRequest, emitHttpResponse, emitLog, emitLogDebug, emitLogError, emitLogInfo, emitLogMark, emitLogWarn, emitNetworkError, emitNetworkRetry, fetchData, fetchResponse, getApiRoute, getBilibiliData, getDouyinData, getEnglishMethodName, getHeadersAndData, getKuaishouData, handleError, httpLogger, initLogger, isNetworkErrorResult, kuaishou, kuaishouApiUrls, kuaishouFetcher, kuaishouSign, kuaishouUtils, logMiddleware, logger, parseDmSegMobileReply, qtparam, toFetcherMethod, validateBilibiliParams, validateDouyinParams, validateKuaishouParams, validateXiaohongshuParams, wbi_sign, xiaohongshu, xiaohongshuApiUrls, xiaohongshuFetcher, xiaohongshuSign, xiaohongshuUtils };
