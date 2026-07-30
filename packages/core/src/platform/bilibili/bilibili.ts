@@ -55,6 +55,13 @@ import { BilibiliDataTypes } from '@/types'
 let img: ElementTypes[]
 type videoDownloadUrlList = BiliVideoPlayurlIsLogin['data']['dash']['video']
 
+/** 评论请求统一使用匿名态，避免账号 Cookie 改变评论热度池结果。 */
+const bilibiliAnonymousRequestConfig = {
+  headers: {
+    Cookie: ''
+  }
+}
+
 export class Bilibili extends Base {
   e: Message
   type: any
@@ -209,12 +216,15 @@ export class Bilibili extends Base {
         if (Config.bilibili.sendContent.some((content) => content === 'comment')) {
           const commentsData = await softFetch(
             () =>
-              this.amagi.bilibili.fetcher.fetchComments({
-                number: Config.bilibili.numcomment,
-                type: 1,
-                oid: infoData.data.data.aid.toString(),
-                typeMode: 'strict'
-              }),
+              this.amagi.bilibili.fetcher.fetchComments(
+                {
+                  number: Config.bilibili.numcomment,
+                  type: 1,
+                  oid: infoData.data.data.aid.toString(),
+                  typeMode: 'strict'
+                },
+                bilibiliAnonymousRequestConfig
+              ),
             [SOFT_ERROR_CODES.BILIBILI_COMMENTS_DISABLED]
           )
           if (commentsData.code === SOFT_ERROR_CODES.BILIBILI_COMMENTS_DISABLED) {
@@ -990,12 +1000,15 @@ export class Bilibili extends Base {
         ) {
           const commentsData = await softFetch(
             () =>
-              this.amagi.bilibili.fetcher.fetchComments({
-                type: mapping_table(dynamicInfo.data.data.item.type),
-                oid: oid(dynamicInfo.data.data.item.type, dynamicInfo.data),
-                number: Config.bilibili.numcomment,
-                typeMode: 'strict'
-              }),
+              this.amagi.bilibili.fetcher.fetchComments(
+                {
+                  type: mapping_table(dynamicInfo.data.data.item.type),
+                  oid: oid(dynamicInfo.data.data.item.type, dynamicInfo.data),
+                  number: Config.bilibili.numcomment,
+                  typeMode: 'strict'
+                },
+                bilibiliAnonymousRequestConfig
+              ),
             [SOFT_ERROR_CODES.BILIBILI_COMMENTS_DISABLED]
           )
           if (commentsData.code === SOFT_ERROR_CODES.BILIBILI_COMMENTS_DISABLED) {
