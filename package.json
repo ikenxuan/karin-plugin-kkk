@@ -6,6 +6,7 @@
   "license": "GPL-3.0-only",
   "author": "ikenxuan",
   "type": "module",
+  "packageManager": "pnpm@11.18.0",
   "scripts": {
     "build": "kkk build core web",
     "build:all": "kkk build core web docs",
@@ -39,32 +40,5 @@
     "tsx": "4.23.1",
     "typescript": "6.0.3",
     "vite": "8.2.0"
-  },
-  "pnpm": {
-    "overrides": {
-      "node-karin": "$node-karin",
-      "typescript": "$typescript",
-      "vite": "$vite"
-    },
-    "onlyBuiltDependencies": [
-      "@code-inspector/core",
-      "@heroui/shared-utils",
-      "@karinjs/sqlite3-cjs",
-      "@parcel/watcher",
-      "@swc/core",
-      "cwebp-bin",
-      "dtrace-provider",
-      "esbuild",
-      "gifsicle",
-      "javascript-obfuscator",
-      "jpegtran-bin",
-      "mozjpeg",
-      "node-pty",
-      "optipng-bin",
-      "pngquant-bin",
-      "protobufjs",
-      "sharp",
-      "unrs-resolver"
-    ]
   }
 }
