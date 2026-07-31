@@ -2,7 +2,7 @@ import { EventEmitter as EventEmitter$1 } from "node:events";
 import zod from "zod";
 import { AxiosRequestConfig, AxiosResponse, RawAxiosResponseHeaders } from "axios";
 import express from "express";
-//#region ../../node_modules/.pnpm/chalk@5.6.2/node_modules/chalk/source/vendor/supports-color/index.d.ts
+//#region ../../node_modules/.pnpm/chalk@6.0.0/node_modules/chalk/source/vendor/supports-color/index.d.ts
 /**
 Levels:
 - `0` - All colors disabled.
@@ -12,7 +12,7 @@ Levels:
 */
 type ColorSupportLevel = 0 | 1 | 2 | 3;
 //#endregion
-//#region ../../node_modules/.pnpm/chalk@5.6.2/node_modules/chalk/source/index.d.ts
+//#region ../../node_modules/.pnpm/chalk@6.0.0/node_modules/chalk/source/index.d.ts
 interface ChalkInstance {
   (...text: unknown[]): string;
   /**
@@ -25,6 +25,8 @@ interface ChalkInstance {
 	- `1` - Basic 16 colors support.
 	- `2` - ANSI 256 colors support.
 	- `3` - Truecolor 16 million colors support.
+
+	@throws If the assigned value is not an integer from 0 to 3.
 	*/
   level: ColorSupportLevel;
   /**
@@ -53,6 +55,8 @@ interface ChalkInstance {
   hex: (color: string) => this;
   /**
 	Use an [8-bit unsigned number](https://en.wikipedia.org/wiki/ANSI_escape_code#8-bit) to set text color.
+
+	The value is downsampled to the 16-color palette on terminals that only support basic colors (level 1), so `chalk.ansi256(196)` becomes 91 (ANSI escape for bright red).
 
 	@example
 	```
@@ -87,7 +91,9 @@ interface ChalkInstance {
 	*/
   bgHex: (color: string) => this;
   /**
-	Use a [8-bit unsigned number](https://en.wikipedia.org/wiki/ANSI_escape_code#8-bit) to set background color.
+	Use an [8-bit unsigned number](https://en.wikipedia.org/wiki/ANSI_escape_code#8-bit) to set background color.
+
+	The value is downsampled to the 16-color palette on terminals that only support basic colors (level 1), so `chalk.bgAnsi256(196)` becomes 101 (ANSI escape for bright red background).
 
 	@example
 	```
@@ -97,6 +103,49 @@ interface ChalkInstance {
 	```
 	*/
   bgAnsi256: (index: number) => this;
+  /**
+	Use RGB values to set underline color.
+
+	The underline color is only visible when an underline style is also applied.
+
+	@example
+	```
+	import chalk from 'chalk';
+
+	chalk.underlineRgb(222, 173, 237).underlineCurly('Hello, world!');
+	```
+	*/
+  underlineRgb: (red: number, green: number, blue: number) => this;
+  /**
+	Use HEX value to set underline color.
+
+	The underline color is only visible when an underline style is also applied.
+
+	@param color - Hexadecimal value representing the desired color.
+
+	@example
+	```
+	import chalk from 'chalk';
+
+	chalk.underlineHex('#DEADED').underlineCurly('Hello, world!');
+	```
+	*/
+  underlineHex: (color: string) => this;
+  /**
+	Use an [8-bit unsigned number](https://en.wikipedia.org/wiki/ANSI_escape_code#8-bit) to set underline color.
+
+	The underline color is only visible when an underline style is also applied.
+
+	The value is downsampled to the first 16 palette entries on terminals that only support basic colors (level 1), so `chalk.underlineAnsi256(196)` becomes 9 (the palette index for bright red).
+
+	@example
+	```
+	import chalk from 'chalk';
+
+	chalk.underlineAnsi256(201).underlineCurly('Hello, world!');
+	```
+	*/
+  underlineAnsi256: (index: number) => this;
   /**
 	Modifier: Reset the current style.
 	*/
@@ -117,6 +166,22 @@ interface ChalkInstance {
 	Modifier: Put a horizontal line below the text. *(Not widely supported)*
 	*/
   readonly underline: this;
+  /**
+	Modifier: Put a double horizontal line below the text. *(Not widely supported)*
+	*/
+  readonly underlineDouble: this;
+  /**
+	Modifier: Put a curly horizontal line below the text. *(Not widely supported)*
+	*/
+  readonly underlineCurly: this;
+  /**
+	Modifier: Put a dotted horizontal line below the text. *(Not widely supported)*
+	*/
+  readonly underlineDotted: this;
+  /**
+	Modifier: Put a dashed horizontal line below the text. *(Not widely supported)*
+	*/
+  readonly underlineDashed: this;
   /**
 	Modifier: Put a horizontal line above the text. *(Not widely supported)*
 	*/
@@ -147,11 +212,11 @@ interface ChalkInstance {
   readonly magenta: this;
   readonly cyan: this;
   readonly white: this;
-  /*
+  /**
 	Alias for `blackBright`.
 	*/
   readonly gray: this;
-  /*
+  /**
 	Alias for `blackBright`.
 	*/
   readonly grey: this;
@@ -171,11 +236,11 @@ interface ChalkInstance {
   readonly bgMagenta: this;
   readonly bgCyan: this;
   readonly bgWhite: this;
-  /*
+  /**
 	Alias for `bgBlackBright`.
 	*/
   readonly bgGray: this;
-  /*
+  /**
 	Alias for `bgBlackBright`.
 	*/
   readonly bgGrey: this;
@@ -187,6 +252,30 @@ interface ChalkInstance {
   readonly bgMagentaBright: this;
   readonly bgCyanBright: this;
   readonly bgWhiteBright: this;
+  readonly underlineBlack: this;
+  readonly underlineRed: this;
+  readonly underlineGreen: this;
+  readonly underlineYellow: this;
+  readonly underlineBlue: this;
+  readonly underlineMagenta: this;
+  readonly underlineCyan: this;
+  readonly underlineWhite: this;
+  /**
+	Alias for `underlineBlackBright`.
+	*/
+  readonly underlineGray: this;
+  /**
+	Alias for `underlineBlackBright`.
+	*/
+  readonly underlineGrey: this;
+  readonly underlineBlackBright: this;
+  readonly underlineRedBright: this;
+  readonly underlineGreenBright: this;
+  readonly underlineYellowBright: this;
+  readonly underlineBlueBright: this;
+  readonly underlineMagentaBright: this;
+  readonly underlineCyanBright: this;
+  readonly underlineWhiteBright: this;
 }
 //#endregion
 //#region ../amagi/packages/core/dist/default/index.d.ts
