@@ -33,7 +33,7 @@
 - `packages/richtext`：core 与 template 共享的富文本中间层。core 生成 JSON，template 渲染 React。
 - `packages/cli`：`kkk` 构建 CLI，串行运行 core/docs/template/web 构建目标。
 - `packages/amagi`：Git submodule，封装平台接口，workspace 路径为 `packages/amagi/packages/core`。
-- `packages/skills`：随仓库分发、供贡献者共享的 AI 开发 skills。后续希望随仓库一起交接的项目相关 skill 应放这里；本地 `.agents` 目录若存在，可作为个人工作区补充。
+- `.agents/skills`：随仓库分发、供贡献者共享的 AI 开发 skills，遵循 Agent Skills 规范（`.agents/skills/<skill-name>/SKILL.md`）。该目录已纳入 Git 跟踪，克隆仓库即可被各类 AI Agent 发现；`.agents` 下的其他内容默认被 gitignore 忽略，可作为个人工作区补充。
 - `Karin`：Karin 框架 Git submodule。
 
 ## 常用命令
@@ -99,7 +99,7 @@ pnpm sort
   - core 调用处的 `Render(event, 'platform/template', data)`
 - `template/src/main.ts` 提供 SSR 渲染器、资源路径处理、HTML 包装、开发态 mock 数据落盘。
 - `template` 构建时会复制 CSS 到 `packages/core/lib/karin-plugin-kkk.css`，并复制 `public` 静态资源到 `packages/core/resources`。
-- 视觉类模板优先阅读 `packages/skills/kkk-design/SKILL.md`：按内容选择克制内容卡片或弥散信息海报系统，避免退回普通后台、营销页或无层级截图。
+- 视觉类模板优先阅读 `.agents/skills/kkk-design/SKILL.md`：按内容选择克制内容卡片或弥散信息海报系统，避免退回普通后台、营销页或无层级截图。
 
 ## WebUI 约定
 
@@ -164,7 +164,7 @@ pnpm sort
 
 ## 项目技能
 
-- 项目随仓库分发的 skills 放在 `packages/skills`；`.agents`、`.claude` 等本地目录如果存在，可以作为贡献者自己的额外补充。交接和协作说明应同时提醒仓库内的 `packages/skills`，确保其他人克隆仓库后也能找到项目相关技能包。
-- 当前内置 `packages/skills/kkk-design/SKILL.md`，用于固定画布、截图优先、信息卡片与信息海报类视觉设计。该 skill 还包含 `references/` 和 `examples/`，后续 AI 做模板视觉工作前应先阅读对应文件。
+- 项目随仓库分发的 skills 放在 `.agents/skills`，遵循 Agent Skills 规范：每个技能一个目录，内含带 YAML frontmatter（`name`、`description`）的 `SKILL.md`，可附带 `references/`、`examples/`、`agents/` 等子目录。该目录已纳入 Git 跟踪并推送到远端，确保其他人克隆仓库后也能找到项目相关技能包；`.claude` 等其他本地目录如果存在，可以作为贡献者自己的额外补充。
+- 当前内置 `.agents/skills/kkk-design/SKILL.md`，用于固定画布、截图优先、信息卡片与信息海报类视觉设计。该 skill 还包含 `references/` 和 `examples/`，后续 AI 做模板视觉工作前应先阅读对应文件。
 - `kkk-design` 是可复用的视觉系统说明，不绑定具体业务页面；使用时按信息气质选择“克制内容卡片”或“弥散信息海报”，并执行其中的画布、色彩、层级、组件和自检规则。
-- 后续新增项目相关 skill 时，放到 `packages/skills/<skill-name>/SKILL.md`，并在本节补充用途和触发场景。
+- 后续新增项目相关 skill 时，放到 `.agents/skills/<skill-name>/SKILL.md`，并在本节补充用途和触发场景。
