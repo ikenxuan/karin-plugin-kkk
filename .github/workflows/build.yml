@@ -159,8 +159,6 @@ jobs:
 
       - name: 📦 配置 PNPM 环境
         uses: pnpm/action-setup@v6
-        with:
-          version: 11
 
       - name: 🟢 配置 Node.js 环境
         uses: actions/setup-node@v6
@@ -285,8 +283,6 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
 
       - uses: pnpm/action-setup@v6
-        with:
-          version: 11
 
       - name: 🚀 发布到 NPM 官方源
         id: publish-to-npm
@@ -494,8 +490,6 @@ jobs:
 
       - name: 📦 配置 PNPM 环境
         uses: pnpm/action-setup@v6
-        with:
-          version: 11
 
       - name: 🟢 配置 Node.js 环境
         uses: actions/setup-node@v6
