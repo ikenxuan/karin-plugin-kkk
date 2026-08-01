@@ -26,7 +26,7 @@ import {
 } from '@/module'
 import { Config } from '@/module/utils/Config'
 import { DouyinIdData, douyinProcessVideos, getDouyinID } from '@/platform/douyin'
-import { getWorkTypeDisplayName, getWorkTypeInfo } from '@/platform/douyin/workType'
+import { getDouyinLiveImageSendPolicy, getWorkTypeDisplayName, getWorkTypeInfo } from '@/platform/douyin/workType'
 import type { douyinPushItem } from '@/types/config/pushlist'
 
 import { processFavoriteList } from './push/favorite'
@@ -484,10 +484,10 @@ export class DouYinpush extends Base {
                       staticImgPath = staticImg.filepath ?? ''
                     }
 
-                    // 根据 livePhotoMode 配置决定处理方式
-                    const livePhotoMode = Config.app.livePhotoMode ?? 'video_and_livephoto'
-                    const shouldGenerateVideo = livePhotoMode === 'video_and_livephoto' || livePhotoMode === 'video_only'
-                    const shouldGenerateLivePhoto = livePhotoMode === 'video_and_livephoto' || livePhotoMode === 'livephoto_only'
+                    const { shouldGenerateVideo, shouldGenerateLivePhoto } = getDouyinLiveImageSendPolicy(
+                      item.clip_type,
+                      Config.app.livePhotoMode ?? 'video_and_livephoto'
+                    )
 
                     // 生成视频
                     if (shouldGenerateVideo) {
@@ -562,14 +562,18 @@ export class DouYinpush extends Base {
                 }
 
                 const bot = karin.getBot(botId) as AdapterType
-                const Element = common.makeForward(images, botId, bot.account.name)
                 try {
-                  await bot.sendForwardMsg(Contact, Element, {
-                    source: '合辑内容',
-                    summary: `查看${Element.length}张图片/视频消息`,
-                    prompt: '抖音合辑解析结果',
-                    news: [{ text: '点击查看解析结果' }]
-                  })
+                  if (images.length === 0) {
+                    logger.warn(`抖音合辑推送解析未生成可发送内容，aweme_id=${Detail_Data.aweme_id}`)
+                  } else {
+                    const Element = common.makeForward(images, botId, bot.account.name)
+                    await bot.sendForwardMsg(Contact, Element, {
+                      source: '合辑内容',
+                      summary: `查看${Element.length}张图片/视频消息`,
+                      prompt: '抖音合辑解析结果',
+                      news: [{ text: '点击查看解析结果' }]
+                    })
+                  }
                 } catch (error) {
                   logger.error(`发送合辑失败: ${error}`)
                 } finally {
@@ -643,10 +647,10 @@ export class DouYinpush extends Base {
                         staticImgPath = staticImg.filepath ?? ''
                       }
 
-                      // 根据 livePhotoMode 配置决定处理方式
-                      const livePhotoMode = Config.app.livePhotoMode ?? 'video_and_livephoto'
-                      const shouldGenerateVideo = livePhotoMode === 'video_and_livephoto' || livePhotoMode === 'video_only'
-                      const shouldGenerateLivePhoto = livePhotoMode === 'video_and_livephoto' || livePhotoMode === 'livephoto_only'
+                      const { shouldGenerateVideo, shouldGenerateLivePhoto } = getDouyinLiveImageSendPolicy(
+                        item.clip_type,
+                        Config.app.livePhotoMode ?? 'video_and_livephoto'
+                      )
 
                       // 生成视频
                       if (shouldGenerateVideo) {
@@ -721,14 +725,18 @@ export class DouYinpush extends Base {
                   }
 
                   const bot = karin.getBot(botId) as AdapterType
-                  const Element = common.makeForward(processedImages, botId, bot.account.name)
                   try {
-                    await bot.sendForwardMsg(Contact, Element, {
-                      source: '图集内容',
-                      summary: `查看${Element.length}张图片/视频消息`,
-                      prompt: '抖音图集解析结果',
-                      news: [{ text: '点击查看解析结果' }]
-                    })
+                    if (processedImages.length === 0) {
+                      logger.warn(`抖音图集推送解析未生成可发送内容，aweme_id=${Detail_Data.aweme_id}`)
+                    } else {
+                      const Element = common.makeForward(processedImages, botId, bot.account.name)
+                      await bot.sendForwardMsg(Contact, Element, {
+                        source: '图集内容',
+                        summary: `查看${Element.length}张图片/视频消息`,
+                        prompt: '抖音图集解析结果',
+                        news: [{ text: '点击查看解析结果' }]
+                      })
+                    }
                   } catch (error) {
                     logger.error(`发送图集失败: ${error}`)
                   } finally {

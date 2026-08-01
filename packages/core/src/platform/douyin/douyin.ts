@@ -28,6 +28,7 @@ import { EmojiReactionManager, getEmojiId } from '@/module/utils/EmojiReaction'
 import { douyinComments } from '@/platform/douyin'
 import { burnDouyinDanmaku, type DouyinDanmakuElem } from '@/platform/douyin/danmaku'
 import { renderWorkImage } from '@/platform/douyin/push/render'
+import { getDouyinLiveImageSendPolicy } from '@/platform/douyin/workType'
 import { DouyinDataTypes, DouyinIdData } from '@/types'
 
 let mp4size = ''
@@ -193,10 +194,10 @@ export class DouYin extends Base {
                       staticImgPath = staticImg.filepath ?? ''
                     }
 
-                    // 根据 livePhotoMode 配置决定处理方式
-                    const livePhotoMode = Config.app.livePhotoMode ?? 'video_and_livephoto'
-                    const shouldGenerateVideo = livePhotoMode === 'video_and_livephoto' || livePhotoMode === 'video_only'
-                    const shouldGenerateLivePhoto = livePhotoMode === 'video_and_livephoto' || livePhotoMode === 'livephoto_only'
+                    const { shouldGenerateVideo, shouldGenerateLivePhoto } = getDouyinLiveImageSendPolicy(
+                      imageItem.clip_type,
+                      Config.app.livePhotoMode ?? 'video_and_livephoto'
+                    )
 
                     // 生成视频
                     if (shouldGenerateVideo) {
@@ -270,19 +271,22 @@ export class DouYin extends Base {
                   processedImages.push(...tipImg)
                 }
 
-                // 使用合并转发发送
-                const Element = common.makeForward(
-                  processedImages,
-                  Config.app.fakeForward ? this.e.sender.userId : this.e.bot.account.selfId,
-                  Config.app.fakeForward ? this.e.sender.nick : this.e.bot.account.name
-                )
                 try {
-                  await this.e.bot.sendForwardMsg(this.e.contact, Element, {
-                    source: '图集内容',
-                    summary: `查看${Element.length}张图片/视频消息`,
-                    prompt: '抖音图集解析结果',
-                    news: [{ text: '点击查看解析结果' }]
-                  })
+                  if (processedImages.length === 0) {
+                    logger.warn(`抖音图集解析未生成可发送内容，aweme_id=${VideoData.data.aweme_detail.aweme_id}`)
+                  } else {
+                    const Element = common.makeForward(
+                      processedImages,
+                      Config.app.fakeForward ? this.e.sender.userId : this.e.bot.account.selfId,
+                      Config.app.fakeForward ? this.e.sender.nick : this.e.bot.account.name
+                    )
+                    await this.e.bot.sendForwardMsg(this.e.contact, Element, {
+                      source: '图集内容',
+                      summary: `查看${Element.length}张图片/视频消息`,
+                      prompt: '抖音图集解析结果',
+                      news: [{ text: '点击查看解析结果' }]
+                    })
+                  }
                 } finally {
                   for (const item of temp) {
                     await Common.removeFile(item.filepath, true)
@@ -398,10 +402,10 @@ export class DouYin extends Base {
                     staticImgPath = staticImg.filepath ?? ''
                   }
 
-                  // 根据 livePhotoMode 配置决定处理方式
-                  const livePhotoMode = Config.app.livePhotoMode ?? 'video_and_livephoto'
-                  const shouldGenerateVideo = livePhotoMode === 'video_and_livephoto' || livePhotoMode === 'video_only'
-                  const shouldGenerateLivePhoto = livePhotoMode === 'video_and_livephoto' || livePhotoMode === 'livephoto_only'
+                  const { shouldGenerateVideo, shouldGenerateLivePhoto } = getDouyinLiveImageSendPolicy(
+                    item.clip_type,
+                    Config.app.livePhotoMode ?? 'video_and_livephoto'
+                  )
 
                   // 生成视频
                   if (shouldGenerateVideo) {
@@ -435,7 +439,7 @@ export class DouYin extends Base {
                     }
                   }
 
-                  // 生成实况图（clip_type === 4和5 是 短片和livePhoto）
+                  // 生成实况图（clip_type === 5 是 livePhoto，clip_type === 4 短片按视频发送）
                   if (shouldGenerateLivePhoto && item.clip_type === 5 && item.url_list?.[0]) {
                     let hasPushedMotionPhotoCover = false
                     if (staticImgPath) {
@@ -474,18 +478,22 @@ export class DouYin extends Base {
                 images.push(...tipImg)
               }
 
-              const Element = common.makeForward(
-                images,
-                Config.app.fakeForward ? this.e.sender.userId : this.e.bot.account.selfId,
-                Config.app.fakeForward ? this.e.sender.nick : this.e.bot.account.name
-              )
               try {
-                await this.e.bot.sendForwardMsg(this.e.contact, Element, {
-                  source: '合辑内容',
-                  summary: `查看${Element.length}张图片/视频消息`,
-                  prompt: '抖音合辑解析结果',
-                  news: [{ text: '点击查看解析结果' }]
-                })
+                if (images.length === 0) {
+                  logger.warn(`抖音合辑解析未生成可发送内容，aweme_id=${VideoData.data.aweme_detail.aweme_id}`)
+                } else {
+                  const Element = common.makeForward(
+                    images,
+                    Config.app.fakeForward ? this.e.sender.userId : this.e.bot.account.selfId,
+                    Config.app.fakeForward ? this.e.sender.nick : this.e.bot.account.name
+                  )
+                  await this.e.bot.sendForwardMsg(this.e.contact, Element, {
+                    source: '合辑内容',
+                    summary: `查看${Element.length}张图片/视频消息`,
+                    prompt: '抖音合辑解析结果',
+                    news: [{ text: '点击查看解析结果' }]
+                  })
+                }
               } finally {
                 for (const item of temp) {
                   await Common.removeFile(item.filepath, true)

@@ -55,6 +55,13 @@ export interface DouyinWorkTypeInfo {
   templatePath: 'douyin/video-work' | 'douyin/image-work' | 'douyin/article-work' | 'douyin/live'
 }
 
+export type DouyinLivePhotoMode = 'video_and_livephoto' | 'video_only' | 'livephoto_only'
+
+export interface DouyinLiveImageSendPolicy {
+  shouldGenerateVideo: boolean
+  shouldGenerateLivePhoto: boolean
+}
+
 /**
  * 从 URL 路径判断作品类型
  */
@@ -197,4 +204,22 @@ export function needsSpecialImageProcessing(workTypeInfo: DouyinWorkTypeInfo, im
 
   // 检查是否包含 live 图（clip_type !== 2）
   return images.some((item) => item.clip_type !== 2 && item.clip_type !== undefined)
+}
+
+/**
+ * 抖音图文里的 clip_type=5 才能生成系统实况图；clip_type=4 是短片。
+ * 用户选择仅发送实况图时，短片仍需兜底成视频节点，避免生成空合并转发。
+ */
+export function getDouyinLiveImageSendPolicy(
+  clipType: number | undefined,
+  livePhotoMode: DouyinLivePhotoMode = 'video_and_livephoto'
+): DouyinLiveImageSendPolicy {
+  const isStaticImage = clipType === 2 || clipType === undefined
+  const canGenerateLivePhoto = clipType === 5
+  const shouldFallbackToVideo = livePhotoMode === 'livephoto_only' && !isStaticImage && !canGenerateLivePhoto
+
+  return {
+    shouldGenerateVideo: livePhotoMode === 'video_and_livephoto' || livePhotoMode === 'video_only' || shouldFallbackToVideo,
+    shouldGenerateLivePhoto: canGenerateLivePhoto && (livePhotoMode === 'video_and_livephoto' || livePhotoMode === 'livephoto_only')
+  }
 }
