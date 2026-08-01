@@ -2,6 +2,18 @@
 
 # Changelog
 
+## [2.41.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.41.0...v2.41.1) (2026-08-01)
+
+
+### 🐛 错误修复
+
+* **douyin:** 修复部分状态下会发送空合并转发消息的情况，兜底插入视频 fix [#343](https://github.com/ikenxuan/karin-plugin-kkk/issues/343) ([0e785c9](https://github.com/ikenxuan/karin-plugin-kkk/commit/0e785c9be1fc8caa84509ac2393d3b0e44263151))
+
+
+### 🧰 其他更新
+
+* use pnpm v11 ([8587b7f](https://github.com/ikenxuan/karin-plugin-kkk/commit/8587b7fe660f7f3f987c2038f86a8432cf51d8c8))
+
 ## [2.41.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.40.3...v2.41.0) (2026-07-30)
 
 
