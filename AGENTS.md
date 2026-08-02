@@ -31,7 +31,7 @@
 - `packages/web`：Karin 插件 WebUI 配置管理端。构建输出到 `packages/core/lib/web`。
 - `packages/docs`：Next/Fumadocs 文档站，内容在 `content/docs`。
 - `packages/richtext`：core 与 template 共享的富文本中间层。core 生成 JSON，template 渲染 React。
-- `packages/cli`：`kkk` 构建 CLI，串行运行 core/docs/template/web 构建目标。
+- `packages/cli`：`kkk` 构建 CLI，串行运行 core/docs/web 构建目标。
 - `packages/amagi`：Git submodule，封装平台接口，workspace 路径为 `packages/amagi/packages/core`。
 - `.agents/skills`：随仓库分发、供贡献者共享的 AI 开发 skills，遵循 Agent Skills 规范（`.agents/skills/<skill-name>/SKILL.md`）。该目录已纳入 Git 跟踪，克隆仓库即可被各类 AI Agent 发现；`.agents` 下的其他内容默认被 gitignore 忽略，可作为个人工作区补充。
 - `Karin`：Karin 框架 Git submodule。
@@ -48,15 +48,16 @@ pnpm template         # template Vite dev，端口 5174
 pnpm docs             # docs Next dev，端口 5175
 pnpm web              # web Vite dev，端口 5176
 pnpm build            # kkk build core web
-pnpm build:all        # kkk build core docs template
+pnpm build:all        # kkk build core web docs
 pnpm build:core
 pnpm build:docs
-pnpm build:template
 pnpm lint
 pnpm format
 pnpm format:check
 pnpm sort
 ```
+
+只有 `core`、`web`、`docs` 三个子包允许构建。`template`、`richtext`、`amagi` 是 core 的源码级依赖：core 的 vite 构建直接 bundle 它们的源码（`template` 别名到 `../template/src`，`@kkk/richtext`、`@ikenxuan/amagi` 走 tsconfig paths），禁止单独构建它们，否则产生的 `dist`/`*.js` 产物会污染 git 待提交区。
 
 局部命令可用 `pnpm --filter <package> run <script>`。CI 使用 Node 24、pnpm 9.15.9；`packages/core` 声明运行引擎为 Node >= 18。
 
@@ -98,7 +99,7 @@ pnpm sort
   - `packages/template/src/types/index.ts` 的 `DynamicRenderPath` 和路径到数据类型映射
   - core 调用处的 `Render(event, 'platform/template', data)`
 - `template/src/main.ts` 提供 SSR 渲染器、资源路径处理、HTML 包装、开发态 mock 数据落盘。
-- `template` 构建时会复制 CSS 到 `packages/core/lib/karin-plugin-kkk.css`，并复制 `public` 静态资源到 `packages/core/resources`。
+- core 构建时由 vite 插件（`packages/core/vite.plugin/copy-assets.ts`）把 `template/public` 静态资源复制到 `packages/core/resources`，CSS 由 core 的 vite 构建直接处理；`template` 自身没有也不需要构建步骤。
 - 视觉类模板优先阅读 `.agents/skills/kkk-design/SKILL.md`：按内容选择克制内容卡片或弥散信息海报系统，避免退回普通后台、营销页或无层级截图。
 
 ## WebUI 约定
@@ -145,7 +146,7 @@ pnpm sort
 - 通用改动：至少跑 `pnpm lint` 和 `pnpm format:check`。
 - core 改动：跑 `pnpm build:core`；如涉及入口加载，跑 `pnpm --filter karin-plugin-kkk exec vitest` 或 `pnpm --filter karin-plugin-kkk run build:check`。
 - web 改动：跑 `pnpm --filter web run build`，必要时启动 `pnpm web` 做浏览器检查。
-- template 改动：跑 `pnpm --filter template run build`，必要时启动 `pnpm template` 检查预览画面。
+- template 改动：启动 `pnpm template` 检查预览画面；不要跑 template 的构建（它没有构建脚本，最终产物由 core 构建生成）。
 - docs 改动：跑 `pnpm --filter docs run types:check` 或 `pnpm build:docs`。
 - 涉及截图/海报样式时，必须实际看渲染结果，检查文字溢出、深浅色主题、移动/桌面尺寸和资源加载。
 

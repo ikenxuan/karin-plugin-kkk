@@ -9,7 +9,6 @@ import pc from 'picocolors'
 const TARGETS: Record<string, string[]> = {
   core: ['pnpm', '--filter', 'karin-plugin-kkk', 'run', 'build'],
   docs: ['pnpm', '--filter', 'docs', 'run', 'build'],
-  template: ['pnpm', '--filter', 'template', 'run', 'build'],
   web: ['pnpm', '--filter', 'web', 'run', 'build']
 }
 
