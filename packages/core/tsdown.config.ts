@@ -3,7 +3,7 @@ import { defineConfig } from 'tsdown'
 export default defineConfig({
   entry: ['src/export/template.ts', 'src/export/richtext.ts', 'src/export/amagi.ts'],
   format: ['esm'],
-  target: 'node18',
+  target: 'es2022',
   outDir: 'lib/core_chunk',
   root: 'src/export',
   deps: {
@@ -13,7 +13,7 @@ export default defineConfig({
   dts: {
     emitDtsOnly: true,
     build: false,
-    resolver: 'tsc',
+    resolver: 'oxc',
     tsconfig: false,
     compilerOptions: {
       baseUrl: '.',

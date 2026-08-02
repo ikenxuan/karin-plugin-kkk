@@ -18,6 +18,7 @@
     "format:check": "oxfmt --check",
     "prepare": "husky",
     "sort": "pnpm -r sort",
+    "postinstall": "pnpm --filter @ikenxuan/amagi run build",
     "web": "pnpm --filter web run dev",
     "template": "pnpm --filter template run dev",
     "watch": "pnpm --filter karin-plugin-kkk run watch"
