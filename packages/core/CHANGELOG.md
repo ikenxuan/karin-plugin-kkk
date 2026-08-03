@@ -2,6 +2,19 @@
 
 # Changelog
 
+## [2.42.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.41.2...v2.42.0) (2026-08-02)
+
+
+### ✨ 新功能
+
+* **douyin:** 弹幕烧录支持显示点赞数量与表情 ([1d46900](https://github.com/ikenxuan/karin-plugin-kkk/commit/1d4690068478b201084259757024da4c612f91ef))
+
+
+### 🐛 错误修复
+
+* ci？ ([d5dfb4f](https://github.com/ikenxuan/karin-plugin-kkk/commit/d5dfb4f0f663c19292d40af6d3948ba62815a32c))
+* ci？ ([2f713f0](https://github.com/ikenxuan/karin-plugin-kkk/commit/2f713f08f17b99f03d3337f87b1829781c18fd57))
+
 ## [2.41.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.41.1...v2.41.2) (2026-08-02)
 
 
