@@ -1,19 +1,21 @@
 import { defineConfig } from 'tsdown'
 
 export default defineConfig({
-  entry: ['src/export/template.ts', 'src/export/richtext.ts', 'src/export/amagi.ts'],
-  format: ['esm'],
-  target: 'es2022',
+  entry: {
+    template: 'src/export/template.ts',
+    richtext: 'src/export/richtext.ts',
+    amagi: 'src/export/amagi.ts'
+  },
   outDir: 'lib/core_chunk',
-  root: 'src/export',
+  // tsdown 在 vite build 之后运行，不能清空 vite 已产出的 JS
+  clean: false,
   deps: {
     onlyBundle: false,
     neverBundle: ['axios', 'zod']
   },
   dts: {
     emitDtsOnly: true,
-    build: false,
-    resolver: 'oxc',
+    // core 的 tsconfig 带 references，会触发 tsc -b 构建模式，这里绕开并内联声明所需的路径映射
     tsconfig: false,
     compilerOptions: {
       baseUrl: '.',
@@ -25,6 +27,5 @@ export default defineConfig({
         '@ikenxuan/amagi': ['../amagi/packages/core/src/index.ts']
       }
     }
-  },
-  clean: false
+  }
 })
