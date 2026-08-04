@@ -2,282 +2,6 @@ import { EventEmitter as EventEmitter$1 } from "node:events";
 import zod from "zod";
 import { AxiosRequestConfig, AxiosResponse, RawAxiosResponseHeaders } from "axios";
 import express from "express";
-//#region ../../node_modules/.pnpm/chalk@6.0.0/node_modules/chalk/source/vendor/supports-color/index.d.ts
-/**
-Levels:
-- `0` - All colors disabled.
-- `1` - Basic 16 colors support.
-- `2` - ANSI 256 colors support.
-- `3` - Truecolor 16 million colors support.
-*/
-type ColorSupportLevel = 0 | 1 | 2 | 3;
-//#endregion
-//#region ../../node_modules/.pnpm/chalk@6.0.0/node_modules/chalk/source/index.d.ts
-interface ChalkInstance {
-  (...text: unknown[]): string;
-  /**
-	The color support for Chalk.
-
-	By default, color support is automatically detected based on the environment.
-
-	Levels:
-	- `0` - All colors disabled.
-	- `1` - Basic 16 colors support.
-	- `2` - ANSI 256 colors support.
-	- `3` - Truecolor 16 million colors support.
-
-	@throws If the assigned value is not an integer from 0 to 3.
-	*/
-  level: ColorSupportLevel;
-  /**
-	Use RGB values to set text color.
-
-	@example
-	```
-	import chalk from 'chalk';
-
-	chalk.rgb(222, 173, 237);
-	```
-	*/
-  rgb: (red: number, green: number, blue: number) => this;
-  /**
-	Use HEX value to set text color.
-
-	@param color - Hexadecimal value representing the desired color.
-
-	@example
-	```
-	import chalk from 'chalk';
-
-	chalk.hex('#DEADED');
-	```
-	*/
-  hex: (color: string) => this;
-  /**
-	Use an [8-bit unsigned number](https://en.wikipedia.org/wiki/ANSI_escape_code#8-bit) to set text color.
-
-	The value is downsampled to the 16-color palette on terminals that only support basic colors (level 1), so `chalk.ansi256(196)` becomes 91 (ANSI escape for bright red).
-
-	@example
-	```
-	import chalk from 'chalk';
-
-	chalk.ansi256(201);
-	```
-	*/
-  ansi256: (index: number) => this;
-  /**
-	Use RGB values to set background color.
-
-	@example
-	```
-	import chalk from 'chalk';
-
-	chalk.bgRgb(222, 173, 237);
-	```
-	*/
-  bgRgb: (red: number, green: number, blue: number) => this;
-  /**
-	Use HEX value to set background color.
-
-	@param color - Hexadecimal value representing the desired color.
-
-	@example
-	```
-	import chalk from 'chalk';
-
-	chalk.bgHex('#DEADED');
-	```
-	*/
-  bgHex: (color: string) => this;
-  /**
-	Use an [8-bit unsigned number](https://en.wikipedia.org/wiki/ANSI_escape_code#8-bit) to set background color.
-
-	The value is downsampled to the 16-color palette on terminals that only support basic colors (level 1), so `chalk.bgAnsi256(196)` becomes 101 (ANSI escape for bright red background).
-
-	@example
-	```
-	import chalk from 'chalk';
-
-	chalk.bgAnsi256(201);
-	```
-	*/
-  bgAnsi256: (index: number) => this;
-  /**
-	Use RGB values to set underline color.
-
-	The underline color is only visible when an underline style is also applied.
-
-	@example
-	```
-	import chalk from 'chalk';
-
-	chalk.underlineRgb(222, 173, 237).underlineCurly('Hello, world!');
-	```
-	*/
-  underlineRgb: (red: number, green: number, blue: number) => this;
-  /**
-	Use HEX value to set underline color.
-
-	The underline color is only visible when an underline style is also applied.
-
-	@param color - Hexadecimal value representing the desired color.
-
-	@example
-	```
-	import chalk from 'chalk';
-
-	chalk.underlineHex('#DEADED').underlineCurly('Hello, world!');
-	```
-	*/
-  underlineHex: (color: string) => this;
-  /**
-	Use an [8-bit unsigned number](https://en.wikipedia.org/wiki/ANSI_escape_code#8-bit) to set underline color.
-
-	The underline color is only visible when an underline style is also applied.
-
-	The value is downsampled to the first 16 palette entries on terminals that only support basic colors (level 1), so `chalk.underlineAnsi256(196)` becomes 9 (the palette index for bright red).
-
-	@example
-	```
-	import chalk from 'chalk';
-
-	chalk.underlineAnsi256(201).underlineCurly('Hello, world!');
-	```
-	*/
-  underlineAnsi256: (index: number) => this;
-  /**
-	Modifier: Reset the current style.
-	*/
-  readonly reset: this;
-  /**
-	Modifier: Make the text bold.
-	*/
-  readonly bold: this;
-  /**
-	Modifier: Make the text have lower opacity.
-	*/
-  readonly dim: this;
-  /**
-	Modifier: Make the text italic. *(Not widely supported)*
-	*/
-  readonly italic: this;
-  /**
-	Modifier: Put a horizontal line below the text. *(Not widely supported)*
-	*/
-  readonly underline: this;
-  /**
-	Modifier: Put a double horizontal line below the text. *(Not widely supported)*
-	*/
-  readonly underlineDouble: this;
-  /**
-	Modifier: Put a curly horizontal line below the text. *(Not widely supported)*
-	*/
-  readonly underlineCurly: this;
-  /**
-	Modifier: Put a dotted horizontal line below the text. *(Not widely supported)*
-	*/
-  readonly underlineDotted: this;
-  /**
-	Modifier: Put a dashed horizontal line below the text. *(Not widely supported)*
-	*/
-  readonly underlineDashed: this;
-  /**
-	Modifier: Put a horizontal line above the text. *(Not widely supported)*
-	*/
-  readonly overline: this;
-  /**
-	Modifier: Invert background and foreground colors.
-	*/
-  readonly inverse: this;
-  /**
-	Modifier: Print the text but make it invisible.
-	*/
-  readonly hidden: this;
-  /**
-	Modifier: Puts a horizontal line through the center of the text. *(Not widely supported)*
-	*/
-  readonly strikethrough: this;
-  /**
-	Modifier: Print the text only when Chalk has a color level above zero.
-
-	Can be useful for things that are purely cosmetic.
-	*/
-  readonly visible: this;
-  readonly black: this;
-  readonly red: this;
-  readonly green: this;
-  readonly yellow: this;
-  readonly blue: this;
-  readonly magenta: this;
-  readonly cyan: this;
-  readonly white: this;
-  /**
-	Alias for `blackBright`.
-	*/
-  readonly gray: this;
-  /**
-	Alias for `blackBright`.
-	*/
-  readonly grey: this;
-  readonly blackBright: this;
-  readonly redBright: this;
-  readonly greenBright: this;
-  readonly yellowBright: this;
-  readonly blueBright: this;
-  readonly magentaBright: this;
-  readonly cyanBright: this;
-  readonly whiteBright: this;
-  readonly bgBlack: this;
-  readonly bgRed: this;
-  readonly bgGreen: this;
-  readonly bgYellow: this;
-  readonly bgBlue: this;
-  readonly bgMagenta: this;
-  readonly bgCyan: this;
-  readonly bgWhite: this;
-  /**
-	Alias for `bgBlackBright`.
-	*/
-  readonly bgGray: this;
-  /**
-	Alias for `bgBlackBright`.
-	*/
-  readonly bgGrey: this;
-  readonly bgBlackBright: this;
-  readonly bgRedBright: this;
-  readonly bgGreenBright: this;
-  readonly bgYellowBright: this;
-  readonly bgBlueBright: this;
-  readonly bgMagentaBright: this;
-  readonly bgCyanBright: this;
-  readonly bgWhiteBright: this;
-  readonly underlineBlack: this;
-  readonly underlineRed: this;
-  readonly underlineGreen: this;
-  readonly underlineYellow: this;
-  readonly underlineBlue: this;
-  readonly underlineMagenta: this;
-  readonly underlineCyan: this;
-  readonly underlineWhite: this;
-  /**
-	Alias for `underlineBlackBright`.
-	*/
-  readonly underlineGray: this;
-  /**
-	Alias for `underlineBlackBright`.
-	*/
-  readonly underlineGrey: this;
-  readonly underlineBlackBright: this;
-  readonly underlineRedBright: this;
-  readonly underlineGreenBright: this;
-  readonly underlineYellowBright: this;
-  readonly underlineBlueBright: this;
-  readonly underlineMagentaBright: this;
-  readonly underlineCyanBright: this;
-  readonly underlineWhiteBright: this;
-}
-//#endregion
 //#region ../amagi/packages/core/dist/default/index.d.ts
 //#region src/platform/bilibili/sign/wbi.d.ts
 /**
@@ -433,7 +157,7 @@ interface BilibiliMethodOptionsMap {
   };
   /** 获取动态数据 */
   DynamicParams: {
-    methodType: 'dynamicDetail' | 'dynamicCard';
+    methodType: 'dynamicDetail';
     /** 动态ID */
     dynamic_id: string;
   };
@@ -640,7 +364,6 @@ type BilibiliMethodOptMap = {
   bangumiInfo: BilibiliMethodOptionsMap['BangumiInfoParams'];
   bangumiStream: BilibiliMethodOptionsMap['BangumiStreamParams'];
   dynamicDetail: BilibiliMethodOptionsMap['DynamicParams'];
-  dynamicCard: BilibiliMethodOptionsMap['DynamicParams'];
   liveRoomInfo: BilibiliMethodOptionsMap['LiveRoomParams'];
   liveRoomInit: BilibiliMethodOptionsMap['LiveRoomParams'];
   loginStatus: BilibiliMethodOptionsMap['LoginBaseInfoParams'];
@@ -806,17 +529,10 @@ declare const BilibiliValidationSchemas: {
     ep_id: string;
   }, unknown>>;
   readonly dynamicDetail: zod.ZodType<{
-    methodType: "dynamicDetail" | "dynamicCard";
+    methodType: "dynamicDetail";
     dynamic_id: string;
   }, unknown, zod.core.$ZodTypeInternals<{
-    methodType: "dynamicDetail" | "dynamicCard";
-    dynamic_id: string;
-  }, unknown>>;
-  readonly dynamicCard: zod.ZodType<{
-    methodType: "dynamicDetail" | "dynamicCard";
-    dynamic_id: string;
-  }, unknown, zod.core.$ZodTypeInternals<{
-    methodType: "dynamicDetail" | "dynamicCard";
+    methodType: "dynamicDetail";
     dynamic_id: string;
   }, unknown>>;
   readonly liveRoomInfo: zod.ZodType<{
@@ -947,7 +663,6 @@ declare const BilibiliMethodRoutes: {
   readonly bangumiInfo: "/fetch_bangumi_video_info";
   readonly bangumiStream: "/fetch_bangumi_video_playurl";
   readonly dynamicDetail: "/fetch_dynamic_info";
-  readonly dynamicCard: "/fetch_dynamic_card";
   readonly liveRoomInfo: "/fetch_live_room_detail";
   readonly liveRoomInit: "/fetch_liveroom_def";
   readonly loginStatus: "/login_basic_info";
@@ -2030,95 +1745,6 @@ declare enum xiaohongshuAPIErrorCode {
   BROWSER_ERROR = 300015
 }
 //#endregion
-//#region src/validation/index.d.ts
-/**
- * 基础响应类型
- */
-type BaseResponse = {
-  /** 响应消息 */
-  message: string;
-  /** 响应状态码 */
-  code: number;
-};
-/**
- * 成功响应类型
- * @template T - 响应数据的类型，默认为any
- */
-type SuccessResult<T = any> = BaseResponse & {
-  /** 响应状态 */
-  success: true;
-  /** 响应数据，类型由泛型 T 决定 */
-  data: T;
-  /** 成功响应时错误信息为空 */
-  error: never;
-};
-/**
- * 错误响应类型
- */
-type ErrorResult = BaseResponse & {
-  /** 响应状态 */
-  success: false;
-  /** API 错误类型 */
-  error: APIErrorType;
-  /** 错误响应时数据为空 */
-  data: never;
-};
-/**
- * 通用API响应类型
- * @template T - 成功响应数据的类型，默认为any
- */
-type Result<T> = SuccessResult<T> | ErrorResult;
-/**
- * 通用API响应类型
- * @template T - 成功响应数据的类型，默认为any
- * @deprecated 请使用 Result<T> 替代
- */
-type ApiResponse<T> = Result<T>;
-/**
- * 验证抖音参数
- * @param methodType - 抖音方法类型
- * @param params - 待验证的参数
- * @returns 验证后的参数，符合原始API期望的类型
- */
-declare const validateDouyinParams: <T extends DouyinMethodType>(methodType: T, params: unknown) => zod.infer<(typeof DouyinValidationSchemas)[T]>;
-/**
- * 验证哔哩哔哩参数
- * @param methodType - 哔哩哔哩方法类型
- * @param params - 待验证的参数
- * @returns 验证后的参数，符合原始API期望的类型
- */
-declare const validateBilibiliParams: <T extends BilibiliMethodType>(methodType: T, params: unknown) => zod.infer<(typeof BilibiliValidationSchemas)[T]>;
-/**
- * 验证快手参数
- * @param methodType - 快手方法类型
- * @param params - 待验证的参数
- * @returns 验证后的参数，符合原始API期望的类型
- */
-declare const validateKuaishouParams: <T extends KuaishouMethodType>(methodType: T, params: unknown) => zod.infer<(typeof KuaishouValidationSchemas)[T]>;
-/**
- * 验证小红书参数
- * @param methodType - 小红书方法类型
- * @param params - 待验证的参数
- * @returns 验证后的参数
- */
-declare const validateXiaohongshuParams: <T extends XiaohongshuMethodType>(methodType: T, params: unknown) => zod.infer<(typeof XiaohongshuValidationSchemas)[T]>;
-/**
- * 创建成功响应格式
- * @param data - 响应数据
- * @param message - 响应消息（可选）
- * @param code - 响应状态码（可选，默认200）
- * @returns 格式化的成功API响应对象
- */
-declare const createSuccessResponse: <T>(data: T, message: string, code?: number) => SuccessResult<T>;
-/**
- * 创建失败响应格式
- * @param error - 错误信息
- * @param message - 详细错误消息（可选）
- * @param code - 错误状态码（可选，默认500）
- * @returns 格式化的错误响应对象
- */
-declare const createErrorResponse: (error: APIErrorType, message: string, code?: number, data?: unknown) => ErrorResult;
-//#endregion
 //#region src/types/ReturnDataType/Bilibili/ArticleCard/ArticleCard_V0.d.ts
 type ArticleCard_V0 = {
   code: number;
@@ -2543,9 +2169,9 @@ type Author$10 = {
   mid: number;
   name: string;
   nameplate: Nameplate$4;
-  official_verify: OfficialVerify$9;
-  pendant: Pendant$10;
-  vip: Vip$10;
+  official_verify: OfficialVerify$8;
+  pendant: Pendant$9;
+  vip: Vip$9;
   [property: string]: any;
 };
 type Nameplate$4 = {
@@ -2557,22 +2183,22 @@ type Nameplate$4 = {
   nid: number;
   [property: string]: any;
 };
-type OfficialVerify$9 = {
+type OfficialVerify$8 = {
   desc: string;
   type: number;
   [property: string]: any;
 };
-type Pendant$10 = {
+type Pendant$9 = {
   expire: number;
   image: string;
   name: string;
   pid: number;
   [property: string]: any;
 };
-type Vip$10 = {
+type Vip$9 = {
   avatar_subscript: number;
   due_date: number;
-  label: Label$10;
+  label: Label$9;
   nickname_color: string;
   status: number;
   theme_type: number;
@@ -2580,7 +2206,7 @@ type Vip$10 = {
   vip_pay_type: number;
   [property: string]: any;
 };
-type Label$10 = {
+type Label$9 = {
   label_theme: string;
   path: string;
   text: string;
@@ -2764,11 +2390,11 @@ type ArticleInfo = ArticleInfo_V0;
 //#region src/types/ReturnDataType/Bilibili/AV2BV/AV2BV_V0.d.ts
 type BiliAv2Bv_V0 = {
   code: number;
-  data: Data$15;
+  data: Data$14;
   message: string;
   [property: string]: any;
 };
-type Data$15 = {
+type Data$14 = {
   bvid: string;
   [property: string]: any;
 };
@@ -3149,7 +2775,7 @@ type UpInfo = {
   is_follow: number;
   mid: number;
   nickname_color: string;
-  pendant: Pendant$9;
+  pendant: Pendant$8;
   theme_type: number;
   uname: string;
   verify_type: number;
@@ -3158,7 +2784,7 @@ type UpInfo = {
   vip_type: number;
   [property: string]: any;
 };
-type Pendant$9 = {
+type Pendant$8 = {
   image: string;
   name: string;
   pid: number;
@@ -3422,12 +3048,12 @@ type BiliBangumiVideoPlayurlNoLogin = BiliBangumiVideoPlayurlNoLogin_V0;
 //#region src/types/ReturnDataType/Bilibili/EmojiList/EmojiList_V0.d.ts
 type BiliEmojiList_V0 = {
   code: number;
-  data: Data$14;
+  data: Data$13;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type Data$14 = {
+type Data$13 = {
   packages: Package[];
   setting: Setting;
   [property: string]: any;
@@ -3686,11 +3312,11 @@ type Member = {
   fans_detail: null | FansDetail;
   is_contractor: boolean;
   is_senior_member: number;
-  level_info: LevelInfo$2;
+  level_info: LevelInfo$1;
   mid: string;
   nameplate: Nameplate$3;
   nft_interaction: null;
-  official_verify: OfficialVerify$8;
+  official_verify: OfficialVerify$7;
   pendant: MemberPendant;
   rank: string;
   senior: Senior;
@@ -3699,7 +3325,7 @@ type Member = {
   uname: string;
   user_sailing: UserSailing;
   user_sailing_v2: UserSailingV2;
-  vip: Vip$9;
+  vip: Vip$8;
   [property: string]: any;
 };
 type AvatarItem = {
@@ -3821,7 +3447,7 @@ type FansDetail = {
   uid: number;
   [property: string]: any;
 };
-type LevelInfo$2 = {
+type LevelInfo$1 = {
   current_exp: number;
   current_level: number;
   current_min: number;
@@ -3837,7 +3463,7 @@ type Nameplate$3 = {
   nid: number;
   [property: string]: any;
 };
-type OfficialVerify$8 = {
+type OfficialVerify$7 = {
   desc: string;
   type: number;
   [property: string]: any;
@@ -3938,11 +3564,11 @@ type UserSailingV2Pendant = {
   type: string;
   [property: string]: any;
 };
-type Vip$9 = {
+type Vip$8 = {
   accessStatus: number;
   avatar_subscript: number;
   dueRemark: string;
-  label: Label$9;
+  label: Label$8;
   nickname_color: string;
   themeType: number;
   vipDueDate: number;
@@ -3951,7 +3577,7 @@ type Vip$9 = {
   vipType: number;
   [property: string]: any;
 };
-type Label$9 = {
+type Label$8 = {
   bg_color: string;
   bg_style: number;
   border_color: string;
@@ -3999,11 +3625,11 @@ type BiliCommentReply = BiliCommentReply_V0;
 //#region src/types/ReturnDataType/Bilibili/BV2AV/BV2AV_V0.d.ts
 type BiliBv2AV_V0 = {
   code: number;
-  data: Data$13;
+  data: Data$12;
   message: string;
   [property: string]: any;
 };
-type Data$13 = {
+type Data$12 = {
   aid: string;
   [property: string]: any;
 };
@@ -4078,9 +3704,9 @@ type Author$9 = {
   mid: number;
   name: string;
   nameplate: Nameplate$2;
-  official_verify: OfficialVerify$7;
-  pendant: Pendant$8;
-  vip: Vip$8;
+  official_verify: OfficialVerify$6;
+  pendant: Pendant$7;
+  vip: Vip$7;
   [property: string]: any;
 };
 type Nameplate$2 = {
@@ -4092,22 +3718,22 @@ type Nameplate$2 = {
   nid: number;
   [property: string]: any;
 };
-type OfficialVerify$7 = {
+type OfficialVerify$6 = {
   desc: string;
   type: number;
   [property: string]: any;
 };
-type Pendant$8 = {
+type Pendant$7 = {
   expire: number;
   image: string;
   name: string;
   pid: number;
   [property: string]: any;
 };
-type Vip$8 = {
+type Vip$7 = {
   avatar_subscript: number;
   due_date: number;
-  label: Label$8;
+  label: Label$7;
   nickname_color: string;
   status: number;
   theme_type: number;
@@ -4115,7 +3741,7 @@ type Vip$8 = {
   vip_pay_type: number;
   [property: string]: any;
 };
-type Label$8 = {
+type Label$7 = {
   label_theme: string;
   path: string;
   text: string;
@@ -4217,14 +3843,14 @@ type ModuleAuthor$4 = {
   label: string;
   mid: number;
   name: string;
-  official_verify: OfficialVerify$6;
-  pendant: Pendant$7;
+  official_verify: OfficialVerify$5;
+  pendant: Pendant$6;
   pub_action: string;
   pub_location_text: string;
   pub_time: string;
   pub_ts: number;
   type: string;
-  vip: Vip$7;
+  vip: Vip$6;
   [property: string]: any;
 };
 type Avatar$5 = {
@@ -4323,12 +3949,12 @@ type Remote$4 = {
   url: string;
   [property: string]: any;
 };
-type OfficialVerify$6 = {
+type OfficialVerify$5 = {
   desc: string;
   type: number;
   [property: string]: any;
 };
-type Pendant$7 = {
+type Pendant$6 = {
   expire: number;
   image: string;
   image_enhance: string;
@@ -4338,18 +3964,18 @@ type Pendant$7 = {
   pid: number;
   [property: string]: any;
 };
-type Vip$7 = {
+type Vip$6 = {
   avatar_subscript: number;
   avatar_subscript_url: string;
   due_date: number;
-  label: Label$7;
+  label: Label$6;
   nickname_color: string;
   status: number;
   theme_type: number;
   type: number;
   [property: string]: any;
 };
-type Label$7 = {
+type Label$6 = {
   bg_color: string;
   bg_style: number;
   border_color: string;
@@ -4480,14 +4106,14 @@ type ModuleAuthor$3 = {
   label: string;
   mid: number;
   name: string;
-  official_verify: OfficialVerify$5;
-  pendant: Pendant$6;
+  official_verify: OfficialVerify$4;
+  pendant: Pendant$5;
   pub_action: string;
   pub_location_text: string;
   pub_time: string;
   pub_ts: number;
   type: string;
-  vip: Vip$6;
+  vip: Vip$5;
   [property: string]: any;
 };
 type Avatar$4 = {
@@ -4586,12 +4212,12 @@ type Remote$3 = {
   url: string;
   [property: string]: any;
 };
-type OfficialVerify$5 = {
+type OfficialVerify$4 = {
   desc: string;
   type: number;
   [property: string]: any;
 };
-type Pendant$6 = {
+type Pendant$5 = {
   expire: number;
   image: string;
   image_enhance: string;
@@ -4601,18 +4227,18 @@ type Pendant$6 = {
   pid: number;
   [property: string]: any;
 };
-type Vip$6 = {
+type Vip$5 = {
   avatar_subscript: number;
   avatar_subscript_url: string;
   due_date: number;
-  label: Label$6;
+  label: Label$5;
   nickname_color: string;
   status: number;
   theme_type: number;
   type: number;
   [property: string]: any;
 };
-type Label$6 = {
+type Label$5 = {
   bg_color: string;
   bg_style: number;
   border_color: string;
@@ -4629,12 +4255,12 @@ type Label$6 = {
 };
 type ModuleDynamic$3 = {
   additional: null;
-  desc: Desc$6;
+  desc: Desc$5;
   major: Major$9;
   topic: null;
   [property: string]: any;
 };
-type Desc$6 = {
+type Desc$5 = {
   rich_text_nodes: RichTextNode$4[];
   text: string;
   [property: string]: any;
@@ -4763,14 +4389,14 @@ type ModuleAuthor$2 = {
   label: string;
   mid: number;
   name: string;
-  official_verify: OfficialVerify$4;
-  pendant: Pendant$5;
+  official_verify: OfficialVerify$3;
+  pendant: Pendant$4;
   pub_action: string;
   pub_location_text: string;
   pub_time: string;
   pub_ts: number;
   type: string;
-  vip: Vip$5;
+  vip: Vip$4;
   [property: string]: any;
 };
 type Avatar$3 = {
@@ -4901,12 +4527,12 @@ type ColorFormat$6 = {
   start_point: string;
   [property: string]: any;
 };
-type OfficialVerify$4 = {
+type OfficialVerify$3 = {
   desc: string;
   type: number;
   [property: string]: any;
 };
-type Pendant$5 = {
+type Pendant$4 = {
   expire: number;
   image: string;
   image_enhance: string;
@@ -4916,18 +4542,18 @@ type Pendant$5 = {
   pid: number;
   [property: string]: any;
 };
-type Vip$5 = {
+type Vip$4 = {
   avatar_subscript: number;
   avatar_subscript_url: string;
   due_date: number;
-  label: Label$5;
+  label: Label$4;
   nickname_color: string;
   status: number;
   theme_type: number;
   type: number;
   [property: string]: any;
 };
-type Label$5 = {
+type Label$4 = {
   bg_color: string;
   bg_style: number;
   border_color: string;
@@ -5272,12 +4898,12 @@ type PurpleLabel$6 = {
 };
 type PurpleModuleDynamic$5 = {
   additional: null;
-  desc: Desc$5;
+  desc: Desc$4;
   major: null;
   topic: Topic$3;
   [property: string]: any;
 };
-type Desc$5 = {
+type Desc$4 = {
   rich_text_nodes: RichTextNode$2[];
   text: string;
   [property: string]: any;
@@ -6314,12 +5940,12 @@ type PurpleLabel$4 = {
 };
 type PurpleModuleDynamic$3 = {
   additional: null;
-  desc: Desc$4;
+  desc: Desc$3;
   major: null;
   topic: Topic$2;
   [property: string]: any;
 };
-type Desc$4 = {
+type Desc$3 = {
   rich_text_nodes: DescRichTextNode$2[];
   text: string;
   [property: string]: any;
@@ -6851,7 +6477,7 @@ type PurpleLabel$3 = {
 };
 type PurpleModuleDynamic$2 = {
   additional: Additional$2;
-  desc: Desc$3;
+  desc: Desc$2;
   major: null;
   topic: null;
   [property: string]: any;
@@ -6885,7 +6511,7 @@ type JumpStyle$1 = {
   text: string;
   [property: string]: any;
 };
-type Desc$3 = {
+type Desc$2 = {
   rich_text_nodes: DescRichTextNode$1[];
   text: string;
   [property: string]: any;
@@ -7393,12 +7019,12 @@ type PurpleLabel$2 = {
 };
 type PurpleModuleDynamic$1 = {
   additional: null;
-  desc: Desc$2;
+  desc: Desc$1;
   major: null;
   topic: Topic$1;
   [property: string]: any;
 };
-type Desc$2 = {
+type Desc$1 = {
   rich_text_nodes: RichTextNode$1[];
   text: string;
   [property: string]: any;
@@ -7877,7 +7503,7 @@ type PurpleLabel$1 = {
 };
 type PurpleModuleDynamic = {
   additional: Additional$1;
-  desc: Desc$1;
+  desc: Desc;
   major: null;
   topic: Topic;
   [property: string]: any;
@@ -7930,7 +7556,7 @@ type Desc2 = {
   visible: boolean;
   [property: string]: any;
 };
-type Desc$1 = {
+type Desc = {
   rich_text_nodes: DescRichTextNode[];
   text: string;
   [property: string]: any;
@@ -8349,14 +7975,14 @@ type ModuleAuthor$1 = {
   label: string;
   mid: number;
   name: string;
-  official_verify: OfficialVerify$3;
-  pendant: Pendant$4;
+  official_verify: OfficialVerify$2;
+  pendant: Pendant$3;
   pub_action: string;
   pub_location_text: string;
   pub_time: string;
   pub_ts: number;
   type: string;
-  vip: Vip$4;
+  vip: Vip$3;
   [property: string]: any;
 };
 type Avatar$2 = {
@@ -8484,12 +8110,12 @@ type ColorFormat$1 = {
   start_point: string;
   [property: string]: any;
 };
-type OfficialVerify$3 = {
+type OfficialVerify$2 = {
   desc: string;
   type: number;
   [property: string]: any;
 };
-type Pendant$4 = {
+type Pendant$3 = {
   expire: number;
   image: string;
   image_enhance: string;
@@ -8499,18 +8125,18 @@ type Pendant$4 = {
   pid: number;
   [property: string]: any;
 };
-type Vip$4 = {
+type Vip$3 = {
   avatar_subscript: number;
   avatar_subscript_url: string;
   due_date: number;
-  label: Label$4;
+  label: Label$3;
   nickname_color: string;
   status: number;
   theme_type: number;
   type: number;
   [property: string]: any;
 };
-type Label$4 = {
+type Label$3 = {
   bg_color: string;
   bg_style: number;
   border_color: string;
@@ -8630,14 +8256,14 @@ type ModuleAuthor = {
   label: string;
   mid: number;
   name: string;
-  official_verify: OfficialVerify$2;
-  pendant: Pendant$3;
+  official_verify: OfficialVerify$1;
+  pendant: Pendant$2;
   pub_action: string;
   pub_location_text: string;
   pub_time: string;
   pub_ts: number;
   type: string;
-  vip: Vip$3;
+  vip: Vip$2;
   [property: string]: any;
 };
 type Avatar$1 = {
@@ -8765,12 +8391,12 @@ type ColorFormat = {
   start_point: string;
   [property: string]: any;
 };
-type OfficialVerify$2 = {
+type OfficialVerify$1 = {
   desc: string;
   type: number;
   [property: string]: any;
 };
-type Pendant$3 = {
+type Pendant$2 = {
   expire: number;
   image: string;
   image_enhance: string;
@@ -8780,18 +8406,18 @@ type Pendant$3 = {
   pid: number;
   [property: string]: any;
 };
-type Vip$3 = {
+type Vip$2 = {
   avatar_subscript: number;
   avatar_subscript_url: string;
   due_date: number;
-  label: Label$3;
+  label: Label$2;
   nickname_color: string;
   status: number;
   theme_type: number;
   type: number;
   [property: string]: any;
 };
-type Label$3 = {
+type Label$2 = {
   bg_color: string;
   bg_style: number;
   border_color: string;
@@ -9008,12 +8634,12 @@ type BiliDynamicInfo<T extends DynamicType> = {
 //#region src/types/ReturnDataType/Bilibili/LiveRoomDef/LiveRoomDef_V0.d.ts
 type BiliLiveRoomDef_V0 = {
   code: number;
-  data: Data$12;
+  data: Data$11;
   message: string;
   msg: string;
   [property: string]: any;
 };
-type Data$12 = {
+type Data$11 = {
   encrypted: boolean;
   hidden_till: number;
   is_hidden: boolean;
@@ -9039,12 +8665,12 @@ type BiliLiveRoomDef = BiliLiveRoomDef_V0;
 //#region src/types/ReturnDataType/Bilibili/LiveRoomDetail/LiveRoomDetail_V0.d.ts
 type BiliLiveRoomDetail_V0 = {
   code: number;
-  data: Data$11;
+  data: Data$10;
   message: string;
   msg: string;
   [property: string]: any;
 };
-type Data$11 = {
+type Data$10 = {
   allow_change_area_time: number;
   allow_upload_cover_time: number;
   area_id: number;
@@ -9158,12 +8784,12 @@ type BiliCheckQrcode = BiliCheckQrcode_V0;
 //#region src/types/ReturnDataType/Bilibili/Login/NewLoginQrcode/NewLoginQrcode.d.ts
 type BiliNewLoginQrcode_V0 = {
   code: number;
-  data: Data$10;
+  data: Data$9;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type Data$10 = {
+type Data$9 = {
   qrcode_key: string;
   url: string;
   [property: string]: any;
@@ -9175,12 +8801,12 @@ type BiliNewLoginQrcode = BiliNewLoginQrcode_V0;
 //#region src/types/ReturnDataType/Bilibili/OneWork/OneWork_V0.d.ts
 type BiliOneWork_V0 = {
   code: number;
-  data: Data$9;
+  data: Data$8;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type Data$9 = {
+type Data$8 = {
   aid: number;
   argue_info: ArgueInfo;
   bvid: string;
@@ -9354,12 +8980,12 @@ type DataData$9<T extends DynamicType = DynamicType> = {
 //#region src/types/ReturnDataType/Bilibili/UserFullView/UserFullView_V0.d.ts
 type BiliUserFullView_V0 = {
   code: number;
-  data: Data$8;
+  data: Data$7;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type Data$8 = {
+type Data$7 = {
   archive: Archive;
   article: Article;
   likes: number;
@@ -9408,12 +9034,12 @@ type BiliUserLiveStatus = BiliUserLiveStatus_V0;
 //#region src/types/ReturnDataType/Bilibili/UserProfile/UserProfile_V0.d.ts
 type BiliUserProfile_V0 = {
   code: number;
-  data: Data$7;
+  data: Data$6;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type Data$7 = {
+type Data$6 = {
   archive_count: number;
   article_count: number;
   card: Card;
@@ -9437,21 +9063,21 @@ type Card = {
   fans: number;
   friend: number;
   is_senior_member: number;
-  level_info: LevelInfo$1;
+  level_info: LevelInfo;
   mid: string;
   name: string;
   name_render: null;
   nameplate: Nameplate$1;
   Official: Official$1;
-  official_verify: OfficialVerify$1;
-  pendant: Pendant$2;
+  official_verify: OfficialVerify;
+  pendant: Pendant$1;
   place: string;
   rank: string;
   regtime: number;
   sex: string;
   sign: string;
   spacesta: number;
-  vip: Vip$2;
+  vip: Vip$1;
   [property: string]: any;
 };
 type Official$1 = {
@@ -9461,7 +9087,7 @@ type Official$1 = {
   type: number;
   [property: string]: any;
 };
-type LevelInfo$1 = {
+type LevelInfo = {
   current_exp: number;
   current_level: number;
   current_min: number;
@@ -9477,12 +9103,12 @@ type Nameplate$1 = {
   nid: number;
   [property: string]: any;
 };
-type OfficialVerify$1 = {
+type OfficialVerify = {
   desc: string;
   type: number;
   [property: string]: any;
 };
-type Pendant$2 = {
+type Pendant$1 = {
   expire: number;
   image: string;
   image_enhance: string;
@@ -9492,12 +9118,12 @@ type Pendant$2 = {
   pid: number;
   [property: string]: any;
 };
-type Vip$2 = {
+type Vip$1 = {
   avatar_icon: AvatarIcon$1;
   avatar_subscript: number;
   avatar_subscript_url: string;
   due_date: number;
-  label: Label$2;
+  label: Label$1;
   nickname_color: string;
   role: number;
   status: number;
@@ -9521,7 +9147,7 @@ type IconResource = {
   url: string;
   [property: string]: any;
 };
-type Label$2 = {
+type Label$1 = {
   bg_color: string;
   bg_style: number;
   border_color: string;
@@ -9581,7 +9207,7 @@ type DataData$7 = {
   name_render: null;
   nameplate: Nameplate;
   official: Official;
-  pendant: Pendant$1;
+  pendant: Pendant;
   profession: Profession;
   rank: number;
   school: null;
@@ -9597,7 +9223,7 @@ type DataData$7 = {
   top_photo: string;
   top_photo_v2: TopPhotoV2;
   user_honour_info: UserHonourInfo;
-  vip: Vip$1;
+  vip: Vip;
   [property: string]: any;
 };
 type Attestation = {
@@ -9685,7 +9311,7 @@ type Official = {
   type: number;
   [property: string]: any;
 };
-type Pendant$1 = {
+type Pendant = {
   expire: number;
   image: string;
   image_enhance: string;
@@ -9720,12 +9346,12 @@ type UserHonourInfo = {
   tags: string[];
   [property: string]: any;
 };
-type Vip$1 = {
+type Vip = {
   avatar_icon: AvatarIcon;
   avatar_subscript: number;
   avatar_subscript_url: string;
   due_date: number;
-  label: Label$1;
+  label: Label;
   nickname_color: string;
   ott_info: OttInfo;
   role: number;
@@ -9746,7 +9372,7 @@ type AvatarIcon = {
   icon_type: number;
   [property: string]: any;
 };
-type Label$1 = {
+type Label = {
   bg_color: string;
   bg_style: number;
   border_color: string;
@@ -9788,12 +9414,12 @@ type UserSpaceInfo = UserSpaceInfo_V0;
 /** 视频下载地址（已登录） */
 type BiliVideoPlayurlIsLogin_V0 = {
   code: number;
-  data: Data$6;
+  data: Data$5;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type Data$6 = {
+type Data$5 = {
   accept_description: string[];
   accept_format: string;
   accept_quality: number[];
@@ -9910,12 +9536,12 @@ type BiliVideoPlayurlIsLogin = BiliVideoPlayurlIsLogin_V0;
 /** 视频下载地址（未登录） */
 type BiliBiliVideoPlayurlNoLogin_V0 = {
   code: number;
-  data: Data$5;
+  data: Data$4;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type Data$5 = {
+type Data$4 = {
   accept_description: string[];
   accept_format: string;
   accept_quality: number[];
@@ -11745,140 +11371,6 @@ type DataUpper = {
 //#region src/types/ReturnDataType/Bilibili/WorkComments/index.d.ts
 type BiliWorkComments = BiliWorkComments_V0;
 //#endregion
-//#region src/types/ReturnDataType/Bilibili/DynamicCard/DynamicCard_V0.d.ts
-type BiliDynamicCard_V0 = {
-  code: number;
-  data: Data$4;
-  message: string;
-  ttl: number;
-  [property: string]: any;
-};
-type Data$4 = {
-  card: DataCard;
-  [property: string]: any;
-};
-type DataCard = {
-  card: string;
-  desc: Desc;
-  display: Display$1;
-  extend_json: string;
-  [property: string]: any;
-};
-type Desc = {
-  acl: number;
-  bvid: string;
-  comment: number;
-  dynamic_id: number;
-  dynamic_id_str: string;
-  inner_id: number;
-  is_liked: number;
-  like: number;
-  orig_dy_id: number;
-  orig_dy_id_str: string;
-  orig_type: number;
-  origin: null;
-  pre_dy_id: number;
-  pre_dy_id_str: string;
-  previous: null;
-  r_type: number;
-  repost: number;
-  rid: number;
-  rid_str: string;
-  spec_type: number;
-  status: number;
-  stype: number;
-  timestamp: number;
-  type: number;
-  uid: number;
-  uid_type: number;
-  user_profile: UserProfile;
-  view: number;
-  [property: string]: any;
-};
-type UserProfile = {
-  card: UserProfileCard;
-  info: Info$1;
-  level_info: LevelInfo;
-  pendant: Pendant;
-  rank: string;
-  sign: string;
-  vip: Vip;
-  [property: string]: any;
-};
-type UserProfileCard = {
-  official_verify: OfficialVerify;
-  [property: string]: any;
-};
-type OfficialVerify = {
-  type: number;
-  [property: string]: any;
-};
-type Info$1 = {
-  face: string;
-  uid: number;
-  uname: string;
-  [property: string]: any;
-};
-type LevelInfo = {
-  current_exp: number;
-  current_level: number;
-  current_min: number;
-  next_exp: string;
-  [property: string]: any;
-};
-type Pendant = {
-  expire: number;
-  image: string;
-  image_enhance: string;
-  image_enhance_frame: string;
-  name: string;
-  pid: number;
-  [property: string]: any;
-};
-type Vip = {
-  accessStatus: number;
-  avatar_subscript: number;
-  avatar_subscript_url: string;
-  dueRemark: string;
-  label: Label;
-  nickname_color: string;
-  role: number;
-  themeType: number;
-  vipDueDate: number;
-  vipStatus: number;
-  vipStatusWarn: string;
-  vipType: number;
-  [property: string]: any;
-};
-type Label = {
-  bg_color: string;
-  bg_style: number;
-  border_color: string;
-  label_theme: string;
-  path: string;
-  text: string;
-  text_color: string;
-  [property: string]: any;
-};
-type Display$1 = {
-  emoji_info: null;
-  highlight: null;
-  live_info: null;
-  origin: null;
-  relation: Relation;
-  usr_action_txt: string;
-  [property: string]: any;
-};
-type Relation = {
-  is_follow: number;
-  is_followed: number;
-  status: number;
-  [property: string]: any;
-};
-//#endregion
-//#region src/types/ReturnDataType/Bilibili/DynamicCard/index.d.ts
-type BiliDynamicCard = BiliDynamicCard_V0;
-//#endregion
 //#region src/types/ReturnDataType/Bilibili/index.d.ts
 /**
  * B站返回类型映射
@@ -11898,8 +11390,6 @@ interface BilibiliReturnTypeMap {
   bangumiInfo: BiliBangumiVideoInfo;
   bangumiStream: BiliBangumiVideoPlayurlIsLogin | BiliBangumiVideoPlayurlNoLogin;
   dynamicDetail: BiliDynamicInfoUnion;
-  /** @deprecated 接口已停用，现返回错误信息 */
-  dynamicCard: ErrorResult;
   liveRoomInfo: BiliLiveRoomDetail;
   liveRoomInit: BiliLiveRoomDef;
   loginStatus: any;
@@ -26426,7 +25916,6 @@ declare const BilibiliInternalMethods: {
   readonly USER_SPACE_INFO: "用户空间详细信息";
   readonly USER_TOTAL_VIEWS: "获取UP主总播放量";
   readonly DYNAMIC_DETAIL: "动态详情数据";
-  readonly DYNAMIC_CARD: "动态卡片数据";
   readonly BANGUMI_INFO: "番剧基本信息数据";
   readonly BANGUMI_STREAM: "番剧下载信息数据";
   readonly LIVE_ROOM_INFO: "直播间信息";
@@ -26457,7 +25946,6 @@ declare const BilibiliFetcherMethods: {
   readonly USER_SPACE_INFO: "fetchUserSpaceInfo";
   readonly USER_TOTAL_VIEWS: "fetchUploaderTotalViews";
   readonly DYNAMIC_DETAIL: "fetchDynamicDetail";
-  readonly DYNAMIC_CARD: "fetchDynamicCard";
   readonly BANGUMI_INFO: "fetchBangumiInfo";
   readonly BANGUMI_STREAM: "fetchBangumiStreamUrl";
   readonly LIVE_ROOM_INFO: "fetchLiveRoomInfo";
@@ -26593,7 +26081,6 @@ declare const MethodMaps: {
       readonly USER_SPACE_INFO: "用户空间详细信息";
       readonly USER_TOTAL_VIEWS: "获取UP主总播放量";
       readonly DYNAMIC_DETAIL: "动态详情数据";
-      readonly DYNAMIC_CARD: "动态卡片数据";
       readonly BANGUMI_INFO: "番剧基本信息数据";
       readonly BANGUMI_STREAM: "番剧下载信息数据";
       readonly LIVE_ROOM_INFO: "直播间信息";
@@ -26623,7 +26110,6 @@ declare const MethodMaps: {
       readonly USER_SPACE_INFO: "fetchUserSpaceInfo";
       readonly USER_TOTAL_VIEWS: "fetchUploaderTotalViews";
       readonly DYNAMIC_DETAIL: "fetchDynamicDetail";
-      readonly DYNAMIC_CARD: "fetchDynamicCard";
       readonly BANGUMI_INFO: "fetchBangumiInfo";
       readonly BANGUMI_STREAM: "fetchBangumiStreamUrl";
       readonly LIVE_ROOM_INFO: "fetchLiveRoomInfo";
@@ -26816,13 +26302,6 @@ declare class BilibiliAPI {
   getUserDynamicList(data: BilibiliMethodOptionsWithoutMethodType['UserParams']): string;
   /** 获取动态详情 */
   getDynamicDetail(data: BilibiliMethodOptionsWithoutMethodType['DynamicParams']): string;
-  /**
-   * 获取动态卡片信息
-   *
-   * @deprecated B站官方已于 `2025-08-09` 删除原 `dynamic_svr` 接口，该接口已停用。
-   * 调用将返回错误信息，请使用 {@link getDynamicDetail} 替代。
-   */
-  getDynamicCard(data: BilibiliMethodOptionsWithoutMethodType['DynamicParams']): string;
   /** 获取用户名片信息 */
   getUserCard(data: BilibiliMethodOptionsWithoutMethodType['UserParams']): string;
   /**
@@ -26879,6 +26358,89 @@ declare class BilibiliAPI {
 }
 /** B站 API URL 构建器实例 */
 declare const bilibiliApiUrls: BilibiliAPI;
+//#endregion
+//#region src/validation/index.d.ts
+/**
+ * 基础响应类型
+ */
+type BaseResponse = {
+  /** 响应消息 */
+  message: string;
+  /** 响应状态码 */
+  code: number;
+};
+/**
+ * 成功响应类型
+ * @template T - 响应数据的类型，默认为any
+ */
+type SuccessResult<T = any> = BaseResponse & {
+  /** 响应状态 */
+  success: true;
+  /** 响应数据，类型由泛型 T 决定 */
+  data: T;
+  /** 成功响应时错误信息为空 */
+  error: never;
+};
+/**
+ * 错误响应类型
+ */
+type ErrorResult = BaseResponse & {
+  /** 响应状态 */
+  success: false;
+  /** API 错误类型 */
+  error: APIErrorType;
+  /** 错误响应时数据为空 */
+  data: never;
+};
+/**
+ * 通用API响应类型
+ * @template T - 成功响应数据的类型，默认为any
+ */
+type Result<T> = SuccessResult<T> | ErrorResult;
+/**
+ * 验证抖音参数
+ * @param methodType - 抖音方法类型
+ * @param params - 待验证的参数
+ * @returns 验证后的参数，符合原始API期望的类型
+ */
+declare const validateDouyinParams: <T extends DouyinMethodType>(methodType: T, params: unknown) => zod.infer<(typeof DouyinValidationSchemas)[T]>;
+/**
+ * 验证哔哩哔哩参数
+ * @param methodType - 哔哩哔哩方法类型
+ * @param params - 待验证的参数
+ * @returns 验证后的参数，符合原始API期望的类型
+ */
+declare const validateBilibiliParams: <T extends BilibiliMethodType>(methodType: T, params: unknown) => zod.infer<(typeof BilibiliValidationSchemas)[T]>;
+/**
+ * 验证快手参数
+ * @param methodType - 快手方法类型
+ * @param params - 待验证的参数
+ * @returns 验证后的参数，符合原始API期望的类型
+ */
+declare const validateKuaishouParams: <T extends KuaishouMethodType>(methodType: T, params: unknown) => zod.infer<(typeof KuaishouValidationSchemas)[T]>;
+/**
+ * 验证小红书参数
+ * @param methodType - 小红书方法类型
+ * @param params - 待验证的参数
+ * @returns 验证后的参数
+ */
+declare const validateXiaohongshuParams: <T extends XiaohongshuMethodType>(methodType: T, params: unknown) => zod.infer<(typeof XiaohongshuValidationSchemas)[T]>;
+/**
+ * 创建成功响应格式
+ * @param data - 响应数据
+ * @param message - 响应消息（可选）
+ * @param code - 响应状态码（可选，默认200）
+ * @returns 格式化的成功API响应对象
+ */
+declare const createSuccessResponse: <T>(data: T, message: string, code?: number) => SuccessResult<T>;
+/**
+ * 创建失败响应格式
+ * @param error - 错误信息
+ * @param message - 详细错误消息（可选）
+ * @param code - 错误状态码（可选，默认500）
+ * @returns 格式化的错误响应对象
+ */
+declare const createErrorResponse: (error: APIErrorType, message: string, code?: number, data?: unknown) => ErrorResult;
 //#endregion
 //#region src/model/fetchers/bilibili/types.d.ts
 /** B站视频信息请求参数 */
@@ -27047,13 +26609,6 @@ interface IBilibiliFetcher {
    * 获取B站动态详情
    */
   fetchDynamicDetail: MethodOverload<BilibiliDynamicOptions, BilibiliReturnTypeMap['dynamicDetail']>;
-  /**
-   * 获取B站动态卡片信息
-   * @deprecated v6.1.3 已废弃，B站官方已于 `2025-08-09` 删除原 `dynamic_svr` 接口。
-   * 调用将返回错误信息
-   * 计划于 v7.0.0 移除。
-   */
-  fetchDynamicCard: MethodOverload<BilibiliDynamicOptions, BilibiliReturnTypeMap['dynamicCard']>;
   /**
    * 获取B站番剧基本信息
    */
@@ -27643,13 +27198,6 @@ interface IBoundBilibiliFetcher {
   fetchUploaderTotalViews: BoundMethodOverload<BilibiliUserOptions, BilibiliReturnTypeMap['uploaderTotalViews']>;
   /** 获取B站动态详情 */
   fetchDynamicDetail: BoundMethodOverload<BilibiliDynamicOptions, BilibiliReturnTypeMap['dynamicDetail']>;
-  /**
-   * 获取B站动态卡片信息
-   * @deprecated v6.1.3 已废弃，B站官方已于 `2025-08-09` 删除原 `dynamic_svr` 接口。
-   * 调用将返回错误信息
-   * 计划于 v7.0.0 移除。
-   */
-  fetchDynamicCard: BoundMethodOverload<BilibiliDynamicOptions, BilibiliReturnTypeMap['dynamicCard']>;
   /** 获取B站番剧基本信息 */
   fetchBangumiInfo: BoundMethodOverload<BilibiliBangumiInfoOptions, BilibiliReturnTypeMap['bangumiInfo']>;
   /** 获取B站番剧视频流地址 */
@@ -28224,72 +27772,13 @@ declare const createAmagiClient: (options?: Options) => {
     prependOnceListener<K_1>(eventName: string | symbol, listener: (...args: any[]) => void): /*elided*/ any;
     eventNames(): (string | symbol)[];
   };
-  /** @deprecated v6 已废弃，请使用 douyin.fetcher 替代 */
-  getDouyinData: (..._args: any[]) => never;
-  /** @deprecated v6 已废弃，请使用 bilibili.fetcher 替代 */
-  getBilibiliData: (..._args: any[]) => never;
-  /** @deprecated v6 已废弃，请使用 kuaishou.fetcher 替代 */
-  getKuaishouData: (..._args: any[]) => never;
-  /** @deprecated v6 已废弃，请使用 xiaohongshu.fetcher 替代 */
-  getXiaohongshuData: (..._args: any[]) => never;
   douyin: {
-    /** @deprecated 请使用 fetcher 替代 */
-    api: {
-      getSearchData: (..._args: any[]) => never;
-      getTextWorkInfo: (..._args: any[]) => never;
-      getWorkInfo: (..._args: any[]) => never;
-      getVideoWorkInfo: (..._args: any[]) => never;
-      getImageAlbumWorkInfo: (..._args: any[]) => never;
-      getSlidesWorkInfo: (..._args: any[]) => never;
-      getComments: (..._args: any[]) => never;
-      getCommentReplies: (..._args: any[]) => never;
-      getUserProfile: (..._args: any[]) => never;
-      getEmojiList: (..._args: any[]) => never;
-      getEmojiProList: (..._args: any[]) => never;
-      getUserVideos: (..._args: any[]) => never;
-      getMusicInfo: (..._args: any[]) => never;
-      getSuggestWords: (..._args: any[]) => never;
-      search: (..._args: any[]) => never;
-      getLiveRoomInfo: (..._args: any[]) => never;
-      getDanmaku: (..._args: any[]) => never;
-      invoke: (..._args: any[]) => never;
-    };
     /** fetcher */
     fetcher: IBoundDouyinFetcher;
     sign: typeof douyinSign;
     douyinApiUrls: typeof douyinApiUrls;
   };
   bilibili: {
-    /** @deprecated 请使用 fetcher 替代 */
-    api: {
-      getVideoInfo: (..._args: any[]) => never;
-      getVideoStream: (..._args: any[]) => never;
-      getComments: (..._args: any[]) => never;
-      getCommentReply: (..._args: any[]) => never;
-      getUserProfile: (..._args: any[]) => never;
-      getUserDynamic: (..._args: any[]) => never;
-      getEmojiList: (..._args: any[]) => never;
-      getBangumiInfo: (..._args: any[]) => never;
-      getBangumiStream: (..._args: any[]) => never;
-      getDynamicInfo: (..._args: any[]) => never;
-      getDynamicCard: (..._args: any[]) => never;
-      getLiveRoomDetail: (..._args: any[]) => never;
-      getLiveRoomInitInfo: (..._args: any[]) => never;
-      getLoginBasicInfo: (..._args: any[]) => never;
-      getLoginQrcode: (..._args: any[]) => never;
-      checkQrcodeStatus: (..._args: any[]) => never;
-      getUserTotalPlayCount: (..._args: any[]) => never;
-      convertAvToBv: (..._args: any[]) => never;
-      convertBvToAv: (..._args: any[]) => never;
-      getArticleContent: (..._args: any[]) => never;
-      getArticleCard: (..._args: any[]) => never;
-      getArticleInfo: (..._args: any[]) => never;
-      getColumnInfo: (..._args: any[]) => never;
-      getUserProfileDetail: (..._args: any[]) => never;
-      applyVoucherCaptcha: (..._args: any[]) => never;
-      validateCaptcha: (..._args: any[]) => never;
-      getDanmaku: (..._args: any[]) => never;
-    };
     /** fetcher */
     fetcher: IBoundBilibiliFetcher;
     sign: {
@@ -28303,165 +27792,18 @@ declare const createAmagiClient: (options?: Options) => {
     bilibiliApiUrls: typeof bilibiliApiUrls;
   };
   kuaishou: {
-    /** @deprecated 请使用 fetcher 替代 */
-    api: {
-      getWorkInfo: (..._args: any[]) => never;
-      getComments: (..._args: any[]) => never;
-      getUserProfile: (..._args: any[]) => never;
-      getUserWorkList: (..._args: any[]) => never;
-      getLiveRoomInfo: (..._args: any[]) => never;
-      getEmojiList: (..._args: any[]) => never;
-    };
     /** fetcher */
     fetcher: IBoundKuaishouFetcher;
     sign: typeof kuaishouSign;
     kuaishouApiUrls: typeof kuaishouApiUrls;
   };
   xiaohongshu: {
-    /** @deprecated 请使用 fetcher 替代 */
-    api: {
-      getHomeFeed: (..._args: any[]) => never;
-      getNote: (..._args: any[]) => never;
-      getComments: (..._args: any[]) => never;
-      getUser: (..._args: any[]) => never;
-      getUserNotes: (..._args: any[]) => never;
-      getSearchNotes: (..._args: any[]) => never;
-      getEmojiList: (..._args: any[]) => never;
-    };
     /** fetcher */
     fetcher: IBoundXiaohongshuFetcher;
     sign: typeof xiaohongshuSign;
     xiaohongshuApiUrls: typeof xiaohongshuApiUrls;
   };
 };
-//#endregion
-//#region src/platform/bilibili/BilibiliApi.d.ts
-/**
- * B站相关 API 的命名空间。
- *
- * @deprecated v6 已废弃，请使用 bilibiliFetcher 或 client.bilibili.fetcher 替代
- */
-declare const bilibili: {
-  /** @deprecated 请使用 bilibiliFetcher.fetchVideoInfo 替代 */
-  getVideoInfo: (..._args: any[]) => never;
-  /** @deprecated 请使用 bilibiliFetcher.fetchVideoStreamUrl 替代 */
-  getVideoStream: (..._args: any[]) => never;
-  /** @deprecated 请使用 bilibiliFetcher.fetchComments 替代 */
-  getComments: (..._args: any[]) => never;
-  /** @deprecated 请使用 bilibiliFetcher.fetchCommentReplies 替代 */
-  getCommentReply: (..._args: any[]) => never;
-  /** @deprecated 请使用 bilibiliFetcher.fetchUserCard 替代 */
-  getUserProfile: (..._args: any[]) => never;
-  /** @deprecated 请使用 bilibiliFetcher.fetchUserDynamicList 替代 */
-  getUserDynamic: (..._args: any[]) => never;
-  /** @deprecated 请使用 bilibiliFetcher.fetchEmojiList 替代 */
-  getEmojiList: (..._args: any[]) => never;
-  /** @deprecated 请使用 bilibiliFetcher.fetchBangumiInfo 替代 */
-  getBangumiInfo: (..._args: any[]) => never;
-  /** @deprecated 请使用 bilibiliFetcher.fetchBangumiStreamUrl 替代 */
-  getBangumiStream: (..._args: any[]) => never;
-  /** @deprecated 请使用 bilibiliFetcher.fetchDynamicDetail 替代 */
-  getDynamicInfo: (..._args: any[]) => never;
-  /** @deprecated 请使用 bilibiliFetcher.fetchDynamicCard 替代 */
-  getDynamicCard: (..._args: any[]) => never;
-  /** @deprecated 请使用 bilibiliFetcher.fetchLiveRoomInfo 替代 */
-  getLiveRoomDetail: (..._args: any[]) => never;
-  /** @deprecated 请使用 bilibiliFetcher.fetchLiveRoomInitInfo 替代 */
-  getLiveRoomInitInfo: (..._args: any[]) => never;
-  /** @deprecated 请使用 bilibiliFetcher.fetchLoginStatus 替代 */
-  getLoginBasicInfo: (..._args: any[]) => never;
-  /** @deprecated 请使用 bilibiliFetcher.requestLoginQrcode 替代 */
-  getLoginQrcode: (..._args: any[]) => never;
-  /** @deprecated 请使用 bilibiliFetcher.checkQrcodeStatus 替代 */
-  checkQrcodeStatus: (..._args: any[]) => never;
-  /** @deprecated 请使用 bilibiliFetcher.fetchUploaderTotalViews 替代 */
-  getUserTotalPlayCount: (..._args: any[]) => never;
-  /** @deprecated 请使用 bilibiliFetcher.convertAvToBv 替代 */
-  convertAvToBv: (..._args: any[]) => never;
-  /** @deprecated 请使用 bilibiliFetcher.convertBvToAv 替代 */
-  convertBvToAv: (..._args: any[]) => never;
-  /** @deprecated 请使用 bilibiliFetcher.fetchArticleContent 替代 */
-  getArticleContent: (..._args: any[]) => never;
-  /** @deprecated 请使用 bilibiliFetcher.fetchArticleCards 替代 */
-  getArticleCard: (..._args: any[]) => never;
-  /** @deprecated 请使用 bilibiliFetcher.fetchArticleInfo 替代 */
-  getArticleInfo: (..._args: any[]) => never;
-  /** @deprecated 请使用 bilibiliFetcher.fetchArticleListInfo 替代 */
-  getColumnInfo: (..._args: any[]) => never;
-  /** @deprecated 请使用 bilibiliFetcher.fetchUserSpaceInfo 替代 */
-  getUserProfileDetail: (..._args: any[]) => never;
-  /** @deprecated 请使用 bilibiliFetcher.requestCaptchaFromVoucher 替代 */
-  applyVoucherCaptcha: (..._args: any[]) => never;
-  /** @deprecated 请使用 bilibiliFetcher.validateCaptchaResult 替代 */
-  validateCaptcha: (..._args: any[]) => never;
-  /** @deprecated 请使用 bilibiliFetcher.fetchVideoDanmaku 替代 */
-  getDanmaku: (..._args: any[]) => never;
-};
-/**
- * 创建绑定了cookie的B站API对象
- *
- * @deprecated v6 已废弃，请使用 createBoundBilibiliFetcher 替代
- */
-declare const createBoundBilibiliApi: (_cookie: string, _requestConfig: RequestConfig) => {
-  /** @deprecated 请使用 bilibiliFetcher.fetchVideoInfo 替代 */
-  getVideoInfo: (..._args: any[]) => never;
-  /** @deprecated 请使用 bilibiliFetcher.fetchVideoStreamUrl 替代 */
-  getVideoStream: (..._args: any[]) => never;
-  /** @deprecated 请使用 bilibiliFetcher.fetchComments 替代 */
-  getComments: (..._args: any[]) => never;
-  /** @deprecated 请使用 bilibiliFetcher.fetchCommentReplies 替代 */
-  getCommentReply: (..._args: any[]) => never;
-  /** @deprecated 请使用 bilibiliFetcher.fetchUserCard 替代 */
-  getUserProfile: (..._args: any[]) => never;
-  /** @deprecated 请使用 bilibiliFetcher.fetchUserDynamicList 替代 */
-  getUserDynamic: (..._args: any[]) => never;
-  /** @deprecated 请使用 bilibiliFetcher.fetchEmojiList 替代 */
-  getEmojiList: (..._args: any[]) => never;
-  /** @deprecated 请使用 bilibiliFetcher.fetchBangumiInfo 替代 */
-  getBangumiInfo: (..._args: any[]) => never;
-  /** @deprecated 请使用 bilibiliFetcher.fetchBangumiStreamUrl 替代 */
-  getBangumiStream: (..._args: any[]) => never;
-  /** @deprecated 请使用 bilibiliFetcher.fetchDynamicDetail 替代 */
-  getDynamicInfo: (..._args: any[]) => never;
-  /** @deprecated 请使用 bilibiliFetcher.fetchDynamicCard 替代 */
-  getDynamicCard: (..._args: any[]) => never;
-  /** @deprecated 请使用 bilibiliFetcher.fetchLiveRoomInfo 替代 */
-  getLiveRoomDetail: (..._args: any[]) => never;
-  /** @deprecated 请使用 bilibiliFetcher.fetchLiveRoomInitInfo 替代 */
-  getLiveRoomInitInfo: (..._args: any[]) => never;
-  /** @deprecated 请使用 bilibiliFetcher.fetchLoginStatus 替代 */
-  getLoginBasicInfo: (..._args: any[]) => never;
-  /** @deprecated 请使用 bilibiliFetcher.requestLoginQrcode 替代 */
-  getLoginQrcode: (..._args: any[]) => never;
-  /** @deprecated 请使用 bilibiliFetcher.checkQrcodeStatus 替代 */
-  checkQrcodeStatus: (..._args: any[]) => never;
-  /** @deprecated 请使用 bilibiliFetcher.fetchUploaderTotalViews 替代 */
-  getUserTotalPlayCount: (..._args: any[]) => never;
-  /** @deprecated 请使用 bilibiliFetcher.convertAvToBv 替代 */
-  convertAvToBv: (..._args: any[]) => never;
-  /** @deprecated 请使用 bilibiliFetcher.convertBvToAv 替代 */
-  convertBvToAv: (..._args: any[]) => never;
-  /** @deprecated 请使用 bilibiliFetcher.fetchArticleContent 替代 */
-  getArticleContent: (..._args: any[]) => never;
-  /** @deprecated 请使用 bilibiliFetcher.fetchArticleCards 替代 */
-  getArticleCard: (..._args: any[]) => never;
-  /** @deprecated 请使用 bilibiliFetcher.fetchArticleInfo 替代 */
-  getArticleInfo: (..._args: any[]) => never;
-  /** @deprecated 请使用 bilibiliFetcher.fetchArticleListInfo 替代 */
-  getColumnInfo: (..._args: any[]) => never;
-  /** @deprecated 请使用 bilibiliFetcher.fetchUserSpaceInfo 替代 */
-  getUserProfileDetail: (..._args: any[]) => never;
-  /** @deprecated 请使用 bilibiliFetcher.requestCaptchaFromVoucher 替代 */
-  applyVoucherCaptcha: (..._args: any[]) => never;
-  /** @deprecated 请使用 bilibiliFetcher.validateCaptchaResult 替代 */
-  validateCaptcha: (..._args: any[]) => never;
-  /** @deprecated 请使用 bilibiliFetcher.fetchVideoDanmaku 替代 */
-  getDanmaku: (..._args: any[]) => never;
-};
-/**
- * 绑定cookie的B站API对象类型
- */
-type BoundBilibiliApi = ReturnType<typeof createBoundBilibiliApi>;
 //#endregion
 //#region src/platform/bilibili/getdata.d.ts
 /**
@@ -28569,16 +27911,6 @@ type bilibiliUtilsModel = {
   };
   /** 该类下的所有方法只会返回拼接好参数后的 Url 地址，需要手动请求该地址以获取数据 */
   bilibiliApiUrls: typeof bilibiliApiUrls;
-  /**
-   * B站相关 API 的命名空间。
-   *
-   * 部分接口可能不需要 Cookie 但建议传递有效的用户 Cookie，以获取更多数据。
-   *
-   * 提供了一系列方法，用于与B站相关的 API 进行交互。
-   *
-   * 每个方法都接受参数和 Cookie，返回 Promise，解析为接口返回的原始数据。
-   */
-  api: typeof bilibili;
 };
 /** B站相关功能模块 (工具集) */
 declare const bilibiliUtils: bilibiliUtilsModel;
@@ -28665,95 +27997,6 @@ declare class DouyinAPI {
 /** 默认的 DouyinAPI 实例（使用默认浏览器版本 125.0.0.0） */
 declare const douyinApiUrls: DouyinAPI;
 //#endregion
-//#region src/platform/douyin/DouyinApi.d.ts
-/**
- * 封装了所有抖音相关的API请求，采用对象化的方式组织。
- *
- * @deprecated v6 已废弃，请使用 douyinFetcher 或 client.douyin.fetcher 替代
- */
-declare const douyin: {
-  /** @deprecated 请使用 douyinFetcher.fetchTextWork 替代 */
-  getTextWorkInfo: (..._args: any[]) => never;
-  /** @deprecated 请使用 douyinFetcher.parseWork 替代 */
-  getWorkInfo: (..._args: any[]) => never;
-  /** @deprecated 请使用 douyinFetcher.fetchVideoWork 替代 */
-  getVideoWorkInfo: (..._args: any[]) => never;
-  /** @deprecated 请使用 douyinFetcher.fetchImageAlbumWork 替代 */
-  getImageAlbumWorkInfo: (..._args: any[]) => never;
-  /** @deprecated 请使用 douyinFetcher.fetchSlidesWork 替代 */
-  getSlidesWorkInfo: (..._args: any[]) => never;
-  /** @deprecated 请使用 douyinFetcher.fetchComments 替代 */
-  getComments: (..._args: any[]) => never;
-  /** @deprecated 请使用 douyinFetcher.fetchCommentReplies 替代 */
-  getCommentReplies: (..._args: any[]) => never;
-  /** @deprecated 请使用 douyinFetcher.fetchUserProfile 替代 */
-  getUserProfile: (..._args: any[]) => never;
-  /** @deprecated 请使用 douyinFetcher.fetchEmojiList 替代 */
-  getEmojiList: (..._args: any[]) => never;
-  /** @deprecated 请使用 douyinFetcher.fetchDynamicEmojiList 替代 */
-  getEmojiProList: (..._args: any[]) => never;
-  /** @deprecated 请使用 douyinFetcher.fetchUserVideoList 替代 */
-  getUserVideos: (..._args: any[]) => never;
-  /** @deprecated 请使用 douyinFetcher.fetchMusicInfo 替代 */
-  getMusicInfo: (..._args: any[]) => never;
-  /** @deprecated 请使用 douyinFetcher.fetchSuggestWords 替代 */
-  getSuggestWords: (..._args: any[]) => never;
-  /** @deprecated 请使用 douyinFetcher.searchContent 替代 */
-  search: (..._args: any[]) => never;
-  /** @deprecated 请使用 douyinFetcher.fetchLiveRoomInfo 替代 */
-  getLiveRoomInfo: (..._args: any[]) => never;
-  /** @deprecated 请使用 douyinFetcher.fetchDanmakuList 替代 */
-  getDanmaku: (..._args: any[]) => never;
-  /** @deprecated 请使用 douyinFetcher 的具体方法替代 */
-  invoke: (..._args: any[]) => never;
-};
-/**
- * 创建绑定了cookie的抖音API对象
- *
- * @deprecated v6 已废弃，请使用 createBoundDouyinFetcher 替代
- */
-declare const createBoundDouyinApi: (_cookie: string, _requestConfig: RequestConfig) => {
-  getSearchData: (..._args: any[]) => never;
-  /** @deprecated 请使用 douyinFetcher.fetchTextWork 替代 */
-  getTextWorkInfo: (..._args: any[]) => never;
-  /** @deprecated 请使用 douyinFetcher.parseWork 替代 */
-  getWorkInfo: (..._args: any[]) => never;
-  /** @deprecated 请使用 douyinFetcher.fetchVideoWork 替代 */
-  getVideoWorkInfo: (..._args: any[]) => never;
-  /** @deprecated 请使用 douyinFetcher.fetchImageAlbumWork 替代 */
-  getImageAlbumWorkInfo: (..._args: any[]) => never;
-  /** @deprecated 请使用 douyinFetcher.fetchSlidesWork 替代 */
-  getSlidesWorkInfo: (..._args: any[]) => never;
-  /** @deprecated 请使用 douyinFetcher.fetchComments 替代 */
-  getComments: (..._args: any[]) => never;
-  /** @deprecated 请使用 douyinFetcher.fetchCommentReplies 替代 */
-  getCommentReplies: (..._args: any[]) => never;
-  /** @deprecated 请使用 douyinFetcher.fetchUserProfile 替代 */
-  getUserProfile: (..._args: any[]) => never;
-  /** @deprecated 请使用 douyinFetcher.fetchEmojiList 替代 */
-  getEmojiList: (..._args: any[]) => never;
-  /** @deprecated 请使用 douyinFetcher.fetchDynamicEmojiList 替代 */
-  getEmojiProList: (..._args: any[]) => never;
-  /** @deprecated 请使用 douyinFetcher.fetchUserVideoList 替代 */
-  getUserVideos: (..._args: any[]) => never;
-  /** @deprecated 请使用 douyinFetcher.fetchMusicInfo 替代 */
-  getMusicInfo: (..._args: any[]) => never;
-  /** @deprecated 请使用 douyinFetcher.fetchSuggestWords 替代 */
-  getSuggestWords: (..._args: any[]) => never;
-  /** @deprecated 请使用 douyinFetcher.searchContent 替代 */
-  search: (..._args: any[]) => never;
-  /** @deprecated 请使用 douyinFetcher.fetchLiveRoomInfo 替代 */
-  getLiveRoomInfo: (..._args: any[]) => never;
-  /** @deprecated 请使用 douyinFetcher.fetchDanmakuList 替代 */
-  getDanmaku: (..._args: any[]) => never;
-  /** @deprecated 请使用 douyinFetcher 的具体方法替代 */
-  invoke: (..._args: any[]) => never;
-};
-/**
- * 绑定cookie的抖音API对象类型
- */
-type BoundDouyinApi = ReturnType<typeof createBoundDouyinApi>;
-//#endregion
 //#region src/platform/douyin/routes.d.ts
 /**
  * 创建抖音路由
@@ -28773,14 +28016,6 @@ type douyinUtilsModel = {
    * 缺少 `a_bougs` 参数，请自行生成拼接
    */
   douyinApiUrls: typeof douyinApiUrls;
-  /**
-   * 封装了所有抖音相关的API请求，采用对象化的方式组织。
-   *
-   * 提供了一系列方法，用于与抖音相关的 API 进行交互。
-   *
-   * 每个方法都接受参数和 Cookie，返回 Promise，解析为接口返回的原始数据。
-   */
-  api: typeof douyin;
 };
 /** 抖音相关功能模块 (工具集) */
 declare const douyinUtils: douyinUtilsModel;
@@ -29067,50 +28302,6 @@ declare class kuaishouSign {
   static signLiveApiRequest(request: KuaishouLiveApiRequest, cookie?: string): KuaishouLiveApiSignature;
 }
 //#endregion
-//#region src/platform/kuaishou/KuaishouApi.d.ts
-/**
- * 快手相关 API 的命名空间。
- *
- * @deprecated v6 已废弃，请使用 kuaishouFetcher 或 client.kuaishou.fetcher 替代
- */
-declare const kuaishou: {
-  /** @deprecated 请使用 kuaishouFetcher.fetchVideoWork 替代 */
-  getWorkInfo: (..._args: any[]) => never;
-  /** @deprecated 请使用 kuaishouFetcher.fetchWorkComments 替代 */
-  getComments: (..._args: any[]) => never;
-  /** @deprecated 请使用 kuaishouFetcher.fetchUserProfile 替代 */
-  getUserProfile: (..._args: any[]) => never;
-  /** @deprecated 请使用 kuaishouFetcher.fetchUserWorkList 替代 */
-  getUserWorkList: (..._args: any[]) => never;
-  /** @deprecated 请使用 kuaishouFetcher.fetchLiveRoomInfo 替代 */
-  getLiveRoomInfo: (..._args: any[]) => never;
-  /** @deprecated 请使用 kuaishouFetcher.fetchEmojiList 替代 */
-  getEmojiList: (..._args: any[]) => never;
-};
-/**
- * 创建绑定了cookie的快手API对象
- *
- * @deprecated v6 已废弃，请使用 createBoundKuaishouFetcher 替代
- */
-declare const createBoundKuaishouApi: (_cookie: string, _requestConfig: RequestConfig) => {
-  /** @deprecated 请使用 kuaishouFetcher.fetchVideoWork 替代 */
-  getWorkInfo: (..._args: any[]) => never;
-  /** @deprecated 请使用 kuaishouFetcher.fetchWorkComments 替代 */
-  getComments: (..._args: any[]) => never;
-  /** @deprecated 请使用 kuaishouFetcher.fetchUserProfile 替代 */
-  getUserProfile: (..._args: any[]) => never;
-  /** @deprecated 请使用 kuaishouFetcher.fetchUserWorkList 替代 */
-  getUserWorkList: (..._args: any[]) => never;
-  /** @deprecated 请使用 kuaishouFetcher.fetchLiveRoomInfo 替代 */
-  getLiveRoomInfo: (..._args: any[]) => never;
-  /** @deprecated 请使用 kuaishouFetcher.fetchEmojiList 替代 */
-  getEmojiList: (..._args: any[]) => never;
-};
-/**
- * 绑定cookie的快手API对象类型
- */
-type BoundKuaishouApi = ReturnType<typeof createBoundKuaishouApi>;
-//#endregion
 //#region src/platform/kuaishou/routes.d.ts
 /**
  * 创建快手路由
@@ -29126,14 +28317,6 @@ type kuaishouUtilsModel = {
   sign: typeof kuaishouSign;
   /** 该类下的方法只会返回请求描述对象，需要手动请求对应地址以获取数据 */
   kuaishouApiUrls: typeof kuaishouApiUrls;
-  /**
-   * 封装了所有快手相关的API请求，采用对象化的方式组织。
-   *
-   * 提供了一系列方法，用于与快手相关的 API 进行交互。
-   *
-   * 每个方法都接受参数和 Cookie，返回 Promise，解析为接口返回的原始数据。
-   */
-  api: typeof kuaishou;
 };
 /** 快手相关功能模块 (工具集) */
 declare const kuaishouUtils: kuaishouUtilsModel;
@@ -29197,54 +28380,6 @@ declare class xiaohongshuSign {
   static getSearchId: () => string;
 }
 //#endregion
-//#region src/platform/xiaohongshu/XiaohongshuApi.d.ts
-/**
- * 封装了所有小红书相关的API请求，采用对象化的方式组织。
- *
- * @deprecated v6 已废弃，请使用 xiaohongshuFetcher 或 client.xiaohongshu.fetcher 替代
- */
-declare const xiaohongshu: {
-  /** @deprecated 请使用 xiaohongshuFetcher.fetchHomeFeed 替代 */
-  getHomeFeed: (..._args: any[]) => never;
-  /** @deprecated 请使用 xiaohongshuFetcher.fetchNoteDetail 替代 */
-  getNote: (..._args: any[]) => never;
-  /** @deprecated 请使用 xiaohongshuFetcher.fetchNoteComments 替代 */
-  getComments: (..._args: any[]) => never;
-  /** @deprecated 请使用 xiaohongshuFetcher.fetchUserProfile 替代 */
-  getUser: (..._args: any[]) => never;
-  /** @deprecated 请使用 xiaohongshuFetcher.fetchUserNoteList 替代 */
-  getUserNotes: (..._args: any[]) => never;
-  /** @deprecated 请使用 xiaohongshuFetcher.searchNotes 替代 */
-  getSearchNotes: (..._args: any[]) => never;
-  /** @deprecated 请使用 xiaohongshuFetcher.fetchEmojiList 替代 */
-  getEmojiList: (..._args: any[]) => never;
-};
-/**
- * 创建绑定了cookie的小红书API对象
- *
- * @deprecated v6 已废弃，请使用 createBoundXiaohongshuFetcher 替代
- */
-declare const createBoundXiaohongshuApi: (_cookie: string, _requestConfig: RequestConfig) => {
-  /** @deprecated 请使用 xiaohongshuFetcher.fetchHomeFeed 替代 */
-  getHomeFeed: (..._args: any[]) => never;
-  /** @deprecated 请使用 xiaohongshuFetcher.fetchNoteDetail 替代 */
-  getNote: (..._args: any[]) => never;
-  /** @deprecated 请使用 xiaohongshuFetcher.fetchNoteComments 替代 */
-  getComments: (..._args: any[]) => never;
-  /** @deprecated 请使用 xiaohongshuFetcher.fetchUserProfile 替代 */
-  getUser: (..._args: any[]) => never;
-  /** @deprecated 请使用 xiaohongshuFetcher.fetchUserNoteList 替代 */
-  getUserNotes: (..._args: any[]) => never;
-  /** @deprecated 请使用 xiaohongshuFetcher.searchNotes 替代 */
-  getSearchNotes: (..._args: any[]) => never;
-  /** @deprecated 请使用 xiaohongshuFetcher.fetchEmojiList 替代 */
-  getEmojiList: (..._args: any[]) => never;
-};
-/**
- * 绑定cookie的小红书API对象类型
- */
-type BoundXiaohongshuApi = ReturnType<typeof createBoundXiaohongshuApi>;
-//#endregion
 //#region src/platform/xiaohongshu/routes.d.ts
 /**
  * 创建小红书路由
@@ -29262,82 +28397,9 @@ type xiaohongshuUtilsModel = {
    * 该类下的所有方法只会返回拼接好参数后的 Url 地址，需要手动请求该地址以获取数据
    */
   xiaohongshuApiUrls: typeof xiaohongshuApiUrls;
-  /**
-   * 封装了所有小红书相关的API请求，采用对象化的方式组织。
-   *
-   * 提供了一系列方法，用于与小红书相关的 API 进行交互。
-   *
-   * 每个方法都接受参数和 Cookie，返回 Promise，解析为接口返回的原始数据。
-   */
-  api: typeof xiaohongshu;
 };
 /** 小红书相关功能模块 (工具集) */
 declare const xiaohongshuUtils: xiaohongshuUtilsModel;
-//#endregion
-//#region src/model/DataFetchers.d.ts
-/**
- * 获取抖音数据
- *
- * @deprecated v6 已废弃，请使用 douyinFetcher 或 client.douyin.fetcher 替代
- * @throws {DeprecatedApiError} 调用时抛出废弃错误
- *
- * @example
- * ```typescript
- * // 旧用法 (已废弃，会抛出错误)
- * const data = await getDouyinData('videoWork', { aweme_id: '123' }, cookie)
- *
- * // 新用法
- * import { douyinFetcher } from '@ikenxuan/amagi'
- * const data = await douyinFetcher.fetchVideoWork({ aweme_id: '123' }, cookie)
- *
- * // 或使用客户端实例
- * const client = createAmagiClient({ cookies: { douyin: cookie } })
- * const data = await client.douyin.fetcher.fetchVideoWork({ aweme_id: '123' })
- * ```
- */
-declare function getDouyinData(..._args: any[]): never;
-/**
- * 获取B站数据
- *
- * @deprecated v6 已废弃，请使用 bilibiliFetcher 或 client.bilibili.fetcher 替代
- * @throws {DeprecatedApiError} 调用时抛出废弃错误
- *
- * @example
- * ```typescript
- * // 旧用法 (已废弃，会抛出错误)
- * const data = await getBilibiliData('videoInfo', { bvid: 'BV123' }, cookie)
- *
- * // 新用法
- * import { bilibiliFetcher } from '@ikenxuan/amagi'
- * const data = await bilibiliFetcher.fetchVideoInfo({ bvid: 'BV123' }, cookie)
- *
- * // 或使用客户端实例
- * const client = createAmagiClient({ cookies: { bilibili: cookie } })
- * const data = await client.bilibili.fetcher.fetchVideoInfo({ bvid: 'BV123' })
- * ```
- */
-declare function getBilibiliData(..._args: any[]): never;
-/**
- * 获取快手数据
- *
- * @deprecated v6 已废弃，请使用 kuaishouFetcher 或 client.kuaishou.fetcher 替代
- * @throws {DeprecatedApiError} 调用时抛出废弃错误
- *
- * @example
- * ```typescript
- * // 旧用法 (已废弃，会抛出错误)
- * const data = await getKuaishouData('videoWork', { photoId: '123' }, cookie)
- *
- * // 新用法
- * import { kuaishouFetcher } from '@ikenxuan/amagi'
- * const data = await kuaishouFetcher.fetchVideoWork({ photoId: '123' }, cookie)
- *
- * // 或使用客户端实例
- * const client = createAmagiClient({ cookies: { kuaishou: cookie } })
- * const data = await client.kuaishou.fetcher.fetchVideoWork({ photoId: '123' })
- * ```
- */
-declare function getKuaishouData(..._args: any[]): never;
 //#endregion
 //#region src/utils/errors.d.ts
 /**
@@ -29433,49 +28495,6 @@ declare const getHeadersAndData: <T = any>(config: AxiosRequestConfig, maxRetrie
   data: T;
 } | ErrorResult>;
 //#endregion
-//#region src/model/logger.d.ts
-/**
- * @deprecated v6 已废弃，请使用事件系统替代
- * 初始化 logger 配置 - 此函数现在为空操作
- */
-declare const initLogger: () => void;
-/**
- * @deprecated v6 已废弃，请使用事件系统替代
- * 简化的日志类，仅发射事件，不再依赖 log4js
- */
-declare class SimpleLogger {
-  chalk: ChalkInstance;
-  red: (text: string) => string;
-  green: (text: string) => string;
-  yellow: (text: string) => string;
-  blue: (text: string) => string;
-  magenta: (text: string) => string;
-  cyan: (text: string) => string;
-  white: (text: string) => string;
-  gray: (text: string) => string;
-  constructor();
-  info(message: any, ...args: any[]): void;
-  warn(message: any, ...args: any[]): void;
-  error(message: any, ...args: any[]): void;
-  mark(message: any, ...args: any[]): void;
-  debug(message: any, ...args: any[]): void;
-}
-/**
- * @deprecated v6 已废弃，请使用事件系统替代
- */
-declare const logger: SimpleLogger;
-/**
- * @deprecated v6 已废弃，请使用事件系统替代
- */
-declare const httpLogger: SimpleLogger;
-/**
- * @deprecated v6 已废弃，请使用事件系统监听 http:response 事件
- * 创建一个日志中间件，用于记录特定请求的详细信息
- * @param pathsToLog 指定需要记录日志的请求路径数组如果未提供，则记录所有请求的日志
- * @returns
- */
-declare const logMiddleware: (pathsToLog?: string[]) => express.RequestHandler;
-//#endregion
 //#region src/types/api-spec.d.ts
 /**
  * Amagi v6 API 规范定义
@@ -29547,7 +28566,6 @@ declare const BilibiliMethodMapping: {
   readonly 用户空间详细信息: "fetchUserSpaceInfo";
   readonly 获取UP主总播放量: "fetchUploaderTotalViews";
   readonly 动态详情数据: "fetchDynamicDetail";
-  readonly 动态卡片数据: "fetchDynamicCard";
   readonly 番剧基本信息数据: "fetchBangumiInfo";
   readonly 番剧下载信息数据: "fetchBangumiStreamUrl";
   readonly 直播间信息: "fetchLiveRoomInfo";
@@ -29633,7 +28651,6 @@ declare const BilibiliApiRoutes: {
   readonly userSpaceInfo: "/user/space";
   readonly uploaderTotalViews: "/user/total-views";
   readonly dynamicDetail: "/dynamic";
-  readonly dynamicCard: "/dynamic/card";
   readonly bangumiInfo: "/bangumi";
   readonly bangumiStream: "/bangumi/stream";
   readonly liveRoomInfo: "/live";
@@ -29684,10 +28701,6 @@ declare function getEnglishMethodName<T extends Platform>(platform: T, chineseMe
 declare function getApiRoute<T extends Platform>(platform: T, methodType: string): string | undefined;
 //#endregion
 //#region src/index.d.ts
-/**
- * @deprecated 请使用 createAmagiClient 替代
- */
-declare const amagiClient: typeof createAmagiClient;
 /** amagi 的构造函数类型 */
 type AmagiConstructor = {
   new (options?: Options): ReturnType<typeof createAmagiClient>;
@@ -29702,26 +28715,6 @@ type AmagiConstructor = {
   kuaishou: typeof kuaishouUtils;
   /** 小红书相关功能模块 (工具集) */
   xiaohongshu: typeof xiaohongshuUtils;
-  /**
-   * @deprecated v6 已废弃，请使用 douyinFetcher 替代
-   * @throws {DeprecatedApiError} 调用时抛出废弃错误
-   */
-  getDouyinData: (...args: any[]) => never;
-  /**
-   * @deprecated v6 已废弃，请使用 bilibiliFetcher 替代
-   * @throws {DeprecatedApiError} 调用时抛出废弃错误
-   */
-  getBilibiliData: (...args: any[]) => never;
-  /**
-   * @deprecated v6 已废弃，请使用 kuaishouFetcher 替代
-   * @throws {DeprecatedApiError} 调用时抛出废弃错误
-   */
-  getKuaishouData: (...args: any[]) => never;
-  /**
-   * @deprecated v6 已废弃，请使用 xiaohongshuFetcher 替代
-   * @throws {DeprecatedApiError} 调用时抛出废弃错误
-   */
-  getXiaohongshuData: (...args: any[]) => never;
   /** 事件系统 */
   events: typeof amagiEvents;
   /**
@@ -29759,4 +28752,4 @@ declare const CreateApp: AmagiConstructor;
 declare const Client: typeof CreateApp;
 declare const amagi: typeof Client;
 //#endregion
-export { APIErrorType, AdditionalType, AmagiEventMap, AmagiEventType, type AnonymousFetcherRequestConfig, type ApiEndpoint, ApiError, ApiErrorEventData, ApiResponse, ApiSuccessEventData, ArticleCard, ArticleContent, ArticleInfo, ArticleWork, BaseRequestOptions, BaseResponse, BiliAv2Bv, BiliBangumiVideoInfo, BiliBangumiVideoPlayurlIsLogin, BiliBangumiVideoPlayurlNoLogin, BiliBiliVideoPlayurlNoLogin, BiliBv2AV, BiliCheckQrcode, BiliCommentReply, BiliDynamicCard, BiliDynamicInfo, BiliDynamicInfoUnion, BiliEmojiList, BiliLiveRoomDef, BiliLiveRoomDetail, BiliNewLoginQrcode, BiliOneWork, BiliProtobufDanmaku, BiliUserDynamic, BiliUserFullView, BiliUserLiveStatus, BiliUserProfile, BiliVideoPlayurlIsLogin, BiliWorkComments, BilibiliApiRoutes, type BilibiliApplyCaptchaOptions, BilibiliApplyCaptchaParamsSchema, type BilibiliArticleCardOptions, BilibiliArticleCardParamsSchema, BilibiliArticleInfoParamsSchema, type BilibiliArticleOptions, BilibiliArticleParamsSchema, type BilibiliAv2BvOptions, BilibiliAv2BvParamsSchema, type BilibiliBangumiInfoOptions, BilibiliBangumiInfoParamsSchema, type BilibiliBangumiStreamOptions, BilibiliBangumiStreamParamsSchema, type BilibiliBv2AvOptions, BilibiliBv2AvParamsSchema, BilibiliColumnInfoParamsSchema, BilibiliCommentParamsSchema, type BilibiliCommentRepliesOptions, BilibiliCommentReplyParamsSchema, type BilibiliCommentsOptions, type BilibiliDanmakuOptions, BilibiliDanmakuParamsSchema, BilibiliDataOptions, BilibiliDataOptionsMap, type BilibiliDynamicOptions, BilibiliDynamicParamsSchema, BilibiliEmojiParamsSchema, type BilibiliFetcher, BilibiliFetcherMethodKey, BilibiliFetcherMethods, BilibiliInternalMethodKey, BilibiliInternalMethods, BilibiliLiveParamsSchema, type BilibiliLiveRoomOptions, BilibiliLoginParamsSchema, type BilibiliMethodKey, BilibiliMethodMapping, BilibiliMethodOptMap, BilibiliMethodOptionsMap, BilibiliMethodRoutes, BilibiliMethodToFetcher, BilibiliMethodType, type BilibiliMethodValue, BilibiliQrcodeParamsSchema, type BilibiliQrcodeStatusOptions, BilibiliQrcodeStatusParamsSchema, BilibiliReturnTypeMap, type BilibiliUserOptions, BilibiliUserParamsSchema, type BilibiliValidateCaptchaOptions, BilibiliValidateCaptchaParamsSchema, BilibiliValidationSchemas, BilibiliVideoDownloadParamsSchema, type BilibiliVideoInfoOptions, BilibiliVideoParamsSchema, type BilibiliVideoStreamOptions, BoundBilibiliApi, type BoundBilibiliFetcher, BoundDouyinApi, type BoundDouyinFetcher, BoundKuaishouApi, type BoundKuaishouFetcher, BoundXiaohongshuApi, type BoundXiaohongshuFetcher, ColumnInfo, CommentReply, CommentType, ConditionalReturnType, CookieConfig, CreateApp, DouyinApiRoutes, DouyinCommentParamsSchema, type DouyinCommentRepliesOptions, DouyinCommentReplyParamsSchema, type DouyinCommentsOptions, type DouyinDanmakuOptions, DouyinDanmakuParamsSchema, DouyinDataOptions, DouyinDataOptionsMap, DouyinEmojiListParamsSchema, DouyinEmojiProParamsSchema, type DouyinFetcher, DouyinFetcherMethodKey, DouyinFetcherMethods, DouyinHotWordsParamsSchema, DouyinInternalMethodKey, DouyinInternalMethods, type DouyinLiveRoomOptions, DouyinLiveRoomParamsSchema, type DouyinMethodKey, DouyinMethodMapping, DouyinMethodOptMap, DouyinMethodOptionsMap, DouyinMethodRoutes, DouyinMethodToFetcher, DouyinMethodType, type DouyinMethodValue, type DouyinMusicOptions, DouyinMusicParamsSchema, type DouyinQrcodeOptions, DouyinQrcodeParamsSchema, DouyinReturnTypeMap, type DouyinSearchOptions, DouyinSearchParamsSchema, type DouyinSuggestWordsOptions, type DouyinUserListOptions, DouyinUserListParamsSchema, type DouyinUserOptions, DouyinUserParamsSchema, DouyinValidationSchemas, type DouyinWorkOptions, DouyinWorkParamsSchema, DyDanmakuList, DyEmojiList, DyEmojiProList, DyImageAlbumWork, DyMusicWork, DySearchInfo, DySlidesWork, DySuggestWords, DyUserInfo, DyUserLiveVideos, DyUserPostVideos, DyVideoWork, DyWorkComments, DynamicType, DynamicTypeAV, DynamicTypeArticle, DynamicTypeDraw, DynamicTypeForward, DynamicTypeForwardUnion, DynamicTypeLiveRcmd, DynamicTypeWord, ErrorResult, ExtractTypeMode, FetcherConfig, type FetcherCookieForRequestConfig, type FetcherRequestConfigWithCookie, type FetcherRequestConfigWithoutCookie, HomeFeed, type HttpMethod, HttpRequestEventData, HttpResponseEventData, type IBilibiliFetcher, type IBoundBilibiliFetcher, type IBoundDouyinFetcher, type IBoundKuaishouFetcher, type IBoundXiaohongshuFetcher, type IDouyinFetcher, type IKuaishouFetcher, type IXiaohongshuFetcher, type KsBannedStatus, KsEmojiList, KsLiveRoomInfo, KsOneWork, type KsUserHomeWork, KsUserProfile, type KsUserProfileCounts, type KsUserProfileGameInfo, type KsUserProfileLiveInfo, type KsUserProfileSensitiveInfo, type KsUserProfileUserInfo, KsUserWorkList, type KsVerifiedStatus, KsWorkComments, KuaishouApiRoutes, KuaishouCommentParamsSchema, type KuaishouCommentsOptions, KuaishouDataOptions, KuaishouDataOptionsMap, KuaishouEmojiParamsSchema, type KuaishouFetcher, KuaishouFetcherMethodKey, KuaishouFetcherMethods, type KuaishouGraphqlRequest, KuaishouInternalMethodKey, KuaishouInternalMethods, type KuaishouLiveApiRequest, type KuaishouLiveRoomInfoOptions, KuaishouLiveRoomInfoParamsSchema, type KuaishouMethodKey, KuaishouMethodMapping, KuaishouMethodOptMap, KuaishouMethodOptionsMap, KuaishouMethodRoutes, KuaishouMethodToFetcher, KuaishouMethodType, type KuaishouMethodValue, KuaishouReturnTypeMap, type KuaishouUserProfileOptions, KuaishouUserProfileParamsSchema, type KuaishouUserWorkListOptions, KuaishouUserWorkListParamsSchema, KuaishouValidationSchemas, KuaishouVideoParamsSchema, type KuaishouVideoWorkOptions, LogEventData, MajorType, MethodMaps, NetworkErrorEventData, NetworkRetryEventData, type NetworksConfigType, NoteComments, OmitMethodType, OneNote, Options, type Platform, RequestConfig, Result, SearchInfoGeneralData, SearchInfoUser, SearchInfoVideo, SearchNotes, SuccessResult, TypeControl, TypeMode, ValidationError, XiaohongshuApiRoutes, type XiaohongshuCommentsOptions, XiaohongshuDataOptions, XiaohongshuDataOptionsMap, XiaohongshuEmojiList, type XiaohongshuFetcher, XiaohongshuFetcherMethodKey, XiaohongshuFetcherMethods, type XiaohongshuHomeFeedOptions, XiaohongshuInternalMethodKey, XiaohongshuInternalMethods, type XiaohongshuMethodKey, XiaohongshuMethodMapping, XiaohongshuMethodOptMap, XiaohongshuMethodOptionsMap, XiaohongshuMethodRoutes, XiaohongshuMethodToFetcher, XiaohongshuMethodType, type XiaohongshuMethodValue, type XiaohongshuNoteDetailOptions, XiaohongshuReturnTypeMap, type XiaohongshuSearchNotesOptions, type XiaohongshuUserNotesOptions, XiaohongshuUserProfile, type XiaohongshuUserProfileOptions, XiaohongshuValidationSchemas, amagi, amagiClient, amagiEvents, av2bv, bilibili, bilibiliApiUrls, bilibiliErrorCodeMap, bilibiliFetcher, bilibiliUtils, bv2av, createAmagiClient, createBilibiliRoutes, createBilibiliRoutes as registerBilibiliRoutes, createBoundBilibiliApi, createBoundBilibiliFetcher, createBoundDouyinApi, createBoundDouyinFetcher, createBoundKuaishouApi, createBoundKuaishouFetcher, createBoundXiaohongshuApi, createBoundXiaohongshuFetcher, createDouyinRoutes, createDouyinRoutes as registerDouyinRoutes, createErrorResponse, createKuaishouRoutes, createKuaishouRoutes as registerKuaishouRoutes, createSuccessResponse, createXiaohongshuRoutes, createXiaohongshuRoutes as registerXiaohongshuRoutes, douyin, douyinApiUrls, douyinFetcher, douyinSign, douyinUtils, emitApiError, emitApiSuccess, emitHttpRequest, emitHttpResponse, emitLog, emitLogDebug, emitLogError, emitLogInfo, emitLogMark, emitLogWarn, emitNetworkError, emitNetworkRetry, fetchData, fetchResponse, getApiRoute, getBilibiliData, getDouyinData, getEnglishMethodName, getHeadersAndData, getKuaishouData, handleError, httpLogger, initLogger, isNetworkErrorResult, kuaishou, kuaishouApiUrls, kuaishouFetcher, kuaishouSign, kuaishouUtils, logMiddleware, logger, parseDmSegMobileReply, qtparam, toFetcherMethod, validateBilibiliParams, validateDouyinParams, validateKuaishouParams, validateXiaohongshuParams, wbi_sign, xiaohongshu, xiaohongshuApiUrls, xiaohongshuFetcher, xiaohongshuSign, xiaohongshuUtils };
+export { APIErrorType, AdditionalType, AmagiEventMap, AmagiEventType, type AnonymousFetcherRequestConfig, type ApiEndpoint, ApiError, ApiErrorEventData, ApiSuccessEventData, ArticleCard, ArticleContent, ArticleInfo, ArticleWork, BaseRequestOptions, BaseResponse, BiliAv2Bv, BiliBangumiVideoInfo, BiliBangumiVideoPlayurlIsLogin, BiliBangumiVideoPlayurlNoLogin, BiliBiliVideoPlayurlNoLogin, BiliBv2AV, BiliCheckQrcode, BiliCommentReply, BiliDynamicInfo, BiliDynamicInfoUnion, BiliEmojiList, BiliLiveRoomDef, BiliLiveRoomDetail, BiliNewLoginQrcode, BiliOneWork, BiliProtobufDanmaku, BiliUserDynamic, BiliUserFullView, BiliUserLiveStatus, BiliUserProfile, BiliVideoPlayurlIsLogin, BiliWorkComments, BilibiliApiRoutes, type BilibiliApplyCaptchaOptions, BilibiliApplyCaptchaParamsSchema, type BilibiliArticleCardOptions, BilibiliArticleCardParamsSchema, BilibiliArticleInfoParamsSchema, type BilibiliArticleOptions, BilibiliArticleParamsSchema, type BilibiliAv2BvOptions, BilibiliAv2BvParamsSchema, type BilibiliBangumiInfoOptions, BilibiliBangumiInfoParamsSchema, type BilibiliBangumiStreamOptions, BilibiliBangumiStreamParamsSchema, type BilibiliBv2AvOptions, BilibiliBv2AvParamsSchema, BilibiliColumnInfoParamsSchema, BilibiliCommentParamsSchema, type BilibiliCommentRepliesOptions, BilibiliCommentReplyParamsSchema, type BilibiliCommentsOptions, type BilibiliDanmakuOptions, BilibiliDanmakuParamsSchema, BilibiliDataOptions, BilibiliDataOptionsMap, type BilibiliDynamicOptions, BilibiliDynamicParamsSchema, BilibiliEmojiParamsSchema, type BilibiliFetcher, BilibiliFetcherMethodKey, BilibiliFetcherMethods, BilibiliInternalMethodKey, BilibiliInternalMethods, BilibiliLiveParamsSchema, type BilibiliLiveRoomOptions, BilibiliLoginParamsSchema, type BilibiliMethodKey, BilibiliMethodMapping, BilibiliMethodOptMap, BilibiliMethodOptionsMap, BilibiliMethodRoutes, BilibiliMethodToFetcher, BilibiliMethodType, type BilibiliMethodValue, BilibiliQrcodeParamsSchema, type BilibiliQrcodeStatusOptions, BilibiliQrcodeStatusParamsSchema, BilibiliReturnTypeMap, type BilibiliUserOptions, BilibiliUserParamsSchema, type BilibiliValidateCaptchaOptions, BilibiliValidateCaptchaParamsSchema, BilibiliValidationSchemas, BilibiliVideoDownloadParamsSchema, type BilibiliVideoInfoOptions, BilibiliVideoParamsSchema, type BilibiliVideoStreamOptions, type BoundBilibiliFetcher, type BoundDouyinFetcher, type BoundKuaishouFetcher, type BoundXiaohongshuFetcher, ColumnInfo, CommentReply, CommentType, ConditionalReturnType, CookieConfig, CreateApp, DouyinApiRoutes, DouyinCommentParamsSchema, type DouyinCommentRepliesOptions, DouyinCommentReplyParamsSchema, type DouyinCommentsOptions, type DouyinDanmakuOptions, DouyinDanmakuParamsSchema, DouyinDataOptions, DouyinDataOptionsMap, DouyinEmojiListParamsSchema, DouyinEmojiProParamsSchema, type DouyinFetcher, DouyinFetcherMethodKey, DouyinFetcherMethods, DouyinHotWordsParamsSchema, DouyinInternalMethodKey, DouyinInternalMethods, type DouyinLiveRoomOptions, DouyinLiveRoomParamsSchema, type DouyinMethodKey, DouyinMethodMapping, DouyinMethodOptMap, DouyinMethodOptionsMap, DouyinMethodRoutes, DouyinMethodToFetcher, DouyinMethodType, type DouyinMethodValue, type DouyinMusicOptions, DouyinMusicParamsSchema, type DouyinQrcodeOptions, DouyinQrcodeParamsSchema, DouyinReturnTypeMap, type DouyinSearchOptions, DouyinSearchParamsSchema, type DouyinSuggestWordsOptions, type DouyinUserListOptions, DouyinUserListParamsSchema, type DouyinUserOptions, DouyinUserParamsSchema, DouyinValidationSchemas, type DouyinWorkOptions, DouyinWorkParamsSchema, DyDanmakuList, DyEmojiList, DyEmojiProList, DyImageAlbumWork, DyMusicWork, DySearchInfo, DySlidesWork, DySuggestWords, DyUserInfo, DyUserLiveVideos, DyUserPostVideos, DyVideoWork, DyWorkComments, DynamicType, DynamicTypeAV, DynamicTypeArticle, DynamicTypeDraw, DynamicTypeForward, DynamicTypeForwardUnion, DynamicTypeLiveRcmd, DynamicTypeWord, ErrorResult, ExtractTypeMode, FetcherConfig, type FetcherCookieForRequestConfig, type FetcherRequestConfigWithCookie, type FetcherRequestConfigWithoutCookie, HomeFeed, type HttpMethod, HttpRequestEventData, HttpResponseEventData, type IBilibiliFetcher, type IBoundBilibiliFetcher, type IBoundDouyinFetcher, type IBoundKuaishouFetcher, type IBoundXiaohongshuFetcher, type IDouyinFetcher, type IKuaishouFetcher, type IXiaohongshuFetcher, type KsBannedStatus, KsEmojiList, KsLiveRoomInfo, KsOneWork, type KsUserHomeWork, KsUserProfile, type KsUserProfileCounts, type KsUserProfileGameInfo, type KsUserProfileLiveInfo, type KsUserProfileSensitiveInfo, type KsUserProfileUserInfo, KsUserWorkList, type KsVerifiedStatus, KsWorkComments, KuaishouApiRoutes, KuaishouCommentParamsSchema, type KuaishouCommentsOptions, KuaishouDataOptions, KuaishouDataOptionsMap, KuaishouEmojiParamsSchema, type KuaishouFetcher, KuaishouFetcherMethodKey, KuaishouFetcherMethods, type KuaishouGraphqlRequest, KuaishouInternalMethodKey, KuaishouInternalMethods, type KuaishouLiveApiRequest, type KuaishouLiveRoomInfoOptions, KuaishouLiveRoomInfoParamsSchema, type KuaishouMethodKey, KuaishouMethodMapping, KuaishouMethodOptMap, KuaishouMethodOptionsMap, KuaishouMethodRoutes, KuaishouMethodToFetcher, KuaishouMethodType, type KuaishouMethodValue, KuaishouReturnTypeMap, type KuaishouUserProfileOptions, KuaishouUserProfileParamsSchema, type KuaishouUserWorkListOptions, KuaishouUserWorkListParamsSchema, KuaishouValidationSchemas, KuaishouVideoParamsSchema, type KuaishouVideoWorkOptions, LogEventData, MajorType, MethodMaps, NetworkErrorEventData, NetworkRetryEventData, type NetworksConfigType, NoteComments, OmitMethodType, OneNote, Options, type Platform, RequestConfig, Result, SearchInfoGeneralData, SearchInfoUser, SearchInfoVideo, SearchNotes, SuccessResult, TypeControl, TypeMode, ValidationError, XiaohongshuApiRoutes, type XiaohongshuCommentsOptions, XiaohongshuDataOptions, XiaohongshuDataOptionsMap, XiaohongshuEmojiList, type XiaohongshuFetcher, XiaohongshuFetcherMethodKey, XiaohongshuFetcherMethods, type XiaohongshuHomeFeedOptions, XiaohongshuInternalMethodKey, XiaohongshuInternalMethods, type XiaohongshuMethodKey, XiaohongshuMethodMapping, XiaohongshuMethodOptMap, XiaohongshuMethodOptionsMap, XiaohongshuMethodRoutes, XiaohongshuMethodToFetcher, XiaohongshuMethodType, type XiaohongshuMethodValue, type XiaohongshuNoteDetailOptions, XiaohongshuReturnTypeMap, type XiaohongshuSearchNotesOptions, type XiaohongshuUserNotesOptions, XiaohongshuUserProfile, type XiaohongshuUserProfileOptions, XiaohongshuValidationSchemas, amagi, amagiEvents, av2bv, bilibiliApiUrls, bilibiliErrorCodeMap, bilibiliFetcher, bilibiliUtils, bv2av, createAmagiClient, createBilibiliRoutes, createBilibiliRoutes as registerBilibiliRoutes, createBoundBilibiliFetcher, createBoundDouyinFetcher, createBoundKuaishouFetcher, createBoundXiaohongshuFetcher, createDouyinRoutes, createDouyinRoutes as registerDouyinRoutes, createErrorResponse, createKuaishouRoutes, createKuaishouRoutes as registerKuaishouRoutes, createSuccessResponse, createXiaohongshuRoutes, createXiaohongshuRoutes as registerXiaohongshuRoutes, douyinApiUrls, douyinFetcher, douyinSign, douyinUtils, emitApiError, emitApiSuccess, emitHttpRequest, emitHttpResponse, emitLog, emitLogDebug, emitLogError, emitLogInfo, emitLogMark, emitLogWarn, emitNetworkError, emitNetworkRetry, fetchData, fetchResponse, getApiRoute, getEnglishMethodName, getHeadersAndData, handleError, isNetworkErrorResult, kuaishouApiUrls, kuaishouFetcher, kuaishouSign, kuaishouUtils, parseDmSegMobileReply, qtparam, toFetcherMethod, validateBilibiliParams, validateDouyinParams, validateKuaishouParams, validateXiaohongshuParams, wbi_sign, xiaohongshuApiUrls, xiaohongshuFetcher, xiaohongshuSign, xiaohongshuUtils };
