@@ -1,10 +1,10 @@
 import fs from 'node:fs'
 
 import type { DySearchInfo } from '@ikenxuan/amagi'
+import type { DouyinUserListData } from '@template/douyin/userlist/components/types'
 import { format } from 'date-fns'
 import type { AdapterType, ImageElement, Message } from 'node-karin'
 import karin, { common, logger, segment } from 'node-karin'
-import { DouyinUserListProps } from 'template/types/platforms/douyin'
 
 import {
   applyWatermarkToImages,
@@ -1076,7 +1076,7 @@ export class DouYinpush extends Base {
       return
     }
 
-    const renderOpt: DouyinUserListProps['data']['renderOpt'] = []
+    const renderOpt: DouyinUserListData['renderOpt'] = []
 
     for (const subscription of subscriptions) {
       const sec_uid = subscription.sec_uid

@@ -1,5 +1,5 @@
+import type { ApiErrorData } from '@template/other/handlerError/components/types'
 import type { Message } from 'node-karin'
-import type { ApiErrorProps } from 'template/types/platforms/other/handlerError'
 
 import type { getBuildMetadata } from '@/module'
 
@@ -16,7 +16,7 @@ export interface ErrorHandlerOptions {
    * @param error - 捕获的错误对象
    * @param logs - 结构化日志数组
    */
-  customErrorHandler?: (error: Error, logs: ApiErrorProps['data']['logs']) => Promise<void>
+  customErrorHandler?: (error: Error, logs: ApiErrorData['logs']) => Promise<void>
 }
 
 /**
@@ -34,7 +34,7 @@ export interface ErrorContext {
   /**
    * 结构化日志数组
    */
-  logs: ApiErrorProps['data']['logs']
+  logs: ApiErrorData['logs']
   /**
    * 消息事件对象
    */
@@ -46,7 +46,7 @@ export interface ErrorContext {
   /**
    * 适配器信息（可选）
    */
-  adapterInfo?: ApiErrorProps['data']['adapterInfo']
+  adapterInfo?: ApiErrorData['adapterInfo']
 }
 
 /**
@@ -94,7 +94,7 @@ export interface RenderErrorOptions {
   /**
    * 平台标识
    */
-  platform?: ApiErrorProps['data']['platform']
+  platform?: ApiErrorData['platform']
   /**
    * 自定义错误名称
    */

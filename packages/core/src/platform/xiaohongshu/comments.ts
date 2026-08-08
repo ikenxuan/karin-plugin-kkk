@@ -9,7 +9,7 @@ import {
   type RichTextEmojiDefinition,
   type RichTextNode
 } from '@kkk/richtext'
-import type { XiaohongshuCommentItem, XiaohongshuSubComment } from 'template/types/platforms/xiaohongshu/comment'
+import type { XiaohongshuCommentItem, XiaohongshuSubComment } from '@template/xiaohongshu/comment/components/types'
 
 import { Config } from '@/module/utils/Config'
 

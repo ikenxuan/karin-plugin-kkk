@@ -1,4 +1,4 @@
-if git diff --cached --name-only | grep -qE '^packages/(template|amagi|richtext|web)/'; then
+if git diff --cached --name-only | grep -qE '^packages/(core|amagi|richtext|web)/'; then
   echo "🧩 检测到子包改动，更新 timestamp..."
   node --import tsx .husky/husky-tasks.ts
   git add packages/core/package.json
