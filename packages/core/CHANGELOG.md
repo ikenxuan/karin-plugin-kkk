@@ -2,6 +2,18 @@
 
 # Changelog
 
+## [2.42.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.42.0...v2.42.1) (2026-08-08)
+
+
+### 🐛 错误修复
+
+* **core:** 更新时间戳至 2026-08-04 ([e9b50f7](https://github.com/ikenxuan/karin-plugin-kkk/commit/e9b50f76ba1f8a4977f5ada604551742e82f379b))
+
+
+### ♻️ 代码重构
+
+* **core:** 更新 tsdown 配置，使用对象形式定义入口文件 ([b00ee12](https://github.com/ikenxuan/karin-plugin-kkk/commit/b00ee12fb525c20a4cc56e5ed82851f8ffffdeb9))
+
 ## [2.42.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.41.2...v2.42.0) (2026-08-02)
 
 
