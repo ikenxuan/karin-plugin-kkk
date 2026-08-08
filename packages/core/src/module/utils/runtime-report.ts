@@ -2,15 +2,14 @@ import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
 
+import type { RuntimeReportData } from '@template/other/runtime/components/types'
 import { isDocker, logs, type Message } from 'node-karin'
-import type { RuntimeReportProps } from 'template/types/platforms/other/runtime'
 
 import { Root } from '../../root'
 import { formatBuildTime, getBuildMetadata } from './build-metadata'
 import { Config } from './Config'
 import { formatBytes } from './Network/helpers'
 
-type RuntimeReportData = Omit<RuntimeReportProps['data'], 'useDarkTheme'>
 type PluginPackageMetadata = typeof Root.pkg & {
   karin?: {
     engines?: string

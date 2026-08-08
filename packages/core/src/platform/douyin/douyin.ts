@@ -1,10 +1,10 @@
 import fs from 'node:fs'
 
 import { type DyEmojiList, DyVideoWork } from '@ikenxuan/amagi'
+import type { DouyinUserVideoListData } from '@template/douyin/user_profile/components/types'
 import { format } from 'date-fns'
 import karin, { type Elements, Message, SendMessage } from 'node-karin'
 import { common, logger, mkdirSync, segment } from 'node-karin'
-import { DouyinUserVideoListProps } from 'template/types/platforms/douyin/UserVideoList'
 
 import {
   Base,
@@ -771,7 +771,7 @@ export class DouYin extends Base {
         const user = userProfileData.data.user
 
         // 转换视频列表数据
-        const videos: DouyinUserVideoListProps['data']['videos'] = rawData.data.aweme_list.map((aweme, index) => {
+        const videos: DouyinUserVideoListData['videos'] = rawData.data.aweme_list.map((aweme, index) => {
           const isVideo = aweme.aweme_type === 0 || aweme.media_type === 0
 
           return {

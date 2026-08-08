@@ -14,11 +14,11 @@ import {
   DynamicTypeDraw,
   Result
 } from '@ikenxuan/amagi'
+import type { BilibiliForwardOriginalContentProps } from '@template/bilibili/dynamic/types'
+import { DecorationCardData } from '@template/bilibili/dynamic/types'
 import { format, formatDistanceToNow, fromUnixTime } from 'date-fns'
 import { zhCN } from 'date-fns/locale'
 import karin, { common, ElementTypes, logger, Message, segment, SendMessage } from 'node-karin'
-import type { BilibiliForwardOriginalContentProps } from 'template/types/platforms/bilibili/dynamic/forward'
-import { DecorationCardData } from 'template/types/platforms/bilibili/dynamic/normal'
 
 import {
   Base,

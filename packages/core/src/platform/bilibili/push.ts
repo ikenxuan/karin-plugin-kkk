@@ -10,10 +10,10 @@ import {
   MajorType,
   Result
 } from '@ikenxuan/amagi'
+import type { BilibiliForwardOriginalContentProps } from '@template/bilibili/dynamic/types'
+import type { BilibiliUserListData } from '@template/bilibili/userlist/components/types'
 import type { AdapterType, ImageElement, Message, SendMsgResults } from 'node-karin'
 import karin, { common, logger, segment } from 'node-karin'
-import { BilibiliUserListProps } from 'template/types/platforms/bilibili'
-import type { BilibiliForwardOriginalContentProps } from 'template/types/platforms/bilibili/dynamic/forward'
 
 import {
   applyWatermarkToImages,
@@ -1478,7 +1478,7 @@ export class Bilibilipush extends Base {
     }
 
     /** 用户的今日动态列表 */
-    const renderOpt: BilibiliUserListProps['data']['renderOpt'] = []
+    const renderOpt: BilibiliUserListData['renderOpt'] = []
 
     // 获取所有订阅UP主的信息
     for (const subscription of subscriptions) {

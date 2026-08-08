@@ -20,7 +20,7 @@
     "sort": "pnpm -r sort",
     "postinstall": "pnpm --filter @ikenxuan/amagi run build",
     "web": "pnpm --filter web run dev",
-    "template": "pnpm --filter template run dev",
+    "template": "pnpm --filter karin-plugin-kkk run template",
     "watch": "pnpm --filter karin-plugin-kkk run watch"
   },
   "dependencies": {

@@ -1,14 +1,15 @@
+import fs from 'node:fs'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { inflateSync } from 'node:zlib'
 
+import type { PluginContext, RenderPlugin } from '@karinjs/template-react'
+import type { BilibiliPosterPalette } from '@template/bilibili/dynamic/types'
+import type { PosterContext } from '@template/types/ctx'
 import { logger } from 'node-karin'
 import axios from 'node-karin/axios'
-import type { Plugin } from 'template'
-import type { BilibiliPosterPalette } from 'template/types/platforms/bilibili/dynamic/live'
 
 import { Config } from '@/module/utils/Config'
-
-type BeforeRenderContext = Parameters<NonNullable<Plugin['beforeRender']>>[0]
-type ApplyRequest = Parameters<NonNullable<Plugin['apply']>>[0]
 
 type RGB = {
   r: number
@@ -360,30 +361,24 @@ const decideCoverTheme = (buffer: Buffer): CoverThemeDecision | null => {
   }
 }
 
-const isBilibiliPosterPaletteRequest = (request: ApplyRequest): boolean => {
-  return request.templateType === 'bilibili' && request.templateName === 'dynamic/DYNAMIC_TYPE_LIVE_RCMD'
+const isBilibiliPosterPaletteRequest = (path: string): boolean => {
+  return path === 'bilibili/dynamic/DYNAMIC_TYPE_LIVE_RCMD'
 }
 
-const isCoverThemeRequest = (request: ApplyRequest): boolean => {
-  if (request.templateType === 'bilibili') {
-    return request.templateName === 'videoInfo'
-  }
-
-  return request.templateType === 'douyin' && (request.templateName === 'video-work' || request.templateName === 'image-work')
+const isCoverThemeRequest = (path: string): boolean => {
+  return path === 'bilibili/videoInfo' || path === 'douyin/video-work' || path === 'douyin/image-work'
 }
 
-const getCoverUrl = (request: ApplyRequest): string => {
-  const data = request.data || {}
-
-  if (request.templateType === 'bilibili' && request.templateName === 'videoInfo') {
+const getCoverUrl = (path: string, data: Record<string, any>): string => {
+  if (path === 'bilibili/videoInfo') {
     return typeof data.pic === 'string' ? data.pic : ''
   }
 
-  if (request.templateName === 'video-work') {
+  if (path === 'douyin/video-work') {
     return typeof data.image_url === 'string' ? data.image_url : ''
   }
 
-  if (request.templateName === 'image-work') {
+  if (path === 'douyin/image-work') {
     const imageList = (data as { image_list?: { images?: Array<{ url?: unknown }> } }).image_list
     const cover = imageList?.images?.find((image) => typeof image.url === 'string' && image.url.length > 0)
     return typeof cover?.url === 'string' ? cover.url : ''
@@ -392,8 +387,9 @@ const getCoverUrl = (request: ApplyRequest): string => {
   return ''
 }
 
-const applyCoverTheme = async (ctx: BeforeRenderContext): Promise<void> => {
-  const imageUrl = getCoverUrl(ctx.request)
+const applyCoverTheme = async (pluginCtx: PluginContext): Promise<void> => {
+  const data = (pluginCtx.data ?? {}) as Record<string, any>
+  const imageUrl = getCoverUrl(pluginCtx.path, data)
   if (!imageUrl) return
 
   const sample = await resolvePosterImageSample(imageUrl)
@@ -402,54 +398,112 @@ const applyCoverTheme = async (ctx: BeforeRenderContext): Promise<void> => {
   const decision = decideCoverTheme(sample.buffer)
   if (!decision) return
 
-  const data = ctx.request.data || {}
-  ctx.request.useDarkTheme = decision.useDarkTheme
   data.useDarkTheme = decision.useDarkTheme
+  // 同步 ktr 外壳的 body dark 类名；只下发 mode，不注入任何颜色变量
+  const ctx = pluginCtx.ctx as PosterContext
+  ctx.theme = { ...ctx.theme, mode: decision.useDarkTheme ? 'dark' : 'light' }
 
   logger.debug(
-    `[Render] 封面智能主题: ${ctx.request.templateType}/${ctx.request.templateName} -> ${decision.useDarkTheme ? '深色' : '浅色'} ` +
+    `[Render] 封面智能主题: ${pluginCtx.path} -> ${decision.useDarkTheme ? '深色' : '浅色'} ` +
       `(luma=${decision.averageLuma.toFixed(2)}, dark=${decision.darkRatio.toFixed(2)}, bright=${decision.brightRatio.toFixed(2)}, vivid=${decision.vividRatio.toFixed(2)})`
   )
 }
 
-export const createPosterPalettePlugin = (): Plugin => {
+export const createPosterPalettePlugin = (): RenderPlugin => {
   return {
     name: '封面动态取色与智能主题',
     enforce: 'pre',
-    apply(request: ApplyRequest) {
-      return isBilibiliPosterPaletteRequest(request) || (Config.app.Theme === 3 && isCoverThemeRequest(request))
+    apply(path: string) {
+      return isBilibiliPosterPaletteRequest(path) || (Config.app.Theme === 3 && isCoverThemeRequest(path))
     },
-    async beforeRender(ctx: BeforeRenderContext) {
-      if (Config.app.Theme === 3 && isCoverThemeRequest(ctx.request)) {
-        await applyCoverTheme(ctx)
+    async beforeRender(pluginCtx) {
+      if (Config.app.Theme === 3 && isCoverThemeRequest(pluginCtx.path)) {
+        await applyCoverTheme(pluginCtx)
       }
 
-      if (!isBilibiliPosterPaletteRequest(ctx.request)) {
+      if (!isBilibiliPosterPaletteRequest(pluginCtx.path)) {
         return
       }
 
-      const data = ctx.request.data || {}
+      const data = (pluginCtx.data ?? {}) as Record<string, any>
       const imageUrl = typeof data.image_url === 'string' ? data.image_url : ''
 
       if (!imageUrl) {
         return
       }
 
-      const useDarkTheme = Boolean(ctx.request.useDarkTheme ?? data.useDarkTheme)
+      const useDarkTheme = Boolean(data.useDarkTheme)
       const sample = await resolvePosterImageSample(imageUrl)
       if (!sample) return
 
       const lightPalette = createPosterPalette(sample.paletteSeed, false)
       const darkPalette = createPosterPalette(sample.paletteSeed, true)
 
-      ctx.state.props = {
-        ...ctx.state.props,
-        posterPalettes: {
-          light: lightPalette,
-          dark: darkPalette
-        },
-        posterPalette: useDarkTheme ? darkPalette : lightPalette
+      // ktr 渲染器在插件之后 createElement，挂到 ctx 上由 defineKkkTemplate 适配器传给组件
+      const ctx = pluginCtx.ctx as PosterContext
+      ctx.posterPalettes = {
+        light: lightPalette,
+        dark: darkPalette
       }
+      ctx.posterPalette = useDarkTheme ? darkPalette : lightPalette
+    }
+  }
+}
+
+/**
+ * 向上定位 karin-plugin-kkk 包根目录。
+ * @returns 包根目录绝对路径，找不到返回 null。
+ */
+const findPluginRoot = (): string | null => {
+  let dir = path.dirname(fileURLToPath(import.meta.url))
+  for (let i = 0; i < 10; i++) {
+    const pkgPath = path.join(dir, 'package.json')
+    if (fs.existsSync(pkgPath)) {
+      try {
+        if (JSON.parse(fs.readFileSync(pkgPath, 'utf-8')).name === 'karin-plugin-kkk') {
+          return dir
+        }
+      } catch {
+        // package.json 解析失败时继续向上找
+      }
+    }
+    const parent = path.dirname(dir)
+    if (parent === dir) break
+    dir = parent
+  }
+  return null
+}
+
+/**
+ * 解析模板静态图片目录：优先 core/resources/image（构建复制产物），开发态回退 template/public/image。
+ * @returns 图片目录绝对路径。
+ */
+const resolveImageDir = (): string => {
+  const root = findPluginRoot()
+  const candidates = root ? [path.join(root, 'resources', 'image'), path.join(root, '..', 'template', 'public', 'image')] : []
+  for (const dir of candidates) {
+    if (fs.existsSync(dir)) {
+      return dir
+    }
+  }
+  return candidates[0] ?? path.join(process.cwd(), 'resources', 'image')
+}
+
+/**
+ * 把组件里的 /image/ 静态图片引用改写为 HTML 文件到图片目录的相对路径，
+ * 与旧引擎 HtmlWrapper 的改写规则保持一致。
+ */
+export const createImagePathPlugin = (): RenderPlugin => {
+  return {
+    name: '静态图片路径改写',
+    afterRender({ html, outputDir }) {
+      const imageDir = resolveImageDir()
+      const imageRelativePath = path.relative(outputDir, imageDir).replace(/\\/g, '/')
+
+      return html
+        .replace(/src="\/image\//g, `src="${imageRelativePath}/`)
+        .replace(/src='\/image\//g, `src='${imageRelativePath}/`)
+        .replace(/src="image\//g, `src="${imageRelativePath}/`)
     }
   }
 }

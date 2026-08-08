@@ -1,5 +1,5 @@
+import type { ApiErrorData } from '@template/other/handlerError/components/types'
 import { logger, type Message } from 'node-karin'
-import type { ApiErrorProps } from 'template/types/platforms/other/handlerError'
 
 import { getBuildMetadata } from '@/module'
 import { EmojiReactionManager } from '@/module/utils/EmojiReaction'
@@ -13,7 +13,7 @@ import { injectBotToEventForPushTask, isPushTask, parseLogsToStructured } from '
 export const handleBusinessError = async (
   error: Error,
   options: ErrorHandlerOptions,
-  logs: ApiErrorProps['data']['logs'],
+  logs: ApiErrorData['logs'],
   event: Message
 ): Promise<'handled' | undefined> => {
   try {

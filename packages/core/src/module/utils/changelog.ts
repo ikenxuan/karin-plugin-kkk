@@ -1,8 +1,8 @@
 import fs from 'node:fs'
 
+import type { ChangelogData } from '@template/other/changelog/components/types'
 import { Message, parseChangelog, range } from 'node-karin'
 import axios from 'node-karin/axios'
-import { ChangelogProps } from 'template/types/platforms/other/changelog'
 
 import { baseHeaders, Render, Root } from '@/module'
 
@@ -79,10 +79,7 @@ const getRemoteBuildMetadata = async (version: string) => {
  * @param props.isRemote - 是否强制获取远程变更日志
  * @returns 变更日志图片元素数组（base64）
  */
-export const getChangelogImage = async (
-  ctx: Message,
-  props: Omit<ChangelogProps['data'], 'markdown' | 'useDarkTheme'> & { isRemote?: boolean }
-) => {
+export const getChangelogImage = async (ctx: Message, props: Omit<ChangelogData, 'markdown' | 'useDarkTheme'> & { isRemote?: boolean }) => {
   let changelog = ''
   let buildTime: string | undefined
   let lagVersionCount = 0

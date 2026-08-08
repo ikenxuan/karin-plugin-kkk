@@ -34,7 +34,7 @@ const copyDirectory = (sourceDir: string, targetDir: string) => {
 
 /**
  * 复制 template 静态资源和 native bindings 的 Vite 插件
- * @description 在构建时将 template 包的静态资源复制到 core 包的 resources 目录，同时把 watermark 的 bindings 复制到 lib/core_chunk
+ * @description 在构建时将 template 目录的静态资源复制到 core 包的 resources 目录，同时把 watermark 的 bindings 复制到 lib/core_chunk
  * @param rootDir 项目根目录路径
  * @returns Vite 插件对象
  */
@@ -43,7 +43,7 @@ export const copyTemplateAssetsPlugin = (rootDir: string): Plugin => {
     name: 'copy-template-assets',
     writeBundle() {
       // 1. 复制 template 包的静态资源
-      const SourceDir = resolve(rootDir, '../template/public')
+      const SourceDir = resolve(rootDir, 'template/public')
       const TargetDir = resolve(rootDir, 'resources')
 
       console.log('🔍 开始复制 template 静态资源...')
