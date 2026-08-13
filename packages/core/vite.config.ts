@@ -3,10 +3,11 @@ import { builtinModules } from 'node:module'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+import { ktrBuildPlugin } from '@karinjs/template-react/plugin'
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 
-import { copyTemplateAssetsPlugin, generateBuildMetadataPlugin, getKarinVersion } from './vite.plugin'
+import { generateBuildMetadataPlugin, getKarinVersion } from './vite.plugin'
 import { injectStartTimerPlugin } from './vite.plugin/inject-start-timer'
 
 // 在ES模块中模拟__dirname
@@ -140,10 +141,10 @@ export default defineConfig({
       { find: 'axios', replacement: 'node-karin/axios' },
       { find: '@', replacement: resolve(__dirname, './src') },
       { find: '@kkk/richtext', replacement: resolve(__dirname, '../richtext/src/index.ts') },
-      { find: '@template', replacement: resolve(__dirname, './template') },
+      { find: '@template', replacement: resolve(__dirname, './ktr') },
       { find: '@ikenxuan/amagi', replacement: resolve(__dirname, '../amagi/packages/core/src/index.ts') },
       { find: 'amagi', replacement: resolve(__dirname, '../amagi/packages/core/src') }
     ]
   },
-  plugins: [react(), injectStartTimerPlugin(), generateBuildMetadataPlugin(__dirname), copyTemplateAssetsPlugin(__dirname)]
+  plugins: [react(), injectStartTimerPlugin(), generateBuildMetadataPlugin(__dirname), ktrBuildPlugin()]
 })

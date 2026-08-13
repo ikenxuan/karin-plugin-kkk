@@ -58,7 +58,7 @@
     "registry": "https://registry.npmjs.org"
   },
   "scripts": {
-    "build": "ktr sync && cross-env NODE_ENV=production vite build && ktr build --outDir lib && tsdown",
+    "build": "cross-env NODE_ENV=production vite build && tsdown",
     "build:check": "ktr sync && tsc --noEmit && pnpm build",
     "dev": "ktr sync && cross-env EBV_FILE=\"development.env\" node --import tsx src/app.ts --trace-deprecation",
     "template": "ktr sync && ktr dev",
@@ -85,7 +85,7 @@
     "@karinjs/plugin-basic": "1.4.13",
     "@karinjs/plugin-ffmpeg": "^0.1.3",
     "@karinjs/plugin-puppeteer": "^2.3.1",
-    "@karinjs/template-react": "link:D:/GitHub/template-react/packages/core",
+    "@karinjs/template-react": "https://pkg.pr.new/KarinJS/template-react/@karinjs/template-react@0dfafb1",
     "@kkk/richtext": "workspace:*",
     "@phosphor-icons/react": "^2.1.10",
     "@thesvg/icons": "^3.0.18",
@@ -144,5 +144,5 @@
     "web": "./lib/web.config.js",
     "ts-web": "./src/web.config.ts"
   },
-  "timestamp": "2026-08-13T15:54:23.458Z"
+  "timestamp": "2026-08-13T16:18:41.471Z"
 }

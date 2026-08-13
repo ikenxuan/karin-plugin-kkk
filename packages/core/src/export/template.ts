@@ -1,2 +1,2 @@
-export { renderVideoPreviewPage } from '@template/_preview/render'
-export type { VideoPreviewRenderOptions } from '@template/_preview/render'
+export { renderVideoPreviewPage } from '@template/template/_preview/render'
+export type { VideoPreviewRenderOptions } from '@template/template/_preview/render'

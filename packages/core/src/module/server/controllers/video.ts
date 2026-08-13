@@ -4,7 +4,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import { renderVideoPreviewPage } from '@template/_preview/render'
+import { renderVideoPreviewPage } from '@template/template/_preview/render'
 import { createNotFoundResponse, logger } from 'node-karin'
 import type { RequestHandler } from 'node-karin/express'
 
