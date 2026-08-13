@@ -42,8 +42,8 @@ export const copyTemplateAssetsPlugin = (rootDir: string): Plugin => {
   return {
     name: 'copy-template-assets',
     writeBundle() {
-      // 1. 复制 template 包的静态资源
-      const SourceDir = resolve(rootDir, 'template/public')
+      // 1. 复制模板静态资源（新约定在 ktr/public）
+      const SourceDir = resolve(rootDir, 'ktr/public')
       const TargetDir = resolve(rootDir, 'resources')
 
       console.log('🔍 开始复制 template 静态资源...')

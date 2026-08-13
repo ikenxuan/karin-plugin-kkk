@@ -24,9 +24,9 @@ const fontProxyPlugin = () => {
 }
 
 export default defineConfig({
-  // 模板源码就在 core 包内的 template/ 目录（ktr 默认约定），无需 templateDir 覆盖；
-  // 静态资源由 core vite 构建的 copyTemplateAssetsPlugin 复制到 resources/，ktr 无需再复制
-  assetsDir: '.ktr-no-assets',
+  dir: {
+    assets: 'resources'
+  },
   dev: {
     port: 5174,
     host: 'localhost',
@@ -34,8 +34,6 @@ export default defineConfig({
   },
   vite: ({ command }) => ({
     plugins: command === 'serve' ? [fontProxyPlugin()] : [],
-    // 开发面板里模板引用的 /image/... 静态资源来自 template/public（生产由 afterRender 插件改写为 resources 相对路径）
-    ...(command === 'serve' ? { publicDir: path.resolve(__dirname, 'template/public') } : {}),
     resolve: {
       alias: [{ find: '@kkk/richtext', replacement: path.resolve(__dirname, '../richtext/src/index.ts') }]
     },

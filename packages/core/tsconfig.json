@@ -36,8 +36,8 @@
   },
   "include": [
     "src/**/*.ts",
-    "template/**/*.ts",
-    "template/**/*.tsx",
+    "ktr/**/*.ts",
+    "ktr/**/*.tsx",
     "vite.plugin/**/*.ts",
     "vite.config.ts",
     "karin.template.ts",
