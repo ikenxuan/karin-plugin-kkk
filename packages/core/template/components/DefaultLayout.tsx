@@ -47,6 +47,10 @@ export const DefaultLayout: React.FC<DefaultLayoutProps> = ({ children, data, ct
         // 截图边界由 ktr 外壳的 #container 提供；用 zoom 而非 transform 缩放，
         // 让布局盒随缩放变化，截图范围与旧引擎（transform 在 #container 上）保持一致。
         zoom: scale,
+        // 旧引擎的 transform 会顺带创建层叠上下文，标准化后的 zoom 不会（任何取值都不会）。
+        // 少了它，模板里 -z-10 的氛围层会逃逸到 <html> 层叠上下文，被本元素不透明的
+        // bg-background 整个盖住（表现为封面模糊层变成纯白/纯黑）。显式 isolate 补回该语义。
+        isolation: 'isolate',
         width: '1440px',
         minWidth: '1440px',
         maxWidth: '1440px',

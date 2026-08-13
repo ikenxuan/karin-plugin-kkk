@@ -79,11 +79,11 @@ const InfoSection: React.FC<PosterProps<DouyinDynamicData>> = (props) => {
         </div>
       </div>
       <div className="flex items-center gap-2 text-[45px] text-muted font-light select-text">
-        <Clock className="w-11 h-11 text-time" />
+        <Clock className="w-11 h-11 text-muted" />
         <span>发布于: {props.data.create_time}</span>
       </div>
       <div className="flex items-center gap-2 text-[45px] text-muted font-light select-text">
-        <Maximize className="w-11 h-11 text-time text-time" />
+        <Maximize className="w-11 h-11 text-muted" />
         <span>图片生成于: {format(new Date(), 'yyyy-MM-dd HH:mm:ss')}</span>
       </div>
     </div>

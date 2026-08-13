@@ -68,7 +68,7 @@ const MusicInfoSection: React.FC<MusicInfoProps & { desc: string }> = ({ desc, m
         </div>
       </div>
       <div className="flex items-center gap-2 text-[45px] text-muted font-light select-text">
-        <Maximize className="w-11 h-11 text-time" />
+        <Maximize className="w-11 h-11 text-muted" />
         <span>图片生成于: {createTime}</span>
       </div>
     </div>
