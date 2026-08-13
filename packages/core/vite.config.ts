@@ -45,7 +45,7 @@ const karinVersion = getKarinVersion(__dirname)
 const mainSrcPrefixes = [
   resolve(__dirname, 'src'),
   resolve(__dirname, '.ktr'),
-  resolve(__dirname, 'template'),
+  resolve(__dirname, 'ktr'),
   resolve(__dirname, '../amagi/packages/core/src'),
   resolve(__dirname, '../richtext/src')
 ].map((p) => p.replace(/\\/g, '/'))
@@ -135,6 +135,9 @@ export default defineConfig({
   },
   resolve: {
     conditions: ['node'],
+    // link: 本地 ktr 时它 node_modules 里的 react 会被当成独立副本打进产物，
+    // SSR 时组件读到的 React dispatcher 是 null（Cannot read 'useContext' of null），强制去重到本包。
+    dedupe: ['react', 'react-dom'],
     alias: [
       { find: 'express', replacement: 'node-karin/express' },
       { find: 'ws', replacement: 'node-karin/ws' },

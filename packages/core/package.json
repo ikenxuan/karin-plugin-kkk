@@ -66,7 +66,7 @@
     "pub": "npm publish --access public",
     "sort": "sort-package-json",
     "sync": "curl -X PUT \"https://registry-direct.npmmirror.com/-/package/karin-plugin-kkk/syncs\"",
-    "watch": "ktr sync && cross-env EBV_FILE=\"development.env\" tsx watch --include \"src/**/*.ts\" --include \"template/**/*.ts\" --include \"template/**/*.tsx\" src/app.ts --trace-deprecation"
+    "watch": "ktr sync && cross-env EBV_FILE=\"development.env\" tsx watch --include \"src/**/*.ts\" --include \"ktr/**/*.ts\" --include \"ktr/**/*.tsx\" src/app.ts --trace-deprecation"
   },
   "dependencies": {
     "@ikenxuan/qrcode": "1.5.0",
@@ -144,5 +144,5 @@
     "web": "./lib/web.config.js",
     "ts-web": "./src/web.config.ts"
   },
-  "timestamp": "2026-08-13T16:18:41.471Z"
+  "timestamp": "2026-08-13T17:29:24.859Z"
 }

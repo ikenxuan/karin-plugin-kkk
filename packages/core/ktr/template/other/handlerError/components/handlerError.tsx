@@ -247,7 +247,6 @@ export const handlerError: React.FC<PosterProps<ApiErrorData>> = (props) => {
   const isBusinessError = data.type === 'business_error'
   const businessError = isBusinessError ? (data.error as BusinessError) : null
   const displayMethod = businessError?.businessName || data.method
-  const errorTitle = React.useMemo(() => getRandomErrorTitle(), [])
 
   // 631 配色 - 红/珊瑚色系
   const bgColor = isDark ? '#0f0a0a' : '#faf5f5'
@@ -454,7 +453,7 @@ export const handlerError: React.FC<PosterProps<ApiErrorData>> = (props) => {
         {/* 主标题 */}
         <div className="mb-20">
           <h1 className="text-[120px] font-black leading-none tracking-tight mb-10" style={{ color: accentColor }}>
-            {errorTitle}
+            {getRandomErrorTitle()}
           </h1>
           <p className="text-5xl font-semibold" style={{ color: primaryColor }}>
             {displayMethod}

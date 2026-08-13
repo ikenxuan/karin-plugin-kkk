@@ -1,13 +1,12 @@
 import { renderRichTextToReact } from '@kkk/richtext'
 import { differenceInSeconds, format, formatDistanceToNow, fromUnixTime } from 'date-fns'
 import { zhCN } from 'date-fns/locale'
-import React, { type ReactNode, useEffect, useMemo, useState } from 'react'
+import React, { type ReactNode, useEffect, useState } from 'react'
 
 import { DefaultLayout } from '../../../components/DefaultLayout'
 import type { PosterProps } from '../../../types/ctx'
 import { cn } from '../../../../utils/cn'
 import { generateQRCode } from '../../../../utils/QRcode'
-import { resolveUseDarkTheme } from '../../../../utils/theme'
 import { ThumbUpIcon } from '../../components/Icons'
 import type { FansDetail, QRCodeSectionProps } from '../../components/types'
 import type { BilibiliCommentData } from './types'
@@ -628,48 +627,18 @@ const CommentItemComponent: React.FC<BilibiliCommentData['CommentsData'][number]
 }
 
 export const BilibiliComment: React.FC<PosterProps<BilibiliCommentData>> = React.memo((props) => {
-  const processedData = useMemo(() => {
-    if (!props.data) {
-      return {
-        useDarkTheme: false,
-        Type: '视频' as const,
-        CommentLength: '0',
-        VideoSize: undefined,
-        Clarity: undefined,
-        ImageLength: undefined,
-        Resolution: null,
-        shareurl: '',
-        share_url: '',
-        CommentsData: []
-      }
-    }
-
-    return {
-      useDarkTheme: resolveUseDarkTheme(props.data, props.ctx),
-      Type: props.data.Type || '视频',
-      CommentLength: props.data.CommentLength || '0',
-      VideoSize: props.data.VideoSize,
-      Clarity: props.data.Clarity,
-      ImageLength: props.data.ImageLength,
-      Resolution: props.data.Resolution,
-      shareurl: props.data.shareurl || '',
-      share_url: props.data.share_url || '',
-      CommentsData: props.data.CommentsData || []
-    }
-  }, [props.data, props.ctx])
-
   return (
     <DefaultLayout {...props}>
       <div className="p-5">
         <div className="h-20"></div>
         {/* 视频信息头部 */}
-        <VideoInfoHeader {...processedData} />
+        <VideoInfoHeader {...props.data} />
 
         {/* 评论列表 */}
         <div className="overflow-hidden mt-8">
-          {processedData.CommentsData.length > 0 ? (
-            processedData.CommentsData.map((comment, index) => (
-              <CommentItemComponent key={index} isLast={index === processedData.CommentsData.length - 1} {...comment} />
+          {props.data.CommentsData.length > 0 ? (
+            props.data.CommentsData.map((comment, index) => (
+              <CommentItemComponent key={index} isLast={index === props.data.CommentsData.length - 1} {...comment} />
             ))
           ) : (
             <div className="flex justify-center items-center py-20 text-muted">

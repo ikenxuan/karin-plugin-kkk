@@ -212,15 +212,16 @@ type RealGlowTextProps = {
 }
 
 export const RealGlowText: React.FC<RealGlowTextProps> = ({ children, className, levels = 4, baseBlur = 6, spread = 6 }) => {
-  const textShadow = React.useMemo(() => {
-    return Array.from({ length: levels }, (_, i) => {
-      const blur = baseBlur + i * spread
-      return `0 0 ${blur}px currentColor`
-    }).join(', ')
-  }, [levels, baseBlur, spread])
-
   return (
-    <span className={className} style={{ textShadow }}>
+    <span
+      className={className}
+      style={{
+        textShadow: Array.from({ length: levels }, (_, i) => {
+          const blur = baseBlur + i * spread
+          return `0 0 ${blur}px currentColor`
+        }).join(', ')
+      }}
+    >
       {children}
     </span>
   )
@@ -259,21 +260,17 @@ export const GlowIcon: React.FC<GlowIconProps> = ({
   glowLayers = 3,
   glowSpread = 4
 }) => {
-  const dropShadow = React.useMemo(() => {
-    return Array.from({ length: glowLayers }, (_, i) => {
-      const radius = glowRadius + i * glowSpread
-      const opacity = Math.min(glowStrength * (1 - i * 0.2), 1)
-      const shadowColor = glowColor ? glowColor.replace(/rgb\(([^)]+)\)/, `rgba($1, ${opacity})`) : `rgba(255, 255, 255, ${opacity})`
-      return `drop-shadow(0 0 ${radius}px ${shadowColor})`
-    }).join(' ')
-  }, [glowColor, glowStrength, glowRadius, glowLayers, glowSpread])
-
   return (
     <div className={className} style={{ display: 'inline-block' }}>
       <Icon
         {...iconProps}
         style={{
-          filter: dropShadow,
+          filter: Array.from({ length: glowLayers }, (_, i) => {
+            const radius = glowRadius + i * glowSpread
+            const opacity = Math.min(glowStrength * (1 - i * 0.2), 1)
+            const shadowColor = glowColor ? glowColor.replace(/rgb\(([^)]+)\)/, `rgba($1, ${opacity})`) : `rgba(255, 255, 255, ${opacity})`
+            return `drop-shadow(0 0 ${radius}px ${shadowColor})`
+          }).join(' '),
           ...iconProps.style
         }}
       />

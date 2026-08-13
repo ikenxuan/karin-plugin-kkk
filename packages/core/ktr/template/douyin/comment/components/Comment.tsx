@@ -16,7 +16,9 @@ import type { DouyinCommentData } from './types'
 const douyinMentionClassName = 'text-[#04498d] dark:text-[#face15]'
 const douyinSearchKeywordClassName = 'font-medium text-[#04498d] dark:text-[#face15]'
 const douyinSearchKeywordIconClassName = 'opacity-90'
-const emptyDouyinRichText = createRichTextDocument([], { platform: 'douyin' })
+// 注意不能提升到模块顶层调用：打包后注册表与共享 chunk 存在循环引用，
+// 模块求值期调用会在「未初始化」的绑定上炸出 is not a function，必须惰性创建。
+const createEmptyDouyinRichText = () => createRichTextDocument([], { platform: 'douyin' })
 
 const renderDouyinCommentRichText = (content: DouyinSubComment['text'] | DouyinCommentData['CommentsData'][number]['text']): ReactNode => {
   return renderRichTextToReact(content, {
@@ -228,7 +230,7 @@ const organizeReplies = (replies: DouyinSubComment[], rootCid: string, maxDepth:
         return [
           {
             cid: `more-${Date.now()}-${Math.random()}`,
-            text: emptyDouyinRichText,
+            text: createEmptyDouyinRichText(),
             digg_count: 0,
             create_time: 0,
             nickname: '',
@@ -540,13 +542,13 @@ const CommentItemComponent: React.FC<DouyinCommentData['CommentsData'][number] &
  */
 export const DouyinComment: React.FC<PosterProps<DouyinCommentData>> = React.memo((props) => {
   // 随机选择一个搜索词
-  const randomSuggestWord = React.useMemo(() => {
+  const randomSuggestWord = () => {
     if (props.data.suggestWrod && props.data.suggestWrod.length > 0) {
       const randomIndex = Math.floor(Math.random() * props.data.suggestWrod.length)
       return props.data.suggestWrod[randomIndex]
     }
     return null
-  }, [props.data.suggestWrod])
+  }
 
   return (
     <DefaultLayout {...props}>
@@ -556,12 +558,12 @@ export const DouyinComment: React.FC<PosterProps<DouyinCommentData>> = React.mem
         <VideoInfoHeader {...props.data} />
 
         {/* 推荐搜索词 */}
-        {randomSuggestWord && (
+        {randomSuggestWord() && (
           <div className="mx-auto my-20 mb-5 ml-10">
             <div className="flex gap-3 items-center px-6 py-4 rounded-2xl">
               <span className="text-5xl text-muted">大家都在搜：</span>
               <span className="relative text-5xl text-[#04498d] dark:text-[#face15]">
-                {randomSuggestWord}
+                {randomSuggestWord()}
                 <Search size={32} className="absolute -top-2 -right-8" />
               </span>
             </div>

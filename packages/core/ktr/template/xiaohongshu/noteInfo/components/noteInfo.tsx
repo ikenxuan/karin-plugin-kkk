@@ -1,7 +1,7 @@
 import { Button, Chip } from '@heroui/react'
 import { renderRichTextToReact } from '@kkk/richtext'
 import { Calendar, ExternalLink, Heart, MapPin, MessageCircle, Share2, Star } from 'lucide-react'
-import React, { useMemo } from 'react'
+import React from 'react'
 
 import { DefaultLayout } from '../../../components/DefaultLayout'
 import type { PosterProps } from '../../../types/ctx'
@@ -65,12 +65,8 @@ StatItem.displayName = 'StatItem'
  * @returns JSX元素
  */
 export const XiaohongshuNoteInfo: React.FC<PosterProps<XiaohongshuNoteInfoData>> = React.memo((props) => {
-  /** 格式化的发布日期 */
-  const formattedDate = useMemo(() => formatDate(props.data.time), [props.data.time])
-
   /** 统计数据配置 - 小红书特色配色 */
-  const statsData = useMemo(
-    () => [
+  const statsData = [
       {
         icon: <Heart size={48} />,
         value: props.data.statistics.liked_count,
@@ -95,9 +91,7 @@ export const XiaohongshuNoteInfo: React.FC<PosterProps<XiaohongshuNoteInfoData>>
         label: '分享',
         iconColor: 'text-green-500'
       }
-    ],
-    [props.data.statistics]
-  )
+    ]
 
   return (
     <DefaultLayout {...props}>
@@ -125,7 +119,7 @@ export const XiaohongshuNoteInfo: React.FC<PosterProps<XiaohongshuNoteInfoData>>
             <div className="flex gap-8 items-center text-5xl text-muted">
               <div className="flex gap-2 items-center">
                 <Calendar size={32} />
-                <span>{formattedDate}</span>
+                <span>{formatDate(props.data.time)}</span>
               </div>
               {props.data.ip_location && (
                 <div className="flex gap-2 items-center">
