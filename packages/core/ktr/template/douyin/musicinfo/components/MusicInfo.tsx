@@ -63,7 +63,7 @@ const MusicInfoSection: React.FC<MusicInfoProps & { desc: string }> = ({ desc, m
           <span>音乐ID: {musicId}</span>
         </div>
         <div className="flex gap-2 items-center select-text">
-          <Users className="w-11 h-11 text-follow" />
+          <Users className="w-11 h-11" />
           <span>{userCount} 人使用过</span>
         </div>
       </div>
@@ -110,7 +110,7 @@ const MusicAuthorInfoSection: React.FC<MusicAuthorInfoProps> = ({
           <span>关注: {followingCount}</span>
         </div>
         <div className="flex gap-2 items-center">
-          <Users className="w-8 h-8 text-follow" />
+          <Users className="w-8 h-" />
           <span>粉丝: {fans}</span>
         </div>
       </div>

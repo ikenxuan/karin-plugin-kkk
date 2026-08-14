@@ -37,8 +37,10 @@ export const DefaultLayout: React.FC<DefaultLayoutProps> = ({ children, data, ct
   return (
     <div
       className={cn(
-        // 圆角与裁剪从旧引擎外壳（#container 规则）迁移到模板根元素：观感不变，单个模板可用 className 覆盖
-        'w-360 shrink-0 overflow-hidden rounded-[5rem] bg-background bg-clip-padding text-foreground font-[HarmonyOSHans-Regular]',
+        // 圆角与裁剪从旧引擎外壳（#container 规则）迁移到模板根元素：观感不变，单个模板可用 className 覆盖。
+        // relative 同样从旧引擎外壳（transform 语义）迁来：根元素是绝对定位包含块，
+        // 模板里 inset-0 的氛围层锚定在卡片矩形上并被圆角裁剪，而不是锚到视口逃逸出去。
+        'relative w-360 shrink-0 overflow-hidden rounded-[5rem] bg-background bg-clip-padding text-foreground font-[HarmonyOSHans-Regular]',
         useDarkTheme ? 'dark' : 'light',
         className
       )}

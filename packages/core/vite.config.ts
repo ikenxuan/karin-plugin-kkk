@@ -76,8 +76,6 @@ export default defineConfig({
         ...[/^node-karin/],
         // @karinjs/template-react 必须打进产物（与模板组件共用同一份 React），其余 @karinjs 包保持外部
         ...[/^@karinjs\/(?!template-react)/],
-        // jiti 按相对路径读自己包里的文件，打进包里必崩（ktr 文档明确要求外部化）
-        'jiti',
         'fingerprint-injector',
         '@snapka/puppeteer',
         '@ikenxuan/watermark',

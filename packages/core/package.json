@@ -71,8 +71,7 @@
   "dependencies": {
     "@ikenxuan/qrcode": "1.5.0",
     "@ikenxuan/watermark": "1.3.0",
-    "fingerprint-injector": "^2.1.86",
-    "jiti": "^2.7.0"
+    "fingerprint-injector": "^2.1.86"
   },
   "devDependencies": {
     "@heroui/react": "3.2.2",
@@ -85,7 +84,7 @@
     "@karinjs/plugin-basic": "1.4.13",
     "@karinjs/plugin-ffmpeg": "^0.1.3",
     "@karinjs/plugin-puppeteer": "^2.3.1",
-    "@karinjs/template-react": "https://pkg.pr.new/KarinJS/template-react/@karinjs/template-react@0dfafb1",
+    "@karinjs/template-react": "https://pkg.pr.new/KarinJS/template-react/@karinjs/template-react@6011010",
     "@kkk/richtext": "workspace:*",
     "@phosphor-icons/react": "^2.1.10",
     "@thesvg/icons": "^3.0.18",
@@ -144,5 +143,5 @@
     "web": "./lib/web.config.js",
     "ts-web": "./src/web.config.ts"
   },
-  "timestamp": "2026-08-13T17:29:24.859Z"
+  "timestamp": "2026-08-14T03:28:50.789Z"
 }
