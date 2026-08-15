@@ -25,7 +25,8 @@ const fontProxyPlugin = () => {
 
 export default defineConfig({
   dir: {
-    assets: 'resources'
+    assets: 'resources',
+    copyAssets: false
   },
   dev: {
     port: 5174,

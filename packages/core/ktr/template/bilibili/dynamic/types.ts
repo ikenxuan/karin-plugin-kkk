@@ -350,21 +350,6 @@ export interface BilibiliForwardContentProps {
   original_content: BilibiliForwardOriginalContentProps['original_content']
 }
 
-export interface BilibiliPosterPalette {
-  bgColor: string
-  primaryColor: string
-  secondaryColor: string
-  mutedColor: string
-  accentColor: string
-  deepColor: string
-  coverShade: string
-}
-
-export interface BilibiliPosterPalettes {
-  light: BilibiliPosterPalette
-  dark: BilibiliPosterPalette
-}
-
 /**
  * B站直播动态内容组件属性接口
  */

@@ -1,10 +1,8 @@
 import type { RenderContext } from '@karinjs/template-react'
 
-import type { BilibiliPosterPalette } from '../bilibili/dynamic/types'
-
 /**
  * kkk 注入模板的运行时上下文。
- * ktr 的 mergeContext 会把调用方传入的字段原样透传，插件（封面取色等）也在 beforeRender 里写这里。
+ * ktr 的 mergeContext 会把调用方传入的字段原样透传。
  */
 export interface PosterContext extends RenderContext {
   /** 版本信息（页脚展示，RemoveWatermark 时不传） */
@@ -26,13 +24,6 @@ export interface PosterContext extends RenderContext {
   }
   /** 水印比特大小（Restore ID） */
   watermarkTextBitSize?: number
-  /** B站直播海报取色（当前主题） */
-  posterPalette?: BilibiliPosterPalette
-  /** B站直播海报取色（明暗双套） */
-  posterPalettes?: {
-    light: BilibiliPosterPalette
-    dark: BilibiliPosterPalette
-  }
 }
 
 /** kkk 模板组件 props：ktr 标准 { data, ctx } 形状，ctx 带 kkk 扩展字段。 */

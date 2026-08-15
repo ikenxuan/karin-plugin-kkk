@@ -4,7 +4,6 @@ import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 import { ktrBuildPlugin } from '@karinjs/template-react/plugin'
-import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 
 import { generateBuildMetadataPlugin, getKarinVersion } from './vite.plugin'
@@ -25,8 +24,7 @@ const entry: string[] = [
   'src/export/richtext.ts',
   'src/export/amagi.ts',
   // ktr 约定注册表是固定入口（先跑 ktr sync 生成），生产环境按 lib/template-registry.js 发现
-  '.ktr/template-registry.ts',
-  '.ktr/mock-registry.ts'
+  '.ktr/template-registry.ts'
 ]
 
 const getFiles = (dir: string) => {
@@ -147,5 +145,5 @@ export default defineConfig({
       { find: 'amagi', replacement: resolve(__dirname, '../amagi/packages/core/src') }
     ]
   },
-  plugins: [react(), injectStartTimerPlugin(), generateBuildMetadataPlugin(__dirname), ktrBuildPlugin()]
+  plugins: [injectStartTimerPlugin(), generateBuildMetadataPlugin(__dirname), ktrBuildPlugin()]
 })

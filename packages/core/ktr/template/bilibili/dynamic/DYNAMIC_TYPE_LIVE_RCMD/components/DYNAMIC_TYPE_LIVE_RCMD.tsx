@@ -1,70 +1,106 @@
 import { extractRichTextPlainText, renderRichTextToReact } from '@kkk/richtext'
 import { Clock, Radio, UsersRound } from 'lucide-react'
 import React from 'react'
-
+// import { cn } from '../../../../../utils/cn'
+import { resolveUseDarkTheme } from '../../../../../utils/theme'
 import { DefaultLayout } from '../../../../components/DefaultLayout'
 import { QRCodeWithAvatar } from '../../../../components/QRCodeWithAvatar'
 import type { PosterProps } from '../../../../types/ctx'
-import { resolveUseDarkTheme } from '../../../../../utils/theme'
 import { EnhancedImage, UsernameDisplay } from '../../../components/shared'
-import type { BilibiliPosterPalette } from '../../types'
 import type { BilibiliLiveDynamicData } from './types'
 
-const LIGHT_FALLBACK: BilibiliPosterPalette = {
-  bgColor: '#f4fbff',
-  primaryColor: '#00a1d6',
-  secondaryColor: '#2dcaef',
-  mutedColor: 'rgba(0,104,138,0.70)',
-  accentColor: '#ff5f7f',
-  deepColor: '#0f2d3a',
-  coverShade: 'rgba(8, 28, 36, 0.34)'
+/** B站品牌粉，直播状态徽章 / 脉冲灯 / 均衡器强调条统一使用，与封面取色无关。 */
+const LIVE_PINK = '#FB7299'
+
+/** 压在封面上的白色文字统一使用重投影，保证在任意封面亮度下可读（与弹幕层同策略）。 */
+const onCoverTextShadow: React.CSSProperties = {
+  textShadow: '0 4px 14px rgba(0,0,0,0.78), 0 0 4px rgba(0,0,0,0.9)'
 }
 
-const DARK_FALLBACK: BilibiliPosterPalette = {
-  bgColor: '#081018',
-  primaryColor: '#63d5ff',
-  secondaryColor: '#9ae6ff',
-  mutedColor: 'rgba(154,230,255,0.72)',
-  accentColor: '#ff8ea7',
-  deepColor: '#d9f6ff',
-  coverShade: 'rgba(0, 0, 0, 0.42)'
+/**
+ * 封面底部溶解遮罩：多段停靠点模拟 smoothstep，
+ * 让封面下缘无明显线性拐点地融入下方的氛围背景层。
+ */
+const coverMaskStyle: React.CSSProperties = {
+  maskImage:
+    'linear-gradient(to bottom, black 52%, rgba(0,0,0,0.9) 60%, rgba(0,0,0,0.68) 70%, rgba(0,0,0,0.35) 82%, rgba(0,0,0,0.1) 93%, transparent 100%)',
+  WebkitMaskImage:
+    'linear-gradient(to bottom, black 52%, rgba(0,0,0,0.9) 60%, rgba(0,0,0,0.68) 70%, rgba(0,0,0,0.35) 82%, rgba(0,0,0,0.1) 93%, transparent 100%)'
 }
+
+/**
+ * 全局氛围背景层：模糊封面 + 渐变遮罩 + 高对比杂色纹理。
+ * 背景色完全取自封面图本身，不再依赖后端取色。
+ */
+const LiveAmbientBackground: React.FC<{ cover: string }> = React.memo(({ cover }) => (
+  <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden select-none">
+    {/* 模糊封面背景 */}
+    <img
+      src={cover}
+      alt=""
+      className="h-full w-full scale-150 object-cover opacity-50 blur-[120px] saturate-[1.8]"
+      referrerPolicy="no-referrer"
+      crossOrigin="anonymous"
+    />
+    {/* 渐变遮罩，压住文字区对比 */}
+    <div className="absolute inset-0 bg-linear-to-b from-surface/60 via-surface/25 to-surface/60 dark:from-black/55 dark:via-black/20 dark:to-black/55" />
+
+    {/* 高对比杂色纹理层 */}
+    <div className="absolute inset-0 opacity-[0.45] mix-blend-overlay dark:mix-blend-soft-light">
+      <svg className="h-full w-full" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <filter id="liveRcmdNoise">
+            <feTurbulence type="fractalNoise" baseFrequency="1.4" numOctaves="3" stitchTiles="stitch" />
+            <feColorMatrix type="saturate" values="0" />
+            <feComponentTransfer>
+              <feFuncR type="discrete" tableValues="0 1" />
+              <feFuncG type="discrete" tableValues="0 1" />
+              <feFuncB type="discrete" tableValues="0 1" />
+            </feComponentTransfer>
+            <feComponentTransfer>
+              <feFuncA type="linear" slope="2.5" intercept="-0.6" />
+            </feComponentTransfer>
+          </filter>
+          <mask id="liveRcmdNoiseMask">
+            <linearGradient id="liveRcmdNoiseGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="white" stopOpacity="0.85" />
+              <stop offset="25%" stopColor="white" stopOpacity="0.4" />
+              <stop offset="50%" stopColor="white" stopOpacity="0.08" />
+              <stop offset="75%" stopColor="white" stopOpacity="0.4" />
+              <stop offset="100%" stopColor="white" stopOpacity="0.85" />
+            </linearGradient>
+            <rect width="100%" height="100%" fill="url(#liveRcmdNoiseGradient)" />
+          </mask>
+        </defs>
+        <rect width="100%" height="100%" filter="url(#liveRcmdNoise)" mask="url(#liveRcmdNoiseMask)" fill="white" />
+      </svg>
+    </div>
+  </div>
+))
+
+LiveAmbientBackground.displayName = 'LiveAmbientBackground'
+
+/** 直播音频均衡器装饰条：直播模板的专属信号装饰。 */
+const LiveEqualizer: React.FC = React.memo(() => (
+  <div className="flex items-end gap-2.5 pb-4">
+    {[46, 88, 62, 98, 52].map((height, index) => (
+      <span
+        key={index}
+        className="w-2.5 rounded-full"
+        style={{
+          height: `${height}px`,
+          backgroundColor: index === 3 ? LIVE_PINK : 'rgba(255,255,255,0.88)',
+          boxShadow: '0 3px 12px rgba(0,0,0,0.55)'
+        }}
+      />
+    ))}
+  </div>
+))
+
+LiveEqualizer.displayName = 'LiveEqualizer'
 
 const stripHtmlTags = (content: string): string => {
   return content.replace(/<[^>]+>/g, '').trim()
-}
-
-const withAlphaFromCss = (color: string, alpha: number): string => {
-  const normalized = color.trim()
-
-  if (normalized.startsWith('#')) {
-    const hex = normalized.slice(1)
-    const fullHex =
-      hex.length === 3
-        ? hex
-            .split('')
-            .map((char) => `${char}${char}`)
-            .join('')
-        : hex
-
-    if (fullHex.length >= 6) {
-      const r = Number.parseInt(fullHex.slice(0, 2), 16)
-      const g = Number.parseInt(fullHex.slice(2, 4), 16)
-      const b = Number.parseInt(fullHex.slice(4, 6), 16)
-      return `rgba(${r}, ${g}, ${b}, ${alpha})`
-    }
-  }
-
-  const match = normalized.match(/rgba?\(([^)]+)\)/)
-  if (!match) return color
-
-  const [r, g, b] = match[1]
-    .split(',')
-    .slice(0, 3)
-    .map((part) => Number.parseFloat(part.trim()))
-
-  if ([r, g, b].some(Number.isNaN)) return color
-  return `rgba(${r}, ${g}, ${b}, ${alpha})`
 }
 
 const getSingleLineFontSize = (content: string, base: number, min: number): number => {
@@ -79,386 +115,150 @@ const getSingleLineFontSize = (content: string, base: number, min: number): numb
 export const BilibiliLiveDynamic: React.FC<PosterProps<BilibiliLiveDynamicData>> = React.memo((props) => {
   const { data, ctx } = props
   const isDark = resolveUseDarkTheme(data, ctx) === true
-  const palette = ctx.posterPalettes
-    ? isDark
-      ? ctx.posterPalettes.dark
-      : ctx.posterPalettes.light
-    : (ctx.posterPalette ?? (isDark ? DARK_FALLBACK : LIGHT_FALLBACK))
-  const { bgColor, primaryColor, secondaryColor, mutedColor, accentColor, deepColor, coverShade } = palette
+
+  // 面板允许数据文件缺字段，关键引用全部兜底，避免白屏
+  const usernameMeta = data.usernameMeta ?? { name: '', vipStatus: 0, nicknameColor: null }
+  const liveinf = data.liveinf ?? ''
+  const fans = data.fans ?? ''
+  const liveTitleLength = data.text ? extractRichTextPlainText(data.text).length : 0
 
   const logo = isDark ? '/image/bilibili/bilibili-light.png' : '/image/bilibili/bilibili.png'
-  const liveSignalTime = data.now_time || data.create_time
-  const streamerName = data.usernameMeta.name
+  const streamerName = usernameMeta.name
   const streamerFontSize = getSingleLineFontSize(streamerName, 68, 42)
-  const liveInfoFontSize = getSingleLineFontSize(data.liveinf, 38, 28)
-  const followerFontSize = getSingleLineFontSize(`${data.fans} 粉丝`, 30, 24)
-  const metaValueFontSize = getSingleLineFontSize(liveSignalTime, 32, 24)
-  const coverInfoFontSize = getSingleLineFontSize(data.liveinf, 38, 24)
-  const broadcastFontSize = getSingleLineFontSize(`${streamerName} 开播了`, 42, 28)
-  const liveTitleLength = extractRichTextPlainText(data.text).length
+  const liveInfoFontSize = getSingleLineFontSize(liveinf, 36, 26)
+  const followerFontSize = getSingleLineFontSize(`${fans} 粉丝`, 30, 24)
   const liveTitleFontSize = liveTitleLength <= 16 ? 74 : liveTitleLength <= 28 ? 66 : liveTitleLength <= 44 ? 58 : 52
 
   return (
-    <DefaultLayout {...props} className="relative overflow-hidden" style={{ backgroundColor: bgColor, minHeight: '1860px' }}>
-      <div className="absolute inset-0 pointer-events-none">
-        <div
-          className="absolute rounded-full w-7xl h-260 -top-40 -left-34 blur-[130px]"
-          style={{
-            background: `radial-gradient(ellipse at 35% 45%, ${withAlphaFromCss(primaryColor, 0.2)} 0%, ${withAlphaFromCss(secondaryColor, 0.1)} 48%, transparent 100%)`
-          }}
-        />
-        <div
-          className="absolute rounded-full w-250 h-280 top-72 -right-16 blur-[118px] rotate-12"
-          style={{
-            background: `radial-gradient(ellipse at 50% 50%, ${withAlphaFromCss(secondaryColor, 0.18)} 0%, ${withAlphaFromCss(primaryColor, 0.08)} 52%, transparent 100%)`
-          }}
-        />
-        <div
-          className="absolute rounded-full w-260 h-180 -bottom-16 left-28 blur-[136px] -rotate-12"
-          style={{
-            background: `radial-gradient(ellipse at 50% 55%, ${withAlphaFromCss(accentColor, 0.16)} 0%, ${withAlphaFromCss(primaryColor, 0.08)} 50%, transparent 100%)`
-          }}
-        />
-      </div>
+    <DefaultLayout {...props} className="relative overflow-hidden">
+      {/* 全局氛围层：模糊封面 + 高对比杂色 */}
+      {data.image_url && <LiveAmbientBackground cover={data.image_url} />}
 
-      <div className="absolute inset-0 pointer-events-none" style={{ opacity: isDark ? 0.09 : 0.11 }}>
-        <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-          <filter id="livePosterNoise" x="0%" y="0%" width="100%" height="100%">
-            <feTurbulence type="fractalNoise" baseFrequency="0.82" numOctaves="1" stitchTiles="stitch" result="noise" />
-            <feColorMatrix type="saturate" values="0" result="gray" />
-            <feComponentTransfer>
-              <feFuncR type="discrete" tableValues="0 1" />
-              <feFuncG type="discrete" tableValues="0 1" />
-              <feFuncB type="discrete" tableValues="0 1" />
-            </feComponentTransfer>
-          </filter>
-          <rect width="100%" height="100%" filter="url(#livePosterNoise)" />
-        </svg>
-      </div>
-
-      <div className="absolute top-30 right-14 pointer-events-none select-none opacity-[0.035]">
-        <div className="text-[220px] font-black tracking-tighter leading-none" style={{ color: deepColor }}>
-          ON
-        </div>
-        <div className="-mt-6 text-[220px] font-black tracking-tighter leading-none" style={{ color: deepColor }}>
-          AIR
-        </div>
-      </div>
-
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {/* <div className='absolute top-20 right-18 grid grid-cols-4 gap-3 opacity-40'>
-          <div className='h-3 w-3 rounded-full' style={{ backgroundColor: accentColor }} />
-          <div className='h-3 w-3 rounded-full' style={{ backgroundColor: primaryColor }} />
-          <div className='h-3 w-3 rounded-full' style={{ backgroundColor: secondaryColor }} />
-          <div className='h-3 w-3 rounded-full' style={{ backgroundColor: primaryColor }} />
-        </div> */}
-
-        <div
-          className="absolute right-0 bottom-0 h-120 w-150 opacity-[0.08]"
-          style={{
-            backgroundImage: `repeating-linear-gradient(-36deg, ${primaryColor}, ${primaryColor} 3px, transparent 3px, transparent 18px)`,
-            maskImage: 'linear-gradient(to top left, black, transparent 72%)',
-            WebkitMaskImage: 'linear-gradient(to top left, black, transparent 72%)'
-          }}
-        />
-
-        <div
-          className="absolute w-175 h-100"
-          style={{
-            left: '56px',
-            bottom: '18px',
-            transform: 'scale(0.82)',
-            transformOrigin: 'left bottom'
-          }}
-        >
-          <div
-            className="absolute -left-22 bottom-0 h-48 w-52 rounded-full blur-[54px]"
-            style={{
-              background: `radial-gradient(circle, ${withAlphaFromCss(accentColor, isDark ? 0.2 : 0.12)} 0%, transparent 70%)`
-            }}
-          />
-          <div
-            className="absolute left-18 bottom-10 h-36 w-44 rounded-full blur-[46px]"
-            style={{
-              background: `radial-gradient(circle, ${withAlphaFromCss(primaryColor, isDark ? 0.11 : 0.06)} 0%, transparent 72%)`
-            }}
-          />
-          <div
-            className="absolute left-34 top-6 h-28 w-36 rounded-full blur-2xl"
-            style={{
-              background: `radial-gradient(circle, ${withAlphaFromCss(secondaryColor, isDark ? 0.08 : 0.05)} 0%, transparent 72%)`
-            }}
-          />
-
-          <div className="absolute left-14 bottom-14 flex items-end gap-3" style={{ opacity: isDark ? 0.88 : 0.72 }}>
-            {[42, 86, 132, 72, 30].map((height, index) => (
-              <span
-                key={height}
-                className="w-2.5 rounded-full"
-                style={{
-                  height: `${height}px`,
-                  background: `linear-gradient(to top, ${index === 2 ? accentColor : primaryColor}, ${withAlphaFromCss(index % 2 === 0 ? secondaryColor : primaryColor, 0.08)})`,
-                  boxShadow: `0 0 22px ${withAlphaFromCss(index === 2 ? accentColor : primaryColor, isDark ? 0.2 : 0.1)}`
-                }}
-              />
-            ))}
-          </div>
-
-          <div className="absolute left-44 top-30 grid grid-cols-4 gap-3 opacity-52">
-            {Array.from({ length: 12 }).map((_, index) => (
-              <span
-                key={index}
-                className="h-2.5 w-2.5 rounded-full"
-                style={{
-                  backgroundColor: index === 2 || index === 5 || index === 9 ? accentColor : index % 2 === 0 ? secondaryColor : primaryColor
-                }}
-              />
-            ))}
-          </div>
-
-          <svg className="absolute inset-0 h-full w-full" viewBox="0 0 700 400" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path
-              d="M22 338C92 304 126 242 188 224C278 198 340 242 420 220C488 202 560 140 640 88"
-              stroke={withAlphaFromCss(accentColor, isDark ? 0.32 : 0.16)}
-              strokeWidth="2"
-              strokeLinecap="round"
-            />
-            <path
-              d="M0 314C68 282 120 272 176 246C254 210 300 168 354 164C432 158 500 216 614 190"
-              stroke={withAlphaFromCss(primaryColor, isDark ? 0.18 : 0.09)}
-              strokeWidth="1"
-              strokeDasharray="8 14"
-              strokeLinecap="round"
-            />
-            <circle cx="188" cy="224" r="7" fill={accentColor} fillOpacity="0.62" />
-            <circle cx="420" cy="220" r="5" fill={secondaryColor} fillOpacity="0.48" />
-            <circle cx="640" cy="88" r="4" fill={primaryColor} fillOpacity="0.42" />
-          </svg>
-        </div>
-      </div>
-
-      <div className="relative z-10 flex h-full flex-col px-16 pt-14 pb-12">
-        <div className="mb-10 flex items-start justify-between gap-10">
-          <div className="flex flex-col gap-5">
-            <div
-              className="inline-flex items-center gap-4 text-[22px] font-black tracking-[0.28em] uppercase"
-              style={{ color: mutedColor }}
-            >
-              <span className="h-3 w-3 shrink-0 rounded-full" style={{ backgroundColor: accentColor }} />
-              <span>Bilibili Live Signal</span>
+      <div className="relative z-10 flex flex-col">
+        {/* 封面：占满模板全宽，底部溶解进氛围层 */}
+        {data.image_url && (
+          <section className="relative">
+            <div className="overflow-hidden" style={coverMaskStyle}>
+              <EnhancedImage src={data.image_url} alt="直播封面" className="block h-auto w-full object-cover" />
             </div>
+
+            {/* 底部直播状态：压在封面溶解区上，靠重投影保持可读 */}
+            <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-10 px-16 pb-4" style={onCoverTextShadow}>
+              <div className="min-w-0">
+                <div className="inline-flex items-center gap-3 text-[20px] font-black tracking-[0.26em] uppercase text-white/85">
+                  <span className="h-3 w-3 animate-pulse rounded-full" style={{ backgroundColor: LIVE_PINK }} />
+                  <span>Now Live</span>
+                </div>
+                <div className="mt-2 flex items-end gap-7">
+                  <span className="text-[92px] leading-none font-black tracking-[-0.03em] whitespace-nowrap text-white select-text">
+                    正在开播
+                  </span>
+                  <LiveEqualizer />
+                </div>
+                <div className="mt-5 inline-flex max-w-full items-center gap-3 font-bold text-white/92">
+                  <Radio size={26} className="shrink-0" />
+                  <span className="min-w-0 select-text" style={{ fontSize: `${liveInfoFontSize}px` }}>
+                    {liveinf}
+                  </span>
+                </div>
+              </div>
+              <div className="shrink-0 pb-2 text-right font-mono text-white/85">
+                <div className="inline-flex items-center gap-3 text-[26px] font-bold whitespace-nowrap select-text">
+                  <Clock size={24} />
+                  <span>{data.create_time}</span>
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* 内容区：压在氛围层之上 */}
+        <section className="relative flex flex-col px-16 pt-14">
+          {/* 背景气氛字 */}
+          <div className="pointer-events-none absolute top-24 right-0 z-0 opacity-[0.05] select-none">
+            <div className="text-[190px] leading-[0.88] font-black tracking-tighter text-foreground">ON</div>
+            <div className="text-[190px] leading-[0.88] font-black tracking-tighter text-foreground">AIR</div>
           </div>
 
-          <div className="flex flex-col items-end gap-5 text-right">
-            <div
-              className="inline-flex items-center gap-3 text-[20px] font-black tracking-[0.24em] uppercase"
-              style={{ color: accentColor }}
-            >
-              <span className="h-3.5 w-3.5 rounded-full animate-pulse" style={{ backgroundColor: accentColor }} />
-              <span>Live</span>
-            </div>
-            <div className="text-[22px] font-semibold tracking-[0.18em] uppercase" style={{ color: mutedColor }}>
-              {data.dynamicTYPE}
-            </div>
-          </div>
-        </div>
+          {/* 直播标题：主视觉文本 */}
+          <h1
+            className="relative z-10 leading-[1.18] font-black tracking-[-0.02em] whitespace-pre-wrap text-foreground select-text"
+            style={{ fontSize: `${liveTitleFontSize}px`, wordBreak: 'break-word', overflowWrap: 'break-word' }}
+          >
+            {data.text &&
+              renderRichTextToReact(data.text, {
+                at: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+                topic: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+                lottery: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+                webLink: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+                vote: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+                viewPicture: { className: 'text-[#006A9E] dark:text-[#58B0D5]' }
+              })}
+          </h1>
 
-        <div className="mb-12">
-          <div className="grid grid-cols-12 gap-8 items-center">
-            <div className="col-span-7 flex min-w-0 items-center gap-6">
+          {/* 主播身份行 */}
+          <div className="relative z-10 mt-14 flex items-center justify-between gap-10">
+            <div className="flex min-w-0 items-center gap-7">
               <div className="relative shrink-0">
-                <div
-                  className="absolute -inset-6 rounded-full blur-[42px]"
-                  style={{
-                    background: `radial-gradient(circle, ${withAlphaFromCss(accentColor, isDark ? 0.26 : 0.18)} 0%, transparent 72%)`
-                  }}
-                />
                 <EnhancedImage src={data.avatar_url} alt="头像" className="h-36 w-36 rounded-full object-cover" isCircular />
                 {data.frame && <EnhancedImage src={data.frame} alt="头像框" className="absolute inset-0 scale-160" />}
               </div>
-
-              <div className="min-w-0 flex-1">
-                <div className="text-[18px] font-black tracking-[0.28em] uppercase" style={{ color: mutedColor }}>
-                  Up On Air
-                </div>
+              <div className="min-w-0">
+                <div className="text-[20px] font-black tracking-[0.28em] uppercase text-muted">Live Streamer</div>
                 <div
-                  className="mt-4 min-w-0 whitespace-nowrap font-black tracking-[-0.04em] leading-none text-foreground select-text"
-                  style={{ fontSize: `${streamerFontSize}px`, color: deepColor }}
+                  className="mt-3 truncate leading-none font-black tracking-[-0.03em] text-foreground select-text"
+                  style={{ fontSize: `${streamerFontSize}px` }}
                 >
-                  <UsernameDisplay metadata={data.usernameMeta} />
+                  <UsernameDisplay metadata={usernameMeta} />
                 </div>
-                <div className="mt-5 inline-flex items-center gap-3 font-black" style={{ color: deepColor }}>
-                  <UsersRound size={22} />
+                <div className="mt-4 inline-flex items-center gap-3 font-bold text-foreground/70">
+                  <UsersRound size={26} />
                   <span className="select-text" style={{ fontSize: `${followerFontSize}px` }}>
-                    {data.fans} 粉丝
+                    {fans} 粉丝
                   </span>
                 </div>
               </div>
             </div>
 
-            <div className="col-span-5 self-start pt-8 text-right">
-              <div
-                className="inline-flex items-center gap-3 text-[20px] font-black tracking-[0.24em] uppercase"
-                style={{ color: accentColor }}
-              >
-                <span className="h-3.5 w-3.5 rounded-full animate-pulse" style={{ backgroundColor: accentColor }} />
-                <span>Live Now</span>
-              </div>
-              <div className="text-[86px] font-black tracking-[-0.06em] leading-[0.92]" style={{ color: deepColor }}>
-                正在开播
-              </div>
+            <div className="shrink-0 text-right">
+              <div className="text-[20px] font-black tracking-[0.26em] uppercase text-muted">Signal Time</div>
+              <div className="mt-3 font-mono text-[30px] font-bold text-foreground/75 select-text">{data.now_time}</div>
             </div>
           </div>
 
-          <div
-            className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4 font-black tracking-tight"
-            style={{ color: deepColor, fontSize: `${metaValueFontSize}px` }}
-          >
-            <div className="inline-flex min-w-0 items-center gap-3">
-              <Radio size={20} />
-              <span className="min-w-0 whitespace-normal leading-[1.18] select-text" style={{ fontSize: `${liveInfoFontSize}px` }}>
-                {data.liveinf}
-              </span>
-            </div>
-            <span style={{ color: withAlphaFromCss(deepColor, 0.26) }}>/</span>
-            <div className="inline-flex items-center gap-3 whitespace-nowrap font-mono">
-              <Clock size={20} />
-              <span className="select-text">{liveSignalTime}</span>
-            </div>
-          </div>
-        </div>
-
-        {data.image_url && (
-          <div className="relative mb-18 overflow-hidden rounded-[36px]">
-            <div className="overflow-hidden rounded-[36px]">
-              <EnhancedImage src={data.image_url} alt="直播封面" className="h-full w-full object-cover" />
-            </div>
-
-            <div
-              className="absolute inset-0 rounded-[36px]"
-              style={{
-                backgroundImage: `linear-gradient(to top, ${coverShade}, rgba(0,0,0,0.10), transparent 46%)`
-              }}
-            />
-
-            <div className="absolute left-8 top-8">
-              <div className="inline-flex items-center gap-3 text-white drop-shadow-[0_10px_24px_rgba(0,0,0,0.24)]">
-                <span className="h-3.5 w-3.5 rounded-full animate-pulse bg-white" />
-                <span className="text-[20px] font-black tracking-[0.22em] uppercase">Live Now</span>
+          {/* 底部：品牌 + 行动区 */}
+          <footer className="relative z-10 mt-16 flex items-end justify-between gap-14 pb-16">
+            <div className="min-w-0">
+              <img src={logo} alt="哔哩哔哩" className={`h-auto ${isDark ? 'w-72' : 'w-108'}`} />
+              <div className="mt-5 text-[26px] font-bold text-muted select-text">你感兴趣的直播都在哔哩哔哩</div>
+              <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-[22px] font-semibold text-foreground/50">
+                <span className="select-text">{data.dynamicTYPE}</span>
+                <span className="opacity-40">/</span>
+                <span className="font-mono select-text">{data.now_time}</span>
               </div>
             </div>
 
-            <div className="absolute bottom-8 left-8 right-8 flex items-end justify-between gap-8 text-white drop-shadow-[0_12px_28px_rgba(0,0,0,0.28)]">
-              <div className="min-w-0 max-w-[72%]">
-                <div
-                  className="whitespace-normal font-black leading-[1.12] tracking-[-0.03em] select-text"
-                  style={{ fontSize: `${coverInfoFontSize}px` }}
-                >
-                  {data.liveinf}
-                </div>
+            <div className="shrink-0 text-right">
+              <div className="text-[20px] font-black tracking-[0.24em] uppercase text-muted">Scan To Watch</div>
+              <div className="mt-2 text-[40px] leading-none font-black tracking-[-0.02em] text-foreground select-text">扫码进入直播间</div>
+              <div className="mt-6 flex justify-end">
+                {data.share_url ? (
+                  <QRCodeWithAvatar
+                    value={data.share_url}
+                    avatarUrl={data.avatar_url}
+                    useDarkTheme={isDark}
+                    alt="二维码"
+                    className="h-72 w-72 object-contain drop-shadow-[0_20px_38px_rgba(0,0,0,0.18)]"
+                  />
+                ) : (
+                  <div className="flex h-72 w-72 items-center justify-center">
+                    <span className="text-[28px] text-muted">二维码</span>
+                  </div>
+                )}
               </div>
-              <div
-                className="shrink-0 whitespace-nowrap font-mono font-black tracking-[-0.02em] text-white select-text"
-                style={{ fontSize: `${metaValueFontSize}px` }}
-              >
-                {liveSignalTime}
-              </div>
             </div>
-          </div>
-        )}
-
-        <div
-          className="mb-12 font-black leading-normal tracking-[-0.045em] whitespace-pre-wrap text-foreground select-text"
-          style={{
-            color: deepColor,
-            fontSize: `${liveTitleFontSize}px`,
-            wordBreak: 'break-word',
-            overflowWrap: 'break-word'
-          }}
-        >
-          {data.text &&
-            renderRichTextToReact(data.text, {
-              at: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
-              topic: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
-              lottery: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
-              webLink: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
-              vote: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
-              viewPicture: { className: 'text-[#006A9E] dark:text-[#58B0D5]' }
-            })}
-        </div>
-
-        <div className="mt-6 grid min-h-115 grid-cols-12 gap-10 items-end">
-          <div className="col-span-7 self-start pb-18">
-            <div
-              className="font-black leading-[1.08] tracking-[-0.02em] select-text"
-              style={{ fontSize: `${broadcastFontSize}px`, color: withAlphaFromCss(deepColor, 0.72) }}
-            >
-              <UsernameDisplay metadata={data.usernameMeta} />
-              <span> 开播了</span>
-            </div>
-
-            <div
-              className="mt-6 inline-flex items-center gap-4 text-[20px] font-black tracking-[0.24em] uppercase"
-              style={{ color: mutedColor }}
-            >
-              <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: accentColor }} />
-              <span>Bilibili Live</span>
-            </div>
-
-            <div
-              className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-[24px] font-semibold leading-[1.35]"
-              style={{ color: withAlphaFromCss(deepColor, 0.76) }}
-            >
-              <span>{data.dynamicTYPE}</span>
-              <span style={{ color: withAlphaFromCss(deepColor, 0.24) }}>/</span>
-              <span className="font-mono">{liveSignalTime}</span>
-            </div>
-
-            <img src={logo} alt="哔哩哔哩" className={`mt-18 h-auto ${isDark ? 'w-72' : 'w-108'}`} />
-
-            <div className="mt-5 text-[22px] font-bold tracking-[0.08em] select-text" style={{ color: mutedColor }}>
-              你感兴趣的直播都在哔哩哔哩
-            </div>
-          </div>
-
-          <div className="col-span-5 flex flex-col items-end self-start pt-2 text-right">
-            <div className="text-[20px] font-black tracking-[0.22em] uppercase" style={{ color: mutedColor }}>
-              Scan To Watch
-            </div>
-            <div className="mt-4 text-[54px] font-black tracking-[-0.04em] leading-[1.02]" style={{ color: deepColor }}>
-              扫码观看
-            </div>
-            <div className="mt-3 text-[24px] font-semibold leading-[1.4]" style={{ color: mutedColor }}>
-              长按识别二维码，直接进入直播间。
-            </div>
-
-            <div className="relative mt-8 flex flex-1 items-center justify-end">
-              <div
-                className="absolute right-10 top-1/2 h-80 w-80 -translate-y-1/2 rounded-full blur-[84px]"
-                style={{ backgroundColor: withAlphaFromCss(primaryColor, isDark ? 0.18 : 0.12) }}
-              />
-              <div
-                className="absolute right-22 top-1/2 h-52 w-52 -translate-y-1/2 rounded-full blur-[48px]"
-                style={{ backgroundColor: withAlphaFromCss(accentColor, isDark ? 0.16 : 0.1) }}
-              />
-              {data.share_url ? (
-                <QRCodeWithAvatar
-                  value={data.share_url}
-                  avatarUrl={data.avatar_url}
-                  useDarkTheme={isDark}
-                  alt="二维码"
-                  className="relative h-100 w-100 object-contain drop-shadow-[0_20px_38px_rgba(0,0,0,0.18)]"
-                />
-              ) : (
-                <div className="relative flex h-100 w-100 items-center justify-center">
-                  <span className="text-[28px]" style={{ color: mutedColor }}>
-                    二维码
-                  </span>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
+          </footer>
+        </section>
       </div>
     </DefaultLayout>
   )

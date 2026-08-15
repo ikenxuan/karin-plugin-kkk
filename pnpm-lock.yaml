@@ -189,8 +189,8 @@ importers:
         specifier: ^2.3.1
         version: 2.3.1(supports-color@7.2.0)
       '@karinjs/template-react':
-        specifier: https://pkg.pr.new/KarinJS/template-react/@karinjs/template-react@6011010
-        version: https://pkg.pr.new/KarinJS/template-react/@karinjs/template-react@6011010(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(supports-color@7.2.0)(tailwind-merge@3.6.0)(yaml@2.9.0)
+        specifier: https://pkg.pr.new/KarinJS/template-react/@karinjs/template-react@edc3e17
+        version: https://pkg.pr.new/KarinJS/template-react/@karinjs/template-react@edc3e17(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(supports-color@7.2.0)(tailwind-merge@3.6.0)(yaml@2.9.0)
       '@kkk/richtext':
         specifier: workspace:*
         version: link:../richtext
@@ -1584,9 +1584,9 @@ packages:
     resolution: {integrity: sha512-8BapqiKlyh2AS7FVQa6TNNEyVc2fBFjMpPIrtJZUHlGZLDNGJTAJFePdAxSwrKuR6dEyoMZPzr48uzRfoRnqHQ==}
     engines: {node: '>=18'}
 
-  '@karinjs/template-react@https://pkg.pr.new/KarinJS/template-react/@karinjs/template-react@6011010':
-    resolution: {integrity: sha512-qjhPeoE9xODZNiHDNJf8XiDr6nJjW2Vk0Zw87Fbn/t8AejiketGV4u2NtBfZ6gL3UjZoIVkCFwt0lZjrxui2SA==, tarball: https://pkg.pr.new/KarinJS/template-react/@karinjs/template-react@6011010}
-    version: 0.1.0-alpha.1.20260814031913.620a96f
+  '@karinjs/template-react@https://pkg.pr.new/KarinJS/template-react/@karinjs/template-react@edc3e17':
+    resolution: {integrity: sha512-BoRMwl2YZOsDDKQKfwQ9emccxyDuJBZBh2bS2V9kKyAHXH8CxaaBjIkg8/DRCxujemvihk01eYyBz4jd1u2Msw==, tarball: https://pkg.pr.new/KarinJS/template-react/@karinjs/template-react@edc3e17}
+    version: 0.1.0-alpha.1.20260815192626.8d63a26
     engines: {node: '>=18.0.0'}
     hasBin: true
     peerDependencies:
@@ -9785,7 +9785,7 @@ snapshots:
       '@karinjs/sqlite3-napi-v6-win32-ia32': 0.4.3
       '@karinjs/sqlite3-napi-v6-win32-x64': 0.4.3
 
-  '@karinjs/template-react@https://pkg.pr.new/KarinJS/template-react/@karinjs/template-react@6011010(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(supports-color@7.2.0)(tailwind-merge@3.6.0)(yaml@2.9.0)':
+  '@karinjs/template-react@https://pkg.pr.new/KarinJS/template-react/@karinjs/template-react@edc3e17(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(supports-color@7.2.0)(tailwind-merge@3.6.0)(yaml@2.9.0)':
     dependencies:
       '@heroui/styles': 3.2.4(tailwind-merge@3.6.0)(tailwindcss@4.3.3)
       '@tailwindcss/vite': 4.3.3(vite@8.1.4(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.23.12)(yaml@2.9.0))

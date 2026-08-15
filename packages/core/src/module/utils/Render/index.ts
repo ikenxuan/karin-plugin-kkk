@@ -9,7 +9,6 @@ import { Common, Root } from '@/module'
 import { Config } from '@/module/utils/Config'
 
 import { isSemverGreater } from '../semver'
-import { createImagePathPlugin, createPosterPalettePlugin } from './plugins'
 import { embedWatermark } from './wm'
 
 /** 注册表类型：.ktr/registry-types.d.ts 模块增强生效后为逐路由精确类型。 */
@@ -39,7 +38,6 @@ const renderTemplate = createTemplateRenderer(import.meta.url, {
   renderer: {
     outputDir: pathModule.join(karinPathHtml, Root.pluginName),
     htmlFileName: 'timestamp',
-    plugins: [createImagePathPlugin(), createPosterPalettePlugin()],
     ...(isDevRuntime ? {} : { captureDir: undefined })
   }
 })
@@ -93,7 +91,7 @@ export const Render = async <P extends DynamicRenderPath>(
   const watermarkTextBitSize = Buffer.byteLength(watermarkText, 'utf8') * 8
   const useDarkTheme = Common.useDarkTheme()
 
-  // kkk 的模板上下文字段（version / watermarkTextBitSize / posterPalette）由 ktr 原样透传，
+  // kkk 的模板上下文字段（version / watermarkTextBitSize）由 ktr 原样透传，
   // defineKkkTemplate 适配器再映射回组件 props。浅色不传 theme，与旧外壳输出保持一致。
   const ctx = {
     scale: Math.min(2, Math.max(0.5, Number(Config.app.renderScale) / 100)),
