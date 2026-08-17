@@ -1,10 +1,11 @@
-import { Surface } from '@heroui/react'
+import { Button, Popover, Surface } from '@heroui/react'
+import { SlidersHorizontal } from 'lucide-react'
 
 import { getValue } from '../utils'
 import type { ConfigPageProps } from './pageTypes'
 
 const AppConfigPage = ({ config, renderers }: ConfigPageProps) => {
-  const { renderCheckboxGroup, renderPageHeader, renderSelectField, renderSubSection, renderSwitch, renderTextField } = renderers
+  const { renderCheckboxGroup, renderPageHeader, renderSelectField, renderSlider, renderSubSection, renderSwitch, renderTextField } = renderers
   const appLivePhotoMode = getValue<string>(config, ['app', 'livePhotoMode'], 'video_and_livephoto')
 
   return (
@@ -40,22 +41,62 @@ const AppConfigPage = ({ config, renderers }: ConfigPageProps) => {
             '可选值50~200，建议100。设置高精度会提高图片的精细度，过高可能会影响渲染与发送速度。',
             { type: 'number', fallback: 100, min: 50, max: 200 }
           )}
-          {renderSelectField(
-            ['app', 'Theme'],
-            '渲染图片的主题色',
-            '渲染评论图和推送图的主题色。',
-            [
-              { label: '自动', value: '0', description: '06:00-18:00为浅色，18:00-06:00为深色' },
-              { label: '浅色', value: '1' },
-              { label: '深色', value: '2' },
-              {
-                label: '智能场景（实验性）',
-                value: '3',
-                description: '自动模式的超集；部分模板会根据封面色调 智能调整主题色，可能会出现不适配的情况。'
-              }
-            ],
-            (value) => Number(value)
-          )}
+          <div className="flex items-start gap-3">
+            <div className="min-w-0 flex-1">
+              {renderSelectField(
+                ['app', 'Theme'],
+                '渲染图片的主题色',
+                '渲染评论图和推送图的主题色。',
+                [
+                  { label: '自动', value: '0', description: '06:00-18:00为浅色，18:00-06:00为深色' },
+                  { label: '浅色', value: '1' },
+                  { label: '深色', value: '2' },
+                  {
+                    label: '智能场景（实验性）',
+                    value: '3',
+                    description: '自动模式的超集；部分模板会根据封面色调 智能调整主题色，可能会出现不适配的情况。'
+                  }
+                ],
+                (value) => Number(value)
+              )}
+            </div>
+            <Popover>
+              <Popover.Trigger aria-label="封面氛围背景参数" className="mt-7 shrink-0">
+                <Button isIconOnly aria-label="封面氛围背景参数" variant="secondary">
+                  <SlidersHorizontal className="size-4" aria-hidden="true" />
+                </Button>
+              </Popover.Trigger>
+              <Popover.Content className="w-90" placement="bottom">
+                <Popover.Dialog>
+                  <Popover.Arrow />
+                  <Popover.Heading>封面氛围背景</Popover.Heading>
+                  <p className="mt-1 mb-5 text-sm text-muted">
+                    仅对使用封面氛围背景的模板生效（抖音视频/图文作品、B站视频信息、B站直播推荐动态）。
+                  </p>
+                  <div className="flex flex-col gap-5">
+                    {renderSlider(
+                      ['app', 'ambientCover', 'coverOpacity'],
+                      '封面氛围强度',
+                      '封面图对背景氛围的贡献度，即模糊封面层的不透明度，越大封面色越浓。',
+                      { fallback: 0.7 }
+                    )}
+                    {renderSlider(
+                      ['app', 'ambientCover', 'overlayEdgeOpacity'],
+                      '氛围压色（顶部/底部）',
+                      '背景两端主题色压色罩的不透明度，越大两端越接近纯色主题背景。',
+                      { fallback: 0.9 }
+                    )}
+                    {renderSlider(
+                      ['app', 'ambientCover', 'overlayMiddleOpacity'],
+                      '氛围压色（中间带）',
+                      '背景中间带主题色压色罩的不透明度，越小封面色越透。',
+                      { fallback: 0.2 }
+                    )}
+                  </div>
+                </Popover.Dialog>
+              </Popover.Content>
+            </Popover>
+          </div>
           {renderSwitch(['app', 'RemoveWatermark'], '移除版本信息', '渲染的图片是否移除底部版本信息。')}
           {renderTextField(['app', 'RenderWaitTime'], '渲染图片的等待时间', '单位：秒，Linux系统下不能为0；其他系统传递 0 可禁用。', {
             type: 'number',

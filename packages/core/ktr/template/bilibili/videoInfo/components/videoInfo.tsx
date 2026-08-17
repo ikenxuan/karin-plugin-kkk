@@ -26,9 +26,9 @@ const coverMaskStyle: React.CSSProperties = {
 /**
  * 全局氛围背景层：模糊封面 + 渐变遮罩 + 高对比杂色纹理
  */
-const AmbientBackground: React.FC<{ pic: string }> = React.memo(({ pic }) => (
+const AmbientBackground: React.FC<{ pic: string; ctx: PosterProps<BilibiliVideoInfoData>['ctx'] }> = React.memo(({ pic, ctx }) => (
   <div className="absolute inset-0 overflow-hidden -z-10">
-    <AmbientCover src={pic} />
+    <AmbientCover src={pic} ctx={ctx} />
 
     {/* 高对比杂色纹理层 */}
     <div className="absolute inset-0 pointer-events-none opacity-[0.45] mix-blend-overlay dark:mix-blend-soft-light">
@@ -109,7 +109,7 @@ export const BilibiliVideoInfo: React.FC<PosterProps<BilibiliVideoInfoData>> = R
   return (
     <DefaultLayout {...props} className="relative overflow-hidden">
       {/* 全局氛围层 */}
-      <AmbientBackground pic={props.data.pic} />
+      <AmbientBackground pic={props.data.pic} ctx={props.ctx} />
 
       <div className="relative z-10">
         {/* 封面：全宽，底部极轻微溶解，不接文字 */}

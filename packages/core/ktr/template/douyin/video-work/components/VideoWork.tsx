@@ -42,9 +42,9 @@ const ambientCoverMask =
 const foregroundCoverMask =
   'linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.1) 4%, rgba(0,0,0,0.35) 10%, rgba(0,0,0,0.68) 17%, rgba(0,0,0,0.9) 23%, black 30%, black 70%, rgba(0,0,0,0.9) 77%, rgba(0,0,0,0.68) 83%, rgba(0,0,0,0.35) 90%, rgba(0,0,0,0.1) 96%, transparent 100%)'
 
-const DouyinDiffuseBackground: React.FC<PosterProps<DouyinVideoWorkData>> = ({ data }) => (
+const DouyinDiffuseBackground: React.FC<PosterProps<DouyinVideoWorkData>> = ({ data, ctx }) => (
   <div className="pointer-events-none absolute inset-0 overflow-hidden select-none">
-    <AmbientCover src={data.image_url} />
+    <AmbientCover src={data.image_url} ctx={ctx} />
 
     <div className="absolute inset-0 opacity-[0.35] mix-blend-overlay dark:mix-blend-soft-light">
       <svg className="h-full w-full" xmlns="http://www.w3.org/2000/svg">
@@ -318,7 +318,7 @@ const DouyinPosterFooter: React.FC<PosterProps<DouyinVideoWorkData>> = ({ data }
           <img
             src={avater_url}
             alt="头像"
-            className="h-24 w-24 shrink-0 rounded-full object-cover shadow-xl"
+            className="h-26 w-26 shrink-0 rounded-full object-cover shadow-xl"
             referrerPolicy="no-referrer"
             crossOrigin="anonymous"
           />

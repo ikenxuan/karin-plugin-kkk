@@ -4,6 +4,7 @@ import React from 'react'
 // import { cn } from '../../../../../utils/cn'
 import { resolveUseDarkTheme } from '../../../../../utils/theme'
 import { DefaultLayout } from '../../../../components/DefaultLayout'
+import { AmbientCover } from '../../../../components/AmbientCover'
 import { QRCodeWithAvatar } from '../../../../components/QRCodeWithAvatar'
 import type { PosterProps } from '../../../../types/ctx'
 import { EnhancedImage, UsernameDisplay } from '../../../components/shared'
@@ -32,18 +33,9 @@ const coverMaskStyle: React.CSSProperties = {
  * 全局氛围背景层：模糊封面 + 渐变遮罩 + 高对比杂色纹理。
  * 背景色完全取自封面图本身，不再依赖后端取色。
  */
-const LiveAmbientBackground: React.FC<{ cover: string }> = React.memo(({ cover }) => (
+const LiveAmbientBackground: React.FC<{ cover: string; ctx: PosterProps<BilibiliLiveDynamicData>['ctx'] }> = React.memo(({ cover, ctx }) => (
   <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden select-none">
-    {/* 模糊封面背景 */}
-    <img
-      src={cover}
-      alt=""
-      className="h-full w-full scale-150 object-cover opacity-50 blur-[120px] saturate-[1.8]"
-      referrerPolicy="no-referrer"
-      crossOrigin="anonymous"
-    />
-    {/* 渐变遮罩，压住文字区对比 */}
-    <div className="absolute inset-0 bg-linear-to-b from-surface/60 via-surface/25 to-surface/60 dark:from-black/55 dark:via-black/20 dark:to-black/55" />
+    <AmbientCover src={cover} ctx={ctx} />
 
     {/* 高对比杂色纹理层 */}
     <div className="absolute inset-0 opacity-[0.45] mix-blend-overlay dark:mix-blend-soft-light">
@@ -132,7 +124,7 @@ export const BilibiliLiveDynamic: React.FC<PosterProps<BilibiliLiveDynamicData>>
   return (
     <DefaultLayout {...props} className="relative overflow-hidden">
       {/* 全局氛围层：模糊封面 + 高对比杂色 */}
-      {data.image_url && <LiveAmbientBackground cover={data.image_url} />}
+      {data.image_url && <LiveAmbientBackground cover={data.image_url} ctx={props.ctx} />}
 
       <div className="relative z-10 flex flex-col">
         {/* 封面：占满模板全宽，底部溶解进氛围层 */}

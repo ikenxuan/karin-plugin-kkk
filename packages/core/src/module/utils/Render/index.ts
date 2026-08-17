@@ -5,10 +5,11 @@ import { createTemplateRenderer, type DataOf, type LoadedRegistry } from '@karin
 import type { ImageElement, Message } from 'node-karin'
 import { db, karinPathHtml, logger, render, segment } from 'node-karin'
 
-import { Common, Root } from '@/module'
+import { Root } from '@/module'
 import { Config } from '@/module/utils/Config'
 
 import { isSemverGreater } from '../semver'
+import { resolveUseDarkTheme } from './coverTheme'
 import { embedWatermark } from './wm'
 
 /** 注册表类型：.ktr/registry-types.d.ts 模块增强生效后为逐路由精确类型。 */
@@ -89,7 +90,8 @@ export const Render = async <P extends DynamicRenderPath>(
   })
 
   const watermarkTextBitSize = Buffer.byteLength(watermarkText, 'utf8') * 8
-  const useDarkTheme = Common.useDarkTheme()
+  // 智能主题（Theme=3）下指定模板按封面明暗决定深浅色，其余走 Common.useDarkTheme()
+  const useDarkTheme = await resolveUseDarkTheme(path, data)
 
   // kkk 的模板上下文字段（version / watermarkTextBitSize）由 ktr 原样透传，
   // defineKkkTemplate 适配器再映射回组件 props。浅色不传 theme，与旧外壳输出保持一致。
@@ -107,6 +109,12 @@ export const Render = async <P extends DynamicRenderPath>(
           hasUpdate
         },
     watermarkTextBitSize,
+    // 封面氛围背景贡献度参数，模板里的 AmbientCover 读取；配置缺失时传 undefined，模板回退内置默认值
+    ambientCover: {
+      coverOpacity: Config.app.ambientCover?.coverOpacity,
+      overlayEdgeOpacity: Config.app.ambientCover?.overlayEdgeOpacity,
+      overlayMiddleOpacity: Config.app.ambientCover?.overlayMiddleOpacity
+    },
     ...(useDarkTheme ? { theme: { mode: 'dark' as const } } : {})
   }
 

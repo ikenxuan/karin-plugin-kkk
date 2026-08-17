@@ -144,6 +144,9 @@ export function getWorkTypeInfo(data: {
   }
 }
 
+/** 抖音图床低分辨率处理模板（如 ~tplv-dy-360p.jpeg），命中说明该封面 URL 被 CDN 降质 */
+const LOW_RES_COVER_PATTERN = /~tplv-[^/?]*(?:270p|360p|480p|540p)/i
+
 /**
  * 获取作品封面 URL
  */
@@ -153,6 +156,7 @@ export function getWorkCoverUrl(
     video?: {
       animated_cover?: { url_list: string[] }
       cover_original_scale?: { url_list: string[] }
+      origin_cover?: { url_list: string[] }
       cover?: { url_list: string[] }
     }
     images?: Array<{ url_list: string[] }>
@@ -163,7 +167,16 @@ export function getWorkCoverUrl(
 ): string {
   // 视频封面
   if (workTypeInfo.isVideo && data.video) {
-    return data.video.animated_cover?.url_list[0] ?? data.video.cover_original_scale?.url_list[0] ?? data.video.cover?.url_list[0] ?? ''
+    // 详情接口没有 animated_cover，会落到 cover_original_scale，
+    // 而它的 url_list[0] 常是 ~tplv-dy-360p 这类 CDN 降质模板（签名绑定路径，无法改 URL 还原）。
+    // 所以按优先级收集所有候选后，优先取未命中低清模板的；全部命中时维持原优先级兜底。
+    const candidates = [
+      data.video.animated_cover,
+      data.video.cover_original_scale,
+      data.video.origin_cover,
+      data.video.cover
+    ].flatMap((field) => field?.url_list ?? [])
+    return candidates.find((url) => !LOW_RES_COVER_PATTERN.test(url)) ?? candidates[0] ?? ''
   }
 
   // 图文封面

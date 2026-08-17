@@ -92,6 +92,9 @@ export const validateConfig = (config: ConfigType | null): Record<string, string
 
   const numberRules: NumberValidationRule[] = [
     { path: ['app', 'renderScale'], label: '渲染精度', min: 50, max: 200 },
+    { path: ['app', 'ambientCover', 'coverOpacity'], label: '封面氛围强度', min: 0, max: 1 },
+    { path: ['app', 'ambientCover', 'overlayEdgeOpacity'], label: '氛围压色（顶部/底部）', min: 0, max: 1 },
+    { path: ['app', 'ambientCover', 'overlayMiddleOpacity'], label: '氛围压色（中间带）', min: 0, max: 1 },
     { path: ['app', 'RenderWaitTime'], label: '渲染图片的等待时间', min: 0 },
     {
       path: ['app', 'multiPageHeight'],

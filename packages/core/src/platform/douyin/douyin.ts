@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 
 import { type DyEmojiList, DyVideoWork } from '@ikenxuan/amagi'
-import type { DouyinUserVideoListData } from '@template/douyin/user_profile/components/types'
+import type { DouyinUserVideoListData } from '@template/template/douyin/user_profile/components/types'
 import { format } from 'date-fns'
 import karin, { type Elements, Message, SendMessage } from 'node-karin'
 import { common, logger, mkdirSync, segment } from 'node-karin'
@@ -63,11 +63,11 @@ export class DouYin extends Base {
   forceBurnDanmaku: boolean
   /** 标记是否已处理 live 图（用于判断是否需要发送音频） */
   hasProcessedLiveImage: boolean
-  get botadapter(): string {
+  get botadapter (): string {
     return this.e.bot?.adapter?.name
   }
 
-  constructor(e: Message, iddata: DouyinIdData, options?: { forceBurnDanmaku?: boolean }) {
+  constructor (e: Message, iddata: DouyinIdData, options?: { forceBurnDanmaku?: boolean }) {
     super(e)
     this.e = e
     this.type = iddata?.type
@@ -76,7 +76,7 @@ export class DouYin extends Base {
     this.hasProcessedLiveImage = false
   }
 
-  async DouyinHandler(data: DouyinIdData) {
+  async DouyinHandler (data: DouyinIdData) {
     if (Config.app.parseTip) {
       this.e.reply('检测到抖音链接，开始解析')
     }
@@ -791,9 +791,9 @@ export class DouYin extends Base {
             index: index + 1,
             music: aweme.music
               ? {
-                  title: aweme.music.title || '',
-                  author: aweme.music.author || ''
-                }
+                title: aweme.music.title || '',
+                author: aweme.music.author || ''
+              }
               : undefined
           }
         })
@@ -842,7 +842,7 @@ export class DouYin extends Base {
 
             await emojiManager.add('EYES')
             processingTimer = setTimeout(() => {
-              emojiManager.add('PROCESSING').catch(() => {})
+              emojiManager.add('PROCESSING').catch(() => { })
             }, 1500)
 
             try {
@@ -855,7 +855,7 @@ export class DouYin extends Base {
               await dy.DouyinHandler(targetData)
 
               successTimer = setTimeout(() => {
-                emojiManager.replace('PROCESSING', 'SUCCESS').catch(() => {})
+                emojiManager.replace('PROCESSING', 'SUCCESS').catch(() => { })
               }, 1500)
             } catch (error) {
               if (processingTimer) clearTimeout(processingTimer)
@@ -950,9 +950,9 @@ export class DouYin extends Base {
           const streamExtra = liveItem.stream_url?.extra
           const resolution = streamExtra
             ? //@ts-ignore
-              `${streamExtra.width}x${streamExtra.height}`
+            `${streamExtra.width}x${streamExtra.height}`
             : //@ts-ignore
-              liveItem.stream_url?.default_resolution || ''
+            liveItem.stream_url?.default_resolution || ''
 
           const img = await Render(this.e, 'douyin/live', {
             image_url: liveItem.cover?.url_list[0],

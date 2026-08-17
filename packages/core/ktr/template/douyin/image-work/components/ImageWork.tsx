@@ -6,6 +6,7 @@ import { Clock3, Hash } from 'lucide-react'
 import React from 'react'
 
 import { DefaultLayout } from '../../../components/DefaultLayout'
+import { AmbientCover } from '../../../components/AmbientCover'
 import { GlowImage } from '../../../components/GlowImage'
 import { QRCodeWithAvatar } from '../../../components/QRCodeWithAvatar'
 import type { PosterProps } from '../../../types/ctx'
@@ -59,21 +60,12 @@ const foregroundCoverMask =
 
 const getCoverUrl = (data: DouyinImageWorkData): string | undefined => data.image_list.images[0]?.url
 
-const DouyinDiffuseBackground: React.FC<PosterProps<DouyinImageWorkData>> = ({ data }) => {
+const DouyinDiffuseBackground: React.FC<PosterProps<DouyinImageWorkData>> = ({ data, ctx }) => {
   const coverUrl = getCoverUrl(data)
 
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden select-none">
-      {coverUrl && (
-        <img
-          src={coverUrl}
-          alt=""
-          className="absolute inset-0 h-full w-full scale-150 object-cover opacity-50 blur-[120px] saturate-[1.8]"
-          referrerPolicy="no-referrer"
-          crossOrigin="anonymous"
-        />
-      )}
-      <div className="absolute inset-0 bg-linear-to-b from-background/70 via-background/50 to-background/70" />
+      {coverUrl && <AmbientCover src={coverUrl} ctx={ctx} />}
 
       <div className="absolute inset-0 opacity-[0.35] mix-blend-overlay dark:mix-blend-soft-light">
         <svg className="h-full w-full" xmlns="http://www.w3.org/2000/svg">
@@ -377,7 +369,7 @@ const DouyinPosterFooter: React.FC<PosterProps<DouyinImageWorkData>> = ({ data }
           <img
             src={avater_url}
             alt="头像"
-            className="h-24 w-24 shrink-0 rounded-full object-cover shadow-xl"
+            className="h-26 w-26 shrink-0 rounded-full object-cover shadow-xl"
             referrerPolicy="no-referrer"
             crossOrigin="anonymous"
           />
