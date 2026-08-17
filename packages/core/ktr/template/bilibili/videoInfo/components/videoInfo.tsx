@@ -4,6 +4,7 @@ import { Calendar } from 'lucide-react'
 import React from 'react'
 
 import { DefaultLayout } from '../../../components/DefaultLayout'
+import { AmbientCover } from '../../../components/AmbientCover'
 import { GlowText } from '../../../components/GlowImage'
 import type { PosterProps } from '../../../types/ctx'
 import { resolveUseDarkTheme } from '../../../../utils/theme'
@@ -27,16 +28,7 @@ const coverMaskStyle: React.CSSProperties = {
  */
 const AmbientBackground: React.FC<{ pic: string }> = React.memo(({ pic }) => (
   <div className="absolute inset-0 overflow-hidden -z-10">
-    {/* 模糊封面背景 */}
-    <img
-      src={pic}
-      alt=""
-      className="w-full h-full object-cover scale-150 blur-[120px] saturate-[1.8] opacity-50"
-      referrerPolicy="no-referrer"
-      crossOrigin="anonymous"
-    />
-    {/* 渐变遮罩 */}
-    <div className="absolute inset-0 bg-linear-to-b from-surface/60 via-surface/25 to-surface/60 dark:from-black/55 dark:via-black/20 dark:to-black/55" />
+    <AmbientCover src={pic} />
 
     {/* 高对比杂色纹理层 */}
     <div className="absolute inset-0 pointer-events-none opacity-[0.45] mix-blend-overlay dark:mix-blend-soft-light">

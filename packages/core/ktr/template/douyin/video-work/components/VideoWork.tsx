@@ -6,6 +6,7 @@ import { Clock3, Hash } from 'lucide-react'
 import React from 'react'
 
 import { DefaultLayout } from '../../../components/DefaultLayout'
+import { AmbientCover } from '../../../components/AmbientCover'
 import { GlowImage } from '../../../components/GlowImage'
 import { QRCodeWithAvatar } from '../../../components/QRCodeWithAvatar'
 import type { PosterProps } from '../../../types/ctx'
@@ -43,14 +44,7 @@ const foregroundCoverMask =
 
 const DouyinDiffuseBackground: React.FC<PosterProps<DouyinVideoWorkData>> = ({ data }) => (
   <div className="pointer-events-none absolute inset-0 overflow-hidden select-none">
-    <img
-      src={data.image_url}
-      alt=""
-      className="absolute inset-0 h-full w-full scale-150 object-cover opacity-50 blur-[120px] saturate-[1.8]"
-      referrerPolicy="no-referrer"
-      crossOrigin="anonymous"
-    />
-    <div className="absolute inset-0 bg-linear-to-b from-background/70 via-background/50 to-background/70" />
+    <AmbientCover src={data.image_url} />
 
     <div className="absolute inset-0 opacity-[0.35] mix-blend-overlay dark:mix-blend-soft-light">
       <svg className="h-full w-full" xmlns="http://www.w3.org/2000/svg">
