@@ -28,6 +28,11 @@
     "removeCache": true,
     "renderScale": 100,
     "Theme": 0,
+    "ambientCover": {
+      "coverOpacity": 0.7,
+      "overlayEdgeOpacity": 0.9,
+      "overlayMiddleOpacity": 0.2
+    },
     "RemoveWatermark": false,
     "RenderWaitTime": 120,
     "EmojiReply": true,
