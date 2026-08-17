@@ -66,7 +66,7 @@ const AppConfigPage = ({ config, renderers }: ConfigPageProps) => {
                   <SlidersHorizontal className="size-4" aria-hidden="true" />
                 </Button>
               </Popover.Trigger>
-              <Popover.Content className="w-90" placement="bottom">
+              <Popover.Content className="w-90 max-w-[calc(100vw-2rem)]" placement="bottom">
                 <Popover.Dialog>
                   <Popover.Arrow />
                   <Popover.Heading>封面氛围背景</Popover.Heading>

@@ -2,6 +2,7 @@ import { Eye, FileVideo, MapPin, Monitor, ShoppingBag, UserPlus, Users } from 'l
 import React from 'react'
 
 import { DefaultLayout } from '../../../components/DefaultLayout'
+import { AmbientCover } from '../../../components/AmbientCover'
 import { QRCodeWithAvatar } from '../../../components/QRCodeWithAvatar'
 import type { PosterProps } from '../../../types/ctx'
 import { resolveUseDarkTheme } from '../../../../utils/theme'
@@ -16,16 +17,9 @@ const coverMaskStyle: React.CSSProperties = {
 /**
  * 全局氛围背景层：模糊封面 + 渐变遮罩 + 高对比杂色纹理
  */
-const AmbientBackground: React.FC<{ pic: string }> = React.memo(({ pic }) => (
+const AmbientBackground: React.FC<{ pic: string; ctx: PosterProps<DouyinLiveData>['ctx'] }> = React.memo(({ pic, ctx }) => (
   <div className="absolute inset-0 overflow-hidden -z-10">
-    <img
-      src={pic}
-      alt=""
-      className="w-full h-full object-cover scale-150 blur-[120px] saturate-[1.8] opacity-50"
-      referrerPolicy="no-referrer"
-      crossOrigin="anonymous"
-    />
-    <div className="absolute inset-0 bg-linear-to-b from-surface/60 via-surface/25 to-surface/60 dark:from-black/55 dark:via-black/20 dark:to-black/55" />
+    <AmbientCover src={pic} ctx={ctx} />
     <div className="absolute inset-0 pointer-events-none opacity-[0.45] mix-blend-overlay dark:mix-blend-soft-light">
       <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
         <defs>
@@ -221,7 +215,7 @@ export const DouyinLive: React.FC<PosterProps<DouyinLiveData>> = (props) => {
 
   return (
     <DefaultLayout {...props} className="relative overflow-hidden">
-      <AmbientBackground pic={d.image_url} />
+      <AmbientBackground pic={d.image_url} ctx={ctx} />
 
       <div className="relative z-10">
         <CoverSection imageUrl={d.image_url} />
