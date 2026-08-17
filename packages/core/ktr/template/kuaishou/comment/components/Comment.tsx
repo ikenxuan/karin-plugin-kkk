@@ -4,9 +4,10 @@ import { zhCN } from 'date-fns/locale'
 import { Heart, MessageCircle } from 'lucide-react'
 import React from 'react'
 
+import { generateQRCode } from '../../../../utils/QRcode'
+import { isDark } from '../../../../utils/theme'
 import { DefaultLayout } from '../../../components/DefaultLayout'
 import type { PosterProps } from '../../../types/ctx'
-import { generateQRCode } from '../../../../utils/QRcode'
 import type { KuaishouCommentData } from './types'
 
 const kuaishouMentionClassName = 'text-[#03488d] dark:text-[#c7daef]'
@@ -52,7 +53,7 @@ const formatKuaishouLikeCount = (count: number): string => {
  * @param props 组件属性
  * @returns JSX元素
  */
-const KuaishouQRCodeSection: React.FC<KuaishouCommentData> = (props) => {
+const KuaishouQRCodeSection: React.FC<KuaishouCommentData & { useDarkTheme: boolean }> = (props) => {
   return (
     <div className="flex flex-col items-center -mr-10">
       <div className="mt-20 flex items-center justify-center w-150 h-150 bg-surface rounded-lg shadow-medium">
@@ -181,7 +182,7 @@ export const KuaishouComment: React.FC<PosterProps<KuaishouCommentData>> = React
       <div className="p-5">
         <div className="flex justify-between items-center max-w-300 mx-auto p-5">
           <KuaishouVideoInfoHeader {...props.data} />
-          <KuaishouQRCodeSection {...props.data} />
+          <KuaishouQRCodeSection {...props.data} useDarkTheme={isDark(props.ctx)} />
         </div>
 
         <div className="overflow-auto mx-auto max-w-full">

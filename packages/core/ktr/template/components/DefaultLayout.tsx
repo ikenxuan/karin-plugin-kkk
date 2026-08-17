@@ -3,7 +3,7 @@ import React from 'react'
 
 import type { PosterContext } from '../types/ctx'
 import { cn } from '../../utils/cn'
-import { resolveUseDarkTheme } from '../../utils/theme'
+import { isDark } from '../../utils/theme'
 import { GlowImage } from './GlowImage'
 import { RolldownLogo } from './RolldownLogo'
 import { ViteLogo } from './ViteLogo'
@@ -14,8 +14,6 @@ import { ViteLogo } from './ViteLogo'
 interface DefaultLayoutProps {
   /** 子组件 */
   children: React.ReactNode
-  /** 渲染数据（仅读取 useDarkTheme 字段） */
-  data: Record<string, any> & { useDarkTheme?: boolean }
   /** ktr 注入的运行时上下文（scale/theme + kkk 扩展字段） */
   ctx: PosterContext
   /** 额外的CSS类名 */
@@ -29,10 +27,11 @@ interface DefaultLayoutProps {
  * @param props 组件属性
  * @returns JSX元素
  */
-export const DefaultLayout: React.FC<DefaultLayoutProps> = ({ children, data, ctx, className = '', style = {} }) => {
-  // 生产渲染由 core 在 data 里注入 useDarkTheme；开发面板未注入时跟随 ktr 主题弹窗的 ctx.theme.mode
-  const useDarkTheme = resolveUseDarkTheme(data, ctx)
-  const { scale = 1, version, watermarkTextBitSize } = ctx
+export const DefaultLayout: React.FC<DefaultLayoutProps> = ({ children, ctx, className = '', style = {} }) => {
+  // 明暗只用于内部装饰分支（辉光强度等）；dark 类与 data-theme 由 ktr 外壳统一写在 body 上，
+  // 模板根元素不再重复施加。唯一事实来源是 ctx.theme.mode。
+  const useDarkTheme = isDark(ctx)
+  const { version, watermarkTextBitSize } = ctx
 
   return (
     <div
@@ -41,18 +40,13 @@ export const DefaultLayout: React.FC<DefaultLayoutProps> = ({ children, data, ct
         // relative 同样从旧引擎外壳（transform 语义）迁来：根元素是绝对定位包含块，
         // 模板里 inset-0 的氛围层锚定在卡片矩形上并被圆角裁剪，而不是锚到视口逃逸出去。
         'relative w-360 shrink-0 overflow-hidden rounded-[5rem] bg-background bg-clip-padding text-foreground font-[HarmonyOSHans-Regular]',
-        useDarkTheme ? 'dark' : 'light',
         className
       )}
-      data-theme={useDarkTheme ? 'dark' : 'light'}
       style={{
-        // 截图边界由 ktr 外壳的 #container 提供；用 zoom 而非 transform 缩放，
-        // 让布局盒随缩放变化，截图范围与旧引擎（transform 在 #container 上）保持一致。
-        zoom: scale,
-        // 旧引擎的 transform 会顺带创建层叠上下文，标准化后的 zoom 不会（任何取值都不会）。
-        // 少了它，模板里 -z-10 的氛围层会逃逸到 <html> 层叠上下文，被本元素不透明的
-        // bg-background 整个盖住（表现为封面模糊层变成纯白/纯黑）。显式 isolate 补回该语义。
-        isolation: 'isolate',
+        // renderScale 缩放由 ktr 外壳统一施加（#container 上的 zoom，SSR 与开发面板沙盒一致），
+        // 模板根元素不要再加 zoom/transform，否则会叠加成 scale²。
+        // 旧引擎 transform 顺带的层叠上下文也由外壳 #container 的 isolation: isolate 补回，
+        // 模板里 -z-10 的氛围层不会逃逸到 <html> 层叠上下文被卡片背景盖住。
         width: '1440px',
         minWidth: '1440px',
         maxWidth: '1440px',

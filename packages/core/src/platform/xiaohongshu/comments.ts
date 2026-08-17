@@ -9,9 +9,14 @@ import {
   type RichTextEmojiDefinition,
   type RichTextNode
 } from '@kkk/richtext'
-import type { XiaohongshuCommentItem, XiaohongshuSubComment } from '@template/xiaohongshu/comment/components/types'
+import type { XiaohongshuCommentData } from '@template/template/xiaohongshu/comment/components/types'
 
 import { Config } from '@/module/utils/Config'
+
+/** 评论项类型：从模板路由主数据接口逐步索引派生，types.ts 不再单独导出子类型 */
+type XiaohongshuCommentItem = XiaohongshuCommentData['CommentsData'][number]
+/** 子评论类型：同上，由评论项的 sub_comments 字段索引得到 */
+type XiaohongshuSubComment = XiaohongshuCommentItem['sub_comments'][number]
 
 /**
  * 处理小红书评论数据。

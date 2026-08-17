@@ -1,11 +1,11 @@
 import { AlertTriangle, QrCode, Smartphone } from 'lucide-react'
 import React from 'react'
 
+import { generateQRCode } from '../../../../utils/QRcode'
+import { isDark } from '../../../../utils/theme'
 import { DefaultLayout } from '../../../components/DefaultLayout'
 import { GlowImage } from '../../../components/GlowImage'
 import type { PosterProps } from '../../../types/ctx'
-import { generateQRCode } from '../../../../utils/QRcode'
-import { resolveUseDarkTheme } from '../../../../utils/theme'
 import type { QrLoginData } from './types'
 
 /**
@@ -14,15 +14,15 @@ import type { QrLoginData } from './types'
  * @returns JSX元素
  */
 export const QrLogin: React.FC<PosterProps<QrLoginData>> = React.memo((props) => {
-  const qrCodeDataUrl = props.data.qr_url ? generateQRCode(props.data.qr_url, resolveUseDarkTheme(props.data, props.ctx) ?? false) : ''
-  const isDark = resolveUseDarkTheme(props.data, props.ctx) ?? false
+  const qrCodeDataUrl = props.data.qr_url ? generateQRCode(props.data.qr_url, isDark(props.ctx)) : ''
+  const dark = isDark(props.ctx)
 
   // 使用蓝紫色系弥散渐变
-  const bgColor = isDark ? '#0f0f1a' : '#f8f6ff'
-  const secondaryColor = isDark ? '#a78bfa' : '#8b5cf6'
-  const mutedColor = isDark ? 'rgba(129,140,248,0.7)' : '#7c3aed'
-  const accentColor = isDark ? '#c4b5fd' : '#4f46e5'
-  const warningColor = isDark ? '#f87171' : '#dc2626' // 改为红色系警告色
+  const bgColor = dark ? '#0f0f1a' : '#f8f6ff'
+  const secondaryColor = dark ? '#a78bfa' : '#8b5cf6'
+  const mutedColor = dark ? 'rgba(129,140,248,0.7)' : '#7c3aed'
+  const accentColor = dark ? '#c4b5fd' : '#4f46e5'
+  const warningColor = dark ? '#f87171' : '#dc2626' // 改为红色系警告色
 
   return (
     <DefaultLayout
@@ -37,7 +37,7 @@ export const QrLogin: React.FC<PosterProps<QrLoginData>> = React.memo((props) =>
         <div
           className="absolute rounded-full w-200 h-150 -top-50 left-1/2 -translate-x-1/2 blur-[150px]"
           style={{
-            background: isDark
+            background: dark
               ? 'radial-gradient(ellipse at 50% 30%, rgba(99,102,241,0.5) 0%, rgba(139,92,246,0.25) 50%, transparent 100%)'
               : 'radial-gradient(ellipse at 50% 30%, rgba(99,102,241,0.35) 0%, rgba(139,92,246,0.18) 50%, transparent 100%)'
           }}
@@ -46,7 +46,7 @@ export const QrLogin: React.FC<PosterProps<QrLoginData>> = React.memo((props) =>
         <div
           className="absolute rounded-full w-175 h-175 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 blur-[140px]"
           style={{
-            background: isDark
+            background: dark
               ? 'radial-gradient(ellipse at 50% 50%, rgba(167,139,250,0.4) 0%, rgba(196,181,253,0.2) 50%, transparent 100%)'
               : 'radial-gradient(ellipse at 50% 50%, rgba(167,139,250,0.3) 0%, rgba(196,181,253,0.12) 50%, transparent 100%)'
           }}
@@ -55,7 +55,7 @@ export const QrLogin: React.FC<PosterProps<QrLoginData>> = React.memo((props) =>
         <div
           className="absolute rounded-full w-200 h-150 -bottom-50 left-1/2 -translate-x-1/2 blur-[150px]"
           style={{
-            background: isDark
+            background: dark
               ? 'radial-gradient(ellipse at 50% 70%, rgba(124,58,237,0.35) 0%, rgba(99,102,241,0.18) 50%, transparent 100%)'
               : 'radial-gradient(ellipse at 50% 70%, rgba(124,58,237,0.25) 0%, rgba(99,102,241,0.12) 50%, transparent 100%)'
           }}
@@ -63,7 +63,7 @@ export const QrLogin: React.FC<PosterProps<QrLoginData>> = React.memo((props) =>
       </div>
 
       {/* 噪点纹理层 */}
-      <div className="absolute inset-0 pointer-events-none" style={{ opacity: isDark ? 0.08 : 0.1 }}>
+      <div className="absolute inset-0 pointer-events-none" style={{ opacity: dark ? 0.08 : 0.1 }}>
         <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
           <filter id="qrNoise" x="0%" y="0%" width="100%" height="100%">
             <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="1" stitchTiles="stitch" result="noise" />
@@ -103,11 +103,11 @@ export const QrLogin: React.FC<PosterProps<QrLoginData>> = React.memo((props) =>
           <div
             className="relative rounded-3xl p-10 border-4"
             style={{
-              background: isDark
+              background: dark
                 ? 'linear-gradient(135deg, rgba(139,92,246,0.2) 0%, rgba(124,58,237,0.15) 100%)'
                 : 'linear-gradient(135deg, rgba(196,181,253,0.4) 0%, rgba(167,139,250,0.3) 100%)',
-              borderColor: isDark ? '#a78bfa' : '#8b5cf6',
-              boxShadow: isDark
+              borderColor: dark ? '#a78bfa' : '#8b5cf6',
+              boxShadow: dark
                 ? '0 0 60px rgba(139,92,246,0.4), inset 0 0 40px rgba(139,92,246,0.15)'
                 : '0 0 60px rgba(139,92,246,0.3), inset 0 0 40px rgba(196,181,253,0.4)'
             }}
@@ -117,10 +117,10 @@ export const QrLogin: React.FC<PosterProps<QrLoginData>> = React.memo((props) =>
               <div
                 className="rounded-full p-6"
                 style={{
-                  background: isDark
+                  background: dark
                     ? 'linear-gradient(135deg, #f87171 0%, #dc2626 100%)'
                     : 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
-                  boxShadow: isDark ? '0 0 40px rgba(248,113,113,0.6)' : '0 0 40px rgba(239,68,68,0.5)'
+                  boxShadow: dark ? '0 0 40px rgba(248,113,113,0.6)' : '0 0 40px rgba(239,68,68,0.5)'
                 }}
               >
                 <AlertTriangle className="w-16 h-16 text-white" strokeWidth={3} />
@@ -134,10 +134,10 @@ export const QrLogin: React.FC<PosterProps<QrLoginData>> = React.memo((props) =>
                   ⚠ 安全警告 ⚠
                 </h3>
                 <div className="space-y-3">
-                  <p className="text-4xl font-bold" style={{ color: isDark ? '#c4b5fd' : '#7c3aed' }}>
+                  <p className="text-4xl font-bold" style={{ color: dark ? '#c4b5fd' : '#7c3aed' }}>
                     请勿截图转发此二维码
                   </p>
-                  <p className="text-3xl font-medium" style={{ color: isDark ? '#a78bfa' : '#8b5cf6' }}>
+                  <p className="text-3xl font-medium" style={{ color: dark ? '#a78bfa' : '#8b5cf6' }}>
                     图片含敏感登录信息
                   </p>
                 </div>
@@ -145,18 +145,18 @@ export const QrLogin: React.FC<PosterProps<QrLoginData>> = React.memo((props) =>
 
               {/* 分隔线 */}
               <div className="flex items-center gap-4">
-                <div className="flex-1 h-1 rounded-full" style={{ backgroundColor: isDark ? '#8b5cf6' : '#a78bfa', opacity: 0.5 }} />
-                <span className="text-3xl" style={{ color: isDark ? '#a78bfa' : '#8b5cf6' }}>
+                <div className="flex-1 h-1 rounded-full" style={{ backgroundColor: dark ? '#8b5cf6' : '#a78bfa', opacity: 0.5 }} />
+                <span className="text-3xl" style={{ color: dark ? '#a78bfa' : '#8b5cf6' }}>
                   ◆
                 </span>
-                <div className="flex-1 h-1 rounded-full" style={{ backgroundColor: isDark ? '#8b5cf6' : '#a78bfa', opacity: 0.5 }} />
+                <div className="flex-1 h-1 rounded-full" style={{ backgroundColor: dark ? '#8b5cf6' : '#a78bfa', opacity: 0.5 }} />
               </div>
 
               <div className="text-center">
                 <p className="text-4xl font-bold tracking-wide" style={{ color: warningColor }}>
                   泄露将导致服务器安全风险
                 </p>
-                <p className="text-3xl font-medium mt-3" style={{ color: isDark ? '#a78bfa' : '#8b5cf6' }}>
+                <p className="text-3xl font-medium mt-3" style={{ color: dark ? '#a78bfa' : '#8b5cf6' }}>
                   CONFIDENTIAL · 机密信息
                 </p>
               </div>
@@ -165,19 +165,19 @@ export const QrLogin: React.FC<PosterProps<QrLoginData>> = React.memo((props) =>
             {/* 装饰性边角 */}
             <div
               className="absolute top-4 left-4 w-12 h-12 border-t-4 border-l-4 rounded-tl-2xl"
-              style={{ borderColor: isDark ? '#a78bfa' : '#8b5cf6' }}
+              style={{ borderColor: dark ? '#a78bfa' : '#8b5cf6' }}
             />
             <div
               className="absolute top-4 right-4 w-12 h-12 border-t-4 border-r-4 rounded-tr-2xl"
-              style={{ borderColor: isDark ? '#a78bfa' : '#8b5cf6' }}
+              style={{ borderColor: dark ? '#a78bfa' : '#8b5cf6' }}
             />
             <div
               className="absolute bottom-4 left-4 w-12 h-12 border-b-4 border-l-4 rounded-bl-2xl"
-              style={{ borderColor: isDark ? '#a78bfa' : '#8b5cf6' }}
+              style={{ borderColor: dark ? '#a78bfa' : '#8b5cf6' }}
             />
             <div
               className="absolute bottom-4 right-4 w-12 h-12 border-b-4 border-r-4 rounded-br-2xl"
-              style={{ borderColor: isDark ? '#a78bfa' : '#8b5cf6' }}
+              style={{ borderColor: dark ? '#a78bfa' : '#8b5cf6' }}
             />
           </div>
         </div>
@@ -216,8 +216,8 @@ export const QrLogin: React.FC<PosterProps<QrLoginData>> = React.memo((props) =>
           <div
             className="rounded-3xl p-10"
             style={{
-              background: isDark ? 'rgba(139,92,246,0.1)' : 'rgba(139,92,246,0.05)',
-              border: `2px solid ${isDark ? 'rgba(139,92,246,0.3)' : 'rgba(139,92,246,0.2)'}`
+              background: dark ? 'rgba(139,92,246,0.1)' : 'rgba(139,92,246,0.05)',
+              border: `2px solid ${dark ? 'rgba(139,92,246,0.3)' : 'rgba(139,92,246,0.2)'}`
             }}
           >
             <div className="flex items-center gap-4 mb-6">

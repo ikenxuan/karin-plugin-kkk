@@ -2,9 +2,9 @@ import { CheckCircle2, TriangleAlert } from 'lucide-react'
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
 
+import { isDark } from '../../../../utils/theme'
 import { DefaultLayout } from '../../../components/DefaultLayout'
 import type { PosterProps } from '../../../types/ctx'
-import { resolveUseDarkTheme } from '../../../../utils/theme'
 import type { RuntimeReportData } from './types'
 
 /**
@@ -16,7 +16,7 @@ import type { RuntimeReportData } from './types'
  */
 export const RuntimeReport: React.FC<PosterProps<RuntimeReportData>> = React.memo((props) => {
   const { data } = props
-  const isDark = resolveUseDarkTheme(data, props.ctx)
+  const dark = isDark(props.ctx)
   const releaseLabel =
     data.identity.releaseType.toLowerCase() === 'stable'
       ? '正式版'
@@ -30,7 +30,7 @@ export const RuntimeReport: React.FC<PosterProps<RuntimeReportData>> = React.mem
         ? { label: '构建信息不一致', icon: <TriangleAlert className="h-8 w-8" />, color: '#f59e0b' }
         : { label: '未找到构建信息', icon: <TriangleAlert className="h-8 w-8" />, color: '#94a3b8' }
 
-  const palette = isDark
+  const palette = dark
     ? {
         background: '#0d0a1c',
         glowPrimary: 'rgba(139, 92, 246, 0.34)',

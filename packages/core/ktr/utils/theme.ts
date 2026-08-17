@@ -1,13 +1,10 @@
-import type { PosterContext } from '../types/ctx'
+import type { RenderContext } from '@karinjs/template-react'
 
 /**
- * 解析模板的明暗状态。
- * 优先级：面板「模板主题」弹窗显式下发的 `ctx.theme.mode` > core 渲染时注入数据的 `data.useDarkTheme`。
- * 生产渲染两者同值；开发面板未选主题时（mode 为 undefined）跟随数据文件。
+ * 判断当前渲染是否为深色主题。
+ * 唯一事实来源是 `ctx.theme.mode`：生产渲染由 core 显式传入（'light' | 'dark'），
+ * 开发面板由「模板主题」弹窗下发；未设置时按浅色处理（框架不发明默认主题）。
+ * @param ctx ktr 注入的运行时上下文。
+ * @returns 深色主题返回 true。
  */
-export const resolveUseDarkTheme = (data: { useDarkTheme?: boolean } | undefined, ctx: PosterContext): boolean => {
-  if (ctx.theme?.mode !== undefined) {
-    return ctx.theme.mode === 'dark'
-  }
-  return Boolean(data?.useDarkTheme)
-}
+export const isDark = (ctx: RenderContext): boolean => ctx.theme?.mode === 'dark'

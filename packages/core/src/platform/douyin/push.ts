@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 
 import type { DySearchInfo } from '@ikenxuan/amagi'
-import type { DouyinUserListData } from '@template/douyin/userlist/components/types'
+import type { DouyinUserListData } from '@template/template/douyin/userlist/components/types'
 import { format } from 'date-fns'
 import type { AdapterType, ImageElement, Message } from 'node-karin'
 import karin, { common, logger, segment } from 'node-karin'

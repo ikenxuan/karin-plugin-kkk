@@ -27,6 +27,4 @@ export interface GroupStatisticsData {
   globalTotalGroups: number
   /** 全局总解析次数 */
   globalTotalParses: number
-  /** 是否使用深色主题（core 渲染时注入 data） */
-  useDarkTheme?: boolean
 }

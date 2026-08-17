@@ -2,23 +2,23 @@ import React from 'react'
 import { RiTrophyFill } from 'react-icons/ri'
 import { VictoryAxis, VictoryChart, VictoryLabel, VictoryLine, VictoryPie, VictoryScatter, VictoryTheme } from 'victory'
 
+import { isDark } from '../../../../utils/theme'
 import { DefaultLayout } from '../../../components/DefaultLayout'
 import type { PosterProps } from '../../../types/ctx'
-import { resolveUseDarkTheme } from '../../../../utils/theme'
 import type { GlobalStatisticsData } from './types'
 
 /**
  * 全局解析统计组件 Global Statistics
  */
 export const GlobalStatistics: React.FC<PosterProps<GlobalStatisticsData>> = (props) => {
-  const useDarkTheme = resolveUseDarkTheme(props.data, props.ctx)
+  const dark = isDark(props.ctx)
 
   const platformConfig = {
     douyin: {
       name: '抖音',
       nameEn: 'Douyin',
-      logo: useDarkTheme ? '/image/douyin/dylogo-light.svg' : '/image/douyin/dylogo-dark.svg',
-      color: useDarkTheme ? '#ffffff' : '#111111'
+      logo: dark ? '/image/douyin/dylogo-light.svg' : '/image/douyin/dylogo-dark.svg',
+      color: dark ? '#ffffff' : '#111111'
     },
     bilibili: {
       name: '哔哩哔哩',
@@ -41,7 +41,7 @@ export const GlobalStatistics: React.FC<PosterProps<GlobalStatisticsData>> = (pr
   }
 
   // 弥散光颜色配置
-  const glowColors = useDarkTheme
+  const glowColors = dark
     ? {
         primary: 'rgba(236, 72, 153, 0.4)',
         secondary: 'rgba(139, 92, 246, 0.3)',
@@ -341,16 +341,16 @@ export const GlobalStatistics: React.FC<PosterProps<GlobalStatisticsData>> = (pr
                 >
                   <VictoryAxis
                     style={{
-                      axis: { stroke: useDarkTheme ? '#71717a' : '#a1a1aa', strokeWidth: 2 },
+                      axis: { stroke: dark ? '#71717a' : '#a1a1aa', strokeWidth: 2 },
                       tickLabels: {
                         fontSize: 24,
-                        fill: useDarkTheme ? '#d4d4d8' : '#52525b',
+                        fill: dark ? '#d4d4d8' : '#52525b',
                         fontFamily: 'HarmonyOSHans-Regular',
                         angle: -45,
                         textAnchor: 'end',
                         verticalAnchor: 'middle'
                       },
-                      grid: { stroke: useDarkTheme ? '#52525b' : '#d4d4d8', strokeWidth: 1 }
+                      grid: { stroke: dark ? '#52525b' : '#d4d4d8', strokeWidth: 1 }
                     }}
                     tickValues={getXAxisTicks()}
                     tickFormat={formatXAxis}
@@ -363,7 +363,7 @@ export const GlobalStatistics: React.FC<PosterProps<GlobalStatisticsData>> = (pr
                         angle={0}
                         style={{
                           fontSize: 24,
-                          fill: useDarkTheme ? '#a1a1aa' : '#71717a',
+                          fill: dark ? '#a1a1aa' : '#71717a',
                           fontFamily: 'HarmonyOSHans-Regular'
                         }}
                       />
@@ -381,19 +381,19 @@ export const GlobalStatistics: React.FC<PosterProps<GlobalStatisticsData>> = (pr
                         angle={0}
                         style={{
                           fontSize: 24,
-                          fill: useDarkTheme ? '#a1a1aa' : '#71717a',
+                          fill: dark ? '#a1a1aa' : '#71717a',
                           fontFamily: 'HarmonyOSHans-Regular'
                         }}
                       />
                     }
                     style={{
-                      axis: { stroke: useDarkTheme ? '#71717a' : '#a1a1aa', strokeWidth: 2 },
+                      axis: { stroke: dark ? '#71717a' : '#a1a1aa', strokeWidth: 2 },
                       tickLabels: {
                         fontSize: 28,
-                        fill: useDarkTheme ? '#d4d4d8' : '#52525b',
+                        fill: dark ? '#d4d4d8' : '#52525b',
                         fontFamily: 'HarmonyOSHans-Regular'
                       },
-                      grid: { stroke: useDarkTheme ? '#52525b' : '#d4d4d8', strokeWidth: 1 }
+                      grid: { stroke: dark ? '#52525b' : '#d4d4d8', strokeWidth: 1 }
                     }}
                   />
                   <VictoryLine
@@ -425,7 +425,7 @@ export const GlobalStatistics: React.FC<PosterProps<GlobalStatisticsData>> = (pr
                       <VictoryLabel
                         style={{
                           fontSize: 10,
-                          fill: useDarkTheme ? '#d4d4d8' : '#52525b',
+                          fill: dark ? '#d4d4d8' : '#52525b',
                           fontFamily: 'HarmonyOSHans-Regular'
                         }}
                         dy={25}
@@ -441,7 +441,7 @@ export const GlobalStatistics: React.FC<PosterProps<GlobalStatisticsData>> = (pr
                       <VictoryLabel
                         style={{
                           fontSize: 10,
-                          fill: useDarkTheme ? '#d4d4d8' : '#52525b',
+                          fill: dark ? '#d4d4d8' : '#52525b',
                           fontFamily: 'HarmonyOSHans-Regular'
                         }}
                         dy={-15}
@@ -492,7 +492,7 @@ export const GlobalStatistics: React.FC<PosterProps<GlobalStatisticsData>> = (pr
                       fontSize: 40,
                       fontFamily: 'HarmonyOSHans-Regular',
                       fontWeight: 'bold',
-                      fill: useDarkTheme ? '#fff' : '#000'
+                      fill: dark ? '#fff' : '#000'
                     }
                   }}
                   labelRadius={400}

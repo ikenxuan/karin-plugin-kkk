@@ -2,10 +2,10 @@ import { format } from 'date-fns'
 import { Clock, Eye, Hash, Maximize, Users } from 'lucide-react'
 import React from 'react'
 
+import { isDark } from '../../../../utils/theme'
 import { DefaultLayout } from '../../../components/DefaultLayout'
 import { QRCodeWithAvatar } from '../../../components/QRCodeWithAvatar'
 import type { PosterProps } from '../../../types/ctx'
-import { resolveUseDarkTheme } from '../../../../utils/theme'
 import { DouyinCommentIcon, DouyinFavoriteIcon, DouyinLikeIcon, DouyinShareIcon } from '../../components/Icons'
 import type { DouyinDynamicData } from './types'
 
@@ -234,7 +234,7 @@ export const DouyinDynamic: React.FC<PosterProps<DouyinDynamicData>> = (props) =
       <div>
         {/* 头部Logo */}
         <div className="h-15" />
-        <DouyinHeader useDarkTheme={resolveUseDarkTheme(props.data, props.ctx)} />
+        <DouyinHeader useDarkTheme={isDark(props.ctx)} />
         <div className="h-15" />
 
         {/* 封面 */}
@@ -268,7 +268,7 @@ export const DouyinDynamic: React.FC<PosterProps<DouyinDynamicData>> = (props) =
               <QRCodeWithAvatar
                 value={props.data.share_url}
                 avatarUrl={props.data.avater_url}
-                useDarkTheme={resolveUseDarkTheme(props.data, props.ctx)}
+                useDarkTheme={isDark(props.ctx)}
                 alt="二维码"
                 className="h-auto w-75 rounded-xl"
               />

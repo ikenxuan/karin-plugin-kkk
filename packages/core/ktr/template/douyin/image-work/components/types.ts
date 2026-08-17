@@ -1,8 +1,8 @@
 /** 本模板的数据类型（路由 index.tsx 与 components/ 实现共用）。 */
 import type { RichTextDocument } from '@kkk/richtext'
 
-/** 抖音图文中单张媒体的类型。 */
-export type DouyinImageMediaType = 'static' | 'live' | 'clip'
+/** 抖音图文中单张媒体的类型。组件内需要时从总类型逐步取：DouyinImageWorkData['image_list']['images'][number]['media_type'] */
+type DouyinImageMediaType = 'static' | 'live' | 'clip'
 
 /**
  * 抖音图文作品组件属性接口
@@ -75,6 +75,4 @@ export interface DouyinImageWorkData {
       role_title: string
     }>
   }
-  /** 是否使用深色主题（core 渲染时注入 data） */
-  useDarkTheme?: boolean
 }

@@ -23,6 +23,4 @@ export interface BilibiliCommentData {
   Resolution: string | null
   /** 评论数据 */
   CommentsData: CommentItem[]
-  /** 是否使用深色主题（core 渲染时注入 data） */
-  useDarkTheme?: boolean
 }

@@ -28,6 +28,4 @@ export interface DouyinMusicInfoData {
   fans: number
   /** 分享链接 */
   share_url: string
-  /** 是否使用深色主题（core 渲染时注入 data） */
-  useDarkTheme?: boolean
 }

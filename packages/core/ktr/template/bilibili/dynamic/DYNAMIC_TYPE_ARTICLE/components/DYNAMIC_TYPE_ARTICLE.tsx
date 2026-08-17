@@ -2,10 +2,10 @@ import { renderRichTextToReact } from '@kkk/richtext'
 import { Bookmark, Clock, Eye, Hash, UsersRound } from 'lucide-react'
 import React from 'react'
 
+import { isDark } from '../../../../../utils/theme'
 import { DefaultLayout } from '../../../../components/DefaultLayout'
 import { QRCodeWithAvatar } from '../../../../components/QRCodeWithAvatar'
 import type { PosterProps } from '../../../../types/ctx'
-import { resolveUseDarkTheme } from '../../../../../utils/theme'
 import { CommentIcon, ShareIcon, ThumbUpIcon } from '../../../components/Icons'
 import { CommentText, DecorationCard, EnhancedImage, UsernameDisplay } from '../../../components/shared'
 import type { BilibiliArticleDynamicData } from './types'
@@ -204,7 +204,7 @@ const BilibiliArticleFooter: React.FC<PosterProps<BilibiliArticleDynamicData>> =
         <QRCodeWithAvatar
           value={props.data.share_url}
           avatarUrl={props.data.avatar_url}
-          useDarkTheme={resolveUseDarkTheme(props.data, props.ctx)}
+          useDarkTheme={isDark(props.ctx)}
           alt="二维码"
           className="h-auto w-75 rounded-2xl"
         />
@@ -218,8 +218,8 @@ const BilibiliArticleFooter: React.FC<PosterProps<BilibiliArticleDynamicData>> =
  */
 export const BilibiliArticleDynamic: React.FC<PosterProps<BilibiliArticleDynamicData>> = React.memo((props) => {
   return (
-    // 旧引擎此处只透传 data/version/scale（不带 watermarkTextBitSize），保持不显示 Restore ID 的原有效果
-    <DefaultLayout data={props.data} ctx={{ ...props.ctx, watermarkTextBitSize: undefined }}>
+    // 旧引擎此处只透传 version/scale（不带 watermarkTextBitSize），保持不显示 Restore ID 的原有效果
+    <DefaultLayout ctx={{ ...props.ctx, watermarkTextBitSize: undefined }}>
       <div className="p-4">
         {/* 间距 */}
         <div className="h-25" />

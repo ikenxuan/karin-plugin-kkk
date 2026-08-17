@@ -32,6 +32,4 @@ export interface BilibiliUserListData {
     /** 推送类型列表 */
     pushTypes?: ('video' | 'draw' | 'word' | 'live' | 'forward' | 'article')[]
   }[]
-  /** 是否使用深色主题（core 渲染时注入 data） */
-  useDarkTheme?: boolean
 }

@@ -9,10 +9,14 @@ import { MdSchedule } from 'react-icons/md'
 import { DefaultLayout } from '../../../components/DefaultLayout'
 import type { PosterProps } from '../../../types/ctx'
 import { generateQRCode } from '../../../../utils/QRcode'
-import { resolveUseDarkTheme } from '../../../../utils/theme'
+import { isDark } from '../../../../utils/theme'
 import { getRandomErrorTitle } from './errorTitles'
-import type { BusinessError, LogLevel } from './types'
 import type { ApiErrorData } from './types'
+
+/** 业务错误类型：从总数据类型里取，不再单独导出。 */
+type BusinessError = ApiErrorData['error']
+/** 日志等级：从总数据类型里逐步取。 */
+type LogLevel = NonNullable<ApiErrorData['logs']>[number]['level']
 
 /**
  * ANSI 颜色代码映射
@@ -134,7 +138,7 @@ const convertAnsiToHtml = (text: string): string => {
   return result
 }
 
-const getLogLevelTheme = (level: LogLevel, isDark: boolean) => {
+const getLogLevelTheme = (level: LogLevel, dark: boolean) => {
   const themeMap: Record<
     LogLevel,
     {
@@ -147,27 +151,27 @@ const getLogLevelTheme = (level: LogLevel, isDark: boolean) => {
     }
   > = {
     TRAC: {
-      bgClass: isDark ? 'bg-muted/10' : 'bg-muted/5',
+      bgClass: dark ? 'bg-muted/10' : 'bg-muted/5',
       borderClass: 'border-muted/20',
       textClass: 'text-muted',
       iconClass: 'text-muted',
-      levelClass: isDark ? 'text-muted/10' : 'text-muted/10',
+      levelClass: dark ? 'text-muted/10' : 'text-muted/10',
       dotClass: 'bg-muted/40'
     },
     DEBU: {
-      bgClass: isDark ? 'bg-cyan-400/10' : 'bg-cyan-500/5',
-      borderClass: isDark ? 'border-cyan-400/20' : 'border-cyan-500/20',
-      textClass: isDark ? 'text-cyan-400' : 'text-cyan-600',
-      iconClass: isDark ? 'text-cyan-400' : 'text-cyan-600',
-      levelClass: isDark ? 'text-cyan-400/10' : 'text-cyan-600/10',
-      dotClass: isDark ? 'bg-cyan-400/40' : 'bg-cyan-500/40'
+      bgClass: dark ? 'bg-cyan-400/10' : 'bg-cyan-500/5',
+      borderClass: dark ? 'border-cyan-400/20' : 'border-cyan-500/20',
+      textClass: dark ? 'text-cyan-400' : 'text-cyan-600',
+      iconClass: dark ? 'text-cyan-400' : 'text-cyan-600',
+      levelClass: dark ? 'text-cyan-400/10' : 'text-cyan-600/10',
+      dotClass: dark ? 'bg-cyan-400/40' : 'bg-cyan-500/40'
     },
     MARK: {
-      bgClass: isDark ? 'bg-muted/10' : 'bg-muted/5',
+      bgClass: dark ? 'bg-muted/10' : 'bg-muted/5',
       borderClass: 'border-muted/20',
       textClass: 'text-muted',
       iconClass: 'text-muted',
-      levelClass: isDark ? 'text-muted/10' : 'text-muted/10',
+      levelClass: dark ? 'text-muted/10' : 'text-muted/10',
       dotClass: 'bg-muted/40'
     },
     INFO: {
@@ -175,7 +179,7 @@ const getLogLevelTheme = (level: LogLevel, isDark: boolean) => {
       borderClass: 'border-success/25',
       textClass: 'text-success',
       iconClass: 'text-success',
-      levelClass: isDark ? 'text-success/10' : 'text-success/10',
+      levelClass: dark ? 'text-success/10' : 'text-success/10',
       dotClass: 'bg-success/40'
     },
     WARN: {
@@ -183,7 +187,7 @@ const getLogLevelTheme = (level: LogLevel, isDark: boolean) => {
       borderClass: 'border-warning/25',
       textClass: 'text-warning',
       iconClass: 'text-warning',
-      levelClass: isDark ? 'text-warning/10' : 'text-warning-soft',
+      levelClass: dark ? 'text-warning/10' : 'text-warning-soft',
       dotClass: 'bg-warning/40'
     },
     ERRO: {
@@ -191,16 +195,16 @@ const getLogLevelTheme = (level: LogLevel, isDark: boolean) => {
       borderClass: 'border-danger/25',
       textClass: 'text-danger',
       iconClass: 'text-danger',
-      levelClass: isDark ? 'text-danger/10' : 'text-danger/10',
+      levelClass: dark ? 'text-danger/10' : 'text-danger/10',
       dotClass: 'bg-danger/40'
     },
     FATA: {
-      bgClass: isDark ? 'bg-pink-400/10' : 'bg-pink-500/5',
-      borderClass: isDark ? 'border-pink-400/25' : 'border-pink-500/25',
-      textClass: isDark ? 'text-pink-400' : 'text-pink-500',
-      iconClass: isDark ? 'text-pink-400' : 'text-pink-500',
-      levelClass: isDark ? 'text-pink-400/10' : 'text-pink-500/10',
-      dotClass: isDark ? 'bg-pink-400/40' : 'bg-pink-500/40'
+      bgClass: dark ? 'bg-pink-400/10' : 'bg-pink-500/5',
+      borderClass: dark ? 'border-pink-400/25' : 'border-pink-500/25',
+      textClass: dark ? 'text-pink-400' : 'text-pink-500',
+      iconClass: dark ? 'text-pink-400' : 'text-pink-500',
+      levelClass: dark ? 'text-pink-400/10' : 'text-pink-500/10',
+      dotClass: dark ? 'bg-pink-400/40' : 'bg-pink-500/40'
     }
   }
   return themeMap[level] || themeMap['TRAC']
@@ -243,17 +247,17 @@ const SectionTitle: React.FC<{ icon: React.ReactNode; en: string; zh: string; co
  */
 export const handlerError: React.FC<PosterProps<ApiErrorData>> = (props) => {
   const { data } = props
-  const isDark = resolveUseDarkTheme(data, props.ctx)
+  const dark = isDark(props.ctx)
   const isBusinessError = data.type === 'business_error'
   const businessError = isBusinessError ? (data.error as BusinessError) : null
   const displayMethod = businessError?.businessName || data.method
 
   // 631 配色 - 红/珊瑚色系
-  const bgColor = isDark ? '#0f0a0a' : '#faf5f5'
-  const primaryColor = isDark ? '#f87171' : '#dc2626'
-  const secondaryColor = isDark ? '#fca5a5' : '#b91c1c'
-  const mutedColor = isDark ? 'rgba(248,113,113,0.7)' : '#991b1b'
-  const accentColor = isDark ? '#fecaca' : '#7f1d1d'
+  const bgColor = dark ? '#0f0a0a' : '#faf5f5'
+  const primaryColor = dark ? '#f87171' : '#dc2626'
+  const secondaryColor = dark ? '#fca5a5' : '#b91c1c'
+  const mutedColor = dark ? 'rgba(248,113,113,0.7)' : '#991b1b'
+  const accentColor = dark ? '#fecaca' : '#7f1d1d'
 
   return (
     <DefaultLayout
@@ -268,7 +272,7 @@ export const handlerError: React.FC<PosterProps<ApiErrorData>> = (props) => {
         <div
           className="absolute rounded-full w-300 h-350 -top-75 -left-50 blur-[120px] -rotate-15"
           style={{
-            background: isDark
+            background: dark
               ? 'radial-gradient(ellipse at 40% 40%, rgba(220,38,38,0.35) 0%, rgba(185,28,28,0.18) 50%, transparent 100%)'
               : 'radial-gradient(ellipse at 40% 40%, rgba(248,113,113,0.45) 0%, rgba(252,165,165,0.22) 50%, transparent 100%)'
           }}
@@ -277,7 +281,7 @@ export const handlerError: React.FC<PosterProps<ApiErrorData>> = (props) => {
         <div
           className="absolute rounded-full w-225 h-250 top-100 -right-25 blur-[100px] rotate-20"
           style={{
-            background: isDark
+            background: dark
               ? 'radial-gradient(ellipse at 50% 50%, rgba(127,29,29,0.3) 0%, rgba(69,10,10,0.15) 50%, transparent 100%)'
               : 'radial-gradient(ellipse at 50% 50%, rgba(254,202,202,0.4) 0%, rgba(254,226,226,0.2) 50%, transparent 100%)'
           }}
@@ -286,7 +290,7 @@ export const handlerError: React.FC<PosterProps<ApiErrorData>> = (props) => {
         <div
           className="absolute rounded-full w-250 h-200 -bottom-50 left-50 blur-[140px] -rotate-10"
           style={{
-            background: isDark
+            background: dark
               ? 'radial-gradient(ellipse at 50% 60%, rgba(153,27,27,0.3) 0%, rgba(127,29,29,0.15) 50%, transparent 100%)'
               : 'radial-gradient(ellipse at 50% 60%, rgba(252,165,165,0.35) 0%, rgba(254,202,202,0.18) 50%, transparent 100%)'
           }}
@@ -294,7 +298,7 @@ export const handlerError: React.FC<PosterProps<ApiErrorData>> = (props) => {
       </div>
 
       {/* 单色噪点层 - 明显颗粒感 */}
-      <div className="absolute inset-0 pointer-events-none" style={{ opacity: isDark ? 0.12 : 0.18 }}>
+      <div className="absolute inset-0 pointer-events-none" style={{ opacity: dark ? 0.12 : 0.18 }}>
         <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
           <filter id="errorPixelNoise" x="0%" y="0%" width="100%" height="100%">
             <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="1" stitchTiles="stitch" result="noise" />
@@ -313,7 +317,7 @@ export const handlerError: React.FC<PosterProps<ApiErrorData>> = (props) => {
       <div className="absolute bottom-20 right-15 pointer-events-none select-none opacity-[0.03]">
         <span
           className="text-[180px] font-black tracking-tighter leading-none block text-right"
-          style={{ color: isDark ? '#fff' : '#7f1d1d' }}
+          style={{ color: dark ? '#fff' : '#7f1d1d' }}
         >
           ERROR
         </span>
@@ -372,8 +376,8 @@ export const handlerError: React.FC<PosterProps<ApiErrorData>> = (props) => {
             <div
               className="relative px-8 py-3 backdrop-blur-md"
               style={{
-                backgroundColor: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
-                border: `1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'}`
+                backgroundColor: dark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+                border: `1px solid ${dark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'}`
               }}
             >
               {/* 四角装饰钉 */}
@@ -386,7 +390,7 @@ export const handlerError: React.FC<PosterProps<ApiErrorData>> = (props) => {
                 {/* 状态指示器 */}
                 <div
                   className="flex flex-col items-center justify-center border-r pr-6"
-                  style={{ borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }}
+                  style={{ borderColor: dark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }}
                 >
                   <div
                     className="w-4 h-4 rounded-full shadow-[0_0_15px_currentColor] animate-pulse"
@@ -462,7 +466,7 @@ export const handlerError: React.FC<PosterProps<ApiErrorData>> = (props) => {
 
         {/* 验证二维码 */}
         {data.isVerification && data.verificationUrl && (
-          <div className="mb-16 p-12 rounded-[40px]" style={{ backgroundColor: isDark ? 'rgba(0,0,0,0.25)' : 'rgba(255,255,255,0.6)' }}>
+          <div className="mb-16 p-12 rounded-[40px]" style={{ backgroundColor: dark ? 'rgba(0,0,0,0.25)' : 'rgba(255,255,255,0.6)' }}>
             <div className="flex items-center gap-6 mb-10">
               <QrCode size={40} className="text-warning" />
               <span className="text-3xl font-semibold" style={{ color: accentColor }}>
@@ -470,7 +474,7 @@ export const handlerError: React.FC<PosterProps<ApiErrorData>> = (props) => {
               </span>
             </div>
             <div className="flex gap-16 items-center">
-              <img src={generateQRCode(data.verificationUrl, isDark)} alt="验证二维码" className="w-64 h-64 rounded-3xl" />
+              <img src={generateQRCode(data.verificationUrl, dark)} alt="验证二维码" className="w-64 h-64 rounded-3xl" />
               <div className="space-y-6">
                 <p className="text-3xl" style={{ color: secondaryColor }}>
                   请在 120 秒内完成验证
@@ -499,7 +503,7 @@ export const handlerError: React.FC<PosterProps<ApiErrorData>> = (props) => {
               zh="触发命令"
               color={mutedColor}
             />
-            <div className="p-10 rounded-[36px]" style={{ backgroundColor: isDark ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.5)' }}>
+            <div className="p-10 rounded-[36px]" style={{ backgroundColor: dark ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.5)' }}>
               <pre
                 className="text-3xl leading-relaxed whitespace-pre-wrap break-all font-mono"
                 style={{ color: accentColor }}
@@ -515,13 +519,13 @@ export const handlerError: React.FC<PosterProps<ApiErrorData>> = (props) => {
           <div
             className="p-10 rounded-[36px]"
             style={{
-              backgroundColor: isDark ? 'rgba(220,38,38,0.1)' : 'rgba(254,202,202,0.4)',
-              border: `1px solid ${isDark ? 'rgba(248,113,113,0.2)' : 'rgba(252,165,165,0.5)'}`
+              backgroundColor: dark ? 'rgba(220,38,38,0.1)' : 'rgba(254,202,202,0.4)',
+              border: `1px solid ${dark ? 'rgba(248,113,113,0.2)' : 'rgba(252,165,165,0.5)'}`
             }}
           >
             <pre
               className="text-2xl leading-relaxed whitespace-pre-wrap break-all font-mono"
-              style={{ color: isDark ? 'rgba(255,255,255,0.85)' : 'rgba(127,29,29,0.9)' }}
+              style={{ color: dark ? 'rgba(255,255,255,0.85)' : 'rgba(127,29,29,0.9)' }}
               dangerouslySetInnerHTML={{
                 __html: convertAnsiToHtml(String(businessError?.stack || data.error?.stack || ''))
               }}
@@ -540,7 +544,7 @@ export const handlerError: React.FC<PosterProps<ApiErrorData>> = (props) => {
             />
             <div className="space-y-6">
               {data.logs.map((log, index) => {
-                const theme = getLogLevelTheme(log.level, isDark)
+                const theme = getLogLevelTheme(log.level, dark)
                 return (
                   <fieldset key={index} className={`relative rounded-3xl ${theme.bgClass} border-2 ${theme.borderClass} p-6`}>
                     {/* 时间戳 */}
@@ -563,7 +567,7 @@ export const handlerError: React.FC<PosterProps<ApiErrorData>> = (props) => {
                     {/* 日志内容 */}
                     <div
                       className="relative z-1 text-2xl font-mono whitespace-pre-wrap break-all leading-relaxed"
-                      style={{ color: isDark ? 'rgba(255,255,255,0.88)' : 'rgba(0,0,0,0.82)' }}
+                      style={{ color: dark ? 'rgba(255,255,255,0.88)' : 'rgba(0,0,0,0.82)' }}
                       dangerouslySetInnerHTML={{ __html: convertAnsiToHtml(log.message) }}
                     />
                   </fieldset>
@@ -574,7 +578,7 @@ export const handlerError: React.FC<PosterProps<ApiErrorData>> = (props) => {
         )}
 
         {/* 底部版本信息 */}
-        <div className="mt-auto pt-12" style={{ borderTop: `2px solid ${isDark ? 'rgba(248,113,113,0.15)' : 'rgba(252,165,165,0.3)'}` }}>
+        <div className="mt-auto pt-12" style={{ borderTop: `2px solid ${dark ? 'rgba(248,113,113,0.15)' : 'rgba(252,165,165,0.3)'}` }}>
           {/* 版本信息网格 */}
           <div className="grid grid-cols-2 gap-10 mb-12">
             <div className="flex items-center gap-6">
@@ -618,8 +622,8 @@ export const handlerError: React.FC<PosterProps<ApiErrorData>> = (props) => {
               <div
                 className="col-span-2 p-8 rounded-3xl"
                 style={{
-                  backgroundColor: isDark ? 'rgba(0,0,0,0.18)' : 'rgba(255,255,255,0.52)',
-                  border: `1px solid ${isDark ? 'rgba(248,113,113,0.22)' : 'rgba(220,38,38,0.14)'}`
+                  backgroundColor: dark ? 'rgba(0,0,0,0.18)' : 'rgba(255,255,255,0.52)',
+                  border: `1px solid ${dark ? 'rgba(248,113,113,0.22)' : 'rgba(220,38,38,0.14)'}`
                 }}
               >
                 <div className="flex items-start justify-between gap-8 mb-6">
@@ -646,14 +650,14 @@ export const handlerError: React.FC<PosterProps<ApiErrorData>> = (props) => {
                 <div className="grid grid-cols-4 gap-4 text-lg" style={{ color: secondaryColor }}>
                   <div
                     className="rounded-2xl px-4 py-3"
-                    style={{ backgroundColor: isDark ? 'rgba(248,113,113,0.08)' : 'rgba(220,38,38,0.05)' }}
+                    style={{ backgroundColor: dark ? 'rgba(248,113,113,0.08)' : 'rgba(220,38,38,0.05)' }}
                   >
                     <p className="text-sm mb-1 opacity-75">Platform / 对接平台</p>
                     <p className="font-semibold break-all text-2xl">{String(data.adapterInfo.platform)}</p>
                   </div>
                   <div
                     className="rounded-2xl px-4 py-3 relative overflow-hidden"
-                    style={{ backgroundColor: isDark ? 'rgba(248,113,113,0.08)' : 'rgba(220,38,38,0.05)' }}
+                    style={{ backgroundColor: dark ? 'rgba(248,113,113,0.08)' : 'rgba(220,38,38,0.05)' }}
                   >
                     <p className="text-sm mb-1 opacity-75">Standard / 协议标准</p>
                     <p className="font-semibold break-all text-2xl">{_.upperFirst(_.camelCase(String(data.adapterInfo.standard)))}</p>
@@ -702,14 +706,14 @@ export const handlerError: React.FC<PosterProps<ApiErrorData>> = (props) => {
                   </div>
                   <div
                     className="rounded-2xl px-4 py-3"
-                    style={{ backgroundColor: isDark ? 'rgba(248,113,113,0.08)' : 'rgba(220,38,38,0.05)' }}
+                    style={{ backgroundColor: dark ? 'rgba(248,113,113,0.08)' : 'rgba(220,38,38,0.05)' }}
                   >
                     <p className="text-sm mb-1 opacity-75">Protocol / 协议实现</p>
                     <p className="font-semibold break-all text-2xl">{String(data.adapterInfo.protocol)}</p>
                   </div>
                   <div
                     className="rounded-2xl px-4 py-3"
-                    style={{ backgroundColor: isDark ? 'rgba(248,113,113,0.08)' : 'rgba(220,38,38,0.05)' }}
+                    style={{ backgroundColor: dark ? 'rgba(248,113,113,0.08)' : 'rgba(220,38,38,0.05)' }}
                   >
                     <p className="text-sm mb-1 opacity-75">Communication / 通信方式</p>
                     <p className="font-semibold break-all text-2xl">{String(data.adapterInfo.communication)}</p>
@@ -738,7 +742,7 @@ export const handlerError: React.FC<PosterProps<ApiErrorData>> = (props) => {
           </div>
 
           {/* 帮助提示 */}
-          <div className="p-10 rounded-[36px]" style={{ backgroundColor: isDark ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.5)' }}>
+          <div className="p-10 rounded-[36px]" style={{ backgroundColor: dark ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.5)' }}>
             <div className="flex items-end justify-between mb-6">
               <div>
                 <p className="text-3xl font-semibold mb-2" style={{ color: accentColor }}>
@@ -752,7 +756,7 @@ export const handlerError: React.FC<PosterProps<ApiErrorData>> = (props) => {
                 className="text-xs font-black tracking-[0.2em] uppercase px-3 py-1 rounded-full"
                 style={{
                   color: primaryColor,
-                  backgroundColor: isDark ? 'rgba(248,113,113,0.12)' : 'rgba(220,38,38,0.08)'
+                  backgroundColor: dark ? 'rgba(248,113,113,0.12)' : 'rgba(220,38,38,0.08)'
                 }}
               >
                 Support
@@ -761,8 +765,8 @@ export const handlerError: React.FC<PosterProps<ApiErrorData>> = (props) => {
             <div
               className="grid grid-cols-2 gap-x-6 gap-y-6 text-2xl leading-relaxed py-6"
               style={{
-                borderTop: `1px solid ${isDark ? 'rgba(248,113,113,0.2)' : 'rgba(220,38,38,0.12)'}`,
-                borderBottom: `1px solid ${isDark ? 'rgba(248,113,113,0.2)' : 'rgba(220,38,38,0.12)'}`
+                borderTop: `1px solid ${dark ? 'rgba(248,113,113,0.2)' : 'rgba(220,38,38,0.12)'}`,
+                borderBottom: `1px solid ${dark ? 'rgba(248,113,113,0.2)' : 'rgba(220,38,38,0.12)'}`
               }}
             >
               <div>

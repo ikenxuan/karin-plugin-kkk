@@ -3,7 +3,7 @@
 /**
  * 文章图片信息
  */
-export interface ArticleImage {
+interface ArticleImage {
   /** AI高清图片URL */
   ai_high_image_url: string
   /** 高清图片URL */
@@ -50,6 +50,4 @@ export interface DouyinArticleWorkData {
   粉丝: string
   /** 分享链接 */
   share_url: string
-  /** 是否使用深色主题（core 渲染时注入 data） */
-  useDarkTheme?: boolean
 }

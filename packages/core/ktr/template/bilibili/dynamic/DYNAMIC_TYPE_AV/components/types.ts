@@ -36,6 +36,4 @@ export interface BilibiliVideoDynamicData extends BilibiliDynamicBaseData {
     /** 粉丝数 */
     follower: number
   }>
-  /** 是否使用深色主题（core 渲染时注入 data） */
-  useDarkTheme?: boolean
 }

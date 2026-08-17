@@ -4,6 +4,7 @@ import { BookOpenText, Clock3, Hash } from 'lucide-react'
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
 
+import { isDark } from '../../../../utils/theme'
 import { DefaultLayout } from '../../../components/DefaultLayout'
 import { QRCodeWithAvatar } from '../../../components/QRCodeWithAvatar'
 import type { PosterProps } from '../../../types/ctx'
@@ -72,8 +73,8 @@ const DouyinDiffuseBackground: React.FC<PosterProps<DouyinArticleWorkData>> = ({
   )
 }
 
-const DouyinPosterHeader: React.FC<PosterProps<DouyinArticleWorkData>> = ({ data }) => {
-  const { avater_url, username, create_time, read_time, useDarkTheme } = data
+const DouyinPosterHeader: React.FC<PosterProps<DouyinArticleWorkData>> = ({ data, ctx }) => {
+  const { avater_url, username, create_time, read_time } = data
 
   return (
     <header className="flex items-start justify-between gap-14">
@@ -100,7 +101,7 @@ const DouyinPosterHeader: React.FC<PosterProps<DouyinArticleWorkData>> = ({ data
         </div>
       </div>
       <img
-        src={useDarkTheme ? '/image/douyin/dylogo-light.svg' : '/image/douyin/dylogo-dark.svg'}
+        src={isDark(ctx) ? '/image/douyin/dylogo-light.svg' : '/image/douyin/dylogo-dark.svg'}
         alt="抖音"
         className="mt-2 h-17 w-auto shrink-0 object-contain opacity-90"
       />
@@ -227,8 +228,8 @@ const DouyinSignalLine: React.FC<PosterProps<DouyinArticleWorkData>> = ({ data }
   )
 }
 
-const DouyinPosterFooter: React.FC<PosterProps<DouyinArticleWorkData>> = ({ data }) => {
-  const { avater_url, username, 抖音号, 获赞, 关注, 粉丝, share_url, useDarkTheme } = data
+const DouyinPosterFooter: React.FC<PosterProps<DouyinArticleWorkData>> = ({ data, ctx }) => {
+  const { avater_url, username, 抖音号, 获赞, 关注, 粉丝, share_url } = data
   const stats = [
     { icon: DouyinLikeIcon, iconSize: 26, label: '获赞', value: 获赞 },
     { icon: UserPlusIcon, iconSize: 32, label: '关注', value: 关注 },
@@ -273,7 +274,7 @@ const DouyinPosterFooter: React.FC<PosterProps<DouyinArticleWorkData>> = ({ data
 
       <div className="shrink-0 text-center">
         <div className="drop-shadow-2xl">
-          <QRCodeWithAvatar value={share_url} avatarUrl={avater_url} useDarkTheme={useDarkTheme} alt="二维码" className="h-75 w-75" />
+          <QRCodeWithAvatar value={share_url} avatarUrl={avater_url} useDarkTheme={isDark(ctx)} alt="二维码" className="h-75 w-75" />
         </div>
         <div className="mt-2 text-[28px] font-black text-foreground/80">扫码查看作品详情</div>
       </div>

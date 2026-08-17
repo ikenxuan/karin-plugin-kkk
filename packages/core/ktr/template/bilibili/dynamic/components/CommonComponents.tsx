@@ -72,9 +72,9 @@ export const BilibiliDynamicStatus: React.FC<BilibiliDynamicBaseData> = (props) 
 }
 
 /**
- * B站动态底部信息组件
+ * B站动态底部信息组件（useDarkTheme 由调用方用 isDark(ctx) 注入，不再从 data 读取）
  */
-export const BilibiliDynamicFooter: React.FC<BilibiliDynamicFooterProps> = (props) => {
+export const BilibiliDynamicFooter: React.FC<BilibiliDynamicFooterProps & { useDarkTheme: boolean }> = (props) => {
   return (
     <div className="flex justify-between items-start px-20 pb-20">
       {/* 左侧：用户信息 */}

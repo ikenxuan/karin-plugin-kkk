@@ -82,6 +82,4 @@ export interface DouyinCommentData {
   }>
   /** 最大嵌套层级 */
   maxDepth?: number
-  /** 是否使用深色主题（core 渲染时注入 data） */
-  useDarkTheme?: boolean
 }

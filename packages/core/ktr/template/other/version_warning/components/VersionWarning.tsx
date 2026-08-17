@@ -2,21 +2,21 @@ import { Chip } from '@heroui/react'
 import { Puzzle } from 'lucide-react'
 import React from 'react'
 
+import { cn } from '../../../../utils/cn'
+import { isDark } from '../../../../utils/theme'
 import { DefaultLayout } from '../../../components/DefaultLayout'
 import { GlowImage } from '../../../components/GlowImage'
 import type { PosterProps } from '../../../types/ctx'
-import { cn } from '../../../../utils/cn'
-import { resolveUseDarkTheme } from '../../../../utils/theme'
 import type { VersionWarningData } from './types'
 
 export const VersionWarning: React.FC<PosterProps<VersionWarningData>> = (props) => {
-  const isDark = resolveUseDarkTheme(props.data, props.ctx)
+  const dark = isDark(props.ctx)
 
-  const bgColor = isDark ? '#1c1917' : '#faf5ef'
-  const primaryColor = isDark ? '#fb923c' : '#c2410c'
-  const secondaryColor = isDark ? '#fdba74' : '#9a3412'
-  const mutedColor = isDark ? 'rgba(251,146,60,0.7)' : '#b45309'
-  const accentColor = isDark ? '#fed7aa' : '#7c2d12'
+  const bgColor = dark ? '#1c1917' : '#faf5ef'
+  const primaryColor = dark ? '#fb923c' : '#c2410c'
+  const secondaryColor = dark ? '#fdba74' : '#9a3412'
+  const mutedColor = dark ? 'rgba(251,146,60,0.7)' : '#b45309'
+  const accentColor = dark ? '#fed7aa' : '#7c2d12'
 
   return (
     <DefaultLayout
@@ -30,7 +30,7 @@ export const VersionWarning: React.FC<PosterProps<VersionWarningData>> = (props)
         <div
           className="absolute rounded-full w-315 h-360 -top-67.5 -left-45 blur-[108px] -rotate-20"
           style={{
-            background: isDark
+            background: dark
               ? 'radial-gradient(ellipse at 40% 40%, rgba(194,65,12,0.4) 0%, rgba(154,52,18,0.2) 50%, transparent 100%)'
               : 'radial-gradient(ellipse at 40% 40%, rgba(234,88,12,0.5) 0%, rgba(251,146,60,0.25) 50%, transparent 100%)'
           }}
@@ -38,7 +38,7 @@ export const VersionWarning: React.FC<PosterProps<VersionWarningData>> = (props)
         <div
           className="absolute rounded-full w-225 h-270 top-112.5 -right-22.5 blur-[90px] rotate-15"
           style={{
-            background: isDark
+            background: dark
               ? 'radial-gradient(ellipse at 50% 50%, rgba(68,44,21,0.35) 0%, rgba(41,26,13,0.18) 50%, transparent 100%)'
               : 'radial-gradient(ellipse at 50% 50%, rgba(251,191,36,0.3) 0%, rgba(245,158,11,0.15) 50%, transparent 100%)'
           }}
@@ -46,7 +46,7 @@ export const VersionWarning: React.FC<PosterProps<VersionWarningData>> = (props)
         <div
           className="absolute rounded-full w-270 h-225 -bottom-45 left-45 blur-[126px] -rotate-10"
           style={{
-            background: isDark
+            background: dark
               ? 'radial-gradient(ellipse at 50% 60%, rgba(180,83,9,0.35) 0%, rgba(146,64,14,0.18) 50%, transparent 100%)'
               : 'radial-gradient(ellipse at 50% 60%, rgba(194,65,12,0.4) 0%, rgba(180,83,9,0.2) 50%, transparent 100%)'
           }}
@@ -54,7 +54,7 @@ export const VersionWarning: React.FC<PosterProps<VersionWarningData>> = (props)
       </div>
 
       {/* 单色噪点层 */}
-      <div className="absolute inset-0 pointer-events-none" style={{ opacity: isDark ? 0.1 : 0.15 }}>
+      <div className="absolute inset-0 pointer-events-none" style={{ opacity: dark ? 0.1 : 0.15 }}>
         <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
           <filter id="pixelNoise" x="0%" y="0%" width="100%" height="100%">
             <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="1" stitchTiles="stitch" result="noise" />
@@ -75,13 +75,13 @@ export const VersionWarning: React.FC<PosterProps<VersionWarningData>> = (props)
       <div className="absolute bottom-25 right-18 pointer-events-none select-none opacity-[0.03]">
         <span
           className="text-[200px] font-black tracking-tighter leading-none block text-right"
-          style={{ color: isDark ? '#fff' : '#78350f' }}
+          style={{ color: dark ? '#fff' : '#78350f' }}
         >
           VERSION
         </span>
         <span
           className="text-[200px] font-black tracking-tighter leading-none block text-right"
-          style={{ color: isDark ? '#fff' : '#78350f' }}
+          style={{ color: dark ? '#fff' : '#78350f' }}
         >
           WARNING
         </span>
@@ -125,7 +125,7 @@ export const VersionWarning: React.FC<PosterProps<VersionWarningData>> = (props)
         {/* 中间 */}
         <div className="flex-1 flex flex-col justify-center">
           {/* 版本对比卡片 */}
-          <div className="rounded-7xl p-12" style={{ backgroundColor: isDark ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.5)' }}>
+          <div className="rounded-7xl p-12" style={{ backgroundColor: dark ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.5)' }}>
             {/* 版本对比 */}
             <div className="flex items-stretch mb-10">
               {/* 当前版本 */}
@@ -150,7 +150,7 @@ export const VersionWarning: React.FC<PosterProps<VersionWarningData>> = (props)
               {/* 分隔线 */}
               <div
                 className="w-0.5 rounded-full mx-10"
-                style={{ backgroundColor: isDark ? 'rgba(251,146,60,0.2)' : 'rgba(180,83,9,0.15)' }}
+                style={{ backgroundColor: dark ? 'rgba(251,146,60,0.2)' : 'rgba(180,83,9,0.15)' }}
               />
 
               {/* 需要版本 */}
@@ -175,10 +175,7 @@ export const VersionWarning: React.FC<PosterProps<VersionWarningData>> = (props)
             </div>
 
             {/* 分隔线 */}
-            <div
-              className="h-0.5 rounded-full mb-10"
-              style={{ backgroundColor: isDark ? 'rgba(251,146,60,0.2)' : 'rgba(180,83,9,0.15)' }}
-            />
+            <div className="h-0.5 rounded-full mb-10" style={{ backgroundColor: dark ? 'rgba(251,146,60,0.2)' : 'rgba(180,83,9,0.15)' }} />
 
             {/* 更新方案 */}
             <div className="space-y-20">
@@ -187,7 +184,7 @@ export const VersionWarning: React.FC<PosterProps<VersionWarningData>> = (props)
                 <div className="flex items-center space-x-4 mb-6">
                   <div
                     className="flex items-center justify-center w-10 h-10 rounded-xl"
-                    style={{ backgroundColor: isDark ? 'rgba(251,146,60,0.15)' : 'rgba(194,65,12,0.1)' }}
+                    style={{ backgroundColor: dark ? 'rgba(251,146,60,0.15)' : 'rgba(194,65,12,0.1)' }}
                   >
                     <span className="text-[28px] font-black" style={{ color: accentColor }}>
                       1
@@ -203,7 +200,7 @@ export const VersionWarning: React.FC<PosterProps<VersionWarningData>> = (props)
                   <Chip
                     className="text-2xl font-semibold px-5 py-3 rounded-full"
                     style={{
-                      backgroundColor: isDark ? 'rgba(251,146,60,0.2)' : 'rgba(194,65,12,0.15)',
+                      backgroundColor: dark ? 'rgba(251,146,60,0.2)' : 'rgba(194,65,12,0.15)',
                       color: accentColor
                     }}
                     size="lg"
@@ -238,7 +235,7 @@ export const VersionWarning: React.FC<PosterProps<VersionWarningData>> = (props)
                 <div className="flex items-center space-x-4 mb-6">
                   <div
                     className="flex items-center justify-center w-10 h-10 rounded-xl"
-                    style={{ backgroundColor: isDark ? 'rgba(251,146,60,0.15)' : 'rgba(194,65,12,0.1)' }}
+                    style={{ backgroundColor: dark ? 'rgba(251,146,60,0.15)' : 'rgba(194,65,12,0.1)' }}
                   >
                     <span className="text-[28px] font-black" style={{ color: accentColor }}>
                       2
@@ -251,7 +248,7 @@ export const VersionWarning: React.FC<PosterProps<VersionWarningData>> = (props)
                   <Chip
                     className="text-2xl font-semibold px-5 py-3 rounded-full"
                     style={{
-                      backgroundColor: isDark ? 'rgba(251,146,60,0.2)' : 'rgba(194,65,12,0.15)',
+                      backgroundColor: dark ? 'rgba(251,146,60,0.2)' : 'rgba(194,65,12,0.15)',
                       color: accentColor
                     }}
                     size="lg"
@@ -286,7 +283,7 @@ export const VersionWarning: React.FC<PosterProps<VersionWarningData>> = (props)
                 <div className="flex items-center space-x-4 mb-6">
                   <div
                     className="flex items-center justify-center w-10 h-10 rounded-xl"
-                    style={{ backgroundColor: isDark ? 'rgba(251,146,60,0.15)' : 'rgba(194,65,12,0.1)' }}
+                    style={{ backgroundColor: dark ? 'rgba(251,146,60,0.15)' : 'rgba(194,65,12,0.1)' }}
                   >
                     <span className="text-[28px] font-black" style={{ color: accentColor }}>
                       3
@@ -303,7 +300,7 @@ export const VersionWarning: React.FC<PosterProps<VersionWarningData>> = (props)
                   <p className="text-[28px]" style={{ color: secondaryColor }}>
                     在 Karin 根目录下执行以下命令
                   </p>
-                  <div className="rounded-xl p-6" style={{ backgroundColor: isDark ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.7)' }}>
+                  <div className="rounded-xl p-6" style={{ backgroundColor: dark ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.7)' }}>
                     <code className="text-[40px] font-mono font-bold block" style={{ color: accentColor }}>
                       pnpm add node-karin@{props.data.requireVersion} -w
                     </code>
@@ -316,15 +313,12 @@ export const VersionWarning: React.FC<PosterProps<VersionWarningData>> = (props)
             </div>
 
             {/* 分隔线 */}
-            <div
-              className="h-0.5 rounded-full my-10"
-              style={{ backgroundColor: isDark ? 'rgba(251,146,60,0.2)' : 'rgba(180,83,9,0.15)' }}
-            />
+            <div className="h-0.5 rounded-full my-10" style={{ backgroundColor: dark ? 'rgba(251,146,60,0.2)' : 'rgba(180,83,9,0.15)' }} />
 
             {/* 重要提示 */}
             <div
               className="rounded-4xl p-6 flex items-start space-x-5"
-              style={{ backgroundColor: isDark ? 'rgba(251,146,60,0.08)' : 'rgba(194,65,12,0.08)' }}
+              style={{ backgroundColor: dark ? 'rgba(251,146,60,0.08)' : 'rgba(194,65,12,0.08)' }}
             >
               <svg className="w-10 h-10 mt-1 shrink-0" viewBox="0 0 24 24" fill={accentColor}>
                 <path d="M12 2L22 20H2L12 2Z" />

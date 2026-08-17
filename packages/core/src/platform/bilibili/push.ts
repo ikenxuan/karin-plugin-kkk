@@ -10,8 +10,8 @@ import {
   MajorType,
   Result
 } from '@ikenxuan/amagi'
-import type { BilibiliForwardOriginalContentProps } from '@template/bilibili/dynamic/types'
-import type { BilibiliUserListData } from '@template/bilibili/userlist/components/types'
+import type { BilibiliForwardOriginalContentProps } from '@template/template/bilibili/dynamic/types'
+import type { BilibiliUserListData } from '@template/template/bilibili/userlist/components/types'
 import type { AdapterType, ImageElement, Message, SendMsgResults } from 'node-karin'
 import karin, { common, logger, segment } from 'node-karin'
 

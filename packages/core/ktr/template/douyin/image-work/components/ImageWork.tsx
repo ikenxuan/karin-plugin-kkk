@@ -11,8 +11,12 @@ import { GlowImage } from '../../../components/GlowImage'
 import { QRCodeWithAvatar } from '../../../components/QRCodeWithAvatar'
 import type { PosterProps } from '../../../types/ctx'
 import { cn } from '../../../../utils/cn'
+import { isDark } from '../../../../utils/theme'
 import { DouyinCommentIcon, DouyinFavoriteIcon, DouyinLikeIcon, DouyinShareIcon } from '../../components/Icons'
-import type { DouyinImageMediaType, DouyinImageWorkData } from './types'
+import type { DouyinImageWorkData } from './types'
+
+/** 单张媒体的类型，从总数据类型里逐步取，不再单独导出。 */
+type ImageMediaType = DouyinImageWorkData['image_list']['images'][number]['media_type']
 
 const LivePhotoIcon: React.FC<{ size?: number; className?: string; weight?: 'fill' }> = ({ size = 28, className }) => (
   <svg
@@ -35,7 +39,7 @@ const imageMediaTypeMeta = {
   live: { label: '实况', icon: LivePhotoIcon },
   clip: { label: '短片', icon: VideoCameraIcon }
 } satisfies Record<
-  DouyinImageMediaType,
+  ImageMediaType,
   {
     label: string
     icon: React.FC<{ size?: number; className?: string; weight?: 'fill' }>
@@ -90,8 +94,9 @@ const DouyinDiffuseBackground: React.FC<PosterProps<DouyinImageWorkData>> = ({ d
   )
 }
 
-const DouyinPosterHeader: React.FC<PosterProps<DouyinImageWorkData>> = ({ data }) => {
-  const { avater_url, username, create_time, useDarkTheme, ip_location } = data
+const DouyinPosterHeader: React.FC<PosterProps<DouyinImageWorkData>> = ({ data, ctx }) => {
+  const { avater_url, username, create_time, ip_location } = data
+  const dark = isDark(ctx)
   const publishTime = formatDistanceToNow(fromUnixTime(create_time), {
     addSuffix: true,
     locale: zhCN
@@ -124,7 +129,7 @@ const DouyinPosterHeader: React.FC<PosterProps<DouyinImageWorkData>> = ({ data }
         </div>
       </div>
       <img
-        src={useDarkTheme ? '/image/douyin/dylogo-light.svg' : '/image/douyin/dylogo-dark.svg'}
+        src={dark ? '/image/douyin/dylogo-light.svg' : '/image/douyin/dylogo-dark.svg'}
         alt="抖音"
         className="mt-2 h-17 w-auto shrink-0 object-contain opacity-90"
       />
@@ -352,8 +357,9 @@ const DouyinCoCreatorList: React.FC<PosterProps<DouyinImageWorkData> & { coCreat
   )
 }
 
-const DouyinPosterFooter: React.FC<PosterProps<DouyinImageWorkData>> = ({ data }) => {
-  const { avater_url, username, 抖音号, 获赞, 关注, 粉丝, share_url, useDarkTheme } = data
+const DouyinPosterFooter: React.FC<PosterProps<DouyinImageWorkData>> = ({ data, ctx }) => {
+  const { avater_url, username, 抖音号, 获赞, 关注, 粉丝, share_url } = data
+  const dark = isDark(ctx)
   const stats = [
     { icon: DouyinLikeIcon, iconSize: 26, label: '获赞', value: 获赞 },
     { icon: UserPlusIcon, iconSize: 32, label: '关注', value: 关注 },
@@ -398,7 +404,7 @@ const DouyinPosterFooter: React.FC<PosterProps<DouyinImageWorkData>> = ({ data }
 
       <div className="shrink-0 text-center">
         <div className="drop-shadow-2xl">
-          <QRCodeWithAvatar value={share_url} avatarUrl={avater_url} useDarkTheme={useDarkTheme} alt="二维码" className="h-75 w-75" />
+          <QRCodeWithAvatar value={share_url} avatarUrl={avater_url} useDarkTheme={dark} alt="二维码" className="h-75 w-75" />
         </div>
         <div className="mt-2 text-[28px] font-black text-foreground/80">扫码查看作品详情</div>
       </div>

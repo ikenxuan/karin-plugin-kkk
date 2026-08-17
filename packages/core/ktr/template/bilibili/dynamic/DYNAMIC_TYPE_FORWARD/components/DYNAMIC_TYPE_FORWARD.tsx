@@ -2,6 +2,7 @@ import { renderRichTextToReact } from '@kkk/richtext'
 import { Clock } from 'lucide-react'
 import React from 'react'
 
+import { isDark } from '../../../../../utils/theme'
 import { DefaultLayout } from '../../../../components/DefaultLayout'
 import type { PosterProps } from '../../../../types/ctx'
 import { DecorationCard, EnhancedImage, UsernameDisplay } from '../../../components/shared'
@@ -336,7 +337,7 @@ export const BilibiliForwardDynamic: React.FC<PosterProps<BilibiliForwardDynamic
         <div className="h-40" />
 
         {/* 底部信息 */}
-        <BilibiliDynamicFooter {...props.data} />
+        <BilibiliDynamicFooter {...props.data} useDarkTheme={isDark(props.ctx)} />
       </div>
     </DefaultLayout>
   )

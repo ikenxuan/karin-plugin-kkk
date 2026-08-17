@@ -25,6 +25,4 @@ export interface BilibiliVideoInfoData {
   owner: BilibiliVideoOwner
   /** 出现次数最多的热门弹幕（可选，按次数降序） */
   hotDanmaku?: BilibiliHotDanmaku[]
-  /** 是否使用深色主题（core 渲染时注入 data） */
-  useDarkTheme?: boolean
 }

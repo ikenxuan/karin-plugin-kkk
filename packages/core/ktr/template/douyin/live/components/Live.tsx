@@ -1,11 +1,11 @@
 import { Eye, FileVideo, MapPin, Monitor, ShoppingBag, UserPlus, Users } from 'lucide-react'
 import React from 'react'
 
-import { DefaultLayout } from '../../../components/DefaultLayout'
+import { isDark } from '../../../../utils/theme'
 import { AmbientCover } from '../../../components/AmbientCover'
+import { DefaultLayout } from '../../../components/DefaultLayout'
 import { QRCodeWithAvatar } from '../../../components/QRCodeWithAvatar'
 import type { PosterProps } from '../../../types/ctx'
-import { resolveUseDarkTheme } from '../../../../utils/theme'
 import { DouyinLikeIcon } from '../../components/Icons'
 import type { DouyinLiveData } from './types'
 
@@ -183,7 +183,7 @@ const BottomSection: React.FC<PosterProps<DouyinLiveData>> = ({ data, ctx }) => 
       {/* 右侧：抖音Logo + 二维码 */}
       <div className="flex flex-col items-end gap-6">
         <img
-          src={resolveUseDarkTheme(data, ctx) ? '/image/douyin/dylogo-light.svg' : '/image/douyin/dylogo-dark.svg'}
+          src={isDark(ctx) ? '/image/douyin/dylogo-light.svg' : '/image/douyin/dylogo-dark.svg'}
           alt="抖音"
           className="w-60 h-auto opacity-80 dark:opacity-70"
         />
@@ -191,7 +191,7 @@ const BottomSection: React.FC<PosterProps<DouyinLiveData>> = ({ data, ctx }) => 
           <QRCodeWithAvatar
             value={data.share_url}
             avatarUrl={data.avater_url}
-            useDarkTheme={resolveUseDarkTheme(data, ctx)}
+            useDarkTheme={isDark(ctx)}
             alt="二维码"
             className="h-auto w-75"
           />

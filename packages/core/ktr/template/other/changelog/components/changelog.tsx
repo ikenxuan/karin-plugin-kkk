@@ -10,11 +10,11 @@ import React from 'react'
 import ReactMarkdown from 'react-markdown'
 import rehypeHighlight from 'rehype-highlight'
 
+import { generateQRCode } from '../../../../utils/QRcode'
+import { isDark } from '../../../../utils/theme'
 import { DefaultLayout } from '../../../components/DefaultLayout'
 import { GlowImage } from '../../../components/GlowImage'
 import type { PosterProps } from '../../../types/ctx'
-import { generateQRCode } from '../../../../utils/QRcode'
-import { resolveUseDarkTheme } from '../../../../utils/theme'
 import type { ChangelogData } from './types'
 
 const InlineCalloutCode: React.FC<React.PropsWithChildren<{ className?: string }>> = ({ children, className }) => (
@@ -47,11 +47,11 @@ const techStackItems = [
  * @returns JSX元素
  */
 export const Changelog: React.FC<PosterProps<ChangelogData>> = React.memo((props) => {
-  const isDark = resolveUseDarkTheme(props.data, props.ctx) ?? false
+  const dark = isDark(props.ctx)
   const isUpdateTip = props.data.Tip === true
   const share_url = (props as any).data?.share_url || ''
 
-  const backgroundColors = isDark
+  const backgroundColors = dark
     ? {
         base: '#0a0a0a',
         primary: 'rgba(212, 175, 55, 0.28)',
@@ -333,7 +333,7 @@ export const Changelog: React.FC<PosterProps<ChangelogData>> = React.memo((props
                       </div>
 
                       <div className="mt-4 w-100 rounded-3xl p-1">
-                        <img src={generateQRCode(share_url, isDark)} alt="二维码" className="w-full h-full rounded-2xl object-contain" />
+                        <img src={generateQRCode(share_url, dark)} alt="二维码" className="w-full h-full rounded-2xl object-contain" />
                       </div>
                     </div>
 
@@ -352,7 +352,7 @@ export const Changelog: React.FC<PosterProps<ChangelogData>> = React.memo((props
                             key={label}
                             className="flex min-h-40 flex-col items-center justify-center gap-3 rounded-2xl border border-border/60 bg-surface/45 px-4 py-5 backdrop-blur-xs"
                           >
-                            <GlowImage glowStrength={isDark ? 1 : 0} blurRadius={20}>
+                            <GlowImage glowStrength={dark ? 1 : 0} blurRadius={20}>
                               <img aria-hidden src={iconSrc} alt="" draggable={false} className="h-16 w-16 object-contain drop-shadow-lg" />
                             </GlowImage>
                             <span className="text-center text-[1.35em] font-bold leading-tight text-foreground/75">{label}</span>
@@ -374,7 +374,7 @@ export const Changelog: React.FC<PosterProps<ChangelogData>> = React.memo((props
             ) : (
               <div className="flex flex-col gap-12 py-8">
                 <div className="w-120 h-auto">
-                  <img src={generateQRCode(share_url, isDark)} alt="二维码" className="w-full h-full object-contain" />
+                  <img src={generateQRCode(share_url, dark)} alt="二维码" className="w-full h-full object-contain" />
                 </div>
                 <div className="text-4xl text-foreground/60">
                   <span>扫码查看实际运行代码从</span>

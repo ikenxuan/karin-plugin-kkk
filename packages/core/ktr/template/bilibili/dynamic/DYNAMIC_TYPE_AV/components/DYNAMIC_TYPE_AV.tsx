@@ -2,9 +2,10 @@ import { renderRichTextToReact } from '@kkk/richtext'
 import { ClockIcon } from '@phosphor-icons/react'
 import React from 'react'
 
+import { cn } from '../../../../../utils/cn'
+import { isDark } from '../../../../../utils/theme'
 import { DefaultLayout } from '../../../../components/DefaultLayout'
 import type { PosterProps } from '../../../../types/ctx'
-import { cn } from '../../../../../utils/cn'
 import { CoinIcon, ViewIcon } from '../../../components/Icons'
 import { EnhancedImage } from '../../../components/shared'
 import { BilibiliDynamicFooter, BilibiliDynamicStatus, BilibiliDynamicUserInfo } from '../../components/CommonComponents'
@@ -226,7 +227,7 @@ export const BilibiliVideoDynamic: React.FC<PosterProps<BilibiliVideoDynamicData
         <BilibiliVideoStaff {...props} />
 
         {/* 底部信息 */}
-        <BilibiliDynamicFooter {...props.data} />
+        <BilibiliDynamicFooter {...props.data} useDarkTheme={isDark(props.ctx)} />
       </div>
     </DefaultLayout>
   )

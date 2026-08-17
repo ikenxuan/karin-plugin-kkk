@@ -4,6 +4,4 @@
 export interface DouyinQrcodeImgData {
   /** 分享链接（用于生成自定义二维码） */
   share_url?: string
-  /** 是否使用深色主题（core 渲染时注入 data） */
-  useDarkTheme?: boolean
 }

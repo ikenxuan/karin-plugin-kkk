@@ -33,28 +33,6 @@ export interface DouyinSubComment {
 }
 
 /**
- * 抖音直播用户信息组件属性接口
- */
-export interface DouyinLiveUserInfoProps {
-  /** 用户头像URL */
-  avater_url: string
-  /** 用户名 */
-  username: string
-  /** 粉丝数 */
-  fans: string
-  /** 是否使用深色主题 */
-  useDarkTheme?: boolean
-}
-
-/**
- * 抖音直播二维码组件属性接口
- */
-export interface DouyinLiveQRCodeProps {
-  /** 是否使用深色主题 */
-  useDarkTheme?: boolean
-}
-
-/**
  * 音乐封面组件属性接口
  */
 export interface MusicCoverProps {
@@ -62,8 +40,6 @@ export interface MusicCoverProps {
   imageUrl: string
   /** 音乐描述 */
   description: string
-  /** 是否使用深色主题 */
-  useDarkTheme?: boolean
 }
 
 /**
@@ -76,8 +52,6 @@ export interface MusicInfoProps {
   userCount: string
   /** 创建时间 */
   createTime: string
-  /** 是否使用深色主题 */
-  useDarkTheme?: boolean
 }
 
 /**
@@ -96,8 +70,6 @@ export interface MusicAuthorInfoProps {
   followingCount: number
   /** 粉丝数 */
   fans: number
-  /** 是否使用深色主题 */
-  useDarkTheme?: boolean
 }
 
 /**
@@ -108,6 +80,4 @@ export interface MusicQRCodeProps {
   share_url: string
   /** 音乐作者头像 URL。 */
   avatarUrl: string
-  /** 是否使用深色主题 */
-  useDarkTheme?: boolean
 }

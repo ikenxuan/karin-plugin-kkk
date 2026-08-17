@@ -83,7 +83,7 @@
     "@karinjs/plugin-basic": "1.4.13",
     "@karinjs/plugin-ffmpeg": "^0.1.3",
     "@karinjs/plugin-puppeteer": "^2.3.1",
-    "@karinjs/template-react": "0.0.1-beta.5",
+    "@karinjs/template-react": "0.0.1-beta.6",
     "@kkk/richtext": "workspace:*",
     "@phosphor-icons/react": "^2.1.10",
     "@thesvg/icons": "^3.0.18",
@@ -115,9 +115,6 @@
     "vite-plugin-wasm": "^3.6.0",
     "vitest": "^4.1.10"
   },
-  "peerDependencies": {
-    "@types/react": "*"
-  },
   "engines": {
     "node": ">=18.0.0"
   },
@@ -141,5 +138,5 @@
     "web": "./lib/web.config.js",
     "ts-web": "./src/web.config.ts"
   },
-  "timestamp": "2026-08-17T15:36:11.912Z"
+  "timestamp": "2026-08-17T18:48:06.351Z"
 }

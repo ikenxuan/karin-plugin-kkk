@@ -14,8 +14,6 @@ export interface XiaohongshuCommentData {
   share_url: string
   /** 评论数据 - 简化为直接的评论数组 */
   CommentsData: XiaohongshuCommentItem[]
-  /** 是否使用深色主题（core 渲染时注入 data） */
-  useDarkTheme?: boolean
 }
 
 /** xiaohongshu板块共享类型（跨模板复用 / core 引用）。 */
@@ -24,7 +22,7 @@ import type { RichTextDocument } from '@kkk/richtext'
 /**
  * 小红书评论项数据接口
  */
-export interface XiaohongshuCommentItem {
+interface XiaohongshuCommentItem {
   /** 评论ID */
   id: string
   /** 笔记ID */
@@ -72,7 +70,7 @@ export interface XiaohongshuCommentItem {
 /**
  * 小红书子评论数据接口
  */
-export interface XiaohongshuSubComment {
+interface XiaohongshuSubComment {
   /** 子评论ID */
   id: string
   /** 笔记ID */

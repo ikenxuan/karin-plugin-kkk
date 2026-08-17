@@ -11,6 +11,4 @@ export interface BilibiliWordDynamicData extends BilibiliDynamicBaseData {
   text: RichTextDocument | null
   /** 相关内容卡片 */
   additional?: BilibiliAdditionalData
-  /** 是否使用深色主题（core 渲染时注入 data） */
-  useDarkTheme?: boolean
 }

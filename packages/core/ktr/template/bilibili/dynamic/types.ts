@@ -160,8 +160,6 @@ export interface BilibiliDynamicContentProps {
   text: RichTextDocument | null
   /** 图片URL数组 */
   image_url: Array<{ image_src: string }>
-  /** 是否使用深色主题 */
-  useDarkTheme?: boolean
   /** 图片布局方式 */
   imageLayout: string
   /** 相关内容卡片 */
@@ -180,8 +178,6 @@ export interface BilibiliDynamicStatusProps {
   share: string | number
   /** 渲染时间 */
   render_time: string
-  /** 是否使用深色主题 */
-  useDarkTheme?: boolean
 }
 
 /**
@@ -213,8 +209,6 @@ export interface BilibiliDynamicFooterProps {
     /** 昵称颜色 */
     nicknameColor: string | null
   }
-  /** 是否使用深色主题 */
-  useDarkTheme?: boolean
 }
 
 /**

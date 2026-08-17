@@ -29,6 +29,4 @@ export interface BilibiliLiveDynamicData {
   share_url: string
   /** 动态类型 */
   dynamicTYPE: string
-  /** 是否使用深色主题（core 渲染时注入 data） */
-  useDarkTheme?: boolean
 }

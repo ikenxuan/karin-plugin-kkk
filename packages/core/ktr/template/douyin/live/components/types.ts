@@ -44,6 +44,4 @@ export interface DouyinLiveData {
   total_favorited: string
   /** 是否有商品 */
   has_commerce_goods: boolean
-  /** 是否使用深色主题（core 渲染时注入 data） */
-  useDarkTheme?: boolean
 }

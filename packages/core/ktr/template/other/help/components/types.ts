@@ -15,14 +15,12 @@ export interface HelpData {
     title: string
     description: string
   }[]
-  /** 是否使用深色主题（core 渲染时注入 data） */
-  useDarkTheme?: boolean
 }
 
 /**
  * 菜单项接口
  */
-export interface MenuItem {
+interface MenuItem {
   /** 菜单项标题 */
   title: string
   /** 菜单项描述 */
@@ -34,7 +32,7 @@ export interface MenuItem {
 /**
  * 菜单分组接口
  */
-export interface MenuGroup {
+interface MenuGroup {
   /** 分组标题 */
   title: string
   /** 菜单项列表 */

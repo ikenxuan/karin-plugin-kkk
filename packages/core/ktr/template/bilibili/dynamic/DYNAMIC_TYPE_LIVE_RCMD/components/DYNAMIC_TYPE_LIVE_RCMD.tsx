@@ -1,10 +1,11 @@
 import { extractRichTextPlainText, renderRichTextToReact } from '@kkk/richtext'
 import { Clock, Radio, UsersRound } from 'lucide-react'
 import React from 'react'
+
 // import { cn } from '../../../../../utils/cn'
-import { resolveUseDarkTheme } from '../../../../../utils/theme'
-import { DefaultLayout } from '../../../../components/DefaultLayout'
+import { isDark } from '../../../../../utils/theme'
 import { AmbientCover } from '../../../../components/AmbientCover'
+import { DefaultLayout } from '../../../../components/DefaultLayout'
 import { QRCodeWithAvatar } from '../../../../components/QRCodeWithAvatar'
 import type { PosterProps } from '../../../../types/ctx'
 import { EnhancedImage, UsernameDisplay } from '../../../components/shared'
@@ -33,42 +34,44 @@ const coverMaskStyle: React.CSSProperties = {
  * 全局氛围背景层：模糊封面 + 渐变遮罩 + 高对比杂色纹理。
  * 背景色完全取自封面图本身，不再依赖后端取色。
  */
-const LiveAmbientBackground: React.FC<{ cover: string; ctx: PosterProps<BilibiliLiveDynamicData>['ctx'] }> = React.memo(({ cover, ctx }) => (
-  <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden select-none">
-    <AmbientCover src={cover} ctx={ctx} />
+const LiveAmbientBackground: React.FC<{ cover: string; ctx: PosterProps<BilibiliLiveDynamicData>['ctx'] }> = React.memo(
+  ({ cover, ctx }) => (
+    <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden select-none">
+      <AmbientCover src={cover} ctx={ctx} />
 
-    {/* 高对比杂色纹理层 */}
-    <div className="absolute inset-0 opacity-[0.45] mix-blend-overlay dark:mix-blend-soft-light">
-      <svg className="h-full w-full" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <filter id="liveRcmdNoise">
-            <feTurbulence type="fractalNoise" baseFrequency="1.4" numOctaves="3" stitchTiles="stitch" />
-            <feColorMatrix type="saturate" values="0" />
-            <feComponentTransfer>
-              <feFuncR type="discrete" tableValues="0 1" />
-              <feFuncG type="discrete" tableValues="0 1" />
-              <feFuncB type="discrete" tableValues="0 1" />
-            </feComponentTransfer>
-            <feComponentTransfer>
-              <feFuncA type="linear" slope="2.5" intercept="-0.6" />
-            </feComponentTransfer>
-          </filter>
-          <mask id="liveRcmdNoiseMask">
-            <linearGradient id="liveRcmdNoiseGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="white" stopOpacity="0.85" />
-              <stop offset="25%" stopColor="white" stopOpacity="0.4" />
-              <stop offset="50%" stopColor="white" stopOpacity="0.08" />
-              <stop offset="75%" stopColor="white" stopOpacity="0.4" />
-              <stop offset="100%" stopColor="white" stopOpacity="0.85" />
-            </linearGradient>
-            <rect width="100%" height="100%" fill="url(#liveRcmdNoiseGradient)" />
-          </mask>
-        </defs>
-        <rect width="100%" height="100%" filter="url(#liveRcmdNoise)" mask="url(#liveRcmdNoiseMask)" fill="white" />
-      </svg>
+      {/* 高对比杂色纹理层 */}
+      <div className="absolute inset-0 opacity-[0.45] mix-blend-overlay dark:mix-blend-soft-light">
+        <svg className="h-full w-full" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <filter id="liveRcmdNoise">
+              <feTurbulence type="fractalNoise" baseFrequency="1.4" numOctaves="3" stitchTiles="stitch" />
+              <feColorMatrix type="saturate" values="0" />
+              <feComponentTransfer>
+                <feFuncR type="discrete" tableValues="0 1" />
+                <feFuncG type="discrete" tableValues="0 1" />
+                <feFuncB type="discrete" tableValues="0 1" />
+              </feComponentTransfer>
+              <feComponentTransfer>
+                <feFuncA type="linear" slope="2.5" intercept="-0.6" />
+              </feComponentTransfer>
+            </filter>
+            <mask id="liveRcmdNoiseMask">
+              <linearGradient id="liveRcmdNoiseGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor="white" stopOpacity="0.85" />
+                <stop offset="25%" stopColor="white" stopOpacity="0.4" />
+                <stop offset="50%" stopColor="white" stopOpacity="0.08" />
+                <stop offset="75%" stopColor="white" stopOpacity="0.4" />
+                <stop offset="100%" stopColor="white" stopOpacity="0.85" />
+              </linearGradient>
+              <rect width="100%" height="100%" fill="url(#liveRcmdNoiseGradient)" />
+            </mask>
+          </defs>
+          <rect width="100%" height="100%" filter="url(#liveRcmdNoise)" mask="url(#liveRcmdNoiseMask)" fill="white" />
+        </svg>
+      </div>
     </div>
-  </div>
-))
+  )
+)
 
 LiveAmbientBackground.displayName = 'LiveAmbientBackground'
 
@@ -106,7 +109,7 @@ const getSingleLineFontSize = (content: string, base: number, min: number): numb
 
 export const BilibiliLiveDynamic: React.FC<PosterProps<BilibiliLiveDynamicData>> = React.memo((props) => {
   const { data, ctx } = props
-  const isDark = resolveUseDarkTheme(data, ctx) === true
+  const dark = isDark(ctx)
 
   // 面板允许数据文件缺字段，关键引用全部兜底，避免白屏
   const usernameMeta = data.usernameMeta ?? { name: '', vipStatus: 0, nicknameColor: null }
@@ -114,7 +117,7 @@ export const BilibiliLiveDynamic: React.FC<PosterProps<BilibiliLiveDynamicData>>
   const fans = data.fans ?? ''
   const liveTitleLength = data.text ? extractRichTextPlainText(data.text).length : 0
 
-  const logo = isDark ? '/image/bilibili/bilibili-light.png' : '/image/bilibili/bilibili.png'
+  const logo = dark ? '/image/bilibili/bilibili-light.png' : '/image/bilibili/bilibili.png'
   const streamerName = usernameMeta.name
   const streamerFontSize = getSingleLineFontSize(streamerName, 68, 42)
   const liveInfoFontSize = getSingleLineFontSize(liveinf, 36, 26)
@@ -221,7 +224,7 @@ export const BilibiliLiveDynamic: React.FC<PosterProps<BilibiliLiveDynamicData>>
           {/* 底部：品牌 + 行动区 */}
           <footer className="relative z-10 mt-16 flex items-end justify-between gap-14 pb-16">
             <div className="min-w-0">
-              <img src={logo} alt="哔哩哔哩" className={`h-auto ${isDark ? 'w-72' : 'w-108'}`} />
+              <img src={logo} alt="哔哩哔哩" className={`h-auto ${dark ? 'w-72' : 'w-108'}`} />
               <div className="mt-5 text-[26px] font-bold text-muted select-text">你感兴趣的直播都在哔哩哔哩</div>
               <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-[22px] font-semibold text-foreground/50">
                 <span className="select-text">{data.dynamicTYPE}</span>
@@ -238,7 +241,7 @@ export const BilibiliLiveDynamic: React.FC<PosterProps<BilibiliLiveDynamicData>>
                   <QRCodeWithAvatar
                     value={data.share_url}
                     avatarUrl={data.avatar_url}
-                    useDarkTheme={isDark}
+                    useDarkTheme={dark}
                     alt="二维码"
                     className="h-72 w-72 object-contain drop-shadow-[0_20px_38px_rgba(0,0,0,0.18)]"
                   />

@@ -65,6 +65,4 @@ export interface DouyinVideoWorkData {
     }>
     subscriber_role?: string
   }
-  /** 是否使用深色主题（core 渲染时注入 data） */
-  useDarkTheme?: boolean
 }

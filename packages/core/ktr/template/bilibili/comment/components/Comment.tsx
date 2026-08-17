@@ -3,10 +3,11 @@ import { differenceInSeconds, format, formatDistanceToNow, fromUnixTime } from '
 import { zhCN } from 'date-fns/locale'
 import React, { type ReactNode, useEffect, useState } from 'react'
 
-import { DefaultLayout } from '../../../components/DefaultLayout'
-import type { PosterProps } from '../../../types/ctx'
 import { cn } from '../../../../utils/cn'
 import { generateQRCode } from '../../../../utils/QRcode'
+import { isDark } from '../../../../utils/theme'
+import { DefaultLayout } from '../../../components/DefaultLayout'
+import type { PosterProps } from '../../../types/ctx'
 import { ThumbUpIcon } from '../../components/Icons'
 import type { FansDetail, QRCodeSectionProps } from '../../components/types'
 import type { BilibiliCommentData } from './types'
@@ -202,7 +203,7 @@ const BilibiliLogo: React.FC = () => {
  * @param props 组件属性
  * @returns JSX元素
  */
-const QRCodeSection: React.FC<QRCodeSectionProps> = ({ share_url, useDarkTheme }) => {
+const QRCodeSection: React.FC<QRCodeSectionProps & { useDarkTheme: boolean }> = ({ share_url, useDarkTheme }) => {
   return (
     <div className="flex flex-col items-center">
       <div className="flex justify-center items-center w-100 h-100 p-4">
@@ -217,7 +218,7 @@ const QRCodeSection: React.FC<QRCodeSectionProps> = ({ share_url, useDarkTheme }
  * @param props 组件属性
  * @returns JSX元素
  */
-const VideoInfoHeader: React.FC<Omit<BilibiliCommentData, 'CommentsData'>> = (props) => {
+const VideoInfoHeader: React.FC<Omit<BilibiliCommentData, 'CommentsData'> & { useDarkTheme: boolean }> = (props) => {
   return (
     <div className="max-w-350 mx-auto px-10 py-8">
       <div className="flex gap-16 justify-between items-start">
@@ -632,7 +633,7 @@ export const BilibiliComment: React.FC<PosterProps<BilibiliCommentData>> = React
       <div className="p-5">
         <div className="h-20"></div>
         {/* 视频信息头部 */}
-        <VideoInfoHeader {...props.data} />
+        <VideoInfoHeader {...props.data} useDarkTheme={isDark(props.ctx)} />
 
         {/* 评论列表 */}
         <div className="overflow-hidden mt-8">

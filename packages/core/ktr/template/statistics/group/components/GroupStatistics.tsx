@@ -2,23 +2,23 @@ import React from 'react'
 import { RiPieChart2Fill } from 'react-icons/ri'
 import { VictoryPie } from 'victory'
 
+import { isDark } from '../../../../utils/theme'
 import { DefaultLayout } from '../../../components/DefaultLayout'
 import type { PosterProps } from '../../../types/ctx'
-import { resolveUseDarkTheme } from '../../../../utils/theme'
 import type { GroupStatisticsData } from './types'
 
 /**
  * 群组解析统计组件 Group Statistics
  */
 export const GroupStatistics: React.FC<PosterProps<GroupStatisticsData>> = (props) => {
-  const useDarkTheme = resolveUseDarkTheme(props.data, props.ctx)
+  const dark = isDark(props.ctx)
 
   const platformConfig = {
     douyin: {
       name: '抖音',
       nameEn: 'Douyin',
-      logo: useDarkTheme ? '/image/douyin/dylogo-light.svg' : '/image/douyin/dylogo-dark.svg',
-      color: useDarkTheme ? '#ffffff' : '#111111'
+      logo: dark ? '/image/douyin/dylogo-light.svg' : '/image/douyin/dylogo-dark.svg',
+      color: dark ? '#ffffff' : '#111111'
     },
     bilibili: {
       name: '哔哩哔哩',
@@ -41,7 +41,7 @@ export const GroupStatistics: React.FC<PosterProps<GroupStatisticsData>> = (prop
   }
 
   // 弥散光颜色配置
-  const glowColors = useDarkTheme
+  const glowColors = dark
     ? {
         primary: 'rgba(236, 72, 153, 0.4)',
         secondary: 'rgba(139, 92, 246, 0.3)',
@@ -216,7 +216,7 @@ export const GroupStatistics: React.FC<PosterProps<GroupStatisticsData>> = (prop
                         fontSize: 40,
                         fontFamily: 'HarmonyOSHans-Regular',
                         fontWeight: 'bold',
-                        fill: useDarkTheme ? '#fff' : '#000'
+                        fill: dark ? '#fff' : '#000'
                       }
                     }}
                     labelRadius={400}

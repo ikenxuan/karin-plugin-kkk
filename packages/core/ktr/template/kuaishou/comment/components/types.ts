@@ -44,6 +44,4 @@ export interface KuaishouCommentData {
     /** IP标签 */
     ip_label?: string
   }[]
-  /** 是否使用深色主题（core 渲染时注入 data） */
-  useDarkTheme?: boolean
 }

@@ -12,15 +12,6 @@ import { isSemverGreater } from '../semver'
 import { resolveUseDarkTheme } from './coverTheme'
 import { embedWatermark } from './wm'
 
-/** 注册表类型：.ktr/registry-types.d.ts 模块增强生效后为逐路由精确类型。 */
-type Registry = LoadedRegistry
-
-/**
- * 动态渲染路径，格式为 "平台/组件ID" 或 "平台/分类/组件ID"。
- * 精确路由联合类型由 ktr 注册表的模块增强提供。
- */
-export type DynamicRenderPath = keyof Registry & string
-
 type ImageMetadata = {
   width?: number
   height?: number
@@ -54,11 +45,10 @@ const renderTemplate = createTemplateRenderer(import.meta.url, {
  * @options 渲染选项
  * @returns 渲染结果图片元素数组的 Promise
  */
-export const Render = async <P extends DynamicRenderPath>(
+export const Render = async <P extends keyof LoadedRegistry>(
   event: Message,
   path: P,
-  // useDarkTheme 由各模板 Data 接口声明为可选字段，core 在这里统一注入，调用方无需关心
-  data?: DataOf<Registry[P]>,
+  data: DataOf<LoadedRegistry[P]>,
   options?: {
     /**
      * 是否跳过水印嵌入
@@ -95,8 +85,10 @@ export const Render = async <P extends DynamicRenderPath>(
 
   // kkk 的模板上下文字段（version / watermarkTextBitSize）由 ktr 原样透传，
   // defineKkkTemplate 适配器再映射回组件 props。浅色不传 theme，与旧外壳输出保持一致。
-  const ctx = {
+  // scale 由 ktr 外壳消费：对 #container 统一施加 zoom，模板组件自身不再处理缩放。
+  const ctx: Parameters<ReturnType<typeof createTemplateRenderer>>[2] = {
     scale: Math.min(2, Math.max(0.5, Number(Config.app.renderScale) / 100)),
+    theme: { mode: useDarkTheme ? 'dark' : 'light' },
     version: Config.app.RemoveWatermark
       ? undefined
       : {
@@ -114,12 +106,11 @@ export const Render = async <P extends DynamicRenderPath>(
       coverOpacity: Config.app.ambientCover?.coverOpacity,
       overlayEdgeOpacity: Config.app.ambientCover?.overlayEdgeOpacity,
       overlayMiddleOpacity: Config.app.ambientCover?.overlayMiddleOpacity
-    },
-    ...(useDarkTheme ? { theme: { mode: 'dark' as const } } : {})
+    }
   }
 
-  // 调用 ktr SSR 渲染，生成 HTML 文件；Object.assign 保留泛型推导（泛型对象 spread 会塌缩掉类型参数）
-  const result = await renderTemplate(path, Object.assign({}, data, { useDarkTheme }), ctx)
+  // 调用 ktr SSR 渲染，生成 HTML 文件；data 保持业务数据原样，主题只走 ctx.theme.mode
+  const result = await renderTemplate(path, data, ctx)
     .then((res) => {
       if (!res.success || !res.htmlPath) {
         throw new Error(res.error)

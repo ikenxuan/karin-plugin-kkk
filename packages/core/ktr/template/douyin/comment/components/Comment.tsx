@@ -5,10 +5,11 @@ import { zhCN } from 'date-fns/locale'
 import { Search } from 'lucide-react'
 import React, { type ReactNode } from 'react'
 
+import { cn } from '../../../../utils/cn'
+import { isDark } from '../../../../utils/theme'
 import { DefaultLayout } from '../../../components/DefaultLayout'
 import { QRCodeWithAvatar } from '../../../components/QRCodeWithAvatar'
 import type { PosterProps } from '../../../types/ctx'
-import { cn } from '../../../../utils/cn'
 import { DouyinCommentIcon, DouyinFavoriteIcon, DouyinLikeIcon, DouyinMoreIcon, DouyinShareIcon } from '../../components/Icons'
 import type { DouyinSubComment } from '../../components/types'
 import type { DouyinCommentData } from './types'
@@ -88,7 +89,7 @@ const formatPublishTime = (timestamp: number): string => {
  * @param props 组件属性
  * @returns JSX元素
  */
-const QRCodeSection: React.FC<Omit<DouyinCommentData, 'CommentsData'>> = (props) => {
+const QRCodeSection: React.FC<Omit<DouyinCommentData, 'CommentsData'> & { useDarkTheme?: boolean }> = (props) => {
   return (
     <div className="flex flex-col items-center">
       <div className="flex justify-center items-center w-100 h-100 p-4">
@@ -109,7 +110,7 @@ const QRCodeSection: React.FC<Omit<DouyinCommentData, 'CommentsData'>> = (props)
  * @param props 组件属性
  * @returns JSX元素
  */
-const VideoInfoHeader: React.FC<Omit<DouyinCommentData, 'CommentsData'>> = (props) => {
+const VideoInfoHeader: React.FC<Omit<DouyinCommentData, 'CommentsData'> & { useDarkTheme?: boolean }> = (props) => {
   return (
     <div className="max-w-350 mx-auto px-10 pt-14">
       <div className="flex items-start justify-between gap-10">
@@ -555,7 +556,7 @@ export const DouyinComment: React.FC<PosterProps<DouyinCommentData>> = React.mem
       <div className="p-5 px-15">
         <div className="h-20"></div>
         {/* 视频信息头部 */}
-        <VideoInfoHeader {...props.data} />
+        <VideoInfoHeader {...props.data} useDarkTheme={isDark(props.ctx)} />
 
         {/* 推荐搜索词 */}
         {randomSuggestWord() && (

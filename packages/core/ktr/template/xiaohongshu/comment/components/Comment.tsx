@@ -4,9 +4,10 @@ import { zhCN } from 'date-fns/locale'
 import { Heart, MessageCircle } from 'lucide-react'
 import React from 'react'
 
+import { generateQRCode } from '../../../../utils/QRcode'
+import { isDark } from '../../../../utils/theme'
 import { DefaultLayout } from '../../../components/DefaultLayout'
 import type { PosterProps } from '../../../types/ctx'
-import { generateQRCode } from '../../../../utils/QRcode'
 import type { XiaohongshuCommentData } from './types'
 
 const xiaohongshuMentionClassName = 'text-[#13386c] dark:text-[#c7daef]'
@@ -53,7 +54,7 @@ const formatXiaohongshuLikeCount = (count: string): string => {
  * @param props 组件属性
  * @returns JSX元素
  */
-const NoteInfoHeader: React.FC<XiaohongshuCommentData> = (props) => {
+const NoteInfoHeader: React.FC<XiaohongshuCommentData & { useDarkTheme: boolean }> = (props) => {
   return (
     <div className="flex justify-between items-center max-w-300 mx-auto p-5">
       <div className="flex flex-col justify-center items-start">
@@ -240,7 +241,7 @@ export const XiaohongshuComment: React.FC<PosterProps<XiaohongshuCommentData>> =
     <DefaultLayout {...props}>
       <div className="h-30" />
       {/* 页面头部 */}
-      <NoteInfoHeader {...props.data} />
+      <NoteInfoHeader {...props.data} useDarkTheme={isDark(props.ctx)} />
 
       {/* 评论列表 */}
       <div className="overflow-auto mx-20 max-w-full">

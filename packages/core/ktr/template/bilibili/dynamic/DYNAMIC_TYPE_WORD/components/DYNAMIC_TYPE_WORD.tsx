@@ -1,6 +1,7 @@
 import { renderRichTextToReact } from '@kkk/richtext'
 import React from 'react'
 
+import { isDark } from '../../../../../utils/theme'
 import { DefaultLayout } from '../../../../components/DefaultLayout'
 import type { PosterProps } from '../../../../types/ctx'
 import { BilibiliAdditionalCard } from '../../components/AdditionalCard'
@@ -56,7 +57,7 @@ export const BilibiliWordDynamic: React.FC<PosterProps<BilibiliWordDynamicData>>
         <BilibiliDynamicStatus {...props.data} />
 
         <div className="h-23" />
-        <BilibiliDynamicFooter {...props.data} />
+        <BilibiliDynamicFooter {...props.data} useDarkTheme={isDark(props.ctx)} />
       </div>
     </DefaultLayout>
   )

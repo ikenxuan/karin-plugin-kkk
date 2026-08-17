@@ -13,6 +13,4 @@ export interface BilibiliForwardDynamicData extends BilibiliDynamicBaseData {
   original_content: BilibiliForwardOriginalContentProps['original_content']
   /** 图片URL */
   imgList: string[] | null
-  /** 是否使用深色主题（core 渲染时注入 data） */
-  useDarkTheme?: boolean
 }

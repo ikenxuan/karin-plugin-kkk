@@ -18,6 +18,4 @@ export interface ChangelogData {
   buildTime?: string
   /** 版本差异对比页面分享链接 */
   share_url?: string
-  /** 是否使用深色主题（core 渲染时注入 data） */
-  useDarkTheme?: boolean
 }

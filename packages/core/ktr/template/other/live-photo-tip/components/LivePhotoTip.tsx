@@ -2,10 +2,10 @@ import { SiApple, SiHonor, SiHuawei, SiOneplus, SiOppo, SiSamsung, SiVivo, SiXia
 import { ArrowDownToLine, Check, HelpCircle, Info, X } from 'lucide-react'
 import React from 'react'
 
+import { isDark } from '../../../../utils/theme'
 import { DefaultLayout } from '../../../components/DefaultLayout'
 import { GlowImage } from '../../../components/GlowImage'
 import type { PosterProps } from '../../../types/ctx'
-import { resolveUseDarkTheme } from '../../../../utils/theme'
 import type { LivePhotoTipData } from './types'
 
 /**
@@ -109,22 +109,22 @@ function UnsupportedBrandCard({ brand, isDark }: { brand: BrandItem; isDark: boo
  * 实况图提示组件 - 正方形，Vercel 黑白风格
  */
 export const LivePhotoTip: React.FC<PosterProps<LivePhotoTipData>> = React.memo((props) => {
-  const isDark = resolveUseDarkTheme(props.data, props.ctx) ?? false
+  const dark = isDark(props.ctx)
 
   // Vercel 黑白风格
-  const bgColor = isDark ? '#000000' : '#ffffff'
-  const primaryColor = isDark ? '#ffffff' : '#000000'
-  const secondaryColor = isDark ? '#888888' : '#666666'
-  const mutedColor = isDark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)'
-  const accentColor = isDark ? '#ffffff' : '#000000'
+  const bgColor = dark ? '#000000' : '#ffffff'
+  const primaryColor = dark ? '#ffffff' : '#000000'
+  const secondaryColor = dark ? '#888888' : '#666666'
+  const mutedColor = dark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)'
+  const accentColor = dark ? '#ffffff' : '#000000'
 
-  const glow1 = 'radial-gradient(ellipse at 30% 40%, ' + (isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)') + ' 0%, transparent 70%)'
+  const glow1 = 'radial-gradient(ellipse at 30% 40%, ' + (dark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)') + ' 0%, transparent 70%)'
   const glow2 =
-    'radial-gradient(ellipse at 70% 60%, ' + (isDark ? 'rgba(128,128,128,0.1)' : 'rgba(128,128,128,0.08)') + ' 0%, transparent 70%)'
+    'radial-gradient(ellipse at 70% 60%, ' + (dark ? 'rgba(128,128,128,0.1)' : 'rgba(128,128,128,0.08)') + ' 0%, transparent 70%)'
 
-  const noiseOpacity = isDark ? 0.04 : 0.06
+  const noiseOpacity = dark ? 0.04 : 0.06
 
-  const appleColor = isDark ? '#ffffff' : '#000000'
+  const appleColor = dark ? '#ffffff' : '#000000'
 
   const supportedBrands: BrandItem[] = [
     { icon: <GooglePhotosIcon className="w-36 h-auto" />, color: '#4285F4', status: 'verified' },
@@ -216,7 +216,7 @@ export const LivePhotoTip: React.FC<PosterProps<LivePhotoTipData>> = React.memo(
           <div
             className="rounded-full p-5 shrink-0"
             style={{
-              background: 'radial-gradient(circle, ' + (isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.06)') + ' 0%, transparent 70%)'
+              background: 'radial-gradient(circle, ' + (dark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.06)') + ' 0%, transparent 70%)'
             }}
           >
             <ArrowDownToLine className="w-30 h-auto" style={{ color: primaryColor }} />
@@ -237,23 +237,23 @@ export const LivePhotoTip: React.FC<PosterProps<LivePhotoTipData>> = React.memo(
           <div className="flex flex-col gap-6">
             <div className="flex justify-center gap-6">
               {supportedBrands.slice(0, 4).map((brand, idx) => (
-                <BrandCard key={idx} brand={brand} isDark={isDark} />
+                <BrandCard key={idx} brand={brand} isDark={dark} />
               ))}
             </div>
             <div className="flex justify-center gap-6">
               {supportedBrands.slice(4).map((brand, idx) => (
-                <BrandCard key={idx} brand={brand} isDark={isDark} />
+                <BrandCard key={idx} brand={brand} isDark={dark} />
               ))}
             </div>
           </div>
 
           {/* 分隔线 */}
-          <div className="w-200 h-px" style={{ backgroundColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)' }} />
+          <div className="w-200 h-px" style={{ backgroundColor: dark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)' }} />
 
           {/* 下方区域：不支持（显著缩小 + 弱化） */}
           <div className="flex justify-center gap-8">
             {unsupportedBrands.map((brand, idx) => (
-              <UnsupportedBrandCard key={idx} brand={brand} isDark={isDark} />
+              <UnsupportedBrandCard key={idx} brand={brand} isDark={dark} />
             ))}
           </div>
         </div>
@@ -261,7 +261,7 @@ export const LivePhotoTip: React.FC<PosterProps<LivePhotoTipData>> = React.memo(
         {/* 兼容说明 */}
         <div
           className="flex items-start gap-4 mt-12 px-8 py-5 rounded-2xl"
-          style={{ backgroundColor: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)' }}
+          style={{ backgroundColor: dark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)' }}
         >
           <Info className="w-6 h-6 shrink-0 mt-0.5" style={{ color: primaryColor }} />
           <p className="text-xl leading-relaxed" style={{ color: mutedColor }}>

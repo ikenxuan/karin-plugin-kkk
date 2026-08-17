@@ -5,6 +5,4 @@ export interface VersionWarningData {
   requireVersion: string
   /** 当前运行的 karin 版本 */
   currentVersion: string
-  /** 是否使用深色主题（core 渲染时注入 data） */
-  useDarkTheme?: boolean
 }

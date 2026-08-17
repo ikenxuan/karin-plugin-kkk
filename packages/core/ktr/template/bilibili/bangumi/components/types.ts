@@ -33,6 +33,4 @@ export interface BangumiBilibiliData {
   Episodes: BangumiBilibiliEpisode[]
   /** 剧集总数 */
   length: number
-  /** 是否使用深色主题（core 渲染时注入 data） */
-  useDarkTheme?: boolean
 }

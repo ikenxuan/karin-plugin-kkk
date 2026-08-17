@@ -3,7 +3,7 @@
 /**
  * 用户视频列表页面的数据类型定义
  */
-export type VideoListItem = {
+type VideoListItem = {
   /** 视频ID */
   aweme_id: string
   /** 视频索引 */
@@ -68,6 +68,4 @@ export type DouyinUserVideoListData = {
   videos: Array<VideoListItem>
   /** 超时秒数 */
   timeoutSeconds?: number
-  /** 是否使用深色主题（core 渲染时注入 data） */
-  useDarkTheme?: boolean
 }

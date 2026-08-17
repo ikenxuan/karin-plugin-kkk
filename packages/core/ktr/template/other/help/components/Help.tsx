@@ -1,11 +1,15 @@
 import React from 'react'
 
+import { isDark } from '../../../../utils/theme'
 import { DefaultLayout } from '../../../components/DefaultLayout'
 import { resolveIcon } from '../../../components/iconRegistry'
 import type { PosterProps } from '../../../types/ctx'
-import { resolveUseDarkTheme } from '../../../../utils/theme'
-import type { MenuGroup, MenuItem } from './types'
 import type { HelpData } from './types'
+
+/** 菜单分组类型：从 HelpData 逐步索引派生，types.ts 不再单独导出子类型 */
+type MenuGroup = NonNullable<HelpData['menu']>[number]
+/** 菜单项类型：同上，由 MenuGroup 继续索引得到 */
+type MenuItem = MenuGroup['items'][number]
 
 /**
  * 获取图标组件，兜底为默认图标
@@ -90,10 +94,10 @@ const MenuGroupComponent: React.FC<{
 export const Help: React.FC<PosterProps<HelpData>> = React.memo((props) => {
   const title = props.data?.title || 'KKK PLUGIN'
   const menuData = props.data?.menu || []
-  const isDark = resolveUseDarkTheme(props.data, props.ctx)
+  const dark = isDark(props.ctx)
 
   // 弥散光颜色配置
-  const glowColors = isDark
+  const glowColors = dark
     ? {
         primary: 'rgba(59, 130, 246, 0.4)', // Blue
         secondary: 'rgba(139, 92, 246, 0.3)', // Violet
@@ -106,7 +110,7 @@ export const Help: React.FC<PosterProps<HelpData>> = React.memo((props) => {
       }
 
   // 内容主题色轮换
-  const contentColors = isDark
+  const contentColors = dark
     ? ['#60a5fa', '#a78bfa', '#2dd4bf'] // Blue-400, Violet-400, Teal-400
     : ['#2563eb', '#7c3aed', '#0d9488'] // Blue-600, Violet-600, Teal-600
 
@@ -200,7 +204,7 @@ export const Help: React.FC<PosterProps<HelpData>> = React.memo((props) => {
           <div
             className="absolute bottom-0 left-0 w-130 h-100 opacity-[0.04]"
             style={{
-              background: `repeating-linear-gradient(45deg, ${isDark ? '#fff' : '#000'}, ${isDark ? '#fff' : '#000'} 5px, transparent 2px, transparent 10px)`
+              background: `repeating-linear-gradient(45deg, ${dark ? '#fff' : '#000'}, ${dark ? '#fff' : '#000'} 5px, transparent 2px, transparent 10px)`
             }}
           />
           {/* 右下角大圆环 */}

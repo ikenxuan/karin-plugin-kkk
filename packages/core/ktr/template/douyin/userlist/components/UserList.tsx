@@ -1,9 +1,9 @@
 import { Clapperboard, Hash, Radio, UserPlus, UsersRound } from 'lucide-react'
 import React from 'react'
 
+import { isDark } from '../../../../utils/theme'
 import { DefaultLayout } from '../../../components/DefaultLayout'
 import type { PosterProps } from '../../../types/ctx'
-import { resolveUseDarkTheme } from '../../../../utils/theme'
 import { DouyinLikeIcon, DouyinRecommendIcon } from '../../components/Icons'
 import type { DouyinUserListData } from './types'
 
@@ -127,11 +127,11 @@ const DouyinUserItem: React.FC<DouyinUserListData['renderOpt'][number]> = (props
  * 抖音用户列表组件
  */
 const DouyinUserList: React.FC<PosterProps<DouyinUserListData>> = (props) => {
-  const isDark = resolveUseDarkTheme(props.data, props.ctx) !== false
+  const dark = isDark(props.ctx)
 
   // 抖音配色：Danger红 (#ef4444) + 黑色 (#000000)
-  const primaryColor = isDark ? '#ef4444' : '#dc2626' // Red-500/600
-  const secondaryColor = isDark ? '#000000' : '#171717' // Black/Neutral-900
+  const primaryColor = dark ? '#ef4444' : '#dc2626' // Red-500/600
+  const secondaryColor = dark ? '#000000' : '#171717' // Black/Neutral-900
 
   return (
     <DefaultLayout

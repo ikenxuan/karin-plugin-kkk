@@ -3,10 +3,10 @@ import { AlertTriangle, ScanLine, User } from 'lucide-react'
 import React from 'react'
 import { RiArrowRightFill } from 'react-icons/ri'
 
+import { generateQRCode } from '../../../../utils/QRcode'
+import { isDark } from '../../../../utils/theme'
 import { DefaultLayout } from '../../../components/DefaultLayout'
 import type { PosterProps } from '../../../types/ctx'
-import { generateQRCode } from '../../../../utils/QRcode'
-import { resolveUseDarkTheme } from '../../../../utils/theme'
 import type { BilibiliQrcodeImgData } from './types'
 
 /**
@@ -15,13 +15,13 @@ import type { BilibiliQrcodeImgData } from './types'
  * @returns JSX元素
  */
 export const BilibiliQrcodeImg: React.FC<PosterProps<BilibiliQrcodeImgData>> = React.memo((props) => {
-  const isDark = resolveUseDarkTheme(props.data, props.ctx)
-  const qrCodeDataUrl = generateQRCode(props.data.share_url, isDark)
+  const dark = isDark(props.ctx)
+  const qrCodeDataUrl = generateQRCode(props.data.share_url, dark)
 
   const theme = {
-    bg: isDark ? '#000000' : '#FFFFFF',
-    text: isDark ? '#FFFFFF' : '#000000',
-    subText: isDark ? '#888888' : '#666666',
+    bg: dark ? '#000000' : '#FFFFFF',
+    text: dark ? '#FFFFFF' : '#000000',
+    subText: dark ? '#888888' : '#666666',
     accent: '#FF6699', // B站粉
     // 双色弥散
     gradientTL: '#FF6699', // 左上 B站粉
@@ -59,7 +59,7 @@ export const BilibiliQrcodeImg: React.FC<PosterProps<BilibiliQrcodeImgData>> = R
       </div>
 
       {/* 2. 单色噪点层 */}
-      <div className="absolute inset-0 pointer-events-none" style={{ opacity: isDark ? 0.16 : 0.2 }}>
+      <div className="absolute inset-0 pointer-events-none" style={{ opacity: dark ? 0.16 : 0.2 }}>
         <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
           <filter id="pixelNoise" x="0%" y="0%" width="100%" height="100%">
             <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" stitchTiles="stitch" result="noise" />

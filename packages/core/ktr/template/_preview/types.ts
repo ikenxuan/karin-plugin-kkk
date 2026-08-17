@@ -1,4 +1,4 @@
-export type PreviewParams = {
+type PreviewParams = {
   filename: string
   filePath: string
   videoUrl: string

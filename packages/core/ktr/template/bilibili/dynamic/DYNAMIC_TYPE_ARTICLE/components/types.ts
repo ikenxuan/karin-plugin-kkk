@@ -64,6 +64,4 @@ export interface BilibiliArticleDynamicData {
   following_count: string | number
   /** 粉丝数 */
   fans: string | number
-  /** 是否使用深色主题（core 渲染时注入 data） */
-  useDarkTheme?: boolean
 }

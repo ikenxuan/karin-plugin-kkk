@@ -67,11 +67,9 @@ export interface RuntimeReportData {
     markdown: string
     available: boolean
   }
-  /** 是否使用深色主题（core 渲染时注入 data） */
-  useDarkTheme?: boolean
 }
 
 /**
  * 构建指纹状态：matched=与当前版本一致；mismatched=不一致；unavailable=无构建元数据。
  */
-export type RuntimeBuildState = 'matched' | 'mismatched' | 'unavailable'
+type RuntimeBuildState = 'matched' | 'mismatched' | 'unavailable'

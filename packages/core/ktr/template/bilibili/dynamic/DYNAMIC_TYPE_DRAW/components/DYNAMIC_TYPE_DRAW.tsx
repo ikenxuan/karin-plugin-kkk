@@ -1,6 +1,7 @@
 import { renderRichTextToReact } from '@kkk/richtext'
 import React from 'react'
 
+import { isDark } from '../../../../../utils/theme'
 import { DefaultLayout } from '../../../../components/DefaultLayout'
 import type { PosterProps } from '../../../../types/ctx'
 import { EnhancedImage } from '../../../components/shared'
@@ -193,7 +194,7 @@ export const BilibiliDrawDynamic: React.FC<PosterProps<BilibiliDynamicData>> = R
         <div className="h-40" />
 
         {/* 底部信息 */}
-        <BilibiliDynamicFooter {...props.data} />
+        <BilibiliDynamicFooter {...props.data} useDarkTheme={isDark(props.ctx)} />
       </div>
     </DefaultLayout>
   )

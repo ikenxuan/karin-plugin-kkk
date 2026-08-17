@@ -1,10 +1,10 @@
 import { Hash, Maximize, Music, QrCode, UserPlus, Users } from 'lucide-react'
 import React from 'react'
 
+import { isDark } from '../../../../utils/theme'
 import { DefaultLayout } from '../../../components/DefaultLayout'
 import { QRCodeWithAvatar } from '../../../components/QRCodeWithAvatar'
 import type { PosterProps } from '../../../types/ctx'
-import { resolveUseDarkTheme } from '../../../../utils/theme'
 import { DouyinLikeIcon } from '../../components/Icons'
 import type { MusicAuthorInfoProps, MusicCoverProps, MusicInfoProps, MusicQRCodeProps } from '../../components/types'
 import type { DouyinMusicInfoData } from './types'
@@ -123,7 +123,7 @@ const MusicAuthorInfoSection: React.FC<MusicAuthorInfoProps> = ({
  * @param props 组件属性
  * @returns JSX元素
  */
-const MusicQRCodeSection: React.FC<MusicQRCodeProps> = ({ share_url, avatarUrl, useDarkTheme }) => {
+const MusicQRCodeSection: React.FC<MusicQRCodeProps & { useDarkTheme?: boolean }> = ({ share_url, avatarUrl, useDarkTheme }) => {
   return (
     <div className="flex flex-col-reverse items-center -mb-12 mr-18">
       <div className="flex items-center gap-2 text-[45px] text-right mt-5 text-muted select-text">
@@ -154,20 +154,14 @@ export const DouyinMusicInfo: React.FC<PosterProps<DouyinMusicInfoData>> = (prop
   return (
     <DefaultLayout {...props}>
       <div>
-        <DouyinHeader useDarkTheme={resolveUseDarkTheme(data, props.ctx)} />
+        <DouyinHeader useDarkTheme={isDark(props.ctx)} />
 
         {/* 音乐封面 */}
-        <MusicCoverSection imageUrl={data.image_url} description={data.desc} useDarkTheme={resolveUseDarkTheme(data, props.ctx)} />
+        <MusicCoverSection imageUrl={data.image_url} description={data.desc} />
         <div className="h-22.5" />
 
         {/* 音乐信息 */}
-        <MusicInfoSection
-          desc={data.desc}
-          musicId={data.music_id}
-          userCount={data.user_count}
-          createTime={data.create_time}
-          useDarkTheme={resolveUseDarkTheme(data, props.ctx)}
-        />
+        <MusicInfoSection desc={data.desc} musicId={data.music_id} userCount={data.user_count} createTime={data.create_time} />
         <div className="h-25" />
 
         {/* 底部文字 */}
@@ -182,9 +176,8 @@ export const DouyinMusicInfo: React.FC<PosterProps<DouyinMusicInfoData>> = (prop
             totalFavorited={data.total_favorited}
             followingCount={data.following_count}
             fans={data.fans}
-            useDarkTheme={resolveUseDarkTheme(data, props.ctx)}
           />
-          <MusicQRCodeSection share_url={data.share_url} avatarUrl={data.avater_url} useDarkTheme={resolveUseDarkTheme(data, props.ctx)} />
+          <MusicQRCodeSection share_url={data.share_url} avatarUrl={data.avater_url} useDarkTheme={isDark(props.ctx)} />
         </div>
       </div>
     </DefaultLayout>

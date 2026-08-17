@@ -2,10 +2,10 @@ import { format } from 'date-fns'
 import { Quote } from 'lucide-react'
 import React from 'react'
 
+import { isDark } from '../../../../utils/theme'
 import { DefaultLayout } from '../../../components/DefaultLayout'
 import { QRCodeWithAvatar } from '../../../components/QRCodeWithAvatar'
 import type { PosterProps } from '../../../types/ctx'
-import { resolveUseDarkTheme } from '../../../../utils/theme'
 import { DouyinCommentIcon, DouyinFavoriteIcon, DouyinLikeIcon, DouyinRecommendIcon, DouyinShareIcon } from '../../components/Icons'
 import type { DouyinFavoriteListData } from './types'
 
@@ -13,10 +13,10 @@ import type { DouyinFavoriteListData } from './types'
  * 抖音喜欢列表组件
  */
 export const DouyinFavoriteList: React.FC<PosterProps<DouyinFavoriteListData>> = (props) => {
-  const isDark = resolveUseDarkTheme(props.data, props.ctx) ?? false
+  const dark = isDark(props.ctx)
 
   // 弥散光颜色配置
-  const glowColors = isDark
+  const glowColors = dark
     ? {
         primary: 'rgba(225, 29, 72, 0.15)', // Rose-600 (Lower opacity)
         secondary: 'rgba(20, 184, 166, 0.15)' // Teal-500 (Complementary)
@@ -122,7 +122,7 @@ export const DouyinFavoriteList: React.FC<PosterProps<DouyinFavoriteListData>> =
               <QRCodeWithAvatar
                 value={props.data.share_url}
                 avatarUrl={props.data.author_avatar}
-                useDarkTheme={resolveUseDarkTheme(props.data, props.ctx)}
+                useDarkTheme={dark}
                 className="w-65 h-auto rounded-2xl mix-blend-multiply"
                 alt="QR"
               />

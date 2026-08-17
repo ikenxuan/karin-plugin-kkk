@@ -3,11 +3,11 @@ import { format, fromUnixTime } from 'date-fns'
 import { Calendar } from 'lucide-react'
 import React from 'react'
 
-import { DefaultLayout } from '../../../components/DefaultLayout'
+import { isDark } from '../../../../utils/theme'
 import { AmbientCover } from '../../../components/AmbientCover'
+import { DefaultLayout } from '../../../components/DefaultLayout'
 import { GlowText } from '../../../components/GlowImage'
 import type { PosterProps } from '../../../types/ctx'
-import { resolveUseDarkTheme } from '../../../../utils/theme'
 import { CoinIcon, CommentIcon, PlayIcon, ShareIcon, StarIcon, ThumbUpIcon } from '../../components/Icons'
 import { EnhancedImage } from '../../components/shared'
 import type { BilibiliHotDanmaku } from '../../components/types'
@@ -195,7 +195,7 @@ export const BilibiliVideoInfo: React.FC<PosterProps<BilibiliVideoInfoData>> = R
               {props.data.owner.frame && <EnhancedImage src={props.data.owner.frame} alt="头像框" className="absolute inset-0 scale-138" />}
             </div>
             <div className="flex flex-col gap-8 min-w-0 flex-1">
-              <GlowText glowStrength={resolveUseDarkTheme(props.data, props.ctx) ? 1 : 0}>
+              <GlowText glowStrength={isDark(props.ctx) ? 1 : 0}>
                 <p
                   className="text-7xl font-bold truncate"
                   style={props.data.owner.usernameMeta?.nicknameColor ? { color: props.data.owner.usernameMeta.nicknameColor } : undefined}

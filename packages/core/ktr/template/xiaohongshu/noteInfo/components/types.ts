@@ -4,7 +4,7 @@ import type { RichTextDocument } from '@kkk/richtext'
 /**
  * 小红书笔记统计信息接口
  */
-export interface XiaohongshuNoteStatistics {
+interface XiaohongshuNoteStatistics {
   /** 分享数 */
   share_count: string | number
   /** 是否已关注 */
@@ -26,7 +26,7 @@ export interface XiaohongshuNoteStatistics {
 /**
  * 小红书作者信息接口
  */
-export interface XiaohongshuAuthor {
+interface XiaohongshuAuthor {
   /** xsec_token */
   xsec_token?: string
   /** 用户ID */

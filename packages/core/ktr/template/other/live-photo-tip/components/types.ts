@@ -5,6 +5,4 @@ export interface LivePhotoTipData {
   title?: string
   /** 附加说明 */
   description?: string
-  /** 是否使用深色主题（core 渲染时注入 data） */
-  useDarkTheme?: boolean
 }

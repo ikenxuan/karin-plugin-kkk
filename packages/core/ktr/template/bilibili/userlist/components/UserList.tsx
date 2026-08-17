@@ -1,9 +1,9 @@
 import { FileText, Hash, Heart, Image as LucideImage, Radio, Share2, UserPlus, UsersRound, Video } from 'lucide-react'
 import React from 'react'
 
+import { isDark } from '../../../../utils/theme'
 import { DefaultLayout } from '../../../components/DefaultLayout'
 import type { PosterProps } from '../../../types/ctx'
-import { resolveUseDarkTheme } from '../../../../utils/theme'
 import { EnhancedImage } from '../../components/shared'
 import type { BilibiliUserListData } from './types'
 
@@ -143,11 +143,11 @@ const BilibiliUserItem: React.FC<BilibiliUserListData['renderOpt'][number]> = (p
  * B站用户列表组件
  */
 const BilibiliUserList: React.FC<PosterProps<BilibiliUserListData>> = (props) => {
-  const isDark = resolveUseDarkTheme(props.data, props.ctx) !== false
+  const dark = isDark(props.ctx)
 
   // 极简配色：主色(B站蓝) + 邻色(浅蓝/紫)
-  const primaryColor = isDark ? '#23ade5' : '#00a1d6'
-  const secondaryColor = isDark ? '#4f46e5' : '#60a5fa' // Indigo/Blue
+  const primaryColor = dark ? '#23ade5' : '#00a1d6'
+  const secondaryColor = dark ? '#4f46e5' : '#60a5fa' // Indigo/Blue
 
   return (
     <DefaultLayout
