@@ -10,9 +10,9 @@ import {
   type RichTextEmojiDefinition,
   type RichTextNode
 } from '@kkk/richtext'
+import type { DouyinCommentData } from '@template/douyin/comment/components/types'
 import decode from 'heic-decode'
 import jpeg from 'jpeg-js'
-import type { DouyinCommentProps } from 'template/types/platforms/douyin'
 
 import { Networks } from '@/module/utils'
 import { douyinFetcher } from '@/module/utils/amagiClient'
@@ -65,7 +65,7 @@ type DouyinMentionToken = {
   userId: string
 }
 
-type DouyinCommentItem = DouyinCommentProps['data']['CommentsData'][number]
+type DouyinCommentItem = DouyinCommentData['CommentsData'][number]
 type DouyinReplyCommentItem = NonNullable<DouyinCommentItem['replyComment']>[number]
 
 /**
@@ -371,7 +371,7 @@ export const douyinComments = async (data: Result<DyWorkComments>, emojidata: an
       }
     }
 
-    const commentObj: DouyinCommentProps['data']['CommentsData'][number] = {
+    const commentObj: DouyinCommentData['CommentsData'][number] = {
       id: id++,
       replyComment: replyComments.length > 0 ? replyComments : undefined,
       cid,

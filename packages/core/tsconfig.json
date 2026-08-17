@@ -9,14 +9,14 @@
     "allowSyntheticDefaultImports": true,
     "paths": {
       "@/*": ["./src/*"],
-      "template": ["../template/src/index.ts"],
-      "template/*": ["../template/src/*"],
+      "@template/*": ["./ktr/*"],
       "@kkk/richtext": ["../richtext"],
       "@ikenxuan/amagi": ["../amagi/packages/core/src/index.ts"],
       "@ikenxuan/amagi/*": ["../amagi/packages/core/src/*"],
       "amagi/*": ["../amagi/packages/core/src/*"]
     },
-    "jsx": "react",
+    "jsx": "react-jsx",
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "declaration": true,
     "noImplicitAny": true,
     "strict": true,
@@ -34,17 +34,22 @@
     "emitDecoratorMetadata": true,
     "composite": true
   },
-  "include": ["src/**/*.ts", "vite.plugin/**/*.ts", "vite.config.ts"],
+  "include": [
+    "src/**/*.ts",
+    "ktr/**/*.ts",
+    "ktr/**/*.tsx",
+    "vite.plugin/**/*.ts",
+    "vite.config.ts",
+    "karin.template.ts",
+    ".ktr/**/*.d.ts"
+  ],
   "references": [
     {
       "path": "../richtext"
     },
     {
-      "path": "../template/tsconfig.app.json"
-    },
-    {
       "path": "../amagi/packages/core"
     }
   ],
-  "exclude": ["node_modules", "**/*.spec.ts", "**/*.test.ts", "**/*.d.ts"]
+  "exclude": ["node_modules", "lib", "**/*.spec.ts", "**/*.test.ts"]
 }

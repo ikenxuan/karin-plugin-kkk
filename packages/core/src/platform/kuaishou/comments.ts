@@ -9,7 +9,7 @@ import {
   type RichTextEmojiDefinition,
   type RichTextNode
 } from '@kkk/richtext'
-import type { KuaishouCommentItem } from 'template/types/platforms/kuaishou/comment'
+import type { KuaishouCommentData } from '@template/kuaishou/comment/components/types'
 
 import { Config } from '@/module/utils/Config'
 
@@ -18,7 +18,10 @@ import { Config } from '@/module/utils/Config'
  *
  * 这里不再拼 HTML，而是输出共享富文本 JSON，交给 template 侧渲染 React 节点。
  */
-export const kuaishouComments = async (data: KsWorkComments, emojiData: RichTextEmojiDefinition[]): Promise<KuaishouCommentItem[]> => {
+export const kuaishouComments = async (
+  data: KsWorkComments,
+  emojiData: RichTextEmojiDefinition[]
+): Promise<KuaishouCommentData['CommentsData']> => {
   const rootComments = data?.data?.visionCommentList?.rootComments
   if (!Array.isArray(rootComments) || rootComments.length === 0) {
     return []

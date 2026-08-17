@@ -9,6 +9,7 @@ import {
   ListBox,
   Popover,
   Select,
+  Slider,
   Switch,
   TextField,
   Tooltip
@@ -20,7 +21,15 @@ import { getDisabledTooltip } from '../../../config/disabledRules'
 import type { ConfigPanelLayoutClasses } from '../../../styles/desktopConfigPanel'
 import type { ConfigType } from '../../../types/config'
 import { booleanText } from './options'
-import type { ConfigDescription, ConfigFieldRenderers, ConfigHelp, ConfigPath, DeviceLayout, SelectOption } from './types'
+import type {
+  ConfigDescription,
+  ConfigFieldRenderers,
+  ConfigHelp,
+  ConfigPath,
+  DeviceLayout,
+  SelectOption,
+  SliderFieldOptions
+} from './types'
 import { getValue, includesValue, isConfigHelp, toNumber, toPathKey } from './utils'
 
 const CronEditor = lazy(() => import('../../pushlist/CronEditor'))
@@ -296,6 +305,39 @@ export const createConfigFieldRenderers = ({
     return wrapWithDisabledTooltip(groupElement, path, disabled)
   }
 
+  const renderSlider = (path: ConfigPath, label: string, help: ConfigDescription, options?: SliderFieldOptions) => {
+    const value = getValue<number>(config, path, options?.fallback ?? 0)
+    const disabled = options?.disabled ?? false
+
+    const sliderElement = (
+      <div className={classes.field}>
+        <Slider
+          className="w-full"
+          isDisabled={disabled}
+          value={value}
+          formatOptions={options?.formatOptions ?? { style: 'percent', maximumFractionDigits: 0 }}
+          maxValue={options?.max ?? 1}
+          minValue={options?.min ?? 0}
+          step={options?.step ?? 0.01}
+          onChange={(nextValue) => {
+            if (Array.isArray(nextValue)) return
+            updateConfigValue(path, nextValue)
+          }}
+        >
+          <Label className="font-semibold">{label}</Label>
+          <Slider.Output />
+          <Slider.Track>
+            <Slider.Fill />
+            <Slider.Thumb />
+          </Slider.Track>
+        </Slider>
+        {renderHelp(help)}
+      </div>
+    )
+
+    return wrapWithDisabledTooltip(sliderElement, path, disabled)
+  }
+
   const renderCronField: ConfigFieldRenderers['renderCronField'] = (path, _label, _help, disabled = false) => {
     const value = getValue<string>(config, path, '*/10 * * * *')
 
@@ -315,6 +357,7 @@ export const createConfigFieldRenderers = ({
     renderTextField,
     renderSelectField,
     renderCheckboxGroup,
+    renderSlider,
     renderCronField,
     renderPageHeader: (title, description) => (
       <div className={`mb-6 ${device === 'mobile' ? 'pr-36' : ''}`} data-config-section>

@@ -1,6 +1,6 @@
+import type { ApiErrorData } from '@template/other/handlerError/components/types'
 import type { AdapterType, Message } from 'node-karin'
 import karin from 'node-karin'
-import type { ApiErrorProps } from 'template/types/platforms/other/handlerError'
 
 import { resolveUsableBot } from '../bot'
 import { Config } from '../Config'
@@ -18,7 +18,7 @@ import { Config } from '../Config'
  * // [{ timestamp: '12:00:00.000', level: 'INFO', message: '消息内容', raw: '...' }]
  * ```
  */
-export const parseLogsToStructured = (logs: string[]): ApiErrorProps['data']['logs'] => {
+export const parseLogsToStructured = (logs: string[]): ApiErrorData['logs'] => {
   const logRegex = /\[(\d{2}:\d{2}:\d{2}\.\d{3})\]\[([A-Z]{4})\]\s(.+)/s
   return logs
     .map((log) => {

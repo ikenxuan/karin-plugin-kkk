@@ -26,8 +26,7 @@
 
 ## 工作区结构
 
-- `packages/core`：主插件包。包含 Karin 入口、命令 apps、平台解析、推送逻辑、配置、数据库、服务端 API、渲染调用、发布产物规则。
-- `packages/template`：React SSR 渲染服务和模板组件。把平台数据渲成 HTML，再交给 core 截图。包含独立开发工作台。
+- `packages/core`：主插件包。包含 Karin 入口、命令 apps、平台解析、推送逻辑、配置、数据库、服务端 API、渲染调用、发布产物规则，以及 `template/` 截图模板源码（遵循 `@karinjs/template-react`（ktr）强约定布局：`template/<板块>/<模板>/index.tsx` 默认导出 `defineTemplate(...)` 即注册为路由；`template/components/**` 是模板实现组件（命中 ktr 忽略的 `components/**` 模式，不参与路由）；`template/types/**` 为共享类型；`template/<路由>/data/*.json` 为面板 mock 数据）。
 - `packages/web`：Karin 插件 WebUI 配置管理端。构建输出到 `packages/core/lib/web`。
 - `packages/docs`：Next/Fumadocs 文档站，内容在 `content/docs`。
 - `packages/richtext`：core 与 template 共享的富文本中间层。core 生成 JSON，template 渲染 React。
@@ -44,7 +43,7 @@
 pnpm install
 pnpm dev              # core 插件开发：pnpm --filter karin-plugin-kkk run dev
 pnpm watch            # core watch
-pnpm template         # template Vite dev，端口 5174
+pnpm template         # ktr dev 模板开发面板（core 的 karin.template.ts），端口 5174
 pnpm docs             # docs Next dev，端口 5175
 pnpm web              # web Vite dev，端口 5176
 pnpm build            # kkk build core web
@@ -57,13 +56,13 @@ pnpm format:check
 pnpm sort
 ```
 
-只有 `core`、`web`、`docs` 三个子包允许构建。`template`、`richtext`、`amagi` 是 core 的源码级依赖：core 的 vite 构建直接 bundle 它们的源码（`template` 别名到 `../template/src`，`@kkk/richtext`、`@ikenxuan/amagi` 走 tsconfig paths），禁止单独构建它们，否则产生的 `dist`/`*.js` 产物会污染 git 待提交区。
+只有 `core`、`web`、`docs` 三个子包允许构建。`richtext`、`amagi` 是 core 的源码级依赖：core 的 vite 构建直接 bundle 它们的源码（`@kkk/richtext`、`@ikenxuan/amagi` 走 tsconfig paths），禁止单独构建它们，否则产生的 `dist`/`*.js` 产物会污染 git 待提交区。模板源码在 `packages/core/template/`（core 包内，ktr 约定），随 core 构建由 `.ktr` 注册表入口 bundle。
 
 局部命令可用 `pnpm --filter <package> run <script>`。CI 使用 Node 24、pnpm 9.15.9；`packages/core` 声明运行引擎为 Node >= 18。
 
 ## 开发端口和路由
 
-- `template` dev：`http://localhost:5174`。
+- `template` dev：`http://localhost:5174/__ktr/panel/`（ktr 开发面板，由 `packages/core/karin.template.ts` 配置）。
 - `docs` dev：`http://localhost:5175`。
 - `web` dev：`http://localhost:5176/kkk/assets/`，反代 `/kkk/v1` 和 `/api/v1` 到 Karin `http://localhost:7777`。
 - 插件生产 WebUI：`/kkk/assets`，配置页注册在 `packages/core/src/web.config.ts`，默认指向 `/kkk/assets/karin-config`。
@@ -75,7 +74,7 @@ pnpm sort
 2. `setup.ts` 初始化服务端路由、B站风控、Karin 版本兼容提醒、SQLite 数据库和数据目录。
 3. `src/apps/*.ts` 注册 Karin 命令与定时任务，例如解析、推送、帮助、扫码登录、统计、更新检测。
 4. `src/platform/*` 负责不同平台的数据获取、ID 识别、评论、弹幕、推送数据处理。
-5. `src/module/utils/Render/index.ts` 调用 `template` 的 SSR 渲染生成 HTML，再用 Karin render 截图为 PNG，并按配置嵌入水印。
+5. `src/module/utils/Render/index.ts` 通过 `@karinjs/template-react` 的 `createTemplateRenderer` 做 SSR 生成 HTML（约定注册表在 `packages/core/.ktr`，由 `ktr sync` 生成），再用 Karin render 截图为 PNG，并按配置嵌入水印。
 6. 视频/图片上传、下载、压缩、限速、临时预览主要在 `src/module/utils/Base.ts`、`Network/*`、`FFmpeg.ts`、`MotionPhoto.ts`。
 7. 错误包装和诊断海报在 `src/module/utils/ErrorHandler/*` 与 `template` 的 `other/handlerError`。
 
@@ -90,16 +89,12 @@ pnpm sort
 
 ## 模板渲染约定
 
-- `template` 的组件注册入口是 `packages/template/src/config/config-base.ts` 和 `config.ts`。
-- 新增模板通常需要同时改：
-  - `packages/template/src/components/platforms/...`
-  - `packages/template/src/types/...`
-  - `packages/template/src/config/config-base.ts`
-  - `packages/template/src/config/config.ts`
-  - `packages/template/src/types/index.ts` 的 `DynamicRenderPath` 和路径到数据类型映射
-  - core 调用处的 `Render(event, 'platform/template', data)`
-- `template/src/main.ts` 提供 SSR 渲染器、资源路径处理、HTML 包装、开发态 mock 数据落盘。
-- core 构建时由 vite 插件（`packages/core/vite.plugin/copy-assets.ts`）把 `template/public` 静态资源复制到 `packages/core/resources`，CSS 由 core 的 vite 构建直接处理；`template` 自身没有也不需要构建步骤。
+- 模板遵循 ktr 强约定：`packages/core/template/<板块>/<模板>/index.tsx` 默认导出 `defineTemplate(...)`（来自 `@karinjs/template-react`），路由即目录路径（支持 `bilibili/dynamic/DYNAMIC_TYPE_*` 三级路由）；路由级数据接口 `XxxData` 声明在同路由的 `components/types.ts`（带 doc 注释、export）。组件 props 为 `{ data, ctx }`（`PosterProps<XxxData>`，见 `template/types/ctx.ts` 的 `PosterContext`/`PosterProps`）：`version`/`scale`/`watermarkTextBitSize`/`posterPalette` 等通过 `ctx` 透传，`data.useDarkTheme` 由 core 注入。
+- 组件实现放在对应路由目录的 `components/`（如 `template/douyin/comment/components/Comment.tsx`）；板块共享组件在 `template/<板块>/components/`，板块共享类型在 `template/<板块>/types.ts`（bilibili 动态在 `template/bilibili/dynamic/types.ts`）；仅全板块通用的大组件（`DefaultLayout`、`GlowImage` 等）在 `template/components/`。`components/**` 路径命中 ktr 忽略模式，不会被扫成路由。组件根元素**不要**写 `id="container"`（截图边界由 ktr 外壳提供，`DefaultLayout` 用 `zoom` 实现 renderScale 缩放）。
+- 新增模板只需：新建 `template/<板块>/<模板>/index.tsx`（`defineTemplate` 注册）、`components/types.ts`（声明 Data 接口）和 `components/` 实现 → `ktr sync` 刷新 `.ktr` 注册表（core 的 dev/build 脚本已前置）→ core 调用处 `Render(event, '平台/模板', data)`，data 类型由 `.ktr/registry-types.d.ts` 模块增强逐路由精确推导。
+- mock 数据：`template/<路由>/mock.ts`（TS mock）或 `template/<路由>/data/*.json`（面板可编辑）；真实渲染数据在开发态自动捕获到 `data/captured.json`（已 gitignore）。
+- SSR 渲染插件在 `packages/core/src/module/utils/Render/plugins.ts`（封面取色/智能主题在 `beforeRender` 改 `data.useDarkTheme` 并把取色挂到 `ctx`；`/image/` 静态资源相对路径改写在 `afterRender`）。
+- core 构建时由 vite 插件（`packages/core/vite.plugin/copy-assets.ts`）把 `template/public` 静态资源复制到 `packages/core/resources`，CSS 由 core 构建里的 `ktr build --outDir lib` 编译 `template/style.css` 产出 `lib/style.css`。
 - 视觉类模板优先阅读 `.agents/skills/kkk-design/SKILL.md`：按内容选择克制内容卡片或弥散信息海报系统，避免退回普通后台、营销页或无层级截图。
 
 ## WebUI 约定
@@ -127,7 +122,7 @@ pnpm sort
 
 - `oxfmt`：无分号、单引号、2 空格、`printWidth: 140`、尾随逗号关闭、排序 import。
 - `oxlint`：TypeScript/React 插件，`no-unused-vars` 为 error；未使用参数/变量用 `_` 前缀。
-- 默认不要手改生成产物，例如 `packages/core/lib`、`packages/template/dist`、`packages/web` 构建输出、`.next`。
+- 默认不要手改生成产物，例如 `packages/core/lib`、`packages/core/.ktr`、`packages/web` 构建输出、`.next`。
 - 保持 ESM 写法，路径别名常见为 `@`、`@kkk/richtext`、`template`、`@ikenxuan/amagi`。
 - 不要把 cookie、token、代理认证等敏感信息写进提交或文档。
 
@@ -152,7 +147,7 @@ pnpm sort
 
 ## Git、提交与发布
 
-- Husky pre-commit：当 `packages/template`、`packages/amagi`、`packages/richtext`、`packages/web` 有暂存改动时，会更新 `packages/core/package.json` 的 `timestamp`。
+- Husky pre-commit：当 `packages/core/template`、`packages/amagi`、`packages/richtext`、`packages/web` 有暂存改动时，会更新 `packages/core/package.json` 的 `timestamp`。
 - Husky commit-msg：提交类型必须匹配 `.release-please-config.json` 的 changelog 类型，例如 `feat:`、`fix:`、`docs:`、`style:`、`refactor:`、`test:`、`build:`、`ci:`、`config:`、`db:`、`amagi:` 等。
 - Release Please 只管理 `packages/core`，正式发布包名为 `karin-plugin-kkk`。
 - CI 在 main/PR 上构建 core+web，发布正式包、GitHub Packages、预览包，并同步 build 分支。

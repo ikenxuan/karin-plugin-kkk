@@ -32,3 +32,8 @@ packages/next-web/
 .agents/*
 !.agents/skills/
 .claude/
+
+# ktr 框架产物缓存
+packages/core/.ktr/
+# ktr 真实渲染捕获数据
+packages/core/template/**/data/*.json

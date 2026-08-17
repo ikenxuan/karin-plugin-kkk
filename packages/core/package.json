@@ -59,46 +59,63 @@
   },
   "scripts": {
     "build": "cross-env NODE_ENV=production vite build && tsdown",
-    "build:check": "tsc --noEmit && pnpm build",
-    "dev": "cross-env EBV_FILE=\"development.env\" node --import tsx src/app.ts --trace-deprecation",
-    "typecheck": "tsc --noEmit",
+    "build:check": "ktr sync && tsc --noEmit && pnpm build",
+    "dev": "ktr sync && cross-env EBV_FILE=\"development.env\" node --import tsx src/app.ts --trace-deprecation",
+    "template": "ktr sync && ktr dev",
+    "typecheck": "ktr sync && tsc --noEmit",
     "pub": "npm publish --access public",
     "sort": "sort-package-json",
     "sync": "curl -X PUT \"https://registry-direct.npmmirror.com/-/package/karin-plugin-kkk/syncs\"",
-    "watch": "cross-env EBV_FILE=\"development.env\" tsx watch --include \"src/**/*.ts\" --include \"../template/src/dev/mock-server.ts\" --include \"../template/src/main.ts\" src/app.ts --trace-deprecation"
+    "watch": "ktr sync && cross-env EBV_FILE=\"development.env\" tsx watch --include \"src/**/*.ts\" --include \"ktr/**/*.ts\" --include \"ktr/**/*.tsx\" src/app.ts --trace-deprecation"
   },
   "dependencies": {
     "@ikenxuan/qrcode": "1.5.0",
     "@ikenxuan/watermark": "1.3.0",
-    "fingerprint-injector": "^2.1.86"
+    "fingerprint-injector": "^2.1.88"
   },
   "devDependencies": {
+    "@heroui/react": "3.2.2",
+    "@icons-pack/react-simple-icons": "^13.13.0",
     "@ikenxuan/amagi": "workspace:*",
-    "@karinjs/adapter-qqbot": "2.2.1",
+    "@karinjs/adapter-qqbot": "3.0.3",
     "@karinjs/plugin-adapter-discordbot": "https://pkg.pr.new/@karinjs/plugin-adapter-discordbot@1feb687",
     "@karinjs/plugin-adapter-milky": "^1.3.3",
     "@karinjs/plugin-basic": "1.4.13",
     "@karinjs/plugin-ffmpeg": "^0.1.3",
     "@karinjs/plugin-puppeteer": "^2.3.1",
+    "@karinjs/template-react": "0.0.1-beta.5",
     "@kkk/richtext": "workspace:*",
-    "@tailwindcss/vite": "4.3.3",
+    "@phosphor-icons/react": "^2.1.10",
+    "@thesvg/icons": "^3.0.18",
     "@types/cors": "^2.8.19",
     "@types/express": "5.0.6",
     "@types/heic-decode": "^2.0.0",
+    "@types/lodash": "^4.17.24",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.4",
     "@vitejs/plugin-react": "^6.0.5",
+    "clsx": "^2.1.1",
     "cors": "^2.8.6",
     "date-fns": "^4.4.0",
     "heic-decode": "^2.1.0",
+    "highlight.js": "^11.11.1",
     "http-proxy-middleware": "4.2.0",
     "jpeg-js": "^0.4.4",
-    "template": "workspace:*",
+    "lodash": "^4.17.21",
+    "lucide-react": "^1.28.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "react-icons": "^5.7.0",
+    "react-markdown": "^10.1.0",
+    "rehype-highlight": "^7.0.2",
+    "tailwind-merge": "3.6.0",
     "tsdown": "^0.22.14",
+    "victory": "^37.3.6",
     "vite-plugin-top-level-await": "^1.6.0",
     "vite-plugin-wasm": "^3.6.0",
     "vitest": "^4.1.10"
   },
   "peerDependencies": {
-    "@karinjs/plugin-puppeteer": "*",
     "@types/react": "*"
   },
   "engines": {
@@ -124,5 +141,5 @@
     "web": "./lib/web.config.js",
     "ts-web": "./src/web.config.ts"
   },
-  "timestamp": "2026-08-04T08:38:16.771Z"
+  "timestamp": "2026-08-17T10:30:32.816Z"
 }

@@ -77,6 +77,22 @@ export interface ConfigHelp {
   extra?: ReactNode
 }
 
+/** 滑块数值配置项的渲染参数。 */
+export type SliderFieldOptions = {
+  /** 最小值，默认 0。 */
+  min?: number
+  /** 最大值，默认 1。 */
+  max?: number
+  /** 步进值，默认 0.01。 */
+  step?: number
+  /** 配置缺失时展示的回退值。 */
+  fallback?: number
+  /** 是否禁用当前滑块。 */
+  disabled?: boolean
+  /** 数值展示的格式化选项，默认百分比。 */
+  formatOptions?: Intl.NumberFormatOptions
+}
+
 /** 配置页复用的字段渲染器集合。 */
 export interface ConfigFieldRenderers {
   /**
@@ -136,6 +152,16 @@ export interface ConfigFieldRenderers {
     disabled?: boolean,
     mutuallyExclusiveGroups?: string[][]
   ) => ReactNode
+
+  /**
+   * 渲染滑块数值配置项。
+   *
+   * @param path 配置字段路径。
+   * @param label 表单项标题。
+   * @param help 表单项帮助文案。
+   * @param options 范围、步进、禁用态等附加参数。
+   */
+  renderSlider: (path: ConfigPath, label: string, help: ConfigDescription, options?: SliderFieldOptions) => ReactNode
 
   /**
    * 渲染 cron 表达式编辑器。

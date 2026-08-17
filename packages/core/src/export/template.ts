@@ -1,4 +1,2 @@
-import reactServerRender from 'template'
-
-export * from 'template'
-export default reactServerRender
+export { renderVideoPreviewPage } from '@template/template/_preview/render'
+export type { VideoPreviewRenderOptions } from '@template/template/_preview/render'

@@ -1,21 +1,47 @@
 import pathModule from 'node:path'
+import { fileURLToPath } from 'node:url'
 
+import { createTemplateRenderer, type DataOf, type LoadedRegistry } from '@karinjs/template-react'
 import type { ImageElement, Message } from 'node-karin'
 import { db, karinPathHtml, logger, render, segment } from 'node-karin'
-import type { DataTypeMap, DynamicRenderPath, ExtractDataTypeFromPath, TypedRenderRequest } from 'template'
-import reactServerRender from 'template'
 
-import { Common, Root } from '@/module'
+import { Root } from '@/module'
 import { Config } from '@/module/utils/Config'
 
 import { isSemverGreater } from '../semver'
-import { createPosterPalettePlugin } from './plugins'
+import { resolveUseDarkTheme } from './coverTheme'
 import { embedWatermark } from './wm'
+
+/** 注册表类型：.ktr/registry-types.d.ts 模块增强生效后为逐路由精确类型。 */
+type Registry = LoadedRegistry
+
+/**
+ * 动态渲染路径，格式为 "平台/组件ID" 或 "平台/分类/组件ID"。
+ * 精确路由联合类型由 ktr 注册表的模块增强提供。
+ */
+export type DynamicRenderPath = keyof Registry & string
 
 type ImageMetadata = {
   width?: number
   height?: number
 }
+
+// 开发态（tsx 跑 src/）捕获真实渲染数据到 template/<路由>/data/captured.json 供面板调试；
+// 生产（lib/ 产物）显式关闭捕获，避免往已安装包里写文件。
+const isDevRuntime = !fileURLToPath(import.meta.url)
+  .replace(/\\/g, '/')
+  .includes('/lib/')
+
+// ktr 侧按约定装配（包根定位、karin.template.ts、.ktr 注册表、CSS 定位、捕获目录）；
+// outputDir 与 htmlFileName 是 karin 领域的位置与命名，由插件显式指定。
+const renderTemplate = createTemplateRenderer(import.meta.url, {
+  bundledDir: 'lib',
+  renderer: {
+    outputDir: pathModule.join(karinPathHtml, Root.pluginName),
+    htmlFileName: 'timestamp',
+    ...(isDevRuntime ? {} : { captureDir: undefined })
+  }
+})
 
 /**
  * 渲染函数
@@ -31,7 +57,8 @@ type ImageMetadata = {
 export const Render = async <P extends DynamicRenderPath>(
   event: Message,
   path: P,
-  data?: Omit<ExtractDataTypeFromPath<P>, 'useDarkTheme'>,
+  // useDarkTheme 由各模板 Data 接口声明为可选字段，core 在这里统一注入，调用方无需关心
+  data?: DataOf<Registry[P]>,
   options?: {
     /**
      * 是否跳过水印嵌入
@@ -39,22 +66,7 @@ export const Render = async <P extends DynamicRenderPath>(
     skipWatermark?: boolean
   }
 ): Promise<ImageElement[]> => {
-  const pathParts = path.split('/')
-  let templateType: string
-  let templateName: string
-
-  if (pathParts.length === 2) {
-    // 二级路径：platform/templateName
-    ;[templateType, templateName] = pathParts
-  } else if (pathParts.length === 3) {
-    // 三级路径：platform/category/templateName
-    templateType = pathParts[0]
-    templateName = `${pathParts[1]}/${pathParts[2]}`
-  } else {
-    throw new Error(`不支持的路径格式: ${path}`)
-  }
-
-  const outputDir = pathModule.join(karinPathHtml, Root.pluginName, templateType)
+  const templateType = path.split('/')[0]
 
   // 检查是否有可用更新
   let hasUpdate = false
@@ -78,37 +90,36 @@ export const Render = async <P extends DynamicRenderPath>(
   })
 
   const watermarkTextBitSize = Buffer.byteLength(watermarkText, 'utf8') * 8
-  const useDarkTheme = Common.useDarkTheme()
+  // 智能主题（Theme=3）下指定模板按封面明暗决定深浅色，其余走 Common.useDarkTheme()
+  const useDarkTheme = await resolveUseDarkTheme(path, data)
 
-  const renderRequest: TypedRenderRequest<keyof DataTypeMap> = {
-    templateType: templateType as TypedRenderRequest<keyof DataTypeMap>['templateType'],
-    templateName,
+  // kkk 的模板上下文字段（version / watermarkTextBitSize）由 ktr 原样透传，
+  // defineKkkTemplate 适配器再映射回组件 props。浅色不传 theme，与旧外壳输出保持一致。
+  const ctx = {
     scale: Math.min(2, Math.max(0.5, Number(Config.app.renderScale) / 100)),
-    useDarkTheme,
     version: Config.app.RemoveWatermark
       ? undefined
       : {
           plugin: 'karin-plugin',
           pluginName: 'kkk',
           pluginVersion: Root.pluginVersion,
-          releaseType: /^\d+\.\d+\.\d+$/.test(Root.pluginVersion) ? 'Stable' : 'Preview',
+          releaseType: /^\d+\.\d+\.\d+$/.test(Root.pluginVersion) ? ('Stable' as const) : ('Preview' as const),
           poweredBy: 'Karin',
           frameworkVersion: Root.karinVersion,
           hasUpdate
         },
     watermarkTextBitSize,
-    data: {
-      ...data,
-      useDarkTheme
-    }
+    // 封面氛围背景贡献度参数，模板里的 AmbientCover 读取；配置缺失时传 undefined，模板回退内置默认值
+    ambientCover: {
+      coverOpacity: Config.app.ambientCover?.coverOpacity,
+      overlayEdgeOpacity: Config.app.ambientCover?.overlayEdgeOpacity,
+      overlayMiddleOpacity: Config.app.ambientCover?.overlayMiddleOpacity
+    },
+    ...(useDarkTheme ? { theme: { mode: 'dark' as const } } : {})
   }
 
-  // 调用 SSR 渲染，生成 HTML 文件
-  const result = await reactServerRender({
-    request: renderRequest,
-    outputDir,
-    plugins: [createPosterPalettePlugin()]
-  })
+  // 调用 ktr SSR 渲染，生成 HTML 文件；Object.assign 保留泛型推导（泛型对象 spread 会塌缩掉类型参数）
+  const result = await renderTemplate(path, Object.assign({}, data, { useDarkTheme }), ctx)
     .then((res) => {
       if (!res.success || !res.htmlPath) {
         throw new Error(res.error)
