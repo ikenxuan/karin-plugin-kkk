@@ -18,7 +18,7 @@ const coverMaskStyle: React.CSSProperties = {
  * 全局氛围背景层：模糊封面 + 渐变遮罩 + 高对比杂色纹理
  */
 const AmbientBackground: React.FC<{ pic: string; ctx: PosterProps<DouyinLiveData>['ctx'] }> = React.memo(({ pic, ctx }) => (
-  <div className="absolute inset-0 overflow-hidden -z-10">
+  <div className="absolute inset-0 overflow-hidden">
     <AmbientCover src={pic} ctx={ctx} />
     <div className="absolute inset-0 pointer-events-none opacity-[0.45] mix-blend-overlay dark:mix-blend-soft-light">
       <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">

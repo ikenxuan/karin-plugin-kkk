@@ -36,7 +36,7 @@ const coverMaskStyle: React.CSSProperties = {
  */
 const LiveAmbientBackground: React.FC<{ cover: string; ctx: PosterProps<BilibiliLiveDynamicData>['ctx'] }> = React.memo(
   ({ cover, ctx }) => (
-    <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden select-none">
+    <div className="pointer-events-none absolute inset-0 overflow-hidden select-none">
       <AmbientCover src={cover} ctx={ctx} />
 
       {/* 高对比杂色纹理层 */}

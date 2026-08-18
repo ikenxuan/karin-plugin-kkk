@@ -27,7 +27,7 @@ const coverMaskStyle: React.CSSProperties = {
  * 全局氛围背景层：模糊封面 + 渐变遮罩 + 高对比杂色纹理
  */
 const AmbientBackground: React.FC<{ pic: string; ctx: PosterProps<BilibiliVideoInfoData>['ctx'] }> = React.memo(({ pic, ctx }) => (
-  <div className="absolute inset-0 overflow-hidden -z-10">
+  <div className="absolute inset-0 overflow-hidden">
     <AmbientCover src={pic} ctx={ctx} />
 
     {/* 高对比杂色纹理层 */}
