@@ -14,7 +14,7 @@ const reg = {
   douyinCDN: /https:\/\/aweme\.snssdk\.com\/aweme\/v1\/play/i, // 抖音 CDN 下载链接
   bilibili: /(bilibili\.com|b23\.tv|t\.bilibili\.com|bili2233\.cn|\bBV[1-9a-zA-Z]{10}\b|\bav\d+\b)/i,
   kuaishou: /(快手.*快手|v\.kuaishou\.com|kuaishou\.com)/,
-  xiaohongshu: /(xiaohongshu\.com|xhslink\.com)/
+  xiaohongshu: /(xiaohongshu\.com|xhslink\.(?:com|cn))/
 }
 
 // 包装抖音处理函数

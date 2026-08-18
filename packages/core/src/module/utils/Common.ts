@@ -80,7 +80,7 @@ class Tools {
         /https:\/\/aweme\.snssdk\.com\/aweme\/v1\/play/i, // 抖音 CDN 下载链接
         /(bilibili\.com|b23\.tv|t\.bilibili\.com|bili2233\.cn|\bBV[1-9a-zA-Z]{10}\b|\bav\d+\b)/i, // B站
         /(快手.*快手|v\.kuaishou\.com|kuaishou\.com)/, // 快手
-        /(xiaohongshu\.com|xhslink\.com)/ // 小红书
+        /(xiaohongshu\.com|xhslink\.(?:com|cn))/ // 小红书
       ]
       if (qrContent && patterns.some((pattern) => pattern.test(qrContent))) {
         logger.debug(`从${source}二维码中识别到支持的平台链接: ${qrContent}`)

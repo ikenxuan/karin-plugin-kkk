@@ -8,7 +8,7 @@ export interface XiaohongshuIdData {
 /**
  * 解析小红书分享链接，提取作品ID
  * - 典型长链接: https://www.xiaohongshu.com/explore/<note_id>
- * - 短链: https://xhslink.com/<code>（会重定向到长链接）
+ * - 短链: https://xhslink.com/<code>、https://xhslink.cn/o/<code>（会重定向到长链接）
  */
 export const getXiaohongshuID = async (url: string, log = true): Promise<XiaohongshuIdData> => {
   const resp = await axios.get(url, {
@@ -94,6 +94,16 @@ export const getXiaohongshuID = async (url: string, log = true): Promise<Xiaohon
 
     case /xiaohongshu\.com\/explore\/([0-9a-zA-Z]+)/.test(effectiveLink): {
       const m = /xiaohongshu\.com\/explore\/([0-9a-zA-Z]+)/.exec(effectiveLink)
+      result = {
+        type: 'note',
+        note_id: m ? m[1] : undefined,
+        xsec_token: finalToken
+      }
+      break
+    }
+    case /[?&]target_note_id=([0-9a-zA-Z]+)/.test(effectiveLink) || /[?&]target_note_id=([0-9a-zA-Z]+)/.test(normalizedLink): {
+      // 笔记暂不可查看等场景会跳到 /explore?...&target_note_id=<note_id>，路径里没有 ID
+      const m = /[?&]target_note_id=([0-9a-zA-Z]+)/.exec(effectiveLink) ?? /[?&]target_note_id=([0-9a-zA-Z]+)/.exec(normalizedLink)
       result = {
         type: 'note',
         note_id: m ? m[1] : undefined,

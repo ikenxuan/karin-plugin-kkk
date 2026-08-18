@@ -121,7 +121,10 @@ export class Xiaohongshu extends Base {
         author: NoteData.data.data.items[0].note_card!.user,
         image_url: NoteData.data.data.items[0].note_card!.image_list[0].url_default,
         time: NoteData.data.data.items[0].note_card!.time,
-        ip_location: NoteData.data.data.items[0].note_card!.ip_location
+        ip_location: NoteData.data.data.items[0].note_card!.ip_location,
+        share_url: `https://www.xiaohongshu.com/discovery/item/${data.note_id}?source=webshare&xhsshare=pc_web&xsec_token=${data.xsec_token}&xsec_source=pc_share`,
+        image_list: NoteData.data.data.items[0].note_card!.image_list?.map((image) => image.url_default) ?? [],
+        is_video: Boolean(NoteData.data.data.items[0].note_card!.video)
       })
       this.e.reply(noteInfoImg)
     }

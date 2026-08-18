@@ -57,4 +57,10 @@ export interface XiaohongshuNoteInfoData {
   time: number
   /** IP位置 */
   ip_location: string
+  /** 笔记分享链接（用于底部二维码） */
+  share_url?: string
+  /** 图集图片URL列表（视频笔记只有封面一张） */
+  image_list?: string[]
+  /** 是否为视频笔记 */
+  is_video?: boolean
 }
