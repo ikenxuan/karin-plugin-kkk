@@ -2,6 +2,32 @@
 
 # Changelog
 
+## [2.42.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.42.0...v2.42.1) (2026-08-18)
+
+
+### 🐛 错误修复
+
+* **core:** 更新时间戳至 2026-08-04 ([e9b50f7](https://github.com/ikenxuan/karin-plugin-kkk/commit/e9b50f76ba1f8a4977f5ada604551742e82f379b))
+* 小红书支持xhslink.cn close [#347](https://github.com/ikenxuan/karin-plugin-kkk/issues/347) ([da7bfd2](https://github.com/ikenxuan/karin-plugin-kkk/commit/da7bfd2d7bd510f0a5918aeb6e4d6abb91614604))
+* 移除不必要的 z-index 属性以简化样式 ([7bc7c2c](https://github.com/ikenxuan/karin-plugin-kkk/commit/7bc7c2cf0682a9c791be5ca1b0b228efc607e30a))
+
+
+### 💄 UI 优化
+
+* 细优部分模板样式 ([5601c9b](https://github.com/ikenxuan/karin-plugin-kkk/commit/5601c9b25cfac2ee52e3ad811644e8aa4a479051))
+* 重写小红书笔记信息模板 ([da7bfd2](https://github.com/ikenxuan/karin-plugin-kkk/commit/da7bfd2d7bd510f0a5918aeb6e4d6abb91614604))
+
+
+### ♻️ 代码重构
+
+* **core:** 更新 tsdown 配置，使用对象形式定义入口文件 ([b00ee12](https://github.com/ikenxuan/karin-plugin-kkk/commit/b00ee12fb525c20a4cc56e5ed82851f8ffffdeb9))
+* use @karinjs/template-react ([#348](https://github.com/ikenxuan/karin-plugin-kkk/issues/348)) ([f4b0c23](https://github.com/ikenxuan/karin-plugin-kkk/commit/f4b0c23e754d6eb5dbee6fb7081f88f4d306eece))
+
+
+### 📦 依赖更新
+
+* @karinjs/template-react更新到0.0.1-beta.6 ([6e557ec](https://github.com/ikenxuan/karin-plugin-kkk/commit/6e557ec3609390de3fba60e5be37947cb25f6a9a))
+
 ## [2.42.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.41.2...v2.42.0) (2026-08-02)
 
 ### ✨ 新功能
