@@ -2,6 +2,19 @@
 
 # Changelog
 
+## [2.42.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.42.1...v2.42.2) (2026-08-21)
+
+
+### 🐛 错误修复
+
+* 更新 @karinjs/template-react 版本至 0.1.1，并调整相关依赖，修复部分功能被抢指令的问题 ([4d14521](https://github.com/ikenxuan/karin-plugin-kkk/commit/4d145219fdff36e11feded2dbd71d3808ee3afbf))
+
+
+### 📦 依赖更新
+
+* update @ikenxuan/watermark to v1.3.1 ([ee7ad27](https://github.com/ikenxuan/karin-plugin-kkk/commit/ee7ad27aca069dba258c6f587261b231451ad0c8))
+* 更新部分开发依赖 ([111609f](https://github.com/ikenxuan/karin-plugin-kkk/commit/111609fa95986da4aa8f6fded737a71435c330e3))
+
 ## [2.42.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.42.0...v2.42.1) (2026-08-18)
 
 
