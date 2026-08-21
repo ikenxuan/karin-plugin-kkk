@@ -17,10 +17,14 @@ const reg = {
   xiaohongshu: /(xiaohongshu\.com|xhslink\.(?:com|cn))/
 }
 
+// 管理类命令本身内嵌平台链接（如 #kkk推送全局忽略{url}），需放行给对应命令处理，
+// 否则会被「默认解析」(videoTool 开启时优先级为 -Infinity) 的解析器抢先消费
+const passthroughCommandReg = /^#kkk推送全局忽略/
+
 // 包装抖音处理函数
 const handleDouyin = wrapWithErrorHandler(
   async (e, next) => {
-    if (e.msg.startsWith('#测试')) {
+    if (e.msg.startsWith('#测试') || passthroughCommandReg.test(e.msg)) {
       return next()
     }
 
@@ -58,6 +62,11 @@ const handleDouyin = wrapWithErrorHandler(
 // 包装B站处理函数
 const handleBilibili = wrapWithErrorHandler(
   async (e, next) => {
+    // 管理类命令内嵌B站链接（如 #kkk推送全局忽略{url}），放行给对应命令，避免被自动解析抢占
+    if (passthroughCommandReg.test(e.msg)) {
+      return next()
+    }
+
     e.msg = e.msg.replace(/\\/g, '') // 移除消息中的反斜杠
 
     // 判断是否为弹幕解析（通过 #弹幕解析 命令触发）
