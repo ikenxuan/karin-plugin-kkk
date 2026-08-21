@@ -152,8 +152,8 @@ importers:
         specifier: 1.5.0
         version: 1.5.0
       '@ikenxuan/watermark':
-        specifier: 1.3.0
-        version: 1.3.0
+        specifier: 1.3.1
+        version: 1.3.1
       fingerprint-injector:
         specifier: ^2.1.88
         version: 2.1.88
@@ -1241,40 +1241,40 @@ packages:
   '@ikenxuan/qrcode@1.5.0':
     resolution: {integrity: sha512-tF7q9LVVWGlG9KJQx1AiY313lrR2uFjTzkQGpmTC2msZ+vArgnjgSIFvUjv7WMl2nPR9hySl6/NkAU2Wwn1iZg==}
 
-  '@ikenxuan/watermark-darwin-arm64@1.3.0':
-    resolution: {integrity: sha512-NM0WF1IXLeGuIAeTnU2Tm4g/riDe9jxOQXgRK4xpKXyMJezN4UiOVX+xjI3HNt3WIsrYbDIk0K1dAhivb/MSTQ==}
+  '@ikenxuan/watermark-darwin-arm64@1.3.1':
+    resolution: {integrity: sha512-W4vGhtGWUQS63o905EsZh2OK+tJrEcNhqDVUTRYbUkJuhi2pIjwR0OQo+PXcYkF4CvqMJ8117EtZ0EBAnAzTdw==}
     cpu: [arm64]
     os: [darwin]
 
-  '@ikenxuan/watermark-darwin-x64@1.3.0':
-    resolution: {integrity: sha512-4M1b9O3COYrQ2gybAe4RFWdNTxaCqzf0+8uAnXBQ1KPOnTwPL5cAd88+DmHx+j6dul+hULMzmGatgbTyC1uoWw==}
+  '@ikenxuan/watermark-darwin-x64@1.3.1':
+    resolution: {integrity: sha512-3GlYfSsZoltRkQgMg5FedRS7UNjEFlOa09PXNs5CYJ5IHqOGurFU+H+YhKb7a9v37cIQnc1HSt0S3OLO53R5mA==}
     cpu: [x64]
     os: [darwin]
 
-  '@ikenxuan/watermark-linux-arm64-gnu@1.3.0':
-    resolution: {integrity: sha512-TR1++Itwt/+VtVj0j5WYrBhdVZad3KKCmhovxxoo8gxkBCrmMTHVxRb27ML6wVYnkQQmmJ6HcducGs1BqO53BQ==}
+  '@ikenxuan/watermark-linux-arm64-gnu@1.3.1':
+    resolution: {integrity: sha512-BZ1fCAyITMQ/U0d0yJ9580RNQGloYSOKc6Rty/z+bR0sBc5ulCX4+WAlbjroDNb0/9lWVgde7MYNtbxfrAkuTw==}
     cpu: [arm64]
     os: [linux]
     libc: [glibc]
 
-  '@ikenxuan/watermark-linux-x64-gnu@1.3.0':
-    resolution: {integrity: sha512-RbRbiTUihT7F18UP4eZZPF9nRKTJsmS6uJW41qW1/H8nxn7b/6sML3DUF1hzjUpBGyOrwyhcS0BbW98WILSJ8w==}
+  '@ikenxuan/watermark-linux-x64-gnu@1.3.1':
+    resolution: {integrity: sha512-vwWFUOQ2hrz+UsDCNCRCQkDAnkgXf6ypPv0HPT7pOxYFjJLzzHOm71ZcPlDdBn9QQN3FBB7huh6qXi5s+0svKA==}
     cpu: [x64]
     os: [linux]
     libc: [glibc]
 
-  '@ikenxuan/watermark-win32-arm64-msvc@1.3.0':
-    resolution: {integrity: sha512-eFZP0C/vGxWQ0FHuKcUIcNks6pY1ff8FXgHK3sjB97gIWC3Fs3HyBEuzoOyZqM9zOWuk1JKfFpeWYGF+ZoGTzQ==}
+  '@ikenxuan/watermark-win32-arm64-msvc@1.3.1':
+    resolution: {integrity: sha512-qjYOcK87+N2q13jN4NbYW9/JLNP0TLQtW6k/RnYH7epGAMUxD6nBFFz6HU5cg5lQJxP0pLUubqsbq97s4Q86OA==}
     cpu: [arm64]
     os: [win32]
 
-  '@ikenxuan/watermark-win32-x64-msvc@1.3.0':
-    resolution: {integrity: sha512-2V1lFWbLNpM1oq53jROdro2CkMCJWKRp9EktORtl6AAUpjcDIZHRaIqH5IxG/DWMB42mnGy1pfSZ/7/iOrq/Yw==}
+  '@ikenxuan/watermark-win32-x64-msvc@1.3.1':
+    resolution: {integrity: sha512-X7fuy7vpd3ml8nHKph51s2NeGU0LDeP6zP4Ff8IQYUpGqvW9abT6mqI8GbyF8FzOZobefFmREPNrremuCYcwSA==}
     cpu: [x64]
     os: [win32]
 
-  '@ikenxuan/watermark@1.3.0':
-    resolution: {integrity: sha512-pVmnE48ZiPocSdnJxBrqo2nNsiCUr7c13I2qQmjT9MO2zh5EuACqAWCQMGmsUOsg6A+D3BHUuDaSliZMwzmVMw==}
+  '@ikenxuan/watermark@1.3.1':
+    resolution: {integrity: sha512-eAk3nQpdZVyt7toofzoM1IYS0b6kxtoAAHMaMgt45dRvIb3yZr3SeSFAb8JXRjVipOzBF1rJgSoOwJnT4pYObw==}
 
   '@ikenxuan/xhshow-ts@1.0.6':
     resolution: {integrity: sha512-2Qo2tWzU6grC7bsTwohnp9KJA9wqDTAb2bbhaBOqBdAlM44zp9qlSAe2+UTYqDZaxrpne8SCT11biizVUJuosQ==}
@@ -9573,32 +9573,32 @@ snapshots:
 
   '@ikenxuan/qrcode@1.5.0': {}
 
-  '@ikenxuan/watermark-darwin-arm64@1.3.0':
+  '@ikenxuan/watermark-darwin-arm64@1.3.1':
     optional: true
 
-  '@ikenxuan/watermark-darwin-x64@1.3.0':
+  '@ikenxuan/watermark-darwin-x64@1.3.1':
     optional: true
 
-  '@ikenxuan/watermark-linux-arm64-gnu@1.3.0':
+  '@ikenxuan/watermark-linux-arm64-gnu@1.3.1':
     optional: true
 
-  '@ikenxuan/watermark-linux-x64-gnu@1.3.0':
+  '@ikenxuan/watermark-linux-x64-gnu@1.3.1':
     optional: true
 
-  '@ikenxuan/watermark-win32-arm64-msvc@1.3.0':
+  '@ikenxuan/watermark-win32-arm64-msvc@1.3.1':
     optional: true
 
-  '@ikenxuan/watermark-win32-x64-msvc@1.3.0':
+  '@ikenxuan/watermark-win32-x64-msvc@1.3.1':
     optional: true
 
-  '@ikenxuan/watermark@1.3.0':
+  '@ikenxuan/watermark@1.3.1':
     optionalDependencies:
-      '@ikenxuan/watermark-darwin-arm64': 1.3.0
-      '@ikenxuan/watermark-darwin-x64': 1.3.0
-      '@ikenxuan/watermark-linux-arm64-gnu': 1.3.0
-      '@ikenxuan/watermark-linux-x64-gnu': 1.3.0
-      '@ikenxuan/watermark-win32-arm64-msvc': 1.3.0
-      '@ikenxuan/watermark-win32-x64-msvc': 1.3.0
+      '@ikenxuan/watermark-darwin-arm64': 1.3.1
+      '@ikenxuan/watermark-darwin-x64': 1.3.1
+      '@ikenxuan/watermark-linux-arm64-gnu': 1.3.1
+      '@ikenxuan/watermark-linux-x64-gnu': 1.3.1
+      '@ikenxuan/watermark-win32-arm64-msvc': 1.3.1
+      '@ikenxuan/watermark-win32-x64-msvc': 1.3.1
 
   '@ikenxuan/xhshow-ts@1.0.6':
     dependencies:
