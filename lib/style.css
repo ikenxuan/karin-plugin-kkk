@@ -12998,6 +12998,10 @@
     inset-inline: 0;
   }
 
+  .inset-x-24 {
+    inset-inline: calc(var(--spacing) * 24);
+  }
+
   .-inset-y-20 {
     inset-block: calc(var(--spacing) * -20);
   }
