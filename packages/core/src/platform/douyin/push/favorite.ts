@@ -3,9 +3,10 @@ import { logger } from 'node-karin'
 
 import { douyinDB } from '@/module'
 import { douyinFetcher } from '@/module/utils/amagiClient'
+import { buildDouyinWorkDetail } from '@/platform/douyin/types'
 import { douyinPushItem } from '@/types/config/pushlist'
 
-import type { DouyinPushItem } from './types'
+import type { DouyinWorkPushItem } from './types'
 
 /**
  * 处理喜欢列表推送
@@ -19,10 +20,10 @@ export async function processFavoriteList(
   item: douyinPushItem,
   targets: Array<{ groupId: string; botId: string }>,
   force: boolean = false
-): Promise<DouyinPushItem[]> {
+): Promise<DouyinWorkPushItem[]> {
   const pushType = 'favorite'
   const listName = '喜欢列表'
-  const result: DouyinPushItem[] = []
+  const result: DouyinWorkPushItem[] = []
 
   // 获取所有目标群组的历史状态
   const groupHistoryStatus = new Map<string, boolean>()
@@ -75,11 +76,8 @@ export async function processFavoriteList(
       create_time: aweme.create_time,
       targets: validTargets,
       pushType,
-      Detail_Data: {
-        ...aweme,
-        user_info: userinfo, // 点赞者（订阅者）的信息
-        author_user_info: authorUserInfo // 作品作者的信息
-      },
+      // user_info 是点赞者（订阅者）的信息，author_user_info 是作品作者的信息
+      Detail_Data: buildDouyinWorkDetail(aweme, { user_info: userinfo, author_user_info: authorUserInfo }),
       avatar_img: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + userinfo.data.user.avatar_larger.uri,
       living: false
     })

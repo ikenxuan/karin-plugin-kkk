@@ -1,3 +1,4 @@
+import type { DyUserInfo, Result } from '@ikenxuan/amagi'
 import {
   createHashtagNode,
   createLineBreakNode,
@@ -12,16 +13,21 @@ import type { ImageElement, Message } from 'node-karin'
 
 import { Count, Render } from '@/module/utils'
 import { douyinFetcher } from '@/module/utils/amagiClient'
+import type { DouyinAwemeImage, DouyinLiveDetailData, DouyinTextExtra, DouyinWorkDetailData } from '@/platform/douyin/types'
+import { type dyVideo, formatDouyinQualityLabel } from '@/platform/douyin/videoQuality'
 
 import { DouyinWorkMainType, type DouyinWorkTypeInfo, getWorkCoverUrl, getWorkTypeInfo } from '../workType'
+
+/** 作品作者或订阅者用户对象（aweme author 与用户主页 user 的联合） */
+type DouyinUserLike = DouyinWorkDetailData['author'] | DyUserInfo['user']
 
 /**
  * 处理作品描述
  * @param Desc - 作品原始描述文本
  * @returns 如果描述为空则返回默认提示，否则返回原文
  */
-function desc(Desc: string) {
-  return Desc === '' ? '该作品没有描述' : Desc
+function desc(Desc: string | undefined) {
+  return !Desc ? '该作品没有描述' : Desc
 }
 
 /**
@@ -30,7 +36,7 @@ function desc(Desc: string) {
  * @param Detail_Data - 作品详情数据，包含 cooperation_info、user_info、author 等字段
  * @returns 合作信息对象，如果不存在则返回 undefined
  */
-function buildCooperationInfo(Detail_Data: any):
+function buildCooperationInfo(Detail_Data: DouyinWorkDetailData):
   | {
       co_creator_nums: number
       co_creators: Array<{
@@ -45,33 +51,29 @@ function buildCooperationInfo(Detail_Data: any):
   if (!raw) return undefined
 
   const rawCreators = Array.isArray(raw.co_creators) ? raw.co_creators : []
-  const subscriber = Detail_Data.user_info?.data?.user ?? Detail_Data.author
+  const subscriber: DouyinUserLike = Detail_Data.user_info?.data?.user ?? Detail_Data.author
 
   const subscriberUid = subscriber?.uid
   const subscriberSecUid = subscriber?.sec_uid
 
   const subscriberInCreators = rawCreators.find(
-    (c: { uid: string; sec_uid: string }) =>
-      (subscriberUid && c.uid && c.uid === subscriberUid) || (subscriberSecUid && c.sec_uid && c.sec_uid === subscriberSecUid)
+    (c) => (subscriberUid && c.uid && c.uid === subscriberUid) || (subscriberSecUid && c.sec_uid && c.sec_uid === subscriberSecUid)
   )
 
-  const co_creators = rawCreators.map(
-    (c: { avatar_thumb: { url_list: (string | undefined)[]; uri: any }; nickname: any; role_title: any }) => {
-      const avatarUrl =
-        c.avatar_thumb?.url_list?.[0] ?? (c.avatar_thumb?.uri ? `https://p3.douyinpic.com/${c.avatar_thumb.uri}` : undefined)
+  const co_creators = rawCreators.map((c) => {
+    const avatarUrl = c.avatar_thumb?.url_list?.[0] ?? (c.avatar_thumb?.uri ? `https://p3.douyinpic.com/${c.avatar_thumb.uri}` : undefined)
 
-      return {
-        avatar_url: avatarUrl,
-        nickname: c.nickname,
-        role_title: c.role_title
-      }
+    return {
+      avatar_url: avatarUrl,
+      nickname: c.nickname ?? '',
+      role_title: c.role_title ?? ''
     }
-  )
+  })
 
   if (
     Detail_Data.author &&
     !rawCreators.some(
-      (c: { uid: string; sec_uid: string; nickname: string }) =>
+      (c) =>
         (Detail_Data.author?.uid && c.uid && c.uid === Detail_Data.author.uid) ||
         (Detail_Data.author?.sec_uid && c.sec_uid && c.sec_uid === Detail_Data.author.sec_uid) ||
         (Detail_Data.author?.nickname && c.nickname && c.nickname === Detail_Data.author.nickname)
@@ -111,7 +113,7 @@ function cdnAvatar(uri: string): string {
 /**
  * 获取作品作者头像，优先沿用用户主页的高清头像，解析侧缺少主页数据时回退到作品作者头像。
  */
-function getUserAvatar(user: any): string {
+function getUserAvatar(user: DouyinUserLike | null | undefined): string {
   if (user?.avatar_larger?.uri) return cdnAvatar(user.avatar_larger.uri)
   return pickImageUrl(user?.avatar_larger, user?.avatar_medium, user?.avatar_thumb) ?? ''
 }
@@ -125,7 +127,7 @@ type ImageMediaType = 'static' | 'live' | 'clip'
  * @param image - 抖音 images 数组中的单项
  * @returns 模板可识别的媒体类型
  */
-function getImageMediaType(image: { clip_type?: number } | null | undefined): ImageMediaType {
+function getImageMediaType(image: DouyinAwemeImage | null | undefined): ImageMediaType {
   switch (image?.clip_type) {
     case 4:
       return 'clip'
@@ -146,7 +148,7 @@ function getImageMediaType(image: { clip_type?: number } | null | undefined): Im
  * @returns 图片列表数据
  */
 function buildImageList(
-  images: Array<{ url_list: string[]; clip_type?: number }> | null | undefined,
+  images: DouyinAwemeImage[] | null | undefined,
   fallbackCover: string
 ): {
   images: Array<{
@@ -212,15 +214,6 @@ function splitTitleAndBody(desc: string): { title: string; body: string } {
   return { title, body }
 }
 
-type DouyinDescTextExtra = {
-  start?: number
-  end?: number
-  hashtag_name?: string
-  hashtag_id?: string
-  sec_uid?: string
-  type?: number
-}
-
 type DouyinDescRichTextToken = {
   start: number
   end: number
@@ -247,7 +240,7 @@ type DouyinMentionToken = {
  */
 async function buildDescRichText(
   text: string,
-  textExtra?: DouyinDescTextExtra[],
+  textExtra?: DouyinTextExtra[],
   titleOffset = 0,
   mentionCache: Map<string, string | null> = new Map()
 ): Promise<RichTextDocument> {
@@ -283,7 +276,7 @@ async function buildDescRichText(
   return createRichTextDocument(nodes, { platform: 'douyin' })
 }
 
-function extractHashtagTokens(body: string, textExtra: DouyinDescTextExtra[] | undefined, titleOffset = 0): DouyinDescRichTextToken[] {
+function extractHashtagTokens(body: string, textExtra: DouyinTextExtra[] | undefined, titleOffset = 0): DouyinDescRichTextToken[] {
   return (textExtra ?? [])
     .filter(
       (item): item is { start: number; end: number; hashtag_name: string; hashtag_id?: string; type: number } =>
@@ -305,7 +298,7 @@ function extractHashtagTokens(body: string, textExtra: DouyinDescTextExtra[] | u
  */
 async function resolveMentionTokens(
   text: string,
-  textExtra: DouyinDescTextExtra[] | undefined,
+  textExtra: DouyinTextExtra[] | undefined,
   titleOffset: number,
   mentionCache: Map<string, string | null>
 ): Promise<DouyinMentionToken[]> {
@@ -377,7 +370,7 @@ function appendTextSegments(text: string, target: RichTextNode[]) {
  * @param Detail_Data - 作品详情数据
  * @returns IP 属地文本（如 "重庆"），不存在时返回 undefined
  */
-function extractIpLocation(Detail_Data: any): string | undefined {
+function extractIpLocation(Detail_Data: DouyinWorkDetailData): string | undefined {
   let raw: string | undefined = Detail_Data.user_info?.data?.user?.ip_location
   if (!raw) raw = Detail_Data.ip_location
   if (!raw || typeof raw !== 'string') return undefined
@@ -390,7 +383,7 @@ function extractIpLocation(Detail_Data: any): string | undefined {
  * @param Detail_Data - 作品详情数据
  * @returns `{ hint_text, word }` 或 undefined
  */
-function extractSuggestWord(Detail_Data: any): { hint_text: string; word: string } | undefined {
+function extractSuggestWord(Detail_Data: DouyinWorkDetailData): { hint_text: string; word: string } | undefined {
   const groups = Detail_Data.suggest_words?.suggest_words
   if (!Array.isArray(groups) || groups.length === 0) return undefined
   const group = groups[0]
@@ -409,7 +402,7 @@ function extractSuggestWord(Detail_Data: any): { hint_text: string; word: string
  * @param images - 可能存在的多种封面对象
  * @returns 可直接渲染的图片 URL，不存在时返回 undefined
  */
-function pickImageUrl(...images: any[]): string | undefined {
+function pickImageUrl(...images: Array<{ url_list?: unknown[] } | null | undefined>): string | undefined {
   for (const image of images) {
     const url = image?.url_list?.find((item: unknown): item is string => typeof item === 'string' && item.length > 0)
     if (url) return url
@@ -437,7 +430,7 @@ function parseMusicExtra(extra: unknown): Record<string, any> {
  * @param music - 抖音作品 music 字段
  * @returns 可传给模板的音乐信息；无有效音乐数据时返回 undefined
  */
-function buildMusicInfo(music: any): { author: string; title: string; cover?: string } | undefined {
+function buildMusicInfo(music: DouyinWorkDetailData['music']): { author: string; title: string; cover?: string } | undefined {
   if (!music || typeof music !== 'object') return undefined
 
   const extra = parseMusicExtra(music.extra)
@@ -478,7 +471,7 @@ export interface RenderWorkImageOptions {
   /** Karin 消息事件，传递给 Render 用于获取 bot 信息 */
   e: Message
   /** 作品详情数据，包含 statistics、author，可选包含用户主页 user_info */
-  Detail_Data: any
+  Detail_Data: DouyinWorkDetailData
   /** 作品创建时间（Unix 时间戳，秒） */
   create_time: number
   /** 分享链接地址 */
@@ -487,6 +480,12 @@ export interface RenderWorkImageOptions {
   skipWatermark?: boolean
   /** 作品类型标签，显示在图片头部 */
   dynamicTypeLabel?: string
+  /**
+   * 视频作品按画质偏好选中、即将下载发送的那一路视频源（见 `douyinProcessVideos`）。
+   * 卡片上展示的清晰度/分辨率/HDR 标记都从它派生，
+   * 保证和后续实际下载的那一路视频源一致；非视频作品或未选档时不传。
+   */
+  videoSource?: dyVideo | null
 }
 
 /**
@@ -511,7 +510,7 @@ function getDefaultPushLabel(workTypeInfo: DouyinWorkTypeInfo): string {
  * @returns 渲染后的图片元素数组
  */
 export async function renderWorkImage(options: RenderWorkImageOptions): Promise<ImageElement[]> {
-  const { e, Detail_Data, create_time, shareLink, skipWatermark = false } = options
+  const { e, Detail_Data, create_time, shareLink, skipWatermark = false, videoSource } = options
   const workTypeInfo = getWorkTypeInfo(Detail_Data)
   const dynamicTypeLabel = options.dynamicTypeLabel ?? getDefaultPushLabel(workTypeInfo)
   const coverUrl = getWorkCoverUrl(workTypeInfo, Detail_Data)
@@ -528,13 +527,15 @@ export async function renderWorkImage(options: RenderWorkImageOptions): Promise<
 
   switch (workTypeInfo.mainType) {
     case DouyinWorkMainType.ARTICLE: {
-      const content = JSON.parse(Detail_Data.article_info.article_content)
-      const fe_data = JSON.parse(Detail_Data.article_info.fe_data)
+      const articleInfo = Detail_Data.article_info
+      if (!articleInfo) return []
+      const content = JSON.parse(articleInfo.article_content)
+      const fe_data = JSON.parse(articleInfo.fe_data)
       return await Render(
         e,
         'douyin/article-work',
         {
-          title: Detail_Data.article_info.article_title,
+          title: articleInfo.article_title,
           markdown: content.markdown,
           images: fe_data.image_list || [],
           read_time: fe_data.read_time || 0,
@@ -571,6 +572,16 @@ export async function renderWorkImage(options: RenderWorkImageOptions): Promise<
           suggest_word: extractSuggestWord(Detail_Data),
           music: buildMusicInfo(Detail_Data.music),
           duration: Detail_Data.duration,
+          // 清晰度/分辨率/HDR 都从选档后的那一路视频源派生，保证卡片展示与实际下载一致；
+          // 未选档（如分享信息图场景未触发选档）时不展示分辨率块
+          resolution: videoSource
+            ? {
+                name: formatDouyinQualityLabel(videoSource),
+                width: videoSource.play_addr.width,
+                height: videoSource.play_addr.height
+              }
+            : undefined,
+          is_HDR: videoSource ? String(videoSource.HDR_type) === '1' : false,
           dianzan: Count(Detail_Data.statistics.digg_count),
           pinglun: Count(Detail_Data.statistics.comment_count),
           share: Count(Detail_Data.statistics.share_count),
@@ -636,8 +647,8 @@ export async function renderWorkImage(options: RenderWorkImageOptions): Promise<
 export interface RenderFavoriteRecommendOptions {
   /** Karin 消息事件 */
   e: Message
-  /** 作品详情数据，包含 user_info（订阅者/推荐者）、author（作品作者）、author_user_info（作者用户信息）、statistics */
-  Detail_Data: any
+  /** 作品详情数据，必带 user_info（订阅者/推荐者）、author（作品作者），可选 author_user_info（作者主页信息） */
+  Detail_Data: DouyinWorkDetailData & { user_info: Result<DyUserInfo> }
   /** 作品创建时间（Unix 时间戳，秒） */
   create_time: number
   /** 分享链接地址 */
@@ -727,7 +738,7 @@ export interface RenderLiveImageOptions {
   /** Karin 消息事件 */
   e: Message
   /** 直播详情数据，包含 user_info、room_data、live_data 等字段 */
-  Detail_Data: any
+  Detail_Data: DouyinLiveDetailData
   /** 是否跳过水印 */
   skipWatermark?: boolean
   /** 推送类型标签，显示在图片头部 */
@@ -750,44 +761,33 @@ export async function renderLiveImage(options: RenderLiveImageOptions): Promise<
 
   const liveItem = Detail_Data.live_data.data.data.data[0]
   const room_data = Detail_Data.room_data
-  //@ts-ignore
   const streamExtra = liveItem.stream_url?.extra
-  const resolution = streamExtra
-    ? `${streamExtra.width}x${streamExtra.height}`
-    : //@ts-ignore
-      liveItem.stream_url?.default_resolution
+  const resolution = streamExtra ? `${streamExtra.width}x${streamExtra.height}` : liveItem.stream_url?.default_resolution
 
   return await Render(
     e,
     'douyin/live',
     {
-      //@ts-ignore
-      image_url: liveItem.cover?.url_list[0],
-      //@ts-ignore
-      text: liveItem.title,
+      image_url: liveItem.cover ? liveItem.cover?.url_list[0] : '',
+      text: liveItem.title ?? '',
       partition_title: Detail_Data.live_data.data.data.partition_road_map?.partition?.title || '未知分区',
       room_id: room_data.owner.web_rid,
-      //@ts-ignore
       online_viewers: Count(Number(liveItem.room_view_stats?.display_value)),
-      //@ts-ignore
       total_viewers: liveItem.stats?.total_user_str || '',
       username: user.nickname,
       avater_url: cdnAvatar(user.avatar_larger.uri),
       fans: Count(user.follower_count),
       share_url: 'https://live.douyin.com/' + room_data.owner.web_rid,
       dynamicTYPE: dynamicTypeLabel,
-      //@ts-ignore
       like_count: Count(Number(liveItem.like_count || 0)),
-      //@ts-ignore
-      user_count_str: liveItem.user_count_str || '',
-      resolution,
+      user_count_str: liveItem.user_count_str ?? '',
+      resolution: resolution ?? '',
       signature: user.signature || '',
-      //@ts-ignore
+      // 上游生成类型把 city 标成 null，真实数据可能是字符串
       city: user.city || '',
       aweme_count: Count(user.aweme_count || 0),
       following_count: Count(user.following_count || 0),
       total_favorited: Count(user.total_favorited || 0),
-      //@ts-ignore
       has_commerce_goods: liveItem.has_commerce_goods || false
     },
     skipWatermark ? { skipWatermark: true } : undefined

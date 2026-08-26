@@ -7,7 +7,7 @@ import sqlite3, { sqlite3 as sqlite3Types } from 'node-karin/sqlite3'
 
 import { Root } from '@/module/utils'
 import { Config } from '@/module/utils/Config'
-import { DouyinPushItem } from '@/platform/douyin/push'
+import { DouyinWorkPushItem } from '@/platform/douyin/push'
 import { douyinPushItem } from '@/types/config/pushlist'
 
 /**
@@ -971,7 +971,7 @@ export class DouyinDBBase {
    * @param PushItem 推送项
    * @param tags 标签列表
    */
-  async shouldFilter(PushItem: DouyinPushItem, tags: string[] = []): Promise<boolean> {
+  async shouldFilter(PushItem: DouyinWorkPushItem, tags: string[] = []): Promise<boolean> {
     // 使用 PushItem.sec_uid 而不是 PushItem.Detail_Data.sec_uid
     const sec_uid = PushItem.sec_uid
     if (!sec_uid) {

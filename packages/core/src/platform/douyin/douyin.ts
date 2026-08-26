@@ -28,33 +28,13 @@ import { EmojiReactionManager, getEmojiId } from '@/module/utils/EmojiReaction'
 import { douyinComments } from '@/platform/douyin'
 import { burnDouyinDanmaku, type DouyinDanmakuElem } from '@/platform/douyin/danmaku'
 import { renderWorkImage } from '@/platform/douyin/push/render'
+import { buildDouyinWorkDetail } from '@/platform/douyin/types'
+import { douyinProcessVideos, type dyVideo } from '@/platform/douyin/videoQuality'
 import { getDouyinLiveImageSendPolicy } from '@/platform/douyin/workType'
 import { DouyinDataTypes, DouyinIdData } from '@/types'
 
 let mp4size = ''
 let img
-export type dyVideo = {
-  FPS: number
-  HDR_bit: string
-  HDR_type: string
-  bit_rate: number
-  format: string
-  gear_name: string
-  is_bytevc1: number
-  is_h265: number
-  play_addr: {
-    data_size: number
-    file_cs: string
-    file_hash: string
-    height: number
-    uri: string
-    url_key: string
-    url_list: string[]
-    width: number
-  }
-  quality_type: number
-  video_extra: string
-}
 export class DouYin extends Base {
   e: Message
   type: DouyinDataTypes[keyof DouyinDataTypes]
@@ -63,11 +43,11 @@ export class DouYin extends Base {
   forceBurnDanmaku: boolean
   /** 标记是否已处理 live 图（用于判断是否需要发送音频） */
   hasProcessedLiveImage: boolean
-  get botadapter (): string {
+  get botadapter(): string {
     return this.e.bot?.adapter?.name
   }
 
-  constructor (e: Message, iddata: DouyinIdData, options?: { forceBurnDanmaku?: boolean }) {
+  constructor(e: Message, iddata: DouyinIdData, options?: { forceBurnDanmaku?: boolean }) {
     super(e)
     this.e = e
     this.type = iddata?.type
@@ -76,7 +56,7 @@ export class DouYin extends Base {
     this.hasProcessedLiveImage = false
   }
 
-  async DouyinHandler (data: DouyinIdData) {
+  async DouyinHandler(data: DouyinIdData) {
     if (Config.app.parseTip) {
       this.e.reply('检测到抖音链接，开始解析')
     }
@@ -544,6 +524,8 @@ export class DouYin extends Base {
         const sendvideofile = true
         type VideoType = DyVideoWork['aweme_detail']['video']
         let video: VideoType | null = null
+        /** 按画质偏好选中、即将下载发送的那一路视频源 */
+        let selectedVideo: dyVideo | null = null
         if (isVideo) {
           // 视频地址特殊判断：play_addr_h264、play_addr、
           video = VideoData.data.aweme_detail.video as VideoType
@@ -554,15 +536,17 @@ export class DouYin extends Base {
               视频ID：${logger.green(VideoData.data.aweme_detail.aweme_id)}\n
               分享链接：${logger.green(VideoData.data.aweme_detail.share_url)}
               `)
-          video.bit_rate = douyinProcessVideos(video.bit_rate, Config.douyin.videoQuality, Config.douyin.maxAutoVideoSize)
+          // 只把选中项取到局部变量，不再原地覆盖 video.bit_rate：
+          // video 是 aweme_detail.video 的同一个引用，覆盖它会把整个作品详情的视频源列表截断成一项，
+          // 污染后面所有拿 Detail_Data 的下游（渲染、推送复用）。
+          selectedVideo = douyinProcessVideos(video.bit_rate, Config.douyin.videoQuality, Config.douyin.maxAutoVideoSize)[0]
           // url_list[2] 是 www.douyin.com/aweme/v1/play 的包装 URL，会按 Douyin 负载均衡 302
           // 到任意 CDN，部分 CDN（如 cjjd14.com、n98-v-ncdnon）返回非 MP4 乱码字节。
           // 直接用 url_list[0] 的签名直链规避包装跳转。
-          g_video_url =
-            video.bit_rate[0].play_addr.url_list[0] ?? video.bit_rate[0].play_addr.url_list[1] ?? video.bit_rate[0].play_addr.url_list[2]
+          g_video_url = selectedVideo.play_addr.url_list[0] ?? selectedVideo.play_addr.url_list[1] ?? selectedVideo.play_addr.url_list[2]
           const title = VideoData.data.aweme_detail.preview_title.substring(0, 80).replace(/[\\/:*?"<>|\r\n]/g, ' ') // video title
           g_title = title
-          mp4size = (video.bit_rate[0].play_addr.data_size / (1024 * 1024)).toFixed(2)
+          mp4size = (selectedVideo.play_addr.data_size / (1024 * 1024)).toFixed(2)
         }
 
         if (Config.douyin.sendContent.includes('info')) {
@@ -604,7 +588,11 @@ export class DouYin extends Base {
               : `https://www.douyin.com/${isArticle ? 'article' : 'note'}/${aweme.aweme_id}`
             const workInfoImg = await renderWorkImage({
               e: this.e,
-              Detail_Data: { ...aweme, user_info: userProfile },
+              // 不再向 Detail_Data 里覆盖 video.bit_rate 塞入选档结果：
+              // 那会篡改原始 aweme 结构（还会给图文/文章作品注入伪造的 video 字段），
+              // 清晰度展示信息改由 videoSource 显式传递。
+              Detail_Data: buildDouyinWorkDetail(aweme, { user_info: userProfile }),
+              videoSource: selectedVideo,
               create_time: aweme.create_time,
               shareLink,
               dynamicTypeLabel: isArticle ? '文章作品' : isVideo ? '视频作品' : this.is_slides ? '合辑作品' : '图文作品'
@@ -645,7 +633,7 @@ export class DouYin extends Base {
               ImageLength: imagenum,
               Region: aweme.region,
               suggestWrod: suggest,
-              Resolution: isVideo && video ? `${video.bit_rate[0].play_addr.width} x ${video.bit_rate[0].play_addr.height}` : null,
+              Resolution: selectedVideo ? `${selectedVideo.play_addr.width} x ${selectedVideo.play_addr.height}` : null,
               maxDepth: 6,
               Author: aweme.author.nickname,
               AuthorAvatar: aweme.author.avatar_thumb.url_list[0],
@@ -791,9 +779,9 @@ export class DouYin extends Base {
             index: index + 1,
             music: aweme.music
               ? {
-                title: aweme.music.title || '',
-                author: aweme.music.author || ''
-              }
+                  title: aweme.music.title || '',
+                  author: aweme.music.author || ''
+                }
               : undefined
           }
         })
@@ -842,7 +830,7 @@ export class DouYin extends Base {
 
             await emojiManager.add('EYES')
             processingTimer = setTimeout(() => {
-              emojiManager.add('PROCESSING').catch(() => { })
+              emojiManager.add('PROCESSING').catch(() => {})
             }, 1500)
 
             try {
@@ -855,7 +843,7 @@ export class DouYin extends Base {
               await dy.DouyinHandler(targetData)
 
               successTimer = setTimeout(() => {
-                emojiManager.replace('PROCESSING', 'SUCCESS').catch(() => { })
+                emojiManager.replace('PROCESSING', 'SUCCESS').catch(() => {})
               }, 1500)
             } catch (error) {
               if (processingTimer) clearTimeout(processingTimer)
@@ -950,9 +938,9 @@ export class DouYin extends Base {
           const streamExtra = liveItem.stream_url?.extra
           const resolution = streamExtra
             ? //@ts-ignore
-            `${streamExtra.width}x${streamExtra.height}`
+              `${streamExtra.width}x${streamExtra.height}`
             : //@ts-ignore
-            liveItem.stream_url?.default_resolution || ''
+              liveItem.stream_url?.default_resolution || ''
 
           const img = await Render(this.e, 'douyin/live', {
             image_url: liveItem.cover?.url_list[0],
@@ -994,116 +982,6 @@ export class DouYin extends Base {
         break
     }
   }
-}
-
-export const douyinProcessVideos = (videos: dyVideo[], videoQuality: string, maxAutoVideoSize?: number): dyVideo[] => {
-  // 首先过滤掉所有 format 为 'dash' 的视频
-  const mp4Videos = videos.filter((video) => video.format !== 'dash')
-
-  if (mp4Videos.length === 0) {
-    logger.warn('没有找到可用的 mp4 格式视频')
-    return videos.slice(0, 1) // 返回第一个视频作为备选
-  }
-
-  logger.debug(`过滤后剩余 ${mp4Videos.length} 个 mp4 格式视频`)
-
-  // 定义画质等级映射，根据 gear_name 判断画质
-  const getQualityLevel = (gearName: string): string => {
-    // 4K 画质
-    if (gearName.includes('lowest_4') || gearName.includes('2160')) return '4k'
-    // 2K/1440p 画质
-    if (gearName.includes('1440') || gearName.includes('2k')) return '2k'
-    // 1080p 画质
-    if (gearName.includes('1080')) return '1080p'
-    // 720p 画质
-    if (gearName.includes('720')) return '720p'
-    // 540p 画质
-    if (gearName.includes('540')) return '540p'
-    // 默认返回 540p
-    return '540p'
-  }
-
-  // 按画质分组，并在每组内按文件大小排序（大的在前）
-  const videosByQuality = new Map<string, dyVideo[]>()
-
-  mp4Videos.forEach((video) => {
-    const quality = getQualityLevel(video.gear_name)
-    if (!videosByQuality.has(quality)) {
-      videosByQuality.set(quality, [])
-    }
-    videosByQuality.get(quality)!.push(video)
-  })
-
-  // 对每个画质组内的视频按文件大小排序（大的在前）
-  videosByQuality.forEach((videos) => {
-    videos.sort((a, b) => b.play_addr.data_size - a.play_addr.data_size)
-  })
-
-  // 如果是自动模式
-  if (videoQuality === 'adapt') {
-    const sizeLimitBytes = (maxAutoVideoSize || Config.app.filelimit) * 1024 * 1024
-
-    // 按画质优先级排序：4k > 2k > 1080p > 720p > 540p
-    const qualityPriority = ['4k', '2k', '1080p', '720p', '540p']
-
-    for (const quality of qualityPriority) {
-      const qualityVideos = videosByQuality.get(quality)
-      if (qualityVideos && qualityVideos.length > 0) {
-        // 选择该画质下文件大小最大但不超过限制的视频
-        const suitableVideo = qualityVideos.find((video) => video.play_addr.data_size <= sizeLimitBytes)
-        if (suitableVideo) {
-          logger.debug(`自动选择画质: ${quality}, 文件大小: ${(suitableVideo.play_addr.data_size / (1024 * 1024)).toFixed(2)}MB`)
-          return [suitableVideo]
-        }
-      }
-    }
-
-    // 如果没有找到符合大小限制的视频，选择最小的视频
-    let smallestVideo = mp4Videos[0]
-    mp4Videos.forEach((video) => {
-      if (video.play_addr.data_size < smallestVideo.play_addr.data_size) {
-        smallestVideo = video
-      }
-    })
-    logger.debug(`未找到符合大小限制的视频，选择最小视频: ${(smallestVideo.play_addr.data_size / (1024 * 1024)).toFixed(2)}MB`)
-    return [smallestVideo]
-  }
-
-  // 固定画质模式
-  const targetQuality = videoQuality
-  const targetVideos = videosByQuality.get(targetQuality)
-
-  if (targetVideos && targetVideos.length > 0) {
-    // 选择该画质下文件大小最大的视频
-    logger.debug(`选择固定画质: ${targetQuality}, 文件大小: ${(targetVideos[0].play_addr.data_size / (1024 * 1024)).toFixed(2)}MB`)
-    return [targetVideos[0]]
-  }
-
-  // 如果没有找到目标画质，选择最接近的画质
-  const qualityPriority = ['4k', '2k', '1080p', '720p', '540p']
-  const targetIndex = qualityPriority.indexOf(targetQuality)
-
-  // 先尝试向下找（更低画质）
-  for (let i = targetIndex + 1; i < qualityPriority.length; i++) {
-    const fallbackVideos = videosByQuality.get(qualityPriority[i])
-    if (fallbackVideos && fallbackVideos.length > 0) {
-      logger.debug(`目标画质 ${targetQuality} 不可用，降级到: ${qualityPriority[i]}`)
-      return [fallbackVideos[0]]
-    }
-  }
-
-  // 再尝试向上找（更高画质）
-  for (let i = targetIndex - 1; i >= 0; i--) {
-    const fallbackVideos = videosByQuality.get(qualityPriority[i])
-    if (fallbackVideos && fallbackVideos.length > 0) {
-      logger.debug(`目标画质 ${targetQuality} 不可用，升级到: ${qualityPriority[i]}`)
-      return [fallbackVideos[0]]
-    }
-  }
-
-  // 如果都没找到，返回第一个可用视频
-  logger.warn('未找到任何匹配的画质，返回默认视频')
-  return [mp4Videos[0]]
 }
 
 /**

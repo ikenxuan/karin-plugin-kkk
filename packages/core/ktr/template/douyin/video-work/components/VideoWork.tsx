@@ -8,7 +8,7 @@ import React from 'react'
 import { isDark } from '../../../../utils/theme'
 import { AmbientCover } from '../../../components/AmbientCover'
 import { DefaultLayout } from '../../../components/DefaultLayout'
-import { GlowImage } from '../../../components/GlowImage'
+import { GlowImage, GlowText } from '../../../components/GlowImage'
 import { QRCodeWithAvatar } from '../../../components/QRCodeWithAvatar'
 import type { PosterProps } from '../../../types/ctx'
 import { DouyinCommentIcon, DouyinFavoriteIcon, DouyinLikeIcon, DouyinShareIcon } from '../../components/Icons'
@@ -111,9 +111,8 @@ const DouyinPosterHeader: React.FC<PosterProps<DouyinVideoWorkData>> = ({ data, 
   )
 }
 
-const DouyinVideoCover: React.FC<PosterProps<DouyinVideoWorkData>> = ({ data }) => {
-  const { image_url, music, duration } = data
-  const durationText = formatDuration(duration)
+const DouyinVideoCover: React.FC<PosterProps<DouyinVideoWorkData>> = (props) => {
+  const durationText = formatDuration(props.data.duration)
 
   return (
     <section className="relative -mx-20 mt-12 overflow-visible">
@@ -125,7 +124,7 @@ const DouyinVideoCover: React.FC<PosterProps<DouyinVideoWorkData>> = ({ data }) 
         }}
       >
         <img
-          src={image_url}
+          src={props.data.image_url}
           alt=""
           className="h-full w-full scale-[1.16] object-cover opacity-48 blur-[72px] saturate-[1.2]"
           referrerPolicy="no-referrer"
@@ -133,7 +132,7 @@ const DouyinVideoCover: React.FC<PosterProps<DouyinVideoWorkData>> = ({ data }) 
         />
       </div>
       <img
-        src={image_url}
+        src={props.data.image_url}
         alt="视频封面"
         className="relative z-10 block h-auto w-full drop-shadow-xl"
         style={{
@@ -143,19 +142,42 @@ const DouyinVideoCover: React.FC<PosterProps<DouyinVideoWorkData>> = ({ data }) 
         referrerPolicy="no-referrer"
         crossOrigin="anonymous"
       />
-      <div className="absolute left-24 top-10 z-30 flex items-center gap-5 text-foreground/85">
-        {durationText && <span className="text-[34px] font-black tabular-nums">时长: {durationText}</span>}
+      {/* 顶部信息行：时长（左）与分辨率（右）同一水平线对齐 */}
+      <div className="absolute inset-x-24 top-10 z-30 flex items-start justify-between text-foreground/85">
+        {durationText && <span className="text-4xl font-black leading-none tabular-nums">时长: {durationText}</span>}
+
+        {props.data.resolution && (
+          <div className="ml-auto flex flex-col items-end gap-1.5">
+            {/* 第一行：分辨率名称 + (如果有 HDR 则追加 " · HDR"，深色模式下发光) */}
+            <span className="text-3xl font-black leading-none tracking-[0.08em] select-text">
+              {props.data.resolution.name}
+              {props.data.is_HDR &&
+                (isDark(props.ctx) ? (
+                  <GlowText glowStrength={1} blurRadius={10}>
+                    {` · HDR`}
+                  </GlowText>
+                ) : (
+                  ` · HDR`
+                ))}
+            </span>
+
+            {/* 第二行：宽 x 高 px */}
+            <span className="text-2xl font-bold tracking-[0.08em] text-foreground/60 tabular-nums select-text">
+              {props.data.resolution.width} × {props.data.resolution.height} px
+            </span>
+          </div>
+        )}
       </div>
 
       <PlayIcon size={104} weight="fill" aria-label="播放" className="absolute bottom-12 right-24 z-30 text-white/50" />
 
-      {music && (
+      {props.data.music && (
         <div className="absolute bottom-12 left-24 z-30 flex max-w-212.5 items-center gap-5 text-foreground/85">
-          {music.cover ? (
+          {props.data.music.cover ? (
             <div className="relative h-20 w-20 shrink-0">
               <GlowImage glowStrength={1} blurRadius={20}>
                 <img
-                  src={music.cover}
+                  src={props.data.music.cover}
                   alt="BGM封面"
                   className="relative z-10 h-full w-full rounded-2xl object-cover"
                   referrerPolicy="no-referrer"
@@ -167,8 +189,8 @@ const DouyinVideoCover: React.FC<PosterProps<DouyinVideoWorkData>> = ({ data }) 
             <MusicNoteIcon size={44} weight="fill" className="shrink-0" />
           )}
           <div className="min-w-0">
-            <div className="truncate text-[36px] font-black leading-tight select-text">{music.title}</div>
-            <div className="truncate text-[27px] font-semibold text-foreground/60 select-text">{music.author}</div>
+            <div className="truncate text-[36px] font-black leading-tight select-text">{props.data.music.title}</div>
+            <div className="truncate text-[27px] font-semibold text-foreground/60 select-text">{props.data.music.author}</div>
           </div>
         </div>
       )}

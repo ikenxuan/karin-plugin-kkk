@@ -29,6 +29,18 @@ export interface DouyinVideoWorkData {
   }
   /** 视频时长（毫秒） */
   duration?: number
+  /** 是否为 HDR 视频 */
+  is_HDR?: boolean
+  /** 视频分辨率 */
+  resolution?: {
+    /** 视频高度 */
+    height: number
+    /** 视频宽度 */
+    width: number
+    /** 视频分辨率名称 */
+    name: string
+  }
+  /** 视频源信息 */
   /** 点赞数 */
   dianzan: string
   /** 评论数 */

@@ -3,9 +3,10 @@ import { logger } from 'node-karin'
 
 import { douyinDB } from '@/module'
 import { douyinFetcher } from '@/module/utils/amagiClient'
+import { buildDouyinWorkDetail } from '@/platform/douyin/types'
 import { douyinPushItem } from '@/types/config/pushlist'
 
-import type { DouyinPushItem } from './types'
+import type { DouyinWorkPushItem } from './types'
 
 /**
  * 处理推荐列表推送
@@ -19,10 +20,10 @@ export async function processRecommendList(
   item: douyinPushItem,
   targets: Array<{ groupId: string; botId: string }>,
   force: boolean = false
-): Promise<DouyinPushItem[]> {
+): Promise<DouyinWorkPushItem[]> {
   const pushType = 'recommend'
   const listName = '推荐列表'
-  const result: DouyinPushItem[] = []
+  const result: DouyinWorkPushItem[] = []
 
   // 获取所有目标群组的历史状态
   const groupHistoryStatus = new Map<string, boolean>()
@@ -75,11 +76,7 @@ export async function processRecommendList(
       create_time: aweme.create_time,
       targets: validTargets,
       pushType,
-      Detail_Data: {
-        ...aweme,
-        user_info: userinfo,
-        author_user_info: authorUserInfo
-      },
+      Detail_Data: buildDouyinWorkDetail(aweme, { user_info: userinfo, author_user_info: authorUserInfo }),
       avatar_img: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + userinfo.data.user.avatar_larger.uri,
       living: false
     })

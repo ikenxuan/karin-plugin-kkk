@@ -25,7 +25,7 @@ import {
   Render
 } from '@/module'
 import { Config } from '@/module/utils/Config'
-import { DouyinIdData, douyinProcessVideos, getDouyinID } from '@/platform/douyin'
+import { DouyinIdData, douyinProcessVideos, type dyVideo, getDouyinID } from '@/platform/douyin'
 import { getDouyinLiveImageSendPolicy, getWorkTypeDisplayName, getWorkTypeInfo } from '@/platform/douyin/workType'
 import type { douyinPushItem } from '@/types/config/pushlist'
 
@@ -34,10 +34,10 @@ import { processLiveStream } from './push/live'
 import { processPostList } from './push/post'
 import { processRecommendList } from './push/recommend'
 import { renderFavoriteImage, renderLiveImage, renderRecommendImage, renderWorkImage } from './push/render'
-import { type DouyinPushItem, type WillBePushList } from './push/types'
+import { type DouyinPushItem, type DouyinWorkPushItem, type WillBePushList } from './push/types'
 
 // Re-export types for backward compatibility
-export type { DouyinPushItem }
+export type { DouyinPushItem, DouyinWorkPushItem }
 
 const douyinBaseHeaders: downLoadFileOptions['headers'] = {
   ...baseHeaders,
@@ -226,7 +226,10 @@ export class DouYinpush extends Base {
     for (const awemeId in data) {
       const pushItem = data[awemeId]
       const actualAwemeId = awemeId.replace(/^(post|favorite|recommend|live)_/, '') // 移除推送类型前缀
-      const shareUrl = pushItem.Detail_Data.share_url ?? `https://live.douyin.com/${pushItem.Detail_Data.room_data?.owner.web_rid}`
+      const shareUrl =
+        pushItem.pushType === 'live'
+          ? `https://live.douyin.com/${pushItem.Detail_Data.room_data?.owner.web_rid}`
+          : (pushItem.Detail_Data.share_url ?? `https://www.douyin.com/video/${actualAwemeId}`)
       let pushTypeLabel: string
       switch (pushItem.pushType) {
         case 'post':
@@ -253,21 +256,19 @@ export class DouYinpush extends Base {
         `)
 
       const Detail_Data = pushItem.Detail_Data
-      const workTypeInfo = getWorkTypeInfo(Detail_Data as any)
+      const workTypeInfo = getWorkTypeInfo(Detail_Data)
       const skip = await skipDynamic(pushItem)
       if (skip) {
         logger.warn(`作品 https://www.douyin.com/video/${actualAwemeId} 已被处理，跳过`)
       }
       let img: ImageElement[] = []
       let iddata: DouyinIdData = { type: 'one_work' }
+      /** 按画质配置选中、即将下载发送的那一路视频源 */
+      let selectedVideo: dyVideo | null = null
       this.injectBotToEventForRender(pushItem.targets)
 
       if (!skip) {
-        iddata = await getDouyinID(
-          this.e,
-          Detail_Data.share_url ?? 'https://live.douyin.com/' + Detail_Data.room_data?.owner.web_rid,
-          false
-        )
+        iddata = await getDouyinID(this.e, shareUrl, false)
       }
 
       if (!skip) {
@@ -276,7 +277,7 @@ export class DouYinpush extends Base {
           workTypeInfo.isVideo &&
           Config.douyin.push.shareType === 'web' &&
           (await new Networks({
-            url: Detail_Data.share_url,
+            url: pushItem.Detail_Data.share_url,
             headers: {
               'User-Agent': 'Apifox/1.0.0 (https://apifox.com)',
               Accept: '*/*',
@@ -295,18 +296,24 @@ export class DouYinpush extends Base {
           } else if (Config.douyin.push.shareType === 'web') {
             workShareLink = realUrl || `https://www.douyin.com/video/${actualAwemeId}`
           } else {
-            workShareLink = Detail_Data.video?.play_addr?.uri
-              ? `https://aweme.snssdk.com/aweme/v1/play/?video_id=${Detail_Data.video.play_addr.uri}&ratio=1080p&line=0`
+            workShareLink = pushItem.Detail_Data.video?.play_addr?.uri
+              ? `https://aweme.snssdk.com/aweme/v1/play/?video_id=${pushItem.Detail_Data.video.play_addr.uri}&ratio=1080p&line=0`
               : `https://www.douyin.com/video/${actualAwemeId}`
           }
         }
 
+        // 画质选档必须早于渲染：卡片上展示的清晰度要和后面实际下载的那一路视频源完全一致，
+        // 否则会出现「卡片写 4K、实际下载 720p」的错位。
+        if (pushItem.pushType !== 'live' && workTypeInfo.isVideo && pushItem.Detail_Data.video?.bit_rate?.length) {
+          selectedVideo = douyinProcessVideos(pushItem.Detail_Data.video.bit_rate, Config.douyin.videoQuality)[0]
+        }
+
         switch (pushItem.pushType) {
           case 'live': {
-            if (!('room_data' in pushItem.Detail_Data && Detail_Data.live_data)) break
+            if (!pushItem.Detail_Data.room_data || !pushItem.Detail_Data.live_data) break
             img = await renderLiveImage({
               e: this.e,
-              Detail_Data,
+              Detail_Data: pushItem.Detail_Data,
               skipWatermark: true,
               dynamicTypeLabel: '直播动态推送'
             })
@@ -316,7 +323,7 @@ export class DouYinpush extends Base {
           case 'favorite': {
             img = await renderFavoriteImage({
               e: this.e,
-              Detail_Data,
+              Detail_Data: pushItem.Detail_Data,
               create_time: pushItem.create_time,
               shareLink: workShareLink!,
               remark: pushItem.remark,
@@ -328,7 +335,7 @@ export class DouYinpush extends Base {
           case 'recommend': {
             img = await renderRecommendImage({
               e: this.e,
-              Detail_Data,
+              Detail_Data: pushItem.Detail_Data,
               create_time: pushItem.create_time,
               shareLink: workShareLink!,
               remark: pushItem.remark,
@@ -341,9 +348,10 @@ export class DouYinpush extends Base {
           default: {
             img = await renderWorkImage({
               e: this.e,
-              Detail_Data,
+              Detail_Data: pushItem.Detail_Data,
               create_time: pushItem.create_time,
               shareLink: workShareLink!,
+              videoSource: selectedVideo,
               skipWatermark: true
             })
             break
@@ -368,10 +376,10 @@ export class DouYinpush extends Base {
 
           // 仅 QQ 官方机器人支持按钮：非直播作品在卡片末尾追加「解析」回调按钮，点击后下发 #解析 + 分享链接
           const parseButton =
-            bot?.adapter?.name === 'QQ Official Bot' && pushItem.pushType !== 'live' && Detail_Data.share_url
+            bot?.adapter?.name === 'QQ Official Bot' && pushItem.pushType !== 'live' && pushItem.Detail_Data.share_url
               ? [
                   segment.button([
-                    { text: '解析', callback: true, data: `#解析${Detail_Data.share_url}` },
+                    { text: '解析', callback: true, data: `#解析${pushItem.Detail_Data.share_url}` },
                     { text: '帮助', callback: true, data: `#kkk帮助` }
                   ])
                 ]
@@ -385,11 +393,13 @@ export class DouYinpush extends Base {
             await douyinDB.updateLiveStatus(pushItem.sec_uid, true)
           }
 
-          // 是否一同解析该新作品？
-          if (Config.douyin.push.parsedynamic && status.message_id) {
+          // 是否一同解析该新作品？（直播推送没有可解析的作品内容）
+          if (pushItem.pushType !== 'live' && Config.douyin.push.parsedynamic && status.message_id) {
+            // 收窄为作品类推送的作品详情
+            const Detail_Data = pushItem.Detail_Data
             logger.debug(`开始解析作品，类型为：${getWorkTypeDisplayName(workTypeInfo)}`)
             // 如果新作品是视频
-            if (workTypeInfo.isVideo) {
+            if (workTypeInfo.isVideo && Detail_Data.video) {
               /** 默认视频下载地址 */
               let downloadUrl = `https://aweme.snssdk.com/aweme/v1/play/?video_id=${Detail_Data.video.play_addr.uri}&ratio=1080p&line=0`
               // 根据配置文件自动选择分辨率
@@ -398,10 +408,11 @@ export class DouYinpush extends Base {
                     视频ID：${logger.green(Detail_Data.aweme_id)}\n
                     分享链接：${logger.green(Detail_Data.share_url)}
                     `)
-              const videoObj = douyinProcessVideos(Detail_Data.video.bit_rate, Config.douyin.videoQuality)
+              // 复用渲染前已选好的视频源，卡片展示的清晰度与实际下载的必然一致
+              const videoObj = selectedVideo ?? douyinProcessVideos(Detail_Data.video.bit_rate, Config.douyin.videoQuality)[0]
               logger.debug('获取精确下载地址')
               downloadUrl = await new Networks({
-                url: videoObj[0].play_addr.url_list[0],
+                url: videoObj.play_addr.url_list[0],
                 headers: douyinBaseHeaders
               }).getLongLink()
               // 下载视频
@@ -460,8 +471,13 @@ export class DouYinpush extends Base {
                   }
 
                   /** 动图/短片 */
+                  const liveVideoUri = item.video?.play_addr_h264?.uri
+                  if (!liveVideoUri) {
+                    logger.warn(`合辑第 ${index + 1} 个动态媒体缺少视频源，跳过`)
+                    continue
+                  }
                   const liveimg = await downloadFile(
-                    `https://aweme.snssdk.com/aweme/v1/play/?video_id=${item.video.play_addr_h264.uri}&ratio=1080p&line=0`,
+                    `https://aweme.snssdk.com/aweme/v1/play/?video_id=${liveVideoUri}&ratio=1080p&line=0`,
                     {
                       title: `Douyin_tmp_V_${Date.now()}.mp4`,
                       headers: douyinBaseHeaders
@@ -584,7 +600,7 @@ export class DouYinpush extends Base {
               } else if (Detail_Data.images) {
                 // 普通图集处理逻辑
                 // 检查是否包含 live 图（clip_type !== 2 且 clip_type !== undefined）
-                const hasLiveImage = Detail_Data.images.some((item: any) => item.clip_type !== 2 && item.clip_type !== undefined)
+                const hasLiveImage = Detail_Data.images.some((item) => item.clip_type !== 2 && item.clip_type !== undefined)
 
                 if (hasLiveImage) {
                   // 包含 live 图，需要特殊处理
@@ -617,14 +633,20 @@ export class DouYinpush extends Base {
                     // 静态图片，clip_type为2或undefined
                     if (item.clip_type === 2 || item.clip_type === undefined) {
                       const image_url = item.url_list[2] ?? item.url_list[1]
+                      if (!image_url) continue
                       const imageUrl = await processImageUrl(image_url, Detail_Data.desc, index)
                       processedImages.push(segment.image(imageUrl))
                       continue
                     }
 
                     /** live 图 */
+                    const liveVideoUri = item.video?.play_addr_h264?.uri
+                    if (!liveVideoUri) {
+                      logger.warn(`图集第 ${index + 1} 个动态媒体缺少视频源，跳过`)
+                      continue
+                    }
                     const liveimg = await downloadFile(
-                      `https://aweme.snssdk.com/aweme/v1/play/?video_id=${item.video.play_addr_h264.uri}&ratio=1080p&line=0`,
+                      `https://aweme.snssdk.com/aweme/v1/play/?video_id=${liveVideoUri}&ratio=1080p&line=0`,
                       {
                         title: `Douyin_tmp_V_${Date.now()}.mp4`,
                         headers: douyinBaseHeaders
@@ -750,12 +772,13 @@ export class DouYinpush extends Base {
                   let image_url
                   for (const [index, item] of Detail_Data.images.entries()) {
                     image_url = item.url_list[2] ?? item.url_list[1] // 图片地址
+                    if (!image_url) continue
                     const imageUrl = await processImageUrl(image_url, Detail_Data.desc, index)
                     imageres.push(segment.image(imageUrl))
                   }
                   const bot = karin.getBot(botId) as AdapterType
 
-                  if (imageres.length === 1) {
+                  if (imageres.length === 1 && image_url) {
                     // 单张图片直接发送
                     const imageUrl = await processImageUrl(image_url, Detail_Data.desc)
                     await bot.sendMsg(Contact, [segment.image(imageUrl)])
@@ -879,7 +902,7 @@ export class DouYinpush extends Base {
 
           // 根据推送类型调用不同的处理函数
           if (contentList.length > 0) {
-            let pushItems: DouyinPushItem[] = []
+            let pushItems: DouyinWorkPushItem[] = []
             switch (pushType) {
               case 'post':
                 pushItems = await processPostList(contentList, sec_uid, userinfo, item, targets)
@@ -1208,8 +1231,8 @@ export class DouYinpush extends Base {
  * @returns 是否应该跳过推送
  */
 const skipDynamic = async (PushItem: DouyinPushItem): Promise<boolean> => {
-  // 如果是直播动态，不跳过
-  if ('liveStatus' in PushItem.Detail_Data) {
+  // 直播动态不做内容过滤
+  if (PushItem.pushType === 'live' || 'liveStatus' in PushItem.Detail_Data) {
     return false
   }
 

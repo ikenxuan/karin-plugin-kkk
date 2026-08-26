@@ -168,8 +168,8 @@ importers:
         specifier: workspace:*
         version: link:../amagi/packages/core
       '@karinjs/adapter-qqbot':
-        specifier: 3.0.3
-        version: 3.0.3
+        specifier: 3.0.6
+        version: 3.0.6
       '@karinjs/plugin-adapter-discordbot':
         specifier: https://pkg.pr.new/@karinjs/plugin-adapter-discordbot@1feb687
         version: https://pkg.pr.new/@karinjs/plugin-adapter-discordbot@1feb687
@@ -1484,8 +1484,8 @@ packages:
     peerDependencies:
       zod: ^4.0.0
 
-  '@karinjs/adapter-qqbot@3.0.3':
-    resolution: {integrity: sha512-R61HdfdJX6ZMs3oERpTu1Nw+qeO4FZZzaNCyg+aEiDPE+qMFDVYe4rn1CQccNwiIivnUqkjyfQljvj88s7R5ig==}
+  '@karinjs/adapter-qqbot@3.0.6':
+    resolution: {integrity: sha512-dv7hY6hjnGVjzJWHxaXjUhEwug5HK743zOcCdikLs6YuA++rvFktucQLO4NHX6oPVil8Z4LkOG5to7GBwES41w==}
 
   '@karinjs/art-template@1.1.0':
     resolution: {integrity: sha512-OKf0WZ61SAs9J/K19nzx1XtmLQKc+lbbxiP7AH34TLIM46L3/wSUybV2hcFl001B3zwRcUlrCOZgDlcxyVcScA==}
@@ -9764,7 +9764,7 @@ snapshots:
       zod: 4.4.3
     optional: true
 
-  '@karinjs/adapter-qqbot@3.0.3':
+  '@karinjs/adapter-qqbot@3.0.6':
     dependencies:
       '@karinjs/geturls': 1.0.2
       form-data: 4.0.6
