@@ -28,7 +28,10 @@ export interface DouyinAwemeImage {
   height?: number
   /** clip_type 为 4/5 时携带的动图视频源 */
   video?: {
-    play_addr_h264?: { uri: string }
+    play_addr_h264?: {
+      uri: string
+      url_list?: string[]
+    }
     [key: string]: any
   }
   [key: string]: any
@@ -114,10 +117,11 @@ export interface DouyinLiveDetailData {
  * 把 amagi 返回的 aweme 对象装配成渲染/推送使用的作品详情。
  * amagi 的生成类型在 text_extra（实为对象数组）、images（图文作品实为数组）等字段上
  * 与真实数据不符，统一在这一处边界断言，下游全部享受精确类型。
+ * 返回类型会带上 extra 的实际形状，例如传入 user_info 后下游可把它当作必填字段使用。
  * @param aweme - amagi 返回的作品详情（aweme_detail 或作品列表项）
  * @param extra - 流程附加字段（作者/订阅者主页信息）
  */
-export const buildDouyinWorkDetail = (
+export const buildDouyinWorkDetail = <E extends { user_info?: Result<DyUserInfo>; author_user_info?: Result<DyUserInfo> }>(
   aweme: unknown,
-  extra: { user_info?: Result<DyUserInfo>; author_user_info?: Result<DyUserInfo> } = {}
-): DouyinWorkDetailData => ({ ...(aweme as object), ...extra }) as DouyinWorkDetailData
+  extra: E = {} as E
+): DouyinWorkDetailData & E => ({ ...(aweme as object), ...extra }) as DouyinWorkDetailData & E

@@ -29,7 +29,7 @@ import { douyinComments } from '@/platform/douyin'
 import { burnDouyinDanmaku, type DouyinDanmakuElem } from '@/platform/douyin/danmaku'
 import { renderWorkImage } from '@/platform/douyin/push/render'
 import { buildDouyinWorkDetail } from '@/platform/douyin/types'
-import { douyinProcessVideos, type dyVideo } from '@/platform/douyin/videoQuality'
+import { douyinProcessVideos, type dyVideo, buildDouyinPlayUrl } from '@/platform/douyin/videoQuality'
 import { getDouyinLiveImageSendPolicy } from '@/platform/douyin/workType'
 import { DouyinDataTypes, DouyinIdData } from '@/types'
 
@@ -152,13 +152,10 @@ export class DouYin extends Base {
                   }
 
                   /** live 图 */
-                  const liveimg = await downloadFile(
-                    `https://aweme.snssdk.com/aweme/v1/play/?video_id=${imageItem.video.play_addr_h264.uri}&ratio=1080p&line=0`,
-                    {
-                      title: `Douyin_tmp_V_${Date.now()}.mp4`,
-                      headers: this.headers
-                    }
-                  )
+                  const liveimg = await downloadFile(buildDouyinPlayUrl(imageItem.video.play_addr_h264), {
+                    title: `Douyin_tmp_V_${Date.now()}.mp4`,
+                    headers: this.headers
+                  })
 
                   if (liveimg.filepath) {
                     const outputPath = Common.tempDri.video + `Douyin_Result_${Date.now()}.mp4`
@@ -360,13 +357,10 @@ export class DouYin extends Base {
                   continue
                 }
                 /** 动图/短片 */
-                const livePhoto = await downloadFile(
-                  `https://aweme.snssdk.com/aweme/v1/play/?video_id=${item.video.play_addr_h264.uri}&ratio=1080p&line=0`,
-                  {
-                    title: `Douyin_tmp_V_${Date.now()}.mp4`,
-                    headers: this.headers
-                  }
-                )
+                const livePhoto = await downloadFile(buildDouyinPlayUrl(item.video.play_addr_h264), {
+                  title: `Douyin_tmp_V_${Date.now()}.mp4`,
+                  headers: this.headers
+                })
 
                 if (livePhoto.filepath) {
                   const outputPath = Common.tempDri.video + `Douyin_Result_${Date.now()}.mp4`
@@ -523,9 +517,9 @@ export class DouYin extends Base {
         let FPS
         const sendvideofile = true
         type VideoType = DyVideoWork['aweme_detail']['video']
-        let video: VideoType | null = null
+        let video: VideoType = VideoData.data.aweme_detail.video.bit_rate[0]
         /** 按画质偏好选中、即将下载发送的那一路视频源 */
-        let selectedVideo: dyVideo | null = null
+        let selectedVideo: dyVideo = video.bit_rate[0]
         if (isVideo) {
           // 视频地址特殊判断：play_addr_h264、play_addr、
           video = VideoData.data.aweme_detail.video as VideoType
@@ -583,9 +577,10 @@ export class DouYin extends Base {
               typeMode: 'strict'
             })
             // 非视频作品使用不带追踪参数的规范短链接，避免二维码内容过长影响扫描识别。
-            const shareLink = isVideo
-              ? `https://aweme.snssdk.com/aweme/v1/play/?video_id=${aweme.video.play_addr.uri}&ratio=1080p&line=0`
-              : `https://www.douyin.com/${isArticle ? 'article' : 'note'}/${aweme.aweme_id}`
+            const shareLink =
+              isVideo && selectedVideo
+                ? buildDouyinPlayUrl(selectedVideo.play_addr)
+                : `https://www.douyin.com/${isArticle ? 'article' : 'note'}/${aweme.aweme_id}`
             const workInfoImg = await renderWorkImage({
               e: this.e,
               // 不再向 Detail_Data 里覆盖 video.bit_rate 塞入选档结果：
@@ -625,9 +620,7 @@ export class DouYin extends Base {
               Type: isArticle ? '文章' : isVideo ? '视频' : this.is_slides ? '合辑' : '图集',
               CommentsData: douyinCommentsRes.CommentsData,
               CommentLength: douyinCommentsRes.CommentsData.length ?? 0,
-              share_url: isVideo
-                ? `https://aweme.snssdk.com/aweme/v1/play/?video_id=${aweme.video.play_addr.uri}&ratio=1080p&line=0`
-                : aweme.share_url,
+              share_url: isVideo && selectedVideo ? buildDouyinPlayUrl(selectedVideo.play_addr) : aweme.share_url,
               VideoSize: mp4size,
               VideoFPS: FPS,
               ImageLength: imagenum,

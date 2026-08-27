@@ -25,7 +25,7 @@ import {
   Render
 } from '@/module'
 import { Config } from '@/module/utils/Config'
-import { DouyinIdData, douyinProcessVideos, type dyVideo, getDouyinID } from '@/platform/douyin'
+import { DouyinIdData, buildDouyinPlayUrl, douyinProcessVideos, type dyVideo, getDouyinID } from '@/platform/douyin'
 import { getDouyinLiveImageSendPolicy, getWorkTypeDisplayName, getWorkTypeInfo } from '@/platform/douyin/workType'
 import type { douyinPushItem } from '@/types/config/pushlist'
 
@@ -286,6 +286,12 @@ export class DouYinpush extends Base {
             }
           }).getLocation())
 
+        // 画质选档必须早于渲染和分享链接拼接：卡片上展示的清晰度要和后面实际下载的那一路视频源完全一致，
+        // 否则会出现「卡片写 4K、实际下载 720p」的错位。
+        if (pushItem.pushType !== 'live' && workTypeInfo.isVideo && pushItem.Detail_Data.video?.bit_rate?.length) {
+          selectedVideo = douyinProcessVideos(pushItem.Detail_Data.video.bit_rate, Config.douyin.videoQuality)[0]
+        }
+
         let workShareLink: string | undefined
         if (pushItem.pushType !== 'live') {
           if (workTypeInfo.isArticle) {
@@ -296,16 +302,10 @@ export class DouYinpush extends Base {
           } else if (Config.douyin.push.shareType === 'web') {
             workShareLink = realUrl || `https://www.douyin.com/video/${actualAwemeId}`
           } else {
-            workShareLink = pushItem.Detail_Data.video?.play_addr?.uri
-              ? `https://aweme.snssdk.com/aweme/v1/play/?video_id=${pushItem.Detail_Data.video.play_addr.uri}&ratio=1080p&line=0`
-              : `https://www.douyin.com/video/${actualAwemeId}`
+            // 直链模式：优先用选档后的视频源拼播放地址，二维码内容与卡片展示的清晰度一致
+            const playAddr = selectedVideo?.play_addr ?? pushItem.Detail_Data.video?.play_addr
+            workShareLink = playAddr ? buildDouyinPlayUrl(playAddr) : `https://www.douyin.com/video/${actualAwemeId}`
           }
-        }
-
-        // 画质选档必须早于渲染：卡片上展示的清晰度要和后面实际下载的那一路视频源完全一致，
-        // 否则会出现「卡片写 4K、实际下载 720p」的错位。
-        if (pushItem.pushType !== 'live' && workTypeInfo.isVideo && pushItem.Detail_Data.video?.bit_rate?.length) {
-          selectedVideo = douyinProcessVideos(pushItem.Detail_Data.video.bit_rate, Config.douyin.videoQuality)[0]
         }
 
         switch (pushItem.pushType) {
@@ -401,7 +401,7 @@ export class DouYinpush extends Base {
             // 如果新作品是视频
             if (workTypeInfo.isVideo && Detail_Data.video) {
               /** 默认视频下载地址 */
-              let downloadUrl = `https://aweme.snssdk.com/aweme/v1/play/?video_id=${Detail_Data.video.play_addr.uri}&ratio=1080p&line=0`
+              let downloadUrl = buildDouyinPlayUrl(Detail_Data.video.play_addr)
               // 根据配置文件自动选择分辨率
               logger.debug(`开始排除不符合条件的视频分辨率；\n
                     共拥有${logger.yellow(Detail_Data.video.bit_rate.length)}个视频源\n
@@ -471,18 +471,15 @@ export class DouYinpush extends Base {
                   }
 
                   /** 动图/短片 */
-                  const liveVideoUri = item.video?.play_addr_h264?.uri
-                  if (!liveVideoUri) {
+                  const livePlayAddr = item.video?.play_addr_h264
+                  if (!livePlayAddr?.uri) {
                     logger.warn(`合辑第 ${index + 1} 个动态媒体缺少视频源，跳过`)
                     continue
                   }
-                  const liveimg = await downloadFile(
-                    `https://aweme.snssdk.com/aweme/v1/play/?video_id=${liveVideoUri}&ratio=1080p&line=0`,
-                    {
-                      title: `Douyin_tmp_V_${Date.now()}.mp4`,
-                      headers: douyinBaseHeaders
-                    }
-                  )
+                  const liveimg = await downloadFile(buildDouyinPlayUrl(livePlayAddr), {
+                    title: `Douyin_tmp_V_${Date.now()}.mp4`,
+                    headers: douyinBaseHeaders
+                  })
 
                   if (liveimg.filepath) {
                     const outputPath = Common.tempDri.video + `Douyin_Result_${Date.now()}.mp4`
@@ -640,18 +637,15 @@ export class DouYinpush extends Base {
                     }
 
                     /** live 图 */
-                    const liveVideoUri = item.video?.play_addr_h264?.uri
-                    if (!liveVideoUri) {
+                    const livePlayAddr = item.video?.play_addr_h264
+                    if (!livePlayAddr?.uri) {
                       logger.warn(`图集第 ${index + 1} 个动态媒体缺少视频源，跳过`)
                       continue
                     }
-                    const liveimg = await downloadFile(
-                      `https://aweme.snssdk.com/aweme/v1/play/?video_id=${liveVideoUri}&ratio=1080p&line=0`,
-                      {
-                        title: `Douyin_tmp_V_${Date.now()}.mp4`,
-                        headers: douyinBaseHeaders
-                      }
-                    )
+                    const liveimg = await downloadFile(buildDouyinPlayUrl(livePlayAddr), {
+                      title: `Douyin_tmp_V_${Date.now()}.mp4`,
+                      headers: douyinBaseHeaders
+                    })
 
                     if (liveimg.filepath) {
                       const outputPath = Common.tempDri.video + `Douyin_Result_${Date.now()}.mp4`

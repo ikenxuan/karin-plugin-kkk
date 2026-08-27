@@ -116,6 +116,27 @@ const groupByQualityLevel = (videos: dyVideo[]): Map<DouyinQualityLevel, dyVideo
 }
 
 /**
+ * 构建抖音视频播放地址（二维码分享链接与下载共用）。
+ * 上游 play 接口现在除 video_id 外还要求携带 file_id（从 play_addr.url_list[2] 的查询参数中提取），
+ * 旧的 ratio/line 参数不再需要；file_id 提取失败时回退为仅带 video_id。
+ * @param playAddr - 视频源的 play_addr 对象（bit_rate 项或 images 项的 play_addr_h264）
+ * @returns 完整的播放地址
+ */
+export const buildDouyinPlayUrl = (playAddr: { uri: string; url_list?: string[] }): string => {
+  const fileId = (() => {
+    try {
+      const wrappedUrl = playAddr.url_list?.[2]
+      return wrappedUrl ? new URL(wrappedUrl).searchParams.get('file_id') : null
+    } catch {
+      return null
+    }
+  })()
+  return fileId
+    ? `https://aweme.snssdk.com/aweme/v1/play/?video_id=${playAddr.uri}&&file_id=${fileId}`
+    : `https://aweme.snssdk.com/aweme/v1/play/?video_id=${playAddr.uri}`
+}
+
+/**
  * 把选中的视频源格式化成展示用的清晰度字符串。
  * 传入的必须是 {@link douyinProcessVideos} 选中的那一路源 —— 卡片上展示的清晰度要和实际下载的一致，
  * 否则会出现「卡片写 4K、实际下载 720p」的错位。
