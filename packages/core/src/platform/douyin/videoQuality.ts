@@ -132,7 +132,7 @@ export const buildDouyinPlayUrl = (playAddr: { uri: string; url_list?: string[] 
     }
   })()
   return fileId
-    ? `https://aweme.snssdk.com/aweme/v1/play/?video_id=${playAddr.uri}&&file_id=${fileId}`
+    ? `https://c/aweme/v1/play/?video_id=${playAddr.uri}&file_id=${fileId}`
     : `https://aweme.snssdk.com/aweme/v1/play/?video_id=${playAddr.uri}`
 }
 
