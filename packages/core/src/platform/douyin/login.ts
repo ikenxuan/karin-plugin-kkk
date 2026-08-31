@@ -5,7 +5,6 @@ import {
   requestPassportQrcode,
   sendPassportVerifyCode,
   validatePassportVerifyCode,
-  type DouyinPassportQrcodeStatus,
   type DouyinPassportVerifyContext
 } from '@ikenxuan/amagi'
 import { karin, logger, type Message } from 'node-karin'
@@ -55,14 +54,14 @@ const createMessageTracker = (e: Message) => {
      * 发送并登记一条消息
      * @param message 消息内容
      */
-    async send (message: Parameters<Message['reply']>[0]) {
+    async send(message: Parameters<Message['reply']>[0]) {
       const sent = await e.reply(message, { reply: true })
       if (sent.messageId) messageIds.push(sent.messageId)
       return sent
     },
 
     /** 撤回目前登记的全部消息 */
-    async recallAll () {
+    async recallAll() {
       const pending = messageIds.splice(0, messageIds.length)
       await Promise.all(
         pending.map(async (id) => {
@@ -111,7 +110,7 @@ const handleSecondVerify = async (
     return false
   }
 
-  const sent = await sendPassportVerifyCode({ verify }, session.cookie, requestConfig())
+  const sent = await sendPassportVerifyCode({ verify, typeMode: 'strict' }, session.cookie, requestConfig())
   if (!sent.success) {
     await tracker.send(`短信验证码发送失败：${sent.message}`)
     return false
@@ -145,7 +144,11 @@ const handleSecondVerify = async (
       continue
     }
 
-    const checked = await validatePassportVerifyCode({ verify, code, biz_trace_id: bizTraceId }, session.cookie, requestConfig())
+    const checked = await validatePassportVerifyCode(
+      { verify, code, biz_trace_id: bizTraceId, typeMode: 'strict' },
+      session.cookie,
+      requestConfig()
+    )
     if (!checked.success) {
       await tracker.send(`验证失败：${checked.message}`)
       return false
@@ -196,7 +199,7 @@ export const douyinLogin = async (e: Message) => {
   const tracker = createMessageTracker(e)
 
   try {
-    const qrcode = await requestPassportQrcode(undefined, undefined, requestConfig())
+    const qrcode = await requestPassportQrcode({ typeMode: 'strict' }, undefined, requestConfig())
     if (!qrcode.success) {
       await e.reply(`获取二维码失败：${qrcode.message}`, { reply: true })
       return true
@@ -209,10 +212,7 @@ export const douyinLogin = async (e: Message) => {
     const base64Data = rendered[0]?.file
     if (!base64Data) throw new Error('生成二维码图片失败')
 
-    fs.writeFileSync(
-      `${Common.tempDri.default}DouyinLoginQrcode.png`,
-      Buffer.from(base64Data.replace(/^base64:\/\//, ''), 'base64')
-    )
+    fs.writeFileSync(`${Common.tempDri.default}DouyinLoginQrcode.png`, Buffer.from(base64Data.replace(/^base64:\/\//, ''), 'base64'))
 
     await tracker.send(rendered)
 
@@ -220,14 +220,14 @@ export const douyinLogin = async (e: Message) => {
     let scanned = false
 
     while (Date.now() < deadline) {
-      const polled = await checkPassportQrcode({ token: session.token }, session.cookie, requestConfig())
+      const polled = await checkPassportQrcode({ token: session.token, typeMode: 'strict' }, session.cookie, requestConfig())
       if (!polled.success) {
         await tracker.recallAll()
         await e.reply(`轮询二维码状态失败：${polled.message}`, { reply: true })
         return true
       }
 
-      const result: DouyinPassportQrcodeStatus = polled.data
+      const result = polled.data
       session.cookie = result.cookie
 
       switch (result.status) {
