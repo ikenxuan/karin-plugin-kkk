@@ -14,7 +14,7 @@ import { Common, Render } from '@/module'
 import { reloadAmagiConfig } from '@/module/utils/amagiClient'
 import { Config } from '@/module/utils/Config'
 
-/** 等待用户扫码的时限，与消息可撤回窗口（2 分钟）对齐 */
+/** 等待用户扫码的时限上限，与消息可撤回窗口（2 分钟）对齐；二维码本身更早失效时以它为准 */
 const SCAN_TIMEOUT = 120_000
 
 /** 扫码后等待手机确认或完成二次验证的时限 */
@@ -212,7 +212,9 @@ export const douyinLogin = async (e: Message) => {
     }
 
     const session: LoginSession = { cookie: qrcode.data.cookie, token: qrcode.data.token }
-    logger.mark(`[抖音登录] 二维码已获取，有效期 ${Math.round(qrcode.data.expire_time / 1000)} 秒`)
+    // expire_time 是绝对 Unix 秒，剩余时长直接用 expires_in
+    const validFor = qrcode.data.expires_in
+    logger.mark(`[抖音登录] 二维码已获取，有效期 ${validFor} 秒`)
 
     const rendered = await Render(e, 'douyin/qrcodeImg', { share_url: qrcode.data.content })
     const base64Data = rendered[0]?.file
@@ -222,7 +224,8 @@ export const douyinLogin = async (e: Message) => {
 
     await tracker.send(rendered)
 
-    let deadline = Date.now() + SCAN_TIMEOUT
+    // 二维码实际只有约 60 秒有效期，等到 2 分钟才提示超时会让用户白等
+    let deadline = Date.now() + (validFor > 0 ? Math.min(validFor * 1000, SCAN_TIMEOUT) : SCAN_TIMEOUT)
     let scanned = false
 
     while (Date.now() < deadline) {
