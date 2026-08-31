@@ -1,3 +1,5 @@
+import { createECDH, createHmac, hkdfSync } from 'node:crypto'
+
 import { douyinPassport } from '@ikenxuan/amagi'
 import { describe, expect, it } from 'vitest'
 
@@ -12,6 +14,7 @@ const {
   parseSendCodeResult,
   parseValidateCodeResult,
   sm3Hex,
+  TicketGuard,
   utcNoonTimestamp,
   xor5Hex
 } = douyinPassport
@@ -296,5 +299,149 @@ describe('aBogus', () => {
     const query = 'aid=6383&device_platform=web_app'
 
     expect(aBogus(query, ua)).not.toBe(aBogus(query, ua))
+  })
+})
+
+
+describe('CookieJar 的本地会话状态', () => {
+  it('__amagi_ 前缀的条目不进 Cookie 请求头', () => {
+    const jar = new CookieJar('ttwid=abc; __amagi_tg_key=secret')
+    expect(jar.toString()).toBe('ttwid=abc')
+    expect(jar.toString()).not.toContain('secret')
+  })
+
+  it('serialize 保留本地会话状态，供两次调用之间传递', () => {
+    const jar = new CookieJar('ttwid=abc')
+    jar.set('__amagi_tg_ticket', 'hash.xxx')
+    expect(jar.serialize()).toBe('ttwid=abc; __amagi_tg_ticket=hash.xxx')
+  })
+
+  it('serialize 的结果能被重新解析回同一份状态', () => {
+    const jar = new CookieJar('ttwid=abc')
+    jar.set('__amagi_tg_ticket', 'hash.xxx')
+    const restored = new CookieJar(jar.serialize())
+    expect(restored.get('__amagi_tg_ticket')).toBe('hash.xxx')
+    expect(restored.toString()).toBe('ttwid=abc')
+  })
+})
+
+describe('TicketGuard', () => {
+  it('发布公钥时写入 client_data 与 web_domain 两条 cookie', () => {
+    const jar = new CookieJar()
+    new TicketGuard(jar).publishPublicKey()
+
+    const payload = JSON.parse(
+      Buffer.from(decodeURIComponent(jar.get('bd_ticket_guard_client_data') ?? ''), 'base64').toString('utf8')
+    )
+    expect(payload['bd-ticket-guard-version']).toBe(2)
+    expect(payload['bd-ticket-guard-iteration-version']).toBe(1)
+    expect(payload['bd-ticket-guard-web-version']).toBe(2)
+    // 未压缩的 P-256 公钥点：1 + 32 + 32 字节
+    expect(Buffer.from(payload['bd-ticket-guard-ree-public-key'], 'base64')).toHaveLength(65)
+    expect(jar.get('bd_ticket_guard_client_web_domain')).toBe('2')
+  })
+
+  it('私钥只生成一次，同一份 cookie 得到同一个公钥', () => {
+    const jar = new CookieJar()
+    const first = new TicketGuard(jar).reePublicKey
+    expect(new TicketGuard(jar).reePublicKey).toBe(first)
+    // 换一份 cookie 就是另一台设备
+    expect(new TicketGuard(new CookieJar()).reePublicKey).not.toBe(first)
+  })
+
+  it('私钥不会出现在 Cookie 请求头里', () => {
+    const jar = new CookieJar('ttwid=abc')
+    const guard = new TicketGuard(jar)
+    guard.publishPublicKey()
+    expect(jar.get('__amagi_tg_key')).toBeTruthy()
+    expect(jar.toString()).not.toContain('__amagi_tg_key')
+  })
+
+  it('未拿到票据时只声明公钥，不带签名', () => {
+    const guard = new TicketGuard(new CookieJar())
+    const headers = guard.headers('/passport/web/get_qrcode/')
+    expect(headers['bd-ticket-guard-ree-public-key']).toBeTruthy()
+    expect(headers['bd-ticket-guard-client-data']).toBeUndefined()
+    expect(headers['bd-ticket-guard-web-sign-type']).toBeUndefined()
+  })
+
+  it('缺字段的签发结果不写入状态', () => {
+    const guard = new TicketGuard(new CookieJar())
+    const partial = Buffer.from(JSON.stringify({ ticket: 'hash.x', ts_sign: 'ts.2.y' })).toString('base64')
+    expect(guard.applyServerData({ 'bd-ticket-guard-server-data': partial })).toBe(false)
+    expect(guard.state).toBeUndefined()
+  })
+
+  it('无法解析的签发结果不抛异常', () => {
+    const guard = new TicketGuard(new CookieJar())
+    expect(guard.applyServerData({ 'bd-ticket-guard-server-data': 'not-base64-json' })).toBe(false)
+    expect(guard.applyServerData({})).toBe(false)
+  })
+
+  it('拿到票据后产出可验证的 HMAC 签名，并按 ts_sign 选择 web-version', () => {
+    const jar = new CookieJar()
+    const guard = new TicketGuard(jar)
+    // 用一把临时密钥充当服务端，走与线上一致的 ECDH + HKDF 流程
+    const server = createECDH('prime256v1')
+    server.generateKeys()
+    const spki = Buffer.concat([
+      Buffer.from('3059301306072a8648ce3d020106082a8648ce3d030107034200', 'hex'),
+      server.getPublicKey()
+    ])
+    const cert = `pub.${spki.subarray(spki.length - 65).toString('base64')}`
+
+    const serverData = Buffer.from(
+      JSON.stringify({ ticket: 'hash.abc', ts_sign: 'ts.2.def', client_cert: cert })
+    ).toString('base64')
+    expect(guard.applyServerData({ 'bd-ticket-guard-server-data': serverData })).toBe(true)
+
+    const headers = guard.headers('/passport/web/check_qrconnect/', 1700000000)
+    expect(headers['bd-ticket-guard-web-version']).toBe('2')
+    expect(headers['bd-ticket-guard-web-sign-type']).toBe('1')
+
+    const clientData = JSON.parse(Buffer.from(headers['bd-ticket-guard-client-data'], 'base64').toString('utf8'))
+    expect(clientData).toMatchObject({
+      ts_sign: 'ts.2.def',
+      req_content: 'ticket,path,timestamp',
+      timestamp: 1700000000
+    })
+
+    // 服务端侧独立复算：ECDH -> HKDF -> HMAC
+    const shared = server.computeSecret(
+      Buffer.from(guard.reePublicKey, 'base64')
+    )
+    const key = Buffer.from(hkdfSync('sha256', shared, Buffer.alloc(32), Buffer.alloc(0), 32))
+    const expected = createHmac('sha256', key)
+      .update('ticket=hash.abc&path=/passport/web/check_qrconnect/&timestamp=1700000000')
+      .digest('base64')
+    expect(clientData.req_sign).toBe(expected)
+  })
+
+  it('ts.1 形态的票据回落到 web-version 1', () => {
+    const jar = new CookieJar()
+    jar.set('__amagi_tg_ticket', 'hash.abc')
+    jar.set('__amagi_tg_ts_sign', 'ts.1.def')
+    jar.set('__amagi_tg_ecdh', '00'.repeat(32))
+    expect(new TicketGuard(jar).headers('/x')['bd-ticket-guard-web-version']).toBe('1')
+  })
+})
+
+describe('轮询限频', () => {
+  it('error_code=7 判为可重试的 busy，并拉长轮询间隔', () => {
+    const result = parsePollResult({ data: { error_code: 7, description: '访问太频繁', interval: 3000 } })
+    expect(result.status).toBe('busy')
+    expect(result.interval).toBe(6000)
+    expect(result).toHaveProperty('message', '访问太频繁')
+  })
+
+  it('限频没给 interval 时用默认值退避', () => {
+    const result = parsePollResult({ data: { error_code: 7 } })
+    expect(result.status).toBe('busy')
+    expect(result.interval).toBe(6000)
+  })
+
+  it('限频不会被误判成风控', () => {
+    expect(parsePollResult({ data: { error_code: 2156 } }).status).toBe('risk')
+    expect(parsePollResult({ data: { error_code: 7 } }).status).not.toBe('risk')
   })
 })

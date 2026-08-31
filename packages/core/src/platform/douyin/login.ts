@@ -269,6 +269,11 @@ export const douyinLogin = async (e: Message) => {
           await e.reply('二维码已失效，请重新发起登录', { reply: true })
           return true
 
+        case 'busy':
+          // 服务端限频，parser 已经把间隔翻倍，这里只记录不打扰用户
+          logger.debug(`[抖音登录] 轮询被限频，${result.interval} ms 后重试: ${result.message}`)
+          break
+
         case 'risk':
           logger.warn(`[抖音登录] 命中风控: ${result.message}`)
           await tracker.recallAll()
