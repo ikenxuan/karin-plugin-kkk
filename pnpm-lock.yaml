@@ -182,9 +182,9 @@ importers:
       '@karinjs/plugin-ffmpeg':
         specifier: ^0.1.3
         version: 0.1.3
-      '@karinjs/plugin-puppeteer':
-        specifier: ^2.3.1
-        version: 2.3.1(supports-color@7.2.0)
+      '@karinjs/plugin-shotium':
+        specifier: ^0.2.1
+        version: 0.2.1
       '@karinjs/template-react':
         specifier: 0.1.1
         version: 0.1.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(supports-color@7.2.0)(tailwind-merge@3.6.0)(yaml@2.9.0)
@@ -194,6 +194,9 @@ importers:
       '@phosphor-icons/react':
         specifier: ^2.1.10
         version: 2.1.10(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@snapka/puppeteer':
+        specifier: ^0.2.7
+        version: 0.2.7(supports-color@7.2.0)
       '@thesvg/icons':
         specifier: ^3.0.18
         version: 3.2.15
@@ -265,7 +268,7 @@ importers:
         version: 3.6.0
       tsdown:
         specifier: ^0.22.14
-        version: 0.22.14(@vitejs/devtools@0.4.10)(oxc-resolver@11.24.2)(tsx@4.23.1)(typescript@6.0.3)
+        version: 0.22.14(oxc-resolver@11.24.2)(tsx@4.23.12)(typescript@6.0.3)
       victory:
         specifier: ^37.3.6
         version: 37.3.6(react@19.2.8)
@@ -1535,8 +1538,8 @@ packages:
   '@karinjs/plugin-ffmpeg@0.1.3':
     resolution: {integrity: sha512-zGFde8c4+13T12jsM9UKvY4s+z+WKUj79xUFTZyF2eR+fyfTCi6cGxgEXjIpOKiWp0G6pepUPF/R4Rm6oYUbIg==}
 
-  '@karinjs/plugin-puppeteer@2.3.1':
-    resolution: {integrity: sha512-qqJpysD1J2Zz8c/NFjzDlnfI2jOEwrhiKOlYnO8cZ71aI/+fEEsZ2+xsiJhZP7MNcC9o26fGsJf/J9b+d0cHaQ==}
+  '@karinjs/plugin-shotium@0.2.1':
+    resolution: {integrity: sha512-1JLi+UbL/DBnI/lx6z92hK6njvP54S3/KcrerBOmkBJVZ+9nu0luXcOeOicejZ3bxKOswEP8RCQX70D52/DEwg==}
 
   '@karinjs/redis@1.1.3':
     resolution: {integrity: sha512-Keo+1pJxvddTqBF4BE7AnZqvbBRXZ4QaZa8uJCKngmQ303TV3M0x0gHuKBfDNXQAkiHylw09a3YAzj68sh/Dhw==}
@@ -3286,6 +3289,46 @@ packages:
 
   '@shikijs/vscode-textmate@10.0.2':
     resolution: {integrity: sha512-83yeghZ2xxin3Nj8z1NMd/NCuca+gsYXswywDy5bHvwlWL8tpTQmzGeUuHd9FC3E/SBEMvzJRwWEOz5gGes9Qg==}
+
+  '@shotkit/shotium-darwin-arm64@0.3.3':
+    resolution: {integrity: sha512-ptirkVh0oJfvPo+OYq7MdTNvNc4/a+x3PpsGsHR4Tr1ADWJ2SoqprvdIJSnIb6Po0QZcuSbxse4KWkLYXiy2DA==}
+    engines: {node: '>=18'}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@shotkit/shotium-darwin-x64@0.3.3':
+    resolution: {integrity: sha512-YiLBSJ2qVdVODIDvlQIwsWr063V6mo1bH2vFWMdfrqVFW0PmqrmyuSSZaoHzB8YgwCxsvjLbVVhhKhb9q16phg==}
+    engines: {node: '>=18'}
+    cpu: [x64]
+    os: [darwin]
+
+  '@shotkit/shotium-linux-arm64@0.3.3':
+    resolution: {integrity: sha512-G3UcvTgd6Mbh1haoFA+co2JgYTOp7JNhCIkB6XdhMVDvYYSRxBv56r3ek+MlQYYTcYzvLBneteetxRP2koTEkA==}
+    engines: {node: '>=18'}
+    cpu: [arm64]
+    os: [linux]
+
+  '@shotkit/shotium-linux-x64@0.3.3':
+    resolution: {integrity: sha512-KlnD9zR0oLwzYgyYb4CCCqpD41g/UDaDOczyxZ5fUFKJNRfwRPfTcNTOFZr9vV862I2NPfTyEBiaaRSDmvIReQ==}
+    engines: {node: '>=18'}
+    cpu: [x64]
+    os: [linux]
+
+  '@shotkit/shotium-win32-arm64@0.3.3':
+    resolution: {integrity: sha512-fUVIi/12k34wMPTHzdN9bMYt2PIqek4XFs+IWF5g5i1WaKnuOUsYZ1DbJO5Tas7Mz8sjmNzPopBbUmXtHF9ISg==}
+    engines: {node: '>=18'}
+    cpu: [arm64]
+    os: [win32]
+
+  '@shotkit/shotium-win32-x64@0.3.3':
+    resolution: {integrity: sha512-U+AE1JBHtxBbxRQg3r/PMIZPCZknjeTg0o6/uZC6aAoPyl5aszClGMLYZ4JFll6ffGYfNOdP6vP+moBrL04zeA==}
+    engines: {node: '>=18'}
+    cpu: [x64]
+    os: [win32]
+
+  '@shotkit/shotium@0.3.3':
+    resolution: {integrity: sha512-bXaSs7zXV2oAkFloOsgZhjCLrKHO26ycMNnw22soy+w0D4fL2wfm8mwpSOUTBaaZ7xmyoXMUwCg2NmX9dc6MQQ==}
+    engines: {node: '>=18'}
 
   '@simple-libs/child-process-utils@1.0.2':
     resolution: {integrity: sha512-/4R8QKnd/8agJynkNdJmNw2MBxuFTRcNFnE5Sg/G+jkSsV8/UBgULMzhizWWW42p8L5H7flImV2ATi79Ove2Tw==}
@@ -9822,16 +9865,9 @@ snapshots:
 
   '@karinjs/plugin-ffmpeg@0.1.3': {}
 
-  '@karinjs/plugin-puppeteer@2.3.1(supports-color@7.2.0)':
+  '@karinjs/plugin-shotium@0.2.1':
     dependencies:
-      '@snapka/puppeteer': 0.2.7(supports-color@7.2.0)
-    transitivePeerDependencies:
-      - bare-abort-controller
-      - bare-buffer
-      - bufferutil
-      - react-native-b4a
-      - supports-color
-      - utf-8-validate
+      '@shotkit/shotium': 0.3.3
 
   '@karinjs/redis@1.1.3': {}
 
@@ -11525,6 +11561,33 @@ snapshots:
       '@types/hast': 3.0.5
 
   '@shikijs/vscode-textmate@10.0.2': {}
+
+  '@shotkit/shotium-darwin-arm64@0.3.3':
+    optional: true
+
+  '@shotkit/shotium-darwin-x64@0.3.3':
+    optional: true
+
+  '@shotkit/shotium-linux-arm64@0.3.3':
+    optional: true
+
+  '@shotkit/shotium-linux-x64@0.3.3':
+    optional: true
+
+  '@shotkit/shotium-win32-arm64@0.3.3':
+    optional: true
+
+  '@shotkit/shotium-win32-x64@0.3.3':
+    optional: true
+
+  '@shotkit/shotium@0.3.3':
+    optionalDependencies:
+      '@shotkit/shotium-darwin-arm64': 0.3.3
+      '@shotkit/shotium-darwin-x64': 0.3.3
+      '@shotkit/shotium-linux-arm64': 0.3.3
+      '@shotkit/shotium-linux-x64': 0.3.3
+      '@shotkit/shotium-win32-arm64': 0.3.3
+      '@shotkit/shotium-win32-x64': 0.3.3
 
   '@simple-libs/child-process-utils@1.0.2':
     dependencies:
@@ -16893,6 +16956,32 @@ snapshots:
       - oxc-resolver
       - vue-tsc
 
+  tsdown@0.22.14(oxc-resolver@11.24.2)(tsx@4.23.12)(typescript@6.0.3):
+    dependencies:
+      ansis: 4.3.1
+      cac: 7.0.0
+      defu: 6.1.7
+      empathic: 2.0.1
+      hookable: 6.1.1
+      import-without-cache: 0.4.0
+      obug: 2.1.4
+      picomatch: 4.0.5
+      rolldown: 1.2.1
+      rolldown-plugin-dts: 0.27.14(oxc-resolver@11.24.2)(rolldown@1.2.1)(typescript@6.0.3)
+      tinyexec: 1.2.4
+      tinyglobby: 0.2.17
+      tree-kill: 1.2.2
+      unconfig-core: 7.5.0
+      verkit: 0.3.1
+    optionalDependencies:
+      tsx: 4.23.12
+      typescript: 6.0.3
+    transitivePeerDependencies:
+      - '@typescript/native-preview'
+      - '@volar/typescript'
+      - oxc-resolver
+      - vue-tsc
+
   tslib@2.6.2: {}
 
   tslib@2.8.1: {}
@@ -17361,7 +17450,7 @@ snapshots:
     dependencies:
       lightningcss: 1.33.0
       picomatch: 4.0.5
-      postcss: 8.5.25
+      postcss: 8.5.26
       rolldown: 1.1.5
       tinyglobby: 0.2.17
     optionalDependencies:
@@ -17377,7 +17466,7 @@ snapshots:
     dependencies:
       lightningcss: 1.33.0
       picomatch: 4.0.5
-      postcss: 8.5.25
+      postcss: 8.5.26
       rolldown: 1.1.5
       tinyglobby: 0.2.17
     optionalDependencies:

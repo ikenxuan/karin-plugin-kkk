@@ -3,7 +3,7 @@ import { platform } from 'node:os'
 import path from 'node:path'
 
 import { scanSync } from '@ikenxuan/qrcode'
-import { snapka } from '@karinjs/plugin-puppeteer'
+import { snapka } from '@snapka/puppeteer'
 import { newInjectedPage } from 'fingerprint-injector'
 import { karin, karinPathTemp, logger, Message } from 'node-karin'
 

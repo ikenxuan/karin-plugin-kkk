@@ -82,10 +82,11 @@
     "@karinjs/plugin-adapter-milky": "^1.3.3",
     "@karinjs/plugin-basic": "1.4.13",
     "@karinjs/plugin-ffmpeg": "^0.1.3",
-    "@karinjs/plugin-puppeteer": "^2.3.1",
+    "@karinjs/plugin-shotium": "^0.2.1",
     "@karinjs/template-react": "0.1.1",
     "@kkk/richtext": "workspace:*",
     "@phosphor-icons/react": "^2.1.10",
+    "@snapka/puppeteer": "^0.2.7",
     "@thesvg/icons": "^3.0.18",
     "@types/cors": "^2.8.19",
     "@types/express": "5.0.6",
@@ -138,5 +139,5 @@
     "web": "./lib/web.config.js",
     "ts-web": "./src/web.config.ts"
   },
-  "timestamp": "2026-08-28T16:30:43.846Z"
+  "timestamp": "2026-08-31T11:03:18.849Z"
 }

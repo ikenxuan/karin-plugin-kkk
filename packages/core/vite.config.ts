@@ -75,7 +75,7 @@ export default defineConfig({
         // @karinjs/template-react 必须打进产物（与模板组件共用同一份 React），其余 @karinjs 包保持外部
         ...[/^@karinjs\/(?!template-react)/],
         'fingerprint-injector',
-        '@snapka/puppeteer',
+        // '@snapka/puppeteer',
         '@ikenxuan/watermark',
         '@ikenxuan/qrcode'
       ],
