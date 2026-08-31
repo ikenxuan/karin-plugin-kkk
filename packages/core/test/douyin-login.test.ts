@@ -1,6 +1,6 @@
 import { createECDH, createHmac, hkdfSync } from 'node:crypto'
 
-import { douyinPassport } from '@ikenxuan/amagi'
+import { douyinPassport, isSmsCodeVerifyWay } from '@ikenxuan/amagi'
 import { describe, expect, it } from 'vitest'
 
 // 协议层实现在 @ikenxuan/amagi 的 passport 模块里，这里锁住 kkk 依赖的那部分行为
@@ -18,7 +18,6 @@ const {
   utcNoonTimestamp,
   xor5Hex
 } = douyinPassport
-
 
 describe('CookieJar', () => {
   it('按下发顺序覆盖同名 cookie，保留最后一次的值', () => {
@@ -302,7 +301,6 @@ describe('aBogus', () => {
   })
 })
 
-
 describe('CookieJar 的本地会话状态', () => {
   it('__amagi_ 前缀的条目不进 Cookie 请求头', () => {
     const jar = new CookieJar('ttwid=abc; __amagi_tg_key=secret')
@@ -330,9 +328,7 @@ describe('TicketGuard', () => {
     const jar = new CookieJar()
     new TicketGuard(jar).publishPublicKey()
 
-    const payload = JSON.parse(
-      Buffer.from(decodeURIComponent(jar.get('bd_ticket_guard_client_data') ?? ''), 'base64').toString('utf8')
-    )
+    const payload = JSON.parse(Buffer.from(decodeURIComponent(jar.get('bd_ticket_guard_client_data') ?? ''), 'base64').toString('utf8'))
     expect(payload['bd-ticket-guard-version']).toBe(2)
     expect(payload['bd-ticket-guard-iteration-version']).toBe(1)
     expect(payload['bd-ticket-guard-web-version']).toBe(2)
@@ -384,15 +380,10 @@ describe('TicketGuard', () => {
     // 用一把临时密钥充当服务端，走与线上一致的 ECDH + HKDF 流程
     const server = createECDH('prime256v1')
     server.generateKeys()
-    const spki = Buffer.concat([
-      Buffer.from('3059301306072a8648ce3d020106082a8648ce3d030107034200', 'hex'),
-      server.getPublicKey()
-    ])
+    const spki = Buffer.concat([Buffer.from('3059301306072a8648ce3d020106082a8648ce3d030107034200', 'hex'), server.getPublicKey()])
     const cert = `pub.${spki.subarray(spki.length - 65).toString('base64')}`
 
-    const serverData = Buffer.from(
-      JSON.stringify({ ticket: 'hash.abc', ts_sign: 'ts.2.def', client_cert: cert })
-    ).toString('base64')
+    const serverData = Buffer.from(JSON.stringify({ ticket: 'hash.abc', ts_sign: 'ts.2.def', client_cert: cert })).toString('base64')
     expect(guard.applyServerData({ 'bd-ticket-guard-server-data': serverData })).toBe(true)
 
     const headers = guard.headers('/passport/web/check_qrconnect/', 1700000000)
@@ -407,9 +398,7 @@ describe('TicketGuard', () => {
     })
 
     // 服务端侧独立复算：ECDH -> HKDF -> HMAC
-    const shared = server.computeSecret(
-      Buffer.from(guard.reePublicKey, 'base64')
-    )
+    const shared = server.computeSecret(Buffer.from(guard.reePublicKey, 'base64'))
     const key = Buffer.from(hkdfSync('sha256', shared, Buffer.alloc(32), Buffer.alloc(0), 32))
     const expected = createHmac('sha256', key)
       .update('ticket=hash.abc&path=/passport/web/check_qrconnect/&timestamp=1700000000')
@@ -443,5 +432,23 @@ describe('轮询限频', () => {
   it('限频不会被误判成风控', () => {
     expect(parsePollResult({ data: { error_code: 2156 } }).status).toBe('risk')
     expect(parsePollResult({ data: { error_code: 7 } }).status).not.toBe('risk')
+  })
+})
+
+describe('二次验证方式识别', () => {
+  it('两种下行短信收码方式都认', () => {
+    expect(isSmsCodeVerifyWay('mobile_sms_verify')).toBe(true)
+    expect(isSmsCodeVerifyWay('assist_mobile_sms_verify')).toBe(true)
+  })
+
+  it('上行短信不算收码方式', () => {
+    expect(isSmsCodeVerifyWay('mobile_up_sms_verify')).toBe(false)
+    expect(isSmsCodeVerifyWay('assist_mobile_up_sms_verify')).toBe(false)
+  })
+
+  it('其它验证方式一律不认', () => {
+    for (const way of ['face_verify', 'pwd_verify', 'qr_code_verify', '', 'mobile_sms_verify_x']) {
+      expect(isSmsCodeVerifyWay(way)).toBe(false)
+    }
   })
 })

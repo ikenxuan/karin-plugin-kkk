@@ -2,6 +2,7 @@ import fs from 'node:fs'
 
 import {
   checkPassportQrcode,
+  isSmsCodeVerifyWay,
   requestPassportQrcode,
   sendPassportVerifyCode,
   validatePassportVerifyCode,
@@ -103,14 +104,17 @@ const handleSecondVerify = async (
     return false
   }
 
-  const smsWay = verify.verifyWays.find((way) => way.verifyWay === 'mobile_sms_verify')
+  // 服务端给的验证方式因账号而异：普通账号是 mobile_sms_verify，
+  // 被判定需要辅助验证的账号是 assist_mobile_sms_verify，两者都是下行短信收码
+  const smsWay = verify.verifyWays.find((way) => isSmsCodeVerifyWay(way.verifyWay))
   if (verify.verifyWays.length > 0 && !smsWay) {
     const ways = verify.verifyWays.map((way) => way.verifyWay).join('、')
+    logger.warn(`[抖音登录] 服务端给出的验证方式均不支持: ${ways}`)
     await tracker.send(`账号触发了二次验证，但当前仅支持短信验证码，服务端给出的方式为：${ways}`)
     return false
   }
 
-  const sent = await sendPassportVerifyCode({ verify, typeMode: 'strict' }, session.cookie, requestConfig())
+  const sent = await sendPassportVerifyCode({ verify, verify_way: smsWay?.verifyWay, typeMode: 'strict' }, session.cookie, requestConfig())
   if (!sent.success) {
     await tracker.send(`短信验证码发送失败：${sent.message}`)
     return false
@@ -123,6 +127,8 @@ const handleSecondVerify = async (
   }
 
   const bizTraceId = sent.data.biz_trace_id
+  const verifyWay = sent.data.verify_way
+  logger.mark(`[抖音登录] 二次验证方式: ${verifyWay}`)
   const target = sent.data.mobile || smsWay?.mobile || '扫码设备绑定的手机号'
   await tracker.send(`此次登录需要二次验证\n6 位数验证码已发送至 ${target}\n请在 ${CODE_INPUT_TIMEOUT} 秒内直接回复该验证码`)
 
@@ -145,7 +151,7 @@ const handleSecondVerify = async (
     }
 
     const checked = await validatePassportVerifyCode(
-      { verify, code, biz_trace_id: bizTraceId, typeMode: 'strict' },
+      { verify, code, biz_trace_id: bizTraceId, verify_way: verifyWay, typeMode: 'strict' },
       session.cookie,
       requestConfig()
     )
