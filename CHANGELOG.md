@@ -2,6 +2,31 @@
 
 # Changelog
 
+## [2.42.3](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.42.2...v2.42.3) (2026-09-01)
+
+
+### 🐛 错误修复
+
+* **douyin:** 优化视频播放链接构建，支持新格式并确保二维码与下载一致性 ([417ad3c](https://github.com/ikenxuan/karin-plugin-kkk/commit/417ad3c826b8403bb0a71004f6e7210bd01283cc))
+* use @snapka/puppeteer ([38f9d5b](https://github.com/ikenxuan/karin-plugin-kkk/commit/38f9d5b0773c9da4f4b853d61715e639cdc776e2))
+* 二维码链接拼接错误 ([4772801](https://github.com/ikenxuan/karin-plugin-kkk/commit/4772801ded3dd9f2d658de9693572036385bea82))
+* 类型安全修复 ([6fc8a6b](https://github.com/ikenxuan/karin-plugin-kkk/commit/6fc8a6b591af8fa270397bb0b0d7bc34d39abe0c))
+
+
+### 💄 UI 优化
+
+* **douyin:** douyin/video-work 支持显示视频分辨率 ([6fc8a6b](https://github.com/ikenxuan/karin-plugin-kkk/commit/6fc8a6b591af8fa270397bb0b0d7bc34d39abe0c))
+
+
+### 🧰 其他更新
+
+* remove @karinjs/plugin-adapter-discordbot devDependencies ([1db3e35](https://github.com/ikenxuan/karin-plugin-kkk/commit/1db3e356924a1dd5ef53fcbda1717d1c54ecc740))
+
+
+### ♻️ 代码重构
+
+* **douyin:** 用 amagi passport 接口替换 Puppeteer 登录 ([#353](https://github.com/ikenxuan/karin-plugin-kkk/issues/353)) ([3cf285a](https://github.com/ikenxuan/karin-plugin-kkk/commit/3cf285aed960e12ba0fc5b21dab6bd12e452c211))
+
 ## [2.42.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.42.1...v2.42.2) (2026-08-21)
 
 
