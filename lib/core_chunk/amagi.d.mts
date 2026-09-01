@@ -13836,6 +13836,153 @@ type MediumCoverurl = {
 //#region src/types/ReturnDataType/Douyin/MusicWork/index.d.ts
 type DyMusicWork = DyMusicWork_V0;
 //#endregion
+//#region src/types/ReturnDataType/Douyin/PassportLogin/PassportLogin.d.ts
+/**
+ * 抖音 passport 扫码登录的返回类型
+ *
+ * 与其它返回类型不同，这几个不是服务端原始 JSON 的映射，而是登录状态机归一化之后的结果：
+ * passport 的原始响应会把状态散落在 `data.status`、`data.error_code`、`data.account_flow`
+ * 三处，且同一种情况有多套表达。协议层把它们收敛成一个可判别联合，调用方只需 `switch`
+ * 一次即可覆盖全部分支。
+ */
+/** 二次验证的一种可选方式 */
+interface DyPassportVerifyWay {
+  /** 方式标识，如 `mobile_sms_verify` */
+  verifyWay: string;
+  /** 该方式关联的手机号（已脱敏） */
+  mobile?: string;
+}
+/**
+ * 二次验证上下文
+ *
+ * 字段全部来自轮询响应，需原样透传给发码与验码接口，缺字段会被判为伪造请求。
+ */
+interface DyPassportVerifyContext {
+  /** 加密后的用户 ID */
+  encryptUid: string;
+  /** 验证票据 */
+  verifyTicket: string;
+  /** 验证会话票据 */
+  stdParams: Record<string, string>;
+  /** 文案场景，扫码登录固定为 `qr_connect` */
+  copywritingKey: string;
+  /** 风控分流标记 */
+  diversionTag: string;
+  /** 新版验证流标识 */
+  newVerifyFlow: string;
+  /** 服务端给出的可选验证方式 */
+  verifyWays: DyPassportVerifyWay[];
+}
+/** 一次二维码轮询的归一化结果 */
+type DyPassportPollResult =
+/** 尚未扫码 */
+{
+  status: 'new';
+  interval: number;
+} |
+/** 已扫码，等待手机端确认 */
+{
+  status: 'scanned';
+  interval: number;
+} |
+/** 已确认，可跟随 `redirectUrl` 领取登录凭证 */
+{
+  status: 'confirmed';
+  interval: number;
+  redirectUrl: string;
+} |
+/** 二维码过期 */
+{
+  status: 'expired';
+  interval: number;
+} |
+/** 触发账号二次验证 */
+{
+  status: 'verify';
+  interval: number;
+  verify: DyPassportVerifyContext;
+} |
+/** 触发风控 */
+{
+  status: 'risk';
+  interval: number;
+  message: string;
+} |
+/** 轮询被限频，退避后可继续用同一个 token 重试 */
+{
+  status: 'busy';
+  interval: number;
+  message: string;
+} |
+/** 未知状态，原样保留服务端返回，便于排查 */
+{
+  status: 'unknown';
+  interval: number;
+  message: string;
+};
+/** 登录二维码 */
+interface DyPassportQrcode {
+  /** 轮询用的二维码令牌 */
+  token: string;
+  /** 二维码承载的内容，直接拿去生成图片 */
+  content: string;
+  /**
+   * 二维码过期时间，服务端原值，是**绝对 Unix 时间戳（秒）**而非时长
+   *
+   * 想要剩余秒数请直接用 `expires_in`。
+   */
+  expire_time: number;
+  /** 距离二维码过期还剩多少秒，取二维码时算出，实测约 60 秒 */
+  expires_in: number;
+  /** 本次会话 cookie，后续调用需原样传回 */
+  cookie: string;
+}
+/** 二维码状态 */
+type DyPassportQrcodeStatus = DyPassportPollResult & {
+  /** 最新会话 cookie；`confirmed` 时已包含 sessionid / sid_guard 等登录凭证 */
+  cookie: string;
+  /** cookie 里是否已具备登录态凭证 */
+  logged_in: boolean;
+};
+/** 发码接口归一化后的结果，不含会话字段 */
+interface DyPassportSendCodeResult {
+  /** 是否发送成功 */
+  ok: boolean;
+  /** 服务端返回的脱敏手机号 */
+  mobile: string;
+  /** 允许重新发送的等待秒数 */
+  retryAfter: number;
+  /** 失败时的错误码 */
+  errorCode?: number;
+  /** 失败时的描述 */
+  message: string;
+}
+/** 发送短信验证码的结果 */
+type DyPassportSendCode = DyPassportSendCodeResult & {
+  /** 最新会话 cookie */
+  cookie: string;
+  /** 本次验证流程的追踪 ID，提交验证码时必须传回同一个值 */
+  biz_trace_id: string;
+  /** 本次实际使用的验证方式，提交验证码时应传回同一个值 */
+  verify_way: string;
+};
+/** 验码接口归一化后的结果，不含会话字段 */
+interface DyPassportValidateCodeResult {
+  /** 验证是否通过 */
+  ok: boolean;
+  /** 验证码是否填错（可以让用户重试） */
+  wrongCode: boolean;
+  /** 错误码 */
+  errorCode?: number;
+  /** 描述 */
+  message: string;
+}
+/** 提交短信验证码的结果 */
+type DyPassportValidateCode = DyPassportValidateCodeResult & {
+  /** 最新会话 cookie */
+  cookie: string;
+};
+//#endregion
 //#region src/types/ReturnDataType/Douyin/SearchInfo/SearchInfoGeneral/SearchInfoGeneral_V0.d.ts
 type SearchInfoGeneralData_V0 = {
   ad_info: {
@@ -24103,6 +24250,10 @@ interface DouyinReturnTypeMap {
   liveRoomInfo: DyUserLiveVideos;
   loginQrcode: any;
   commentReplies: CommentReply;
+  passportQrcode: DyPassportQrcode;
+  passportQrcodeStatus: DyPassportQrcodeStatus;
+  passportSendCode: DyPassportSendCode;
+  passportValidateCode: DyPassportValidateCode;
 }
 //#endregion
 //#region src/types/ReturnDataType/Kuaishou/EmojiList/EmojiList_V0.d.ts
@@ -26675,6 +26826,413 @@ interface IBilibiliFetcher {
   fetchEmojiList: NoParamMethodOverload<BilibiliReturnTypeMap['emojiList']>;
 }
 //#endregion
+//#region src/platform/douyin/passport/aBogus.d.ts
+/** bdms SDK 版本号，同时也是 passport 通用参数里的 p_bd */
+declare const BDMS_SDK_VERSION = "1.0.1.19-fix.01";
+/**
+ * 生成 a_bogus
+ * @param query 除 a_bogus 之外的完整查询串（未加 `?`，保持实际发送顺序）
+ * @param userAgent 与请求头一致的 UA
+ * @returns a_bogus 参数值（未做 URL 编码）
+ */
+declare const aBogus: (query: string, userAgent: string) => string;
+//#endregion
+//#region src/platform/douyin/passport/cookieJar.d.ts
+/**
+ * 登录流程用的轻量 CookieJar
+ *
+ * 登录过程会跨 `www.douyin.com` / `login.douyin.com` / `ttwid.bytedance.com` 三个域，
+ * 且同一个 cookie 名会被多次下发（例如 `ttwid` 在换取可信指纹后会被替换、
+ * `sessionid` 在二次验证通过后会被升级）。这里只做一件事：**按下发顺序覆盖同名 cookie**，
+ * 保证最终拿到的永远是最后一次下发的值，同时正确处理服务端的删除指令。
+ *
+ * 不做域/路径隔离：整个登录流程都在抖音自己的域下，隔离反而会漏掉跨子域下发的凭证。
+ *
+ * 另外承载一小部分**本地会话状态**（见 `INTERNAL_PREFIX`）：passport 的几个接口对外是
+ * 无状态的，会话全靠 cookie 串在调用之间传递，而 bd-ticket-guard 需要在多次调用之间
+ * 记住自己生成的密钥与服务端签发的票据。这些条目以 `__amagi_` 开头，
+ * `toString()` 不会把它们放进 Cookie 请求头，只有 `serialize()` 才会带上。
+ */
+/** 本地会话状态的 cookie 名前缀，这些条目永远不会发给服务端 */
+declare const INTERNAL_PREFIX = "__amagi_";
+declare class CookieJar {
+  /** Map 保留插入顺序，重复 set 只更新值、不改变位置 */
+  private readonly cookies;
+  /**
+   * @param initial 初始 cookie 串，形如 `a=1; b=2`
+   */
+  constructor(initial?: string);
+  /** 当前持有的 cookie 数量 */
+  get size(): number;
+  /**
+   * 写入一条 cookie
+   * @param name cookie 名
+   * @param value cookie 值
+   */
+  set(name: string, value: string): this;
+  /**
+   * 读取一条 cookie
+   * @param name cookie 名
+   */
+  get(name: string): string | undefined;
+  /**
+   * 是否持有某条 cookie
+   * @param name cookie 名
+   */
+  has(name: string): boolean;
+  /**
+   * 合并一段 `name=value; name=value` 形式的 cookie 串
+   * @param cookieString cookie 串，空值直接忽略
+   */
+  merge(cookieString?: string | null): this;
+  /**
+   * 应用响应的 Set-Cookie 头
+   * @param setCookies 单条或多条 Set-Cookie 原始值
+   */
+  applySetCookie(setCookies?: string | string[] | null): this;
+  /**
+   * 是否已经拿到登录态凭证（`ttwid` 是匿名设备指纹，不算登录）
+   */
+  isLoggedIn(): boolean;
+  /** 序列化为可直接放进 Cookie 请求头的字符串，不含本地会话状态 */
+  toString(): string;
+  /**
+   * 序列化为在两次调用之间传递的会话串，包含本地会话状态
+   *
+   * 登录流程内部用这个；最终落库的登录凭证用 `toString()`，避免把本地密钥写进配置。
+   */
+  serialize(): string;
+  /** 导出为普通对象，便于断言与日志 */
+  toJSON(): Record<string, string>;
+}
+//#endregion
+//#region src/platform/douyin/passport/ticketGuard.d.ts
+/** 一次登录会话持有的 ticket-guard 状态 */
+interface TicketGuardState {
+  /** 服务端签发的票据 */
+  ticket: string;
+  /** 票据的时间戳签名 */
+  tsSign: string;
+  /** ECDH 派生出的 HMAC 密钥 */
+  ecdhKey: Buffer;
+}
+/**
+ * bd-ticket-guard 会话
+ *
+ * 状态全部读写自传入的 CookieJar，因此与 passport 的无状态调用形态天然兼容。
+ */
+declare class TicketGuard {
+  private readonly jar;
+  /**
+   * @param jar 当前会话 cookie
+   */
+  constructor(jar: CookieJar);
+  /** 本会话的私钥，缺失时生成一把并写回 CookieJar */
+  private get privateKey();
+  /** 未压缩格式的公钥（base64），即 `bd-ticket-guard-ree-public-key` */
+  get reePublicKey(): string;
+  /** 已签发的票据，未签发时为 undefined */
+  get state(): TicketGuardState | undefined;
+  /**
+   * 在首个 passport 请求之前把公钥交给服务端
+   *
+   * 缺了这一步扫码依然能成功，但服务端不会签发票据，后续请求也就无从携带。
+   */
+  publishPublicKey(): void;
+  /**
+   * 消化响应里可能带回的票据签发结果
+   * @param headers 响应头
+   * @returns 是否收到了新票据
+   */
+  applyServerData(headers: Record<string, unknown>): boolean;
+  /**
+   * 生成本次请求的 bd-ticket-guard 请求头
+   *
+   * 尚未拿到票据时只声明公钥，让服务端有机会签发；拿到之后带完整签名。
+   * @param path 请求路径，不含 query
+   * @param timestamp 秒级时间戳，默认取当前
+   */
+  headers(path: string, timestamp?: number): Record<string, string>;
+  /**
+   * ECDH + HKDF-SHA256 派生 HMAC 密钥
+   * @param clientCert 服务端下发的证书或裸公钥
+   */
+  private deriveEcdhKey;
+}
+//#endregion
+//#region src/platform/douyin/passport/client.d.ts
+/** 与签名里的浏览器环境保持一致的 UA */
+declare const PASSPORT_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36";
+/** passport 接口的通用响应形状 */
+interface PassportPayload {
+  message?: string;
+  error_code?: number;
+  description?: string;
+  data?: Record<string, unknown>;
+}
+interface PassportResponse<T = PassportPayload> {
+  /** HTTP 状态码 */
+  status: number;
+  /** 原始响应体 */
+  raw: string;
+  /** 解析后的 JSON，解析失败时为空对象 */
+  body: T;
+  /** 合并了本次 Set-Cookie 之后的完整 cookie 串 */
+  cookie: string;
+}
+declare class DouyinPassportClient {
+  private readonly requestConfig?;
+  /** 会话 cookie */
+  readonly cookies: CookieJar;
+  /** bd-ticket-guard 设备票据，状态随 cookie 一起流转 */
+  readonly ticketGuard: TicketGuard;
+  /**
+   * @param cookie 已有的会话 cookie 串
+   * @param requestConfig amagi 的请求配置（代理、超时、额外请求头）
+   */
+  constructor(cookie?: string, requestConfig?: RequestConfig | undefined);
+  /** CSRF token：优先用服务端下发的，缺失时本地生成并同步写进 cookie（双提交校验） */
+  private get csrfToken();
+  /**
+   * 初始化登录环境指纹
+   *
+   * 依次请求抖音首页拿 `__ac_nonce`、再向 ttwid 服务注册拿 `ttwid`。两步都是匿名的，
+   * 任意机器、任意系统都能跑；失败不抛错，只会让后续更容易命中风控。
+   */
+  bootstrap(): Promise<void>;
+  /**
+   * 请求 login.douyin.com 的 passport 接口（四重签名 + a_bogus 形态）
+   * @param path 接口路径，如 `/passport/web/get_qrcode/`
+   * @param params 业务参数，并入 query
+   */
+  request<T extends PassportPayload = PassportPayload>(path: string, params?: Record<string, string | number>): Promise<PassportResponse<T>>;
+  /**
+   * 请求 www.douyin.com 的验证页接口（lite 形态：固定 query + 表单 body，无签名）
+   * @param path 接口路径，如 `/passport/web/send_code/`
+   * @param params 业务参数，进 body
+   * @param bizTraceId 业务追踪 ID，同一次验证流程内保持一致
+   */
+  liteRequest<T extends PassportPayload = PassportPayload>(path: string, params: Record<string, string>, bizTraceId: string): Promise<PassportResponse<T>>;
+  /**
+   * 跟随扫码确认后下发的 SSO 跳转链，把最终的登录凭证收进 CookieJar
+   * @param redirectUrl `check_qrconnect` 返回的 redirect_url
+   * @returns 是否拿到登录态 cookie
+   */
+  followSsoRedirect(redirectUrl: string): Promise<boolean>;
+  /** 实际发请求：合并 cookie、消化 Set-Cookie 与 msToken */
+  private send;
+}
+//#endregion
+//#region src/platform/douyin/passport/params.d.ts
+/**
+ * 逐字节异或 5 后转十六进制，SDK 用它编码参数名列表、验证码与密码
+ * @param input 明文
+ */
+declare const xor5Hex: (input: string) => string;
+/** 随机十六进制串，用于 biz_trace_id 一类的追踪 ID */
+declare const randomHex: (length: number) => string;
+/** 当日 UTC 12:00 的秒级时间戳，aid-sign 以此为密钥基准 */
+declare const utcNoonTimestamp: (now?: Date) => number;
+/**
+ * 计算 sign 与 qs
+ * @param params query 参数（仅排序后的前 10 个参与签名）
+ * @param data body 参数，GET 请求传空对象
+ */
+declare const makeSignAndQs: (params: Record<string, unknown>, data?: Record<string, unknown>) => {
+  sign: string;
+  qs: string;
+};
+/**
+ * 计算 `x-tt-passport-aid-sign` 请求头
+ * @param urlPath 接口路径，如 `/passport/web/get_qrcode/`
+ * @param timestamp 当日 UTC 正午时间戳（秒），默认取当前
+ */
+declare const makeAidSign: (urlPath: string, timestamp?: number) => string;
+//#endregion
+//#region src/platform/douyin/passport/types.d.ts
+/** 二维码信息，`get_qrcode` 的解析结果 */
+interface QrcodeInfo {
+  /** 轮询用的二维码令牌 */
+  token: string;
+  /** 二维码承载的内容，优先用它渲染，缺失时回退到 token */
+  content: string;
+  /**
+   * 二维码过期时间，服务端给的是**绝对 Unix 时间戳（秒）**而非时长
+   *
+   * 实测二维码只有约 60 秒有效期，调用方应据此设置扫码等待上限。
+   */
+  expireTime: number;
+}
+/** 二次验证上下文 */
+type VerifyContext = DyPassportVerifyContext;
+/** 单个验证方式 */
+type VerifyWay = DyPassportVerifyWay;
+/** 一次轮询的结果 */
+type PollResult = DyPassportPollResult;
+/** 发送短信验证码的结果 */
+type SendCodeResult = DyPassportSendCodeResult;
+/** 提交短信验证码的结果 */
+type ValidateCodeResult = DyPassportValidateCodeResult;
+//#endregion
+//#region src/platform/douyin/passport/parser.d.ts
+/**
+ * 解析 `get_qrcode` 响应
+ * @param payload 服务端响应体
+ * @returns 二维码信息，缺少 token 时返回 null
+ */
+declare const parseQrcode: (payload: PassportPayload) => QrcodeInfo | null;
+/**
+ * 解析 `check_qrconnect` 响应为状态机可消费的结果
+ * @param payload 服务端响应体
+ */
+declare const parsePollResult: (payload: PassportPayload) => PollResult;
+/**
+ * 解析 `send_code` 响应
+ * @param payload 服务端响应体
+ */
+declare const parseSendCodeResult: (payload: PassportPayload) => SendCodeResult;
+/**
+ * 解析 `validate_code` 响应
+ * @param payload 服务端响应体
+ */
+declare const parseValidateCodeResult: (payload: PassportPayload) => ValidateCodeResult;
+//#endregion
+//#region src/platform/douyin/passport/sm3.d.ts
+/**
+ * SM3 摘要（GM/T 0004-2012），抖音 bdms 签名链使用的变体
+ *
+ * 与标准实现的唯一差异：字符串按 `charCodeAt` 逐字符取字节（非 UTF-8 编码），
+ * 与浏览器里 bdms 的 `strToBytes` 行为一致。签名输入均为 ASCII，实际不会踩到多字节分支，
+ * 但仍保留该分支以保证与浏览器实现逐位一致。
+ */
+/**
+ * 计算 SM3 摘要
+ * @param message 待摘要的字符串或字节数组
+ * @returns 32 字节摘要
+ */
+declare const sm3: (message: string | number[]) => number[];
+/**
+ * 连续两次 SM3（bdms 对 URL 与盐值的处理方式）
+ * @param message 待摘要的字符串或字节数组
+ * @returns 32 字节摘要
+ */
+declare const sm3Twice: (message: string | number[]) => number[];
+/**
+ * 十六进制摘要，仅用于测试与排查
+ * @param message 待摘要的字符串或字节数组
+ */
+declare const sm3Hex: (message: string | number[]) => string;
+declare namespace index_d_exports {
+  export { BDMS_SDK_VERSION, CookieJar, DouyinPassportClient, INTERNAL_PREFIX, PASSPORT_USER_AGENT, PassportPayload, PassportResponse, PollResult, QrcodeInfo, SendCodeResult, TicketGuard, TicketGuardState, ValidateCodeResult, VerifyContext, VerifyWay, aBogus, makeAidSign, makeSignAndQs, parsePollResult, parseQrcode, parseSendCodeResult, parseValidateCodeResult, randomHex, sm3, sm3Hex, sm3Twice, utcNoonTimestamp, xor5Hex };
+}
+//#endregion
+//#region src/model/fetchers/douyin/auth.d.ts
+/**
+ * 判断某个验证方式能否用短信验证码流程完成
+ * @param verifyWay 服务端下发的 verify_way
+ */
+declare const isSmsCodeVerifyWay: (verifyWay: string) => boolean;
+/**
+ * 以下四个别名对应 `DouyinReturnTypeMap` 里的 passport 条目，保留是为了让调用方
+ * 能按 `Douyin<接口名>` 的习惯直接引用，定义本身只有 ReturnDataType 那一份。
+ */
+/** 登录二维码 */
+type DouyinPassportQrcode = DouyinReturnTypeMap['passportQrcode'];
+/** 二维码状态 */
+type DouyinPassportQrcodeStatus = DouyinReturnTypeMap['passportQrcodeStatus'];
+/** 发送短信验证码的结果 */
+type DouyinPassportSendCode = DouyinReturnTypeMap['passportSendCode'];
+/** 提交短信验证码的结果 */
+type DouyinPassportValidateCode = DouyinReturnTypeMap['passportValidateCode'];
+/** 二维码状态查询参数 */
+interface DouyinPassportQrcodeStatusOptions extends BaseRequestOptions {
+  /** `requestPassportQrcode` 返回的令牌 */
+  token: string;
+}
+/** 发送短信验证码参数 */
+interface DouyinPassportSendCodeOptions extends BaseRequestOptions {
+  /** 轮询返回 `status: 'verify'` 时给出的验证上下文 */
+  verify: VerifyContext;
+  /** 追踪 ID，不传则自动生成 */
+  biz_trace_id?: string;
+  /**
+   * 本次使用的验证方式
+   *
+   * 不传则从 `verify.verifyWays` 里自动挑一个能收验证码的。服务端对不同账号会给出
+   * 不同的取值（如 `mobile_sms_verify` 或辅助验证的 `assist_mobile_sms_verify`），
+   * 必须原样回传，写死会导致验证失败。
+   */
+  verify_way?: string;
+}
+/** 提交短信验证码参数 */
+interface DouyinPassportValidateCodeOptions extends DouyinPassportSendCodeOptions {
+  /** 用户收到的 6 位验证码明文 */
+  code: string;
+}
+/**
+ * 申请抖音扫码登录二维码
+ *
+ * 首次调用会自动完成环境指纹初始化（`__ac_nonce` + `ttwid`），无需额外准备。
+ * @param options - 请求选项 (可选)
+ * @param cookie - 已有的会话 Cookie (可选，续用同一会话时传入)
+ * @param requestConfig - 请求配置 (可选)
+ * @returns 二维码令牌、内容与会话 cookie
+ * @example
+ * ```typescript
+ * const qrcode = await requestPassportQrcode()
+ * console.log(qrcode.data.content) // 拿去生成二维码图片
+ * ```
+ */
+declare function requestPassportQrcode<M extends TypeMode = 'loose'>(options?: {
+  typeMode?: M;
+}, cookie?: string, requestConfig?: RequestConfig): Promise<Result<ConditionalReturnType<DouyinReturnTypeMap['passportQrcode'], M>>>;
+/**
+ * 查询抖音扫码登录二维码的状态
+ *
+ * 状态为 `confirmed` 时会自动跟随 SSO 跳转领取登录凭证，返回的 `cookie` 即完整登录态。
+ * @param options - 二维码状态参数
+ * @param options.token - `requestPassportQrcode` 返回的令牌
+ * @param cookie - 会话 Cookie，必须是申请二维码时返回的那一份
+ * @param requestConfig - 请求配置 (可选)
+ * @returns 扫码状态与最新会话 cookie
+ * @example
+ * ```typescript
+ * const status = await checkPassportQrcode({ token }, cookie)
+ * // new 未扫码 / scanned 已扫待确认 / verify 需二次验证 / confirmed 登录成功 / expired 已过期
+ * console.log(status.data.status)
+ * ```
+ */
+declare function checkPassportQrcode<M extends TypeMode = 'loose'>(options: DouyinPassportQrcodeStatusOptions & {
+  typeMode?: M;
+}, cookie?: string, requestConfig?: RequestConfig): Promise<Result<ConditionalReturnType<DouyinReturnTypeMap['passportQrcodeStatus'], M>>>;
+/**
+ * 向账号绑定手机发送二次验证短信验证码
+ *
+ * 用于轮询返回 `status: 'verify'`（即 `error_code=2046` / `account_flow=verify`）的场景。
+ * @param options - 发码参数
+ * @param options.verify - 轮询返回的验证上下文
+ * @param options.biz_trace_id - 追踪 ID (可选，不传自动生成)
+ * @param cookie - 会话 Cookie
+ * @param requestConfig - 请求配置 (可选)
+ * @returns 脱敏手机号、重发等待秒数与追踪 ID
+ */
+declare function sendPassportVerifyCode<M extends TypeMode = 'loose'>(options: DouyinPassportSendCodeOptions & {
+  typeMode?: M;
+}, cookie?: string, requestConfig?: RequestConfig): Promise<Result<ConditionalReturnType<DouyinReturnTypeMap['passportSendCode'], M>>>;
+/**
+ * 提交二次验证的短信验证码
+ * @param options - 验码参数
+ * @param options.verify - 轮询返回的验证上下文
+ * @param options.code - 用户收到的 6 位验证码明文
+ * @param options.biz_trace_id - 必须与发码时用的是同一个
+ * @param cookie - 会话 Cookie
+ * @param requestConfig - 请求配置 (可选)
+ * @returns 验证结果；`wrongCode` 为 true 表示验证码填错，可以让用户重试
+ */
+declare function validatePassportVerifyCode<M extends TypeMode = 'loose'>(options: DouyinPassportValidateCodeOptions & {
+  typeMode?: M;
+}, cookie?: string, requestConfig?: RequestConfig): Promise<Result<ConditionalReturnType<DouyinReturnTypeMap['passportValidateCode'], M>>>;
+//#endregion
 //#region src/model/fetchers/douyin/types.d.ts
 /** 抖音作品请求参数 */
 interface DouyinWorkOptions extends BaseRequestOptions {
@@ -26830,6 +27388,28 @@ interface IDouyinFetcher {
    * 申请抖音登录二维码
    */
   requestLoginQrcode: MethodOverload<DouyinQrcodeOptions, DouyinReturnTypeMap['loginQrcode']>;
+  /**
+   * 申请抖音 passport 扫码登录二维码
+   *
+   * 与 `requestLoginQrcode`（旧的 sso.douyin.com 形态）不同，这一套能走完整的登录流程：
+   * 取码 → 轮询 → 二次验证 → 下发登录 cookie。
+   *
+   * 登录是有会话的：返回的 `cookie` 需要在后续调用中原样传回，因此这几个方法只在
+   * `douyinFetcher` 上提供，不进绑定了固定 cookie 的 `BoundDouyinFetcher`。
+   */
+  requestPassportQrcode: NoParamMethodOverload<DouyinReturnTypeMap['passportQrcode']>;
+  /**
+   * 查询 passport 扫码登录二维码的状态
+   */
+  checkPassportQrcode: MethodOverload<DouyinPassportQrcodeStatusOptions, DouyinReturnTypeMap['passportQrcodeStatus']>;
+  /**
+   * 向账号绑定手机发送二次验证短信验证码
+   */
+  sendPassportVerifyCode: MethodOverload<DouyinPassportSendCodeOptions, DouyinReturnTypeMap['passportSendCode']>;
+  /**
+   * 提交二次验证的短信验证码
+   */
+  validatePassportVerifyCode: MethodOverload<DouyinPassportValidateCodeOptions, DouyinReturnTypeMap['passportValidateCode']>;
   /**
    * 获取抖音表情列表
    */
@@ -27776,6 +28356,7 @@ declare const createAmagiClient: (options?: Options) => {
     /** fetcher */
     fetcher: IBoundDouyinFetcher;
     sign: typeof douyinSign;
+    passport: typeof index_d_exports;
     douyinApiUrls: typeof douyinApiUrls;
   };
   bilibili: {
@@ -28010,6 +28591,13 @@ declare const createDouyinRoutes: (cookie: string, requestConfig?: RequestConfig
 type douyinUtilsModel = {
   /** 签名算法相关 */
   sign: typeof douyinSign;
+  /**
+   * passport 扫码登录协议（签名、CookieJar、响应解析）
+   *
+   * 日常调用请优先用 `douyinFetcher` 上的 `requestPassportQrcode` 等方法，
+   * 这里暴露的是底层构件，便于自行编排或做单元测试。
+   */
+  passport: typeof index_d_exports;
   /**
    * 该类下的所有方法只会返回拼接好参数后的 Url 地址，需要手动请求该地址以获取数据
    *
@@ -28752,4 +29340,4 @@ declare const CreateApp: AmagiConstructor;
 declare const Client: typeof CreateApp;
 declare const amagi: typeof Client;
 //#endregion
-export { APIErrorType, AdditionalType, AmagiEventMap, AmagiEventType, type AnonymousFetcherRequestConfig, type ApiEndpoint, ApiError, ApiErrorEventData, ApiSuccessEventData, ArticleCard, ArticleContent, ArticleInfo, ArticleWork, BaseRequestOptions, BaseResponse, BiliAv2Bv, BiliBangumiVideoInfo, BiliBangumiVideoPlayurlIsLogin, BiliBangumiVideoPlayurlNoLogin, BiliBiliVideoPlayurlNoLogin, BiliBv2AV, BiliCheckQrcode, BiliCommentReply, BiliDynamicInfo, BiliDynamicInfoUnion, BiliEmojiList, BiliLiveRoomDef, BiliLiveRoomDetail, BiliNewLoginQrcode, BiliOneWork, BiliProtobufDanmaku, BiliUserDynamic, BiliUserFullView, BiliUserLiveStatus, BiliUserProfile, BiliVideoPlayurlIsLogin, BiliWorkComments, BilibiliApiRoutes, type BilibiliApplyCaptchaOptions, BilibiliApplyCaptchaParamsSchema, type BilibiliArticleCardOptions, BilibiliArticleCardParamsSchema, BilibiliArticleInfoParamsSchema, type BilibiliArticleOptions, BilibiliArticleParamsSchema, type BilibiliAv2BvOptions, BilibiliAv2BvParamsSchema, type BilibiliBangumiInfoOptions, BilibiliBangumiInfoParamsSchema, type BilibiliBangumiStreamOptions, BilibiliBangumiStreamParamsSchema, type BilibiliBv2AvOptions, BilibiliBv2AvParamsSchema, BilibiliColumnInfoParamsSchema, BilibiliCommentParamsSchema, type BilibiliCommentRepliesOptions, BilibiliCommentReplyParamsSchema, type BilibiliCommentsOptions, type BilibiliDanmakuOptions, BilibiliDanmakuParamsSchema, BilibiliDataOptions, BilibiliDataOptionsMap, type BilibiliDynamicOptions, BilibiliDynamicParamsSchema, BilibiliEmojiParamsSchema, type BilibiliFetcher, BilibiliFetcherMethodKey, BilibiliFetcherMethods, BilibiliInternalMethodKey, BilibiliInternalMethods, BilibiliLiveParamsSchema, type BilibiliLiveRoomOptions, BilibiliLoginParamsSchema, type BilibiliMethodKey, BilibiliMethodMapping, BilibiliMethodOptMap, BilibiliMethodOptionsMap, BilibiliMethodRoutes, BilibiliMethodToFetcher, BilibiliMethodType, type BilibiliMethodValue, BilibiliQrcodeParamsSchema, type BilibiliQrcodeStatusOptions, BilibiliQrcodeStatusParamsSchema, BilibiliReturnTypeMap, type BilibiliUserOptions, BilibiliUserParamsSchema, type BilibiliValidateCaptchaOptions, BilibiliValidateCaptchaParamsSchema, BilibiliValidationSchemas, BilibiliVideoDownloadParamsSchema, type BilibiliVideoInfoOptions, BilibiliVideoParamsSchema, type BilibiliVideoStreamOptions, type BoundBilibiliFetcher, type BoundDouyinFetcher, type BoundKuaishouFetcher, type BoundXiaohongshuFetcher, ColumnInfo, CommentReply, CommentType, ConditionalReturnType, CookieConfig, CreateApp, DouyinApiRoutes, DouyinCommentParamsSchema, type DouyinCommentRepliesOptions, DouyinCommentReplyParamsSchema, type DouyinCommentsOptions, type DouyinDanmakuOptions, DouyinDanmakuParamsSchema, DouyinDataOptions, DouyinDataOptionsMap, DouyinEmojiListParamsSchema, DouyinEmojiProParamsSchema, type DouyinFetcher, DouyinFetcherMethodKey, DouyinFetcherMethods, DouyinHotWordsParamsSchema, DouyinInternalMethodKey, DouyinInternalMethods, type DouyinLiveRoomOptions, DouyinLiveRoomParamsSchema, type DouyinMethodKey, DouyinMethodMapping, DouyinMethodOptMap, DouyinMethodOptionsMap, DouyinMethodRoutes, DouyinMethodToFetcher, DouyinMethodType, type DouyinMethodValue, type DouyinMusicOptions, DouyinMusicParamsSchema, type DouyinQrcodeOptions, DouyinQrcodeParamsSchema, DouyinReturnTypeMap, type DouyinSearchOptions, DouyinSearchParamsSchema, type DouyinSuggestWordsOptions, type DouyinUserListOptions, DouyinUserListParamsSchema, type DouyinUserOptions, DouyinUserParamsSchema, DouyinValidationSchemas, type DouyinWorkOptions, DouyinWorkParamsSchema, DyDanmakuList, DyEmojiList, DyEmojiProList, DyImageAlbumWork, DyMusicWork, DySearchInfo, DySlidesWork, DySuggestWords, DyUserInfo, DyUserLiveVideos, DyUserPostVideos, DyVideoWork, DyWorkComments, DynamicType, DynamicTypeAV, DynamicTypeArticle, DynamicTypeDraw, DynamicTypeForward, DynamicTypeForwardUnion, DynamicTypeLiveRcmd, DynamicTypeWord, ErrorResult, ExtractTypeMode, FetcherConfig, type FetcherCookieForRequestConfig, type FetcherRequestConfigWithCookie, type FetcherRequestConfigWithoutCookie, HomeFeed, type HttpMethod, HttpRequestEventData, HttpResponseEventData, type IBilibiliFetcher, type IBoundBilibiliFetcher, type IBoundDouyinFetcher, type IBoundKuaishouFetcher, type IBoundXiaohongshuFetcher, type IDouyinFetcher, type IKuaishouFetcher, type IXiaohongshuFetcher, type KsBannedStatus, KsEmojiList, KsLiveRoomInfo, KsOneWork, type KsUserHomeWork, KsUserProfile, type KsUserProfileCounts, type KsUserProfileGameInfo, type KsUserProfileLiveInfo, type KsUserProfileSensitiveInfo, type KsUserProfileUserInfo, KsUserWorkList, type KsVerifiedStatus, KsWorkComments, KuaishouApiRoutes, KuaishouCommentParamsSchema, type KuaishouCommentsOptions, KuaishouDataOptions, KuaishouDataOptionsMap, KuaishouEmojiParamsSchema, type KuaishouFetcher, KuaishouFetcherMethodKey, KuaishouFetcherMethods, type KuaishouGraphqlRequest, KuaishouInternalMethodKey, KuaishouInternalMethods, type KuaishouLiveApiRequest, type KuaishouLiveRoomInfoOptions, KuaishouLiveRoomInfoParamsSchema, type KuaishouMethodKey, KuaishouMethodMapping, KuaishouMethodOptMap, KuaishouMethodOptionsMap, KuaishouMethodRoutes, KuaishouMethodToFetcher, KuaishouMethodType, type KuaishouMethodValue, KuaishouReturnTypeMap, type KuaishouUserProfileOptions, KuaishouUserProfileParamsSchema, type KuaishouUserWorkListOptions, KuaishouUserWorkListParamsSchema, KuaishouValidationSchemas, KuaishouVideoParamsSchema, type KuaishouVideoWorkOptions, LogEventData, MajorType, MethodMaps, NetworkErrorEventData, NetworkRetryEventData, type NetworksConfigType, NoteComments, OmitMethodType, OneNote, Options, type Platform, RequestConfig, Result, SearchInfoGeneralData, SearchInfoUser, SearchInfoVideo, SearchNotes, SuccessResult, TypeControl, TypeMode, ValidationError, XiaohongshuApiRoutes, type XiaohongshuCommentsOptions, XiaohongshuDataOptions, XiaohongshuDataOptionsMap, XiaohongshuEmojiList, type XiaohongshuFetcher, XiaohongshuFetcherMethodKey, XiaohongshuFetcherMethods, type XiaohongshuHomeFeedOptions, XiaohongshuInternalMethodKey, XiaohongshuInternalMethods, type XiaohongshuMethodKey, XiaohongshuMethodMapping, XiaohongshuMethodOptMap, XiaohongshuMethodOptionsMap, XiaohongshuMethodRoutes, XiaohongshuMethodToFetcher, XiaohongshuMethodType, type XiaohongshuMethodValue, type XiaohongshuNoteDetailOptions, XiaohongshuReturnTypeMap, type XiaohongshuSearchNotesOptions, type XiaohongshuUserNotesOptions, XiaohongshuUserProfile, type XiaohongshuUserProfileOptions, XiaohongshuValidationSchemas, amagi, amagiEvents, av2bv, bilibiliApiUrls, bilibiliErrorCodeMap, bilibiliFetcher, bilibiliUtils, bv2av, createAmagiClient, createBilibiliRoutes, createBilibiliRoutes as registerBilibiliRoutes, createBoundBilibiliFetcher, createBoundDouyinFetcher, createBoundKuaishouFetcher, createBoundXiaohongshuFetcher, createDouyinRoutes, createDouyinRoutes as registerDouyinRoutes, createErrorResponse, createKuaishouRoutes, createKuaishouRoutes as registerKuaishouRoutes, createSuccessResponse, createXiaohongshuRoutes, createXiaohongshuRoutes as registerXiaohongshuRoutes, douyinApiUrls, douyinFetcher, douyinSign, douyinUtils, emitApiError, emitApiSuccess, emitHttpRequest, emitHttpResponse, emitLog, emitLogDebug, emitLogError, emitLogInfo, emitLogMark, emitLogWarn, emitNetworkError, emitNetworkRetry, fetchData, fetchResponse, getApiRoute, getEnglishMethodName, getHeadersAndData, handleError, isNetworkErrorResult, kuaishouApiUrls, kuaishouFetcher, kuaishouSign, kuaishouUtils, parseDmSegMobileReply, qtparam, toFetcherMethod, validateBilibiliParams, validateDouyinParams, validateKuaishouParams, validateXiaohongshuParams, wbi_sign, xiaohongshuApiUrls, xiaohongshuFetcher, xiaohongshuSign, xiaohongshuUtils };
+export { APIErrorType, AdditionalType, AmagiEventMap, AmagiEventType, type AnonymousFetcherRequestConfig, type ApiEndpoint, ApiError, ApiErrorEventData, ApiSuccessEventData, ArticleCard, ArticleContent, ArticleInfo, ArticleWork, BaseRequestOptions, BaseResponse, BiliAv2Bv, BiliBangumiVideoInfo, BiliBangumiVideoPlayurlIsLogin, BiliBangumiVideoPlayurlNoLogin, BiliBiliVideoPlayurlNoLogin, BiliBv2AV, BiliCheckQrcode, BiliCommentReply, BiliDynamicInfo, BiliDynamicInfoUnion, BiliEmojiList, BiliLiveRoomDef, BiliLiveRoomDetail, BiliNewLoginQrcode, BiliOneWork, BiliProtobufDanmaku, BiliUserDynamic, BiliUserFullView, BiliUserLiveStatus, BiliUserProfile, BiliVideoPlayurlIsLogin, BiliWorkComments, BilibiliApiRoutes, type BilibiliApplyCaptchaOptions, BilibiliApplyCaptchaParamsSchema, type BilibiliArticleCardOptions, BilibiliArticleCardParamsSchema, BilibiliArticleInfoParamsSchema, type BilibiliArticleOptions, BilibiliArticleParamsSchema, type BilibiliAv2BvOptions, BilibiliAv2BvParamsSchema, type BilibiliBangumiInfoOptions, BilibiliBangumiInfoParamsSchema, type BilibiliBangumiStreamOptions, BilibiliBangumiStreamParamsSchema, type BilibiliBv2AvOptions, BilibiliBv2AvParamsSchema, BilibiliColumnInfoParamsSchema, BilibiliCommentParamsSchema, type BilibiliCommentRepliesOptions, BilibiliCommentReplyParamsSchema, type BilibiliCommentsOptions, type BilibiliDanmakuOptions, BilibiliDanmakuParamsSchema, BilibiliDataOptions, BilibiliDataOptionsMap, type BilibiliDynamicOptions, BilibiliDynamicParamsSchema, BilibiliEmojiParamsSchema, type BilibiliFetcher, BilibiliFetcherMethodKey, BilibiliFetcherMethods, BilibiliInternalMethodKey, BilibiliInternalMethods, BilibiliLiveParamsSchema, type BilibiliLiveRoomOptions, BilibiliLoginParamsSchema, type BilibiliMethodKey, BilibiliMethodMapping, BilibiliMethodOptMap, BilibiliMethodOptionsMap, BilibiliMethodRoutes, BilibiliMethodToFetcher, BilibiliMethodType, type BilibiliMethodValue, BilibiliQrcodeParamsSchema, type BilibiliQrcodeStatusOptions, BilibiliQrcodeStatusParamsSchema, BilibiliReturnTypeMap, type BilibiliUserOptions, BilibiliUserParamsSchema, type BilibiliValidateCaptchaOptions, BilibiliValidateCaptchaParamsSchema, BilibiliValidationSchemas, BilibiliVideoDownloadParamsSchema, type BilibiliVideoInfoOptions, BilibiliVideoParamsSchema, type BilibiliVideoStreamOptions, type BoundBilibiliFetcher, type BoundDouyinFetcher, type BoundKuaishouFetcher, type BoundXiaohongshuFetcher, ColumnInfo, CommentReply, CommentType, ConditionalReturnType, CookieConfig, CreateApp, DouyinApiRoutes, DouyinCommentParamsSchema, type DouyinCommentRepliesOptions, DouyinCommentReplyParamsSchema, type DouyinCommentsOptions, type DouyinDanmakuOptions, DouyinDanmakuParamsSchema, DouyinDataOptions, DouyinDataOptionsMap, DouyinEmojiListParamsSchema, DouyinEmojiProParamsSchema, type DouyinFetcher, DouyinFetcherMethodKey, DouyinFetcherMethods, DouyinHotWordsParamsSchema, DouyinInternalMethodKey, DouyinInternalMethods, type DouyinLiveRoomOptions, DouyinLiveRoomParamsSchema, type DouyinMethodKey, DouyinMethodMapping, DouyinMethodOptMap, DouyinMethodOptionsMap, DouyinMethodRoutes, DouyinMethodToFetcher, DouyinMethodType, type DouyinMethodValue, type DouyinMusicOptions, DouyinMusicParamsSchema, type PollResult as DouyinPassportPollResult, type DouyinPassportQrcode, type QrcodeInfo as DouyinPassportQrcodeInfo, type DouyinPassportQrcodeStatus, type DouyinPassportQrcodeStatusOptions, type DouyinPassportSendCode, type DouyinPassportSendCodeOptions, type SendCodeResult as DouyinPassportSendCodeResult, type DouyinPassportValidateCode, type DouyinPassportValidateCodeOptions, type ValidateCodeResult as DouyinPassportValidateCodeResult, type VerifyContext as DouyinPassportVerifyContext, type VerifyWay as DouyinPassportVerifyWay, type DouyinQrcodeOptions, DouyinQrcodeParamsSchema, DouyinReturnTypeMap, type DouyinSearchOptions, DouyinSearchParamsSchema, type DouyinSuggestWordsOptions, type DouyinUserListOptions, DouyinUserListParamsSchema, type DouyinUserOptions, DouyinUserParamsSchema, DouyinValidationSchemas, type DouyinWorkOptions, DouyinWorkParamsSchema, DyDanmakuList, DyEmojiList, DyEmojiProList, DyImageAlbumWork, DyMusicWork, DyPassportPollResult, DyPassportQrcode, DyPassportQrcodeStatus, DyPassportSendCode, DyPassportSendCodeResult, DyPassportValidateCode, DyPassportValidateCodeResult, DyPassportVerifyContext, DyPassportVerifyWay, DySearchInfo, DySlidesWork, DySuggestWords, DyUserInfo, DyUserLiveVideos, DyUserPostVideos, DyVideoWork, DyWorkComments, DynamicType, DynamicTypeAV, DynamicTypeArticle, DynamicTypeDraw, DynamicTypeForward, DynamicTypeForwardUnion, DynamicTypeLiveRcmd, DynamicTypeWord, ErrorResult, ExtractTypeMode, FetcherConfig, type FetcherCookieForRequestConfig, type FetcherRequestConfigWithCookie, type FetcherRequestConfigWithoutCookie, HomeFeed, type HttpMethod, HttpRequestEventData, HttpResponseEventData, type IBilibiliFetcher, type IBoundBilibiliFetcher, type IBoundDouyinFetcher, type IBoundKuaishouFetcher, type IBoundXiaohongshuFetcher, type IDouyinFetcher, type IKuaishouFetcher, type IXiaohongshuFetcher, type KsBannedStatus, KsEmojiList, KsLiveRoomInfo, KsOneWork, type KsUserHomeWork, KsUserProfile, type KsUserProfileCounts, type KsUserProfileGameInfo, type KsUserProfileLiveInfo, type KsUserProfileSensitiveInfo, type KsUserProfileUserInfo, KsUserWorkList, type KsVerifiedStatus, KsWorkComments, KuaishouApiRoutes, KuaishouCommentParamsSchema, type KuaishouCommentsOptions, KuaishouDataOptions, KuaishouDataOptionsMap, KuaishouEmojiParamsSchema, type KuaishouFetcher, KuaishouFetcherMethodKey, KuaishouFetcherMethods, type KuaishouGraphqlRequest, KuaishouInternalMethodKey, KuaishouInternalMethods, type KuaishouLiveApiRequest, type KuaishouLiveRoomInfoOptions, KuaishouLiveRoomInfoParamsSchema, type KuaishouMethodKey, KuaishouMethodMapping, KuaishouMethodOptMap, KuaishouMethodOptionsMap, KuaishouMethodRoutes, KuaishouMethodToFetcher, KuaishouMethodType, type KuaishouMethodValue, KuaishouReturnTypeMap, type KuaishouUserProfileOptions, KuaishouUserProfileParamsSchema, type KuaishouUserWorkListOptions, KuaishouUserWorkListParamsSchema, KuaishouValidationSchemas, KuaishouVideoParamsSchema, type KuaishouVideoWorkOptions, LogEventData, MajorType, MethodMaps, NetworkErrorEventData, NetworkRetryEventData, type NetworksConfigType, NoteComments, OmitMethodType, OneNote, Options, type Platform, RequestConfig, Result, SearchInfoGeneralData, SearchInfoUser, SearchInfoVideo, SearchNotes, SuccessResult, TypeControl, TypeMode, ValidationError, XiaohongshuApiRoutes, type XiaohongshuCommentsOptions, XiaohongshuDataOptions, XiaohongshuDataOptionsMap, XiaohongshuEmojiList, type XiaohongshuFetcher, XiaohongshuFetcherMethodKey, XiaohongshuFetcherMethods, type XiaohongshuHomeFeedOptions, XiaohongshuInternalMethodKey, XiaohongshuInternalMethods, type XiaohongshuMethodKey, XiaohongshuMethodMapping, XiaohongshuMethodOptMap, XiaohongshuMethodOptionsMap, XiaohongshuMethodRoutes, XiaohongshuMethodToFetcher, XiaohongshuMethodType, type XiaohongshuMethodValue, type XiaohongshuNoteDetailOptions, XiaohongshuReturnTypeMap, type XiaohongshuSearchNotesOptions, type XiaohongshuUserNotesOptions, XiaohongshuUserProfile, type XiaohongshuUserProfileOptions, XiaohongshuValidationSchemas, amagi, amagiEvents, av2bv, bilibiliApiUrls, bilibiliErrorCodeMap, bilibiliFetcher, bilibiliUtils, bv2av, checkPassportQrcode, createAmagiClient, createBilibiliRoutes, createBilibiliRoutes as registerBilibiliRoutes, createBoundBilibiliFetcher, createBoundDouyinFetcher, createBoundKuaishouFetcher, createBoundXiaohongshuFetcher, createDouyinRoutes, createDouyinRoutes as registerDouyinRoutes, createErrorResponse, createKuaishouRoutes, createKuaishouRoutes as registerKuaishouRoutes, createSuccessResponse, createXiaohongshuRoutes, createXiaohongshuRoutes as registerXiaohongshuRoutes, douyinApiUrls, douyinFetcher, index_d_exports as douyinPassport, douyinSign, douyinUtils, emitApiError, emitApiSuccess, emitHttpRequest, emitHttpResponse, emitLog, emitLogDebug, emitLogError, emitLogInfo, emitLogMark, emitLogWarn, emitNetworkError, emitNetworkRetry, fetchData, fetchResponse, getApiRoute, getEnglishMethodName, getHeadersAndData, handleError, isNetworkErrorResult, isSmsCodeVerifyWay, kuaishouApiUrls, kuaishouFetcher, kuaishouSign, kuaishouUtils, parseDmSegMobileReply, qtparam, requestPassportQrcode, sendPassportVerifyCode, toFetcherMethod, validateBilibiliParams, validateDouyinParams, validateKuaishouParams, validatePassportVerifyCode, validateXiaohongshuParams, wbi_sign, xiaohongshuApiUrls, xiaohongshuFetcher, xiaohongshuSign, xiaohongshuUtils };
