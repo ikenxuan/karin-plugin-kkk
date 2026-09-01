@@ -517,9 +517,13 @@ export class DouYin extends Base {
         let FPS
         const sendvideofile = true
         type VideoType = DyVideoWork['aweme_detail']['video']
-        let video: VideoType = VideoData.data.aweme_detail.video.bit_rate[0]
+        /**
+         * 图文/文章作品的 video 字段不含 bit_rate，不能无条件初始化，
+         * 否则会在这里直接抛 TypeError；仅在视频分支内赋值，其余场景保持 null。
+         */
+        let video: VideoType | null = null
         /** 按画质偏好选中、即将下载发送的那一路视频源 */
-        let selectedVideo: dyVideo = video.bit_rate[0]
+        let selectedVideo: dyVideo | null = null
         if (isVideo) {
           // 视频地址特殊判断：play_addr_h264、play_addr、
           video = VideoData.data.aweme_detail.video as VideoType
@@ -533,7 +537,10 @@ export class DouYin extends Base {
           // 只把选中项取到局部变量，不再原地覆盖 video.bit_rate：
           // video 是 aweme_detail.video 的同一个引用，覆盖它会把整个作品详情的视频源列表截断成一项，
           // 污染后面所有拿 Detail_Data 的下游（渲染、推送复用）。
-          selectedVideo = douyinProcessVideos(video.bit_rate, Config.douyin.videoQuality, Config.douyin.maxAutoVideoSize)[0]
+          selectedVideo = douyinProcessVideos(video.bit_rate, Config.douyin.videoQuality, Config.douyin.maxAutoVideoSize)[0] ?? null
+          if (!selectedVideo) {
+            throw new Error(`未找到可用的视频源，aweme_id=${VideoData.data.aweme_detail.aweme_id}`)
+          }
           // url_list[2] 是 www.douyin.com/aweme/v1/play 的包装 URL，会按 Douyin 负载均衡 302
           // 到任意 CDN，部分 CDN（如 cjjd14.com、n98-v-ncdnon）返回非 MP4 乱码字节。
           // 直接用 url_list[0] 的签名直链规避包装跳转。
