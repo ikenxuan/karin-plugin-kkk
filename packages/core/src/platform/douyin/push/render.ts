@@ -1,4 +1,4 @@
-import type { DyUserInfo, Result } from '@ikenxuan/amagi'
+import type { AmagiSuccess, DyUserInfo } from '@ikenxuan/amagi'
 import {
   createHashtagNode,
   createLineBreakNode,
@@ -325,7 +325,7 @@ async function resolveMentionTokens(
     uniqueSecUids.map(async (secUid) => {
       if (mentionCache.has(secUid)) return
       try {
-        const userInfo = await douyinFetcher.fetchUserProfile({ sec_uid: secUid, typeMode: 'strict' })
+        const userInfo = await douyinFetcher.fetchUserProfile({ sec_uid: secUid })
         const user = userInfo.data.user
         const nickname = user.nickname?.trim()
         mentionCache.set(secUid, user.sec_uid === secUid && nickname ? `@${nickname}` : null)
@@ -629,7 +629,7 @@ export interface RenderFavoriteRecommendOptions {
   /** Karin 消息事件 */
   e: Message
   /** 作品详情数据，必带 user_info（订阅者/推荐者）、author（作品作者），可选 author_user_info（作者主页信息） */
-  Detail_Data: DouyinWorkDetailData & { user_info: Result<DyUserInfo> }
+  Detail_Data: DouyinWorkDetailData & { user_info: AmagiSuccess<DyUserInfo> }
   /** 作品创建时间（Unix 时间戳，秒） */
   create_time: number
   /** 分享链接地址 */

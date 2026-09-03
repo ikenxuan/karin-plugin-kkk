@@ -1,4 +1,4 @@
-import type { DyUserInfo, DyUserLiveVideos, DyVideoWork, Result } from '@ikenxuan/amagi'
+import type { AmagiSuccess, DyUserInfo, DyUserLiveVideos, DyVideoWork } from '@ikenxuan/amagi'
 
 type AwemeDetail = DyVideoWork['aweme_detail']
 
@@ -88,23 +88,23 @@ export interface DouyinWorkDetailData {
   }
   cooperation_info?: DouyinCooperationInfo
   /** 流程附加：作品作者/订阅者主页信息（解析与作品列表推送场景注入） */
-  user_info?: Result<DyUserInfo>
+  user_info?: AmagiSuccess<DyUserInfo>
   /** 流程附加：喜欢/推荐列表场景下作品作者的主页信息 */
-  author_user_info?: Result<DyUserInfo>
+  author_user_info?: AmagiSuccess<DyUserInfo>
   [key: string]: any
 }
 
 /** 直播推送的详情数据（非 aweme 结构） */
 export interface DouyinLiveDetailData {
   /** 主播主页信息 */
-  user_info: Result<DyUserInfo>
+  user_info: AmagiSuccess<DyUserInfo>
   /** 直播间信息，由 user_info.data.user.room_data JSON 解析而来 */
   room_data?: {
     owner: { web_rid: string }
     [key: string]: any
   }
   /** 直播间详情接口返回 */
-  live_data?: Result<DyUserLiveVideos>
+  live_data?: AmagiSuccess<DyUserLiveVideos>
   /** 本次推送的直播状态标记 */
   liveStatus?: {
     liveStatus: 'open' | 'close'
@@ -121,7 +121,7 @@ export interface DouyinLiveDetailData {
  * @param aweme - amagi 返回的作品详情（aweme_detail 或作品列表项）
  * @param extra - 流程附加字段（作者/订阅者主页信息）
  */
-export const buildDouyinWorkDetail = <E extends { user_info?: Result<DyUserInfo>; author_user_info?: Result<DyUserInfo> }>(
+export const buildDouyinWorkDetail = <E extends { user_info?: AmagiSuccess<DyUserInfo>; author_user_info?: AmagiSuccess<DyUserInfo> }>(
   aweme: unknown,
   extra: E = {} as E
 ): DouyinWorkDetailData & E => ({ ...(aweme as object), ...extra }) as DouyinWorkDetailData & E

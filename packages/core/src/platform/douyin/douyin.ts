@@ -63,8 +63,7 @@ export class DouYin extends Base {
     switch (this.type) {
       case 'one_work': {
         const VideoData = await this.amagi.douyin.fetcher.parseWork({
-          aweme_id: data.aweme_id,
-          typeMode: 'strict'
+          aweme_id: data.aweme_id
         })
 
         if (VideoData.data.aweme_detail === null) {
@@ -78,8 +77,7 @@ export class DouYin extends Base {
 
         const CommentsData = await this.amagi.douyin.fetcher.fetchWorkComments({
           aweme_id: data.aweme_id,
-          number: Config.douyin.numcomment,
-          typeMode: 'strict'
+          number: Config.douyin.numcomment
         })
         this.is_slides = VideoData.data.aweme_detail.is_slides === true
         let g_video_url = ''
@@ -580,8 +578,7 @@ export class DouYin extends Base {
           } else {
             const aweme = VideoData.data.aweme_detail
             const userProfile = await this.amagi.douyin.fetcher.fetchUserProfile({
-              sec_uid: aweme.author.sec_uid,
-              typeMode: 'strict'
+              sec_uid: aweme.author.sec_uid
             })
             // 非视频作品使用不带追踪参数的规范短链接，避免二维码内容过长影响扫描识别。
             const shareLink =
@@ -604,7 +601,7 @@ export class DouYin extends Base {
         }
 
         if (Config.douyin.sendContent.includes('comment')) {
-          const EmojiData = await this.amagi.douyin.fetcher.fetchEmojiList({ typeMode: 'strict' })
+          const EmojiData = await this.amagi.douyin.fetcher.fetchEmojiList()
           const list = Emoji(EmojiData.data)
           const douyinCommentsRes = await douyinComments(CommentsData, list)
           if (!douyinCommentsRes.CommentsData.length) {
@@ -677,8 +674,7 @@ export class DouYin extends Base {
               logger.debug(`[抖音] 视频时长: ${duration}ms, 开始获取弹幕数据`)
               const danmakuData = await this.amagi.douyin.fetcher.fetchDanmakuList({
                 aweme_id: data.aweme_id,
-                duration,
-                typeMode: 'strict'
+                duration
               })
               if (danmakuData.data?.danmaku_list) {
                 danmakuList = danmakuData.data.danmaku_list
@@ -748,12 +744,10 @@ export class DouYin extends Base {
 
       case 'user_dynamic': {
         const rawData = await this.amagi.douyin.fetcher.fetchUserVideoList({
-          sec_uid: data.sec_uid,
-          typeMode: 'strict'
+          sec_uid: data.sec_uid
         })
         const userProfileData = await this.amagi.douyin.fetcher.fetchUserProfile({
-          sec_uid: data.sec_uid,
-          typeMode: 'strict'
+          sec_uid: data.sec_uid
         })
 
         const user = userProfileData.data.user
@@ -862,11 +856,10 @@ export class DouYin extends Base {
       }
       case 'music_work': {
         const MusicData = await this.amagi.douyin.fetcher.fetchMusicInfo({
-          music_id: data.music_id,
-          typeMode: 'strict'
+          music_id: data.music_id
         })
         const sec_uid = MusicData.data.music_info.sec_uid
-        const UserData = await this.amagi.douyin.fetcher.fetchUserProfile({ sec_uid, typeMode: 'strict' })
+        const UserData = await this.amagi.douyin.fetcher.fetchUserProfile({ sec_uid })
         // if (UserData.data.status_code === 2) {
         //   const new_UserData.data = await getDouyinData('搜索数据', Config.cookies.douyin, { query: data.music_info.author })
         //   if (new_UserData.data.data[0].type === 4 && new_UserData.data.data[0].card_unique_name === 'user') {
@@ -914,8 +907,7 @@ export class DouYin extends Base {
       }
       case 'live_room_detail': {
         const UserInfoData = await this.amagi.douyin.fetcher.fetchUserProfile({
-          sec_uid: data.sec_uid,
-          typeMode: 'strict'
+          sec_uid: data.sec_uid
         })
         if (UserInfoData.data.user.live_status === 1) {
           // 直播中
@@ -929,8 +921,7 @@ export class DouYin extends Base {
           const room_data = JSON.parse(UserInfoData.data.user.room_data)
           const live_data = await this.amagi.douyin.fetcher.fetchLiveRoomInfo({
             room_id: UserInfoData.data.user.room_id_str,
-            web_rid: room_data.owner.web_rid,
-            typeMode: 'strict'
+            web_rid: room_data.owner.web_rid
           })
           const liveItem = live_data.data.data[0]
           const user = UserInfoData.data.user

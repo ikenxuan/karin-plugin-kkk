@@ -1,4 +1,4 @@
-import { DyUserInfo, Result } from '@ikenxuan/amagi'
+import { AmagiSuccess, DyUserInfo } from '@ikenxuan/amagi'
 import { format, fromUnixTime } from 'date-fns'
 import { logger } from 'node-karin'
 
@@ -16,7 +16,7 @@ import type { DouyinWorkPushItem } from './types'
 export async function processPostList(
   contentList: any[],
   sec_uid: string,
-  userinfo: Result<DyUserInfo>,
+  userinfo: AmagiSuccess<DyUserInfo>,
   item: douyinPushItem,
   targets: Array<{ groupId: string; botId: string }>
 ): Promise<DouyinWorkPushItem[]> {
