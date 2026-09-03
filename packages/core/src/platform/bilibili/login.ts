@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 
-import { BiliCheckQrcode, Result } from '@ikenxuan/amagi'
+import { AmagiSuccess, BiliCheckQrcode } from '@ikenxuan/amagi'
 import type { Message } from 'node-karin'
 import { common } from 'node-karin'
 
@@ -12,7 +12,7 @@ import { Config } from '@/module/utils/Config'
 /** B站登录 */
 export const bilibiliLogin = async (e: Message) => {
   /** 申请二维码 */
-  const qrcodeurl = await bilibiliFetcher.requestLoginQrcode({ typeMode: 'strict' })
+  const qrcodeurl = await bilibiliFetcher.requestLoginQrcode()
   const qrimg = await Render(e, 'bilibili/qrcodeImg', {
     share_url: qrcodeurl.data.data.url,
     avatarUrl: await resolveTriggerAvatarUrl(e)
@@ -46,7 +46,7 @@ export const bilibiliLogin = async (e: Message) => {
     )
   }
 
-  const handleLoginSuccess = async (responseData: Result<BiliCheckQrcode>) => {
+  const handleLoginSuccess = async (responseData: AmagiSuccess<BiliCheckQrcode>) => {
     const setCookieHeader = responseData.data.data.headers['set-cookie']
 
     let cookieString: string
@@ -93,7 +93,7 @@ export const bilibiliLogin = async (e: Message) => {
 
   while (true) {
     try {
-      const qrcodeStatusData = await bilibiliFetcher.checkQrcodeStatus({ qrcode_key, typeMode: 'strict' })
+      const qrcodeStatusData = await bilibiliFetcher.checkQrcodeStatus({ qrcode_key })
       const statusCode = qrcodeStatusData.data.data.data.code
 
       switch (statusCode) {

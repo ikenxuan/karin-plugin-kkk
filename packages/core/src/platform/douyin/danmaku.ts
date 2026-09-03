@@ -373,7 +373,7 @@ export async function getDouyinResolution(path: string): Promise<{ width: number
  */
 async function fetchDouyinEmojiList(): Promise<DouyinEmojiInfo[]> {
   try {
-    const res = await douyinFetcher.fetchEmojiList({ typeMode: 'strict' })
+    const res = await douyinFetcher.fetchEmojiList()
     const list: DyEmojiList['emoji_list'] = res.data?.emoji_list ?? []
     return list
       .map((item) => ({ name: item.display_name, url: item.emoji_url?.url_list?.[0] ?? '' }))

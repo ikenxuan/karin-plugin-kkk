@@ -1,4 +1,4 @@
-import { DyUserInfo, Result } from '@ikenxuan/amagi'
+import { AmagiSuccess, DyUserInfo } from '@ikenxuan/amagi'
 import { logger } from 'node-karin'
 
 import { douyinDB } from '@/module'
@@ -16,7 +16,7 @@ import type { DouyinWorkPushItem } from './types'
 export async function processFavoriteList(
   contentList: any[],
   sec_uid: string,
-  userinfo: Result<DyUserInfo>,
+  userinfo: AmagiSuccess<DyUserInfo>,
   item: douyinPushItem,
   targets: Array<{ groupId: string; botId: string }>,
   force: boolean = false
@@ -56,12 +56,11 @@ export async function processFavoriteList(
     }
 
     // 获取作品作者的用户信息
-    let authorUserInfo: Result<DyUserInfo> | undefined
+    let authorUserInfo: AmagiSuccess<DyUserInfo> | undefined
     try {
       if (aweme.author?.sec_uid) {
         authorUserInfo = await douyinFetcher.fetchUserProfile({
-          sec_uid: aweme.author.sec_uid,
-          typeMode: 'strict'
+          sec_uid: aweme.author.sec_uid
         })
         logger.debug(`获取作品作者 ${aweme.author.nickname} 的用户信息成功`)
       }

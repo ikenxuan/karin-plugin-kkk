@@ -1,4 +1,4 @@
-import { DyWorkComments, Result } from '@ikenxuan/amagi'
+import { AmagiSuccess, DyWorkComments } from '@ikenxuan/amagi'
 import {
   createEmojiNode,
   createLineBreakNode,
@@ -133,7 +133,7 @@ const resolveMentionTokens = async (userIds: string[] | null): Promise<DouyinMen
   const mentionTokens = await Promise.all(
     uniqueUserIds.map(async (secUid) => {
       try {
-        const userInfo = await douyinFetcher.fetchUserProfile({ sec_uid: secUid, typeMode: 'strict' })
+        const userInfo = await douyinFetcher.fetchUserProfile({ sec_uid: secUid })
         const nickname = userInfo.data.user.nickname?.trim()
 
         if (!nickname || userInfo.data.user.sec_uid !== secUid) {
@@ -276,7 +276,7 @@ const processCommentImage = async (imageUrl: string | null): Promise<string | nu
  * @param {*} emojidata 处理过后的emoji列表
  * @returns obj
  */
-export const douyinComments = async (data: Result<DyWorkComments>, emojidata: any) => {
+export const douyinComments = async (data: AmagiSuccess<DyWorkComments>, emojidata: any) => {
   const commentsData: DouyinCommentItem[] = []
   let imageUrls: string[] = []
   if (data.data.comments === null) return { CommentsData: [], image_url: [] }
@@ -321,7 +321,6 @@ export const douyinComments = async (data: Result<DyWorkComments>, emojidata: an
     const replyComment = await douyinFetcher.fetchCommentReplies({
       aweme_id,
       comment_id: cid,
-      typeMode: 'strict',
       number: Config.douyin.subCommentLimit
     })
 

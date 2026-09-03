@@ -115,7 +115,7 @@ const handleSecondVerify = async (
     return false
   }
 
-  const sent = await sendPassportVerifyCode({ verify, verify_way: smsWay?.verifyWay, typeMode: 'strict' }, session.cookie, requestConfig())
+  const sent = await sendPassportVerifyCode({ verify, verify_way: smsWay?.verifyWay }, session.cookie, requestConfig())
   if (!sent.success) {
     await tracker.send(`短信验证码发送失败：${sent.message}`)
     return false
@@ -152,7 +152,7 @@ const handleSecondVerify = async (
     }
 
     const checked = await validatePassportVerifyCode(
-      { verify, code, biz_trace_id: bizTraceId, verify_way: verifyWay, typeMode: 'strict' },
+      { verify, code, biz_trace_id: bizTraceId, verify_way: verifyWay },
       session.cookie,
       requestConfig()
     )
@@ -206,7 +206,7 @@ export const douyinLogin = async (e: Message) => {
   const tracker = createMessageTracker(e)
 
   try {
-    const qrcode = await requestPassportQrcode({ typeMode: 'strict' }, undefined, requestConfig())
+    const qrcode = await requestPassportQrcode({}, undefined, requestConfig())
     if (!qrcode.success) {
       await e.reply(`获取二维码失败：${qrcode.message}`, { reply: true })
       return true
@@ -233,7 +233,7 @@ export const douyinLogin = async (e: Message) => {
     let scanned = false
 
     while (Date.now() < deadline) {
-      const polled = await checkPassportQrcode({ token: session.token, typeMode: 'strict' }, session.cookie, requestConfig())
+      const polled = await checkPassportQrcode({ token: session.token }, session.cookie, requestConfig())
       if (!polled.success) {
         await tracker.recallAll()
         await e.reply(`轮询二维码状态失败：${polled.message}`, { reply: true })

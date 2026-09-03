@@ -1,4 +1,4 @@
-import type { DyUserInfo, Result } from '@ikenxuan/amagi'
+import type { AmagiSuccess, DyUserInfo } from '@ikenxuan/amagi'
 import { logger } from 'node-karin'
 
 import { douyinDB } from '@/module'
@@ -14,7 +14,7 @@ import type { DouyinLivePushItem } from './types'
  */
 export async function processLiveStream(
   sec_uid: string,
-  userinfo: Result<DyUserInfo>,
+  userinfo: AmagiSuccess<DyUserInfo>,
   item: douyinPushItem,
   targets: Array<{ groupId: string; botId: string }>,
   amagi: { douyin: { fetcher: typeof douyinFetcher } }
@@ -25,8 +25,7 @@ export async function processLiveStream(
   // 检查用户是否正在直播
   if (userinfo.data.user.live_status === 1) {
     const UserInfoData = await amagi.douyin.fetcher.fetchUserProfile({
-      sec_uid: userinfo.data.user.sec_uid,
-      typeMode: 'strict'
+      sec_uid: userinfo.data.user.sec_uid
     })
 
     if (!UserInfoData.data.user?.live_status || UserInfoData.data.user.live_status !== 1) {
@@ -42,8 +41,7 @@ export async function processLiveStream(
     const room_data = JSON.parse(UserInfoData.data.user.room_data)
     const liveInfo = await amagi.douyin.fetcher.fetchLiveRoomInfo({
       room_id: UserInfoData.data.user.room_id_str,
-      web_rid: room_data.owner.web_rid,
-      typeMode: 'strict'
+      web_rid: room_data.owner.web_rid
     })
 
     // 如果之前没有直播，现在开播了，需要推送
