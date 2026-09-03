@@ -10,7 +10,7 @@ import {
   type RichTextEmojiDefinition,
   type RichTextNode
 } from '@kkk/richtext'
-import type { DouyinCommentData } from '@template/douyin/comment/components/types'
+import type { DouyinCommentData } from '@template/template/douyin/comment/components/types'
 import decode from 'heic-decode'
 import jpeg from 'jpeg-js'
 
