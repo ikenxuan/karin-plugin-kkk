@@ -25,7 +25,9 @@ const amagiDetailOf = (error: Error) => {
     requestId: meta?.requestId,
     attempts: meta?.attempts,
     durationMs: meta?.durationMs,
-    issues: error.issues
+    issues: error.issues,
+    // 逐个请求的明细。amagi 只在 debug: true 时填，封装层常开着
+    trace: meta?.trace
   }
 }
 

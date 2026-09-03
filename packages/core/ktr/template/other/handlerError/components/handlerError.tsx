@@ -13,6 +13,7 @@ import {
   QrCode,
   Radio,
   Repeat,
+  Route,
   ShieldAlert,
   Terminal,
   Timer
@@ -26,6 +27,7 @@ import type { PosterProps } from '../../../types/ctx'
 import { generateQRCode } from '../../../../utils/QRcode'
 import { isDark } from '../../../../utils/theme'
 import { getRandomErrorTitle } from './errorTitles'
+import { highlightStack } from './stackHighlight'
 import type { AmagiErrorDetail, ApiErrorData } from './types'
 
 /** 业务错误类型：从总数据类型里取，不再单独导出。 */
@@ -153,9 +155,28 @@ const convertAnsiToHtml = (text: string): string => {
   return result
 }
 
+/** 把请求 URL 拆成「主体」与「查询参数名」两截：签名 URL 动辄上千字符，全印没法看 */
+const splitRequestUrl = (raw: string): { head: string; names: string[]; queryLength: number } => {
+  try {
+    const u = new URL(raw)
+    const names = [...u.searchParams.keys()]
+    return { head: `${u.origin}${u.pathname}`, names, queryLength: u.search.length }
+  } catch {
+    return { head: raw, names: [], queryLength: 0 }
+  }
+}
+
+/** trace 里 reason 的中文名 */
+const TRACE_REASON_LABELS: Record<string, string> = {
+  initial: '首次',
+  retry: '重试',
+  page: '翻页',
+  segment: '分段',
+  prepare: '前置'
+}
+
 const getLogLevelTheme = (level: LogLevel, dark: boolean) => {
-  const themeMap: Record<
-    LogLevel,
+  const themeMap: Record<    LogLevel,
     {
       bgClass: string
       borderClass: string
@@ -655,6 +676,69 @@ export const handlerError: React.FC<PosterProps<ApiErrorData>> = (props) => {
                   </ul>
                 </div>
               )}
+
+              {/* 逐个请求的明细。一次「翻 3 页 + 重试 1 次」在这里就是 4 行 */}
+              {data.amagi.trace && data.amagi.trace.length > 0 && (
+                <div className="mt-12">
+                  <div className="flex items-center gap-3 mb-6 opacity-70">
+                    <Route size={26} style={{ color: mutedColor }} />
+                    <span className="text-xl font-semibold tracking-[0.12em]" style={{ color: mutedColor }}>
+                      请求轨迹（{data.amagi.trace.length} 次）
+                    </span>
+                  </div>
+                  <div className="space-y-6">
+                    {data.amagi.trace.map((entry, index) => {
+                      const { head, names, queryLength } = splitRequestUrl(entry.url)
+                      const ok = entry.status !== undefined && entry.status >= 200 && entry.status < 300
+                      return (
+                        <div
+                          key={`${entry.url}-${index}`}
+                          className="p-8 rounded-[28px]"
+                          style={{ backgroundColor: dark ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.5)' }}
+                        >
+                          <div className="flex items-center gap-4 flex-wrap mb-4">
+                            <span
+                              className="px-4 py-1 rounded-full text-xl font-bold"
+                              style={{
+                                backgroundColor: dark ? 'rgba(148,163,184,0.18)' : 'rgba(100,116,139,0.14)',
+                                color: dark ? '#cbd5e1' : '#475569'
+                              }}
+                            >
+                              {TRACE_REASON_LABELS[entry.reason] ?? entry.reason}
+                            </span>
+                            <span className="font-mono text-2xl font-bold" style={{ color: accentColor }}>
+                              {entry.method}
+                            </span>
+                            <span
+                              className="font-mono text-2xl font-bold"
+                              style={{ color: entry.status === undefined ? mutedColor : ok ? (dark ? '#4ade80' : '#15803d') : primaryColor }}
+                            >
+                              {entry.status ?? '未发出'}
+                            </span>
+                            <span className="font-mono text-xl opacity-70" style={{ color: mutedColor }}>
+                              {entry.durationMs} ms
+                            </span>
+                            {entry.retryOf && (
+                              <span className="font-mono text-xl" style={{ color: primaryColor }}>
+                                重试于 {entry.retryOf}
+                              </span>
+                            )}
+                          </div>
+                          <p className="font-mono text-xl break-all leading-relaxed" style={{ color: secondaryColor }}>
+                            {head}
+                          </p>
+                          {names.length > 0 && (
+                            <p className="font-mono text-lg break-all mt-3 opacity-60" style={{ color: mutedColor }}>
+                              {names.length} 个查询参数 / {queryLength} 字符：{names.slice(0, 12).join(' ')}
+                              {names.length > 12 ? ` …+${names.length - 12}` : ''}
+                            </p>
+                          )}
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -710,7 +794,12 @@ export const handlerError: React.FC<PosterProps<ApiErrorData>> = (props) => {
 
         {/* 错误堆栈 */}
         <div className="mb-14">
-          <SectionTitle icon={<AlertCircle size={36} style={{ color: mutedColor }} />} en="Stack Trace" zh="错误堆栈" color={mutedColor} />
+          <SectionTitle
+            icon={<AlertCircle size={36} style={{ color: mutedColor }} />}
+            en="Stack Trace"
+            zh={data.amagi ? '调用栈（结构化上下文见上）' : '错误堆栈'}
+            color={mutedColor}
+          />
           <div
             className="p-10 rounded-[36px]"
             style={{
@@ -722,7 +811,11 @@ export const handlerError: React.FC<PosterProps<ApiErrorData>> = (props) => {
               className="text-2xl leading-relaxed whitespace-pre-wrap break-all font-mono"
               style={{ color: dark ? 'rgba(255,255,255,0.85)' : 'rgba(127,29,29,0.9)' }}
               dangerouslySetInnerHTML={{
-                __html: convertAnsiToHtml(String(businessError?.stack || data.error?.stack || ''))
+                // amagi 的错误只有纯文本调用栈（没有 ANSI），按结构上色；
+                // 其余异常仍是 util.inspect 的彩色转储，走 ANSI 那条
+                __html: data.amagi
+                  ? highlightStack(String(businessError?.stack || data.error?.stack || ''), dark)
+                  : convertAnsiToHtml(String(businessError?.stack || data.error?.stack || ''))
               }}
             />
           </div>
