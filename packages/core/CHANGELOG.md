@@ -2,6 +2,13 @@
 
 # Changelog
 
+## [2.42.4](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.42.3...v2.42.4) (2026-09-03)
+
+
+### 🐛 错误修复
+
+* 二维码链接拼接错误 ([ee8bc51](https://github.com/ikenxuan/karin-plugin-kkk/commit/ee8bc51510cffbbea0d352230153f409016031de))
+
 ## [2.42.3](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.42.2...v2.42.3) (2026-09-01)
 
 
