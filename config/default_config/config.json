@@ -33,7 +33,6 @@
       "overlayEdgeOpacity": 0.9,
       "overlayMiddleOpacity": 0.2
     },
-    "RemoveWatermark": false,
     "RenderWaitTime": 120,
     "EmojiReply": true,
     "parseTip": false,
