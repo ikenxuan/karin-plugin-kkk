@@ -10,10 +10,7 @@
     "paths": {
       "@/*": ["./src/*"],
       "@template/*": ["./ktr/*"],
-      "@kkk/richtext": ["../richtext"],
-      "@ikenxuan/amagi": ["../amagi/packages/core/src/index.ts"],
-      "@ikenxuan/amagi/*": ["../amagi/packages/core/src/*"],
-      "amagi/*": ["../amagi/packages/core/src/*"]
+      "@kkk/richtext": ["../richtext"]
     },
     "jsx": "react-jsx",
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
@@ -46,9 +43,6 @@
   "references": [
     {
       "path": "../richtext"
-    },
-    {
-      "path": "../amagi/packages/core"
     }
   ],
   "exclude": ["node_modules", "lib", "**/*.spec.ts", "**/*.test.ts"]
