@@ -1,5 +1,3 @@
-import util from 'node:util'
-
 import Client, {
   type AmagiError as AmagiErrorContract,
   type AmagiFailure,
@@ -60,10 +58,36 @@ const legacyCode = (error: AmagiErrorContract): number => {
 }
 
 /**
+ * 一行说清一次失败：错误大类 / 错误码 + 平台原文 + 请求归因。
+ *
+ * 原先 `AmagiError.message` 塞的是整个失败信封的 `util.inspect` 彩色转储
+ * （实测 1.6 KB 起），理由是「错误图把 message 当 stack 渲染，换成单行会丢上下文」。
+ * 错误图现在把 kind / 分层错误码 / requestId / attempts 这些**单独成块**渲染了，
+ * 转储于是只剩重复 —— 一条 118 行的 stack 里同一份数据出现四遍，而调用帧只占 7 行。
+ *
+ * 另一半理由是日志：`message` 会被 `logger.warn(...)` 直接拼进日志行
+ * （`platform/bilibili/push.ts` 有三处），转储把整行日志顶成一屏 ANSI。
+ * @param envelope - v7 失败信封
+ * @returns 一行摘要
+ */
+const describeFailure = (envelope: AmagiFailure): string => {
+  const { error, meta } = envelope
+  const facts = [
+    meta?.endpoint,
+    error.platform?.code === undefined ? undefined : `平台码 ${error.platform.code}`,
+    error.http?.status === undefined ? undefined : `HTTP ${error.http.status}`,
+    meta?.requestId === undefined ? undefined : `requestId=${meta.requestId}`,
+    meta?.attempts === undefined ? undefined : `attempts=${meta.attempts}`
+  ].filter((part): part is string => typeof part === 'string' && part !== '')
+
+  return `[${error.kind}/${error.code}] ${error.message}${facts.length > 0 ? ` (${facts.join(' ')})` : ''}`
+}
+
+/**
  * Amagi 错误类，携带 v7 的分层错误信息。
  *
- * `message` 仍是 `util.inspect` 的彩色转储 —— 错误图直接把它当 stack 渲染，
- * 换成单行文案会让错误图丢掉全部上下文。要纯文案读 {@link reason}。
+ * `message` 是一行摘要（见 {@link describeFailure}）；结构化字段各有自己的属性，
+ * 完整信封在 {@link envelope} 里，不需要靠转储传递。
  */
 export class AmagiError extends Error {
   /** 平台业务码，见 {@link legacyCode} */
@@ -76,7 +100,7 @@ export class AmagiError extends Error {
   kind: AmagiErrorContract['kind']
   /** amagi 自己的字符串错误码，22 个之一 */
   amagiCode: AmagiErrorContract['code']
-  /** 平台返回的原文，没有被 inspect 包装 */
+  /** 平台返回的原文，不带前缀与归因 */
   reason: string
   /** 是否值得重试 */
   retryable: boolean
@@ -89,22 +113,7 @@ export class AmagiError extends Error {
 
   constructor (envelope: AmagiFailure) {
     const error = envelope.error
-    super(
-      util.inspect(
-        {
-          kind: error.kind,
-          code: error.code,
-          message: error.message,
-          retryable: error.retryable,
-          platform: error.platform,
-          http: error.http,
-          issues: error.issues,
-          raw: error.raw,
-          meta: envelope.meta
-        },
-        { depth: 10, colors: true, compact: false, breakLength: 120, showHidden: true }
-      )
-    )
+    super(describeFailure(envelope))
     this.name = 'AmagiError'
     this.code = legacyCode(error)
     this.data = error.raw

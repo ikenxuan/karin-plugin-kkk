@@ -161,6 +161,39 @@ describe('失败信封转异常', () => {
     await expect(probe(bilibiliFetcher).fetchThing()).resolves.toEqual(successEnvelope)
   })
 
+  it('message 是一行摘要，不是信封转储', async () => {
+    runtime.state.envelope = failureEnvelope
+    const error = await probe(bilibiliFetcher)
+      .fetchThing()
+      .catch((err: unknown) => err as AmagiError)
+
+    // 原先这里是整个信封的 util.inspect 彩色转储（实测 1.6 KB 起），错误图把它
+    // 当 stack 渲染、logger.warn 又把它直接拼进日志行。结构化字段现在各有属性、
+    // 错误图也单独成块渲染，转储只剩重复。
+    expect(error.message).toBe(
+      '[forbidden/PLATFORM_ERROR] UP主已关闭评论区 (bilibili.comments 平台码 12061 HTTP 200 requestId=req-1 attempts=1)'
+    )
+    expect(error.message).not.toContain('\n')
+    // 纯平台原文仍然单独可取
+    expect(error.reason).toBe('UP主已关闭评论区')
+  })
+
+  it('stack 只有一行摘要 + 调用帧，同一份数据不再出现多遍', async () => {
+    runtime.state.envelope = failureEnvelope
+    const error = await probe(bilibiliFetcher)
+      .fetchThing()
+      .catch((err: unknown) => err as AmagiError)
+
+    const lines = String(error.stack).split('\n')
+    expect(lines[0]).toContain('[forbidden/PLATFORM_ERROR]')
+    // 除首行外全是调用帧
+    expect(lines.slice(1).every((line) => /^\s+at\s/.test(line))).toBe(true)
+    // 转储时代这些会各出现两到四遍
+    expect(lines.filter((line) => line.includes('requestId')).length).toBe(1)
+    expect(String(error.stack)).not.toContain('rawError')
+    expect(String(error.stack)).not.toContain('envelope')
+  })
+
   it('同步方法不被包成 async', () => {
     expect(probe(bilibiliFetcher).describe()).toBe('bilibili')
   })
