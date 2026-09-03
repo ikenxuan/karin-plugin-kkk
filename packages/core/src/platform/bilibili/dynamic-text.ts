@@ -12,6 +12,7 @@ import {
   createListItemNode,
   createListNode,
   createLotteryNode,
+  createOpusLinkNode,
   createParagraphNode,
   createRichTextDocument,
   createTextNode,
@@ -326,6 +327,22 @@ const parseOpusTextNodes = (
 ): RichTextNode[] => {
   const result: RichTextNode[] = []
   for (const node of nodes) {
+    // node_type 4：站内图文高亮链接，官方页面渲染成带图文图标的 <a>
+    if (node.node_type === 4) {
+      const link = node.link
+      if (!link?.show_text) {
+        logger.error(`[bilibili] opus 富文本遇到 node_type=4 但缺少 link 数据: ${JSON.stringify(node).slice(0, 500)}`)
+        continue
+      }
+      // 缺跳转地址时退化成普通文本，至少不丢正文
+      if (link.link) {
+        result.push(createOpusLinkNode(link.show_text, link.link))
+      } else {
+        result.push(createTextNode(link.show_text))
+      }
+      continue
+    }
+
     if (node.node_type !== 1 || !node.word) {
       // 记录未适配的节点类型
       if (node.node_type !== undefined && node.node_type !== 1) {
@@ -781,6 +798,8 @@ const inlineRichTextNodeToText = (node: RichTextNode): string => {
       return node.name
     case 'webLink':
       return formatRichTextLink(node.text, node.jumpUrl)
+    case 'opusLink':
+      return formatRichTextLink(node.text, node.url)
     case 'lineBreak':
       return '\n'
     default:

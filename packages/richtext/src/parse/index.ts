@@ -19,6 +19,7 @@ import type {
   RichTextAtNode,
   RichTextLotteryNode,
   RichTextWebLinkNode,
+  RichTextOpusLinkNode,
   RichTextVoteNode,
   RichTextViewPictureNode,
   RichTextHorizontalRuleNode,
@@ -89,6 +90,13 @@ export const createWebLinkNode = (text: string, jumpUrl: string): RichTextWebLin
   type: 'webLink',
   text,
   jumpUrl
+})
+
+/** 创建站内图文链接节点。 */
+export const createOpusLinkNode = (text: string, url: string): RichTextOpusLinkNode => ({
+  type: 'opusLink',
+  text,
+  url
 })
 
 /** 创建投票节点。 */
@@ -221,6 +229,7 @@ export const extractRichTextPlainText = (document: RichTextDocument): string => 
       case 'at':
       case 'lottery':
       case 'webLink':
+      case 'opusLink':
       case 'vote':
       case 'viewPicture':
       case 'hashtag':
