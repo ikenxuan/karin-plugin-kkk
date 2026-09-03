@@ -14,7 +14,7 @@ import { logger } from 'node-karin'
 import { Config } from './Config'
 
 /** v7 客户端实例 */
-type AmagiClient = ReturnType<typeof Client>
+export type AmagiClient = ReturnType<typeof Client>
 
 /** 四个平台的键，用来在类型层重建 client 形状 */
 type PlatformKey = 'bilibili' | 'douyin' | 'kuaishou' | 'xiaohongshu'
@@ -305,20 +305,31 @@ export const registerAmagiReloadListener = (listener: AmagiReloadListener) => {
   return () => amagiReloadListeners.delete(listener)
 }
 
-export let bilibiliFetcher = amagiClientInstance.amagi.bilibili.fetcher
+/**
+ * 四个平台的「失败必抛」fetcher。
+ *
+ * 类型必须显式标注：不标的话 TS 要在声明产物里展开 fetcher 的结构，而 amagi 的
+ * 响应类型桶只导出 `BiliOneWork` 这样的别名、不导出底层的 `*_V0` 名字，
+ * 展开时叫不出名来，报一片 TS2883。标上 amagi 导出的具名类型就没这个问题。
+ */
+export let bilibiliFetcher: SuccessBilibiliFetcher = amagiClientInstance.amagi.bilibili.fetcher
 
-export let douyinFetcher = amagiClientInstance.amagi.douyin.fetcher
+export let douyinFetcher: SuccessDouyinFetcher = amagiClientInstance.amagi.douyin.fetcher
 
-export let kuaishouFetcher = amagiClientInstance.amagi.kuaishou.fetcher
+export let kuaishouFetcher: SuccessKuaishouFetcher = amagiClientInstance.amagi.kuaishou.fetcher
 
-export let xiaohongshuFetcher = amagiClientInstance.amagi.xiaohongshu.fetcher
+export let xiaohongshuFetcher: SuccessXiaohongshuFetcher = amagiClientInstance.amagi.xiaohongshu.fetcher
 
 /**
  * 原始 v7 客户端。扫码登录会话（`douyin.login` / `bilibili.login`）、实例级事件
  * 总线（`events` / `on` / `once`）与 `startServer` 都从这里取。
+ *
+ * 返回类型显式写成 {@link AmagiClient}：不写的话 TS 要在声明产物里展开这个结构，
+ * 展开过程中会碰到 amagi 内部才叫得出名字的类型（如 `SearchNoteType`），
+ * 报 TS4023。
  * @returns 当前的 v7 客户端实例
  */
-export const getAmagiClient = () => amagiClientInstance.rawAmagi
+export const getAmagiClient = (): AmagiClient => amagiClientInstance.rawAmagi
 
 export const reloadAmagiConfig = () => {
   if (!amagiClientInstance.reloadConfig()) return false

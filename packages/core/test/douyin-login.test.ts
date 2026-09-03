@@ -1,11 +1,12 @@
 import { createECDH, createHmac, hkdfSync } from 'node:crypto'
 
-import { douyinPassport, isSmsCodeVerifyWay } from '@ikenxuan/amagi'
+import { douyinPassport } from '@ikenxuan/amagi'
 import { describe, expect, it } from 'vitest'
 
 // 协议层实现在 @ikenxuan/amagi 的 passport 模块里，这里锁住 kkk 依赖的那部分行为
 const {
   aBogus,
+  isSmsCodeVerifyWay,
   CookieJar,
   makeAidSign,
   makeSignAndQs,
