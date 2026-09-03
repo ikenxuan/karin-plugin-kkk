@@ -1,7 +1,22 @@
 import { Chip } from '@heroui/react'
 import { formatDistanceToNow, parse } from 'date-fns'
 import { zhCN } from 'date-fns/locale'
-import { AlertCircle, Clock, FileText, GitBranch, Puzzle, QrCode, Terminal } from 'lucide-react'
+import {
+  AlertCircle,
+  Clock,
+  FileText,
+  Fingerprint,
+  Gauge,
+  GitBranch,
+  ListChecks,
+  Puzzle,
+  QrCode,
+  Radio,
+  Repeat,
+  ShieldAlert,
+  Terminal,
+  Timer
+} from 'lucide-react'
 import _ from 'node-karin/lodash'
 import React from 'react'
 import { MdSchedule } from 'react-icons/md'
@@ -11,7 +26,7 @@ import type { PosterProps } from '../../../types/ctx'
 import { generateQRCode } from '../../../../utils/QRcode'
 import { isDark } from '../../../../utils/theme'
 import { getRandomErrorTitle } from './errorTitles'
-import type { ApiErrorData } from './types'
+import type { AmagiErrorDetail, ApiErrorData } from './types'
 
 /** 业务错误类型：从总数据类型里取，不再单独导出。 */
 type BusinessError = ApiErrorData['error']
@@ -226,6 +241,51 @@ const getAdapterLogo = (adapterName: string): React.ReactNode => {
     if (nameLower.includes(key)) return <img src={logoPath} className="h-20 w-auto" alt={adapterName} />
   }
   return <Puzzle size={64} className="text-danger/80" />
+}
+
+/**
+ * amagi 12 个错误大类的中文名与「该怎么办」。
+ *
+ * 印 `kind` 本身对看图的人没用 —— 有用的是它指向哪一类处置：改配置、等一会儿、
+ * 还是提 issue。所以每一类都带一句处置提示。
+ */
+const ERROR_KIND_META: Record<AmagiErrorDetail['kind'], { zh: string; hint: string }> = {
+  validation: { zh: '参数校验', hint: '调用参数不合法，通常是插件自身的问题' },
+  auth: { zh: '身份失效', hint: 'Cookie 缺失或已过期，重新扫码登录即可' },
+  rate_limit: { zh: '触发限流', hint: '请求太频繁，等一会儿再试' },
+  risk: { zh: '命中风控', hint: '平台要求人机验证，或需要换一个账号的 Cookie' },
+  not_found: { zh: '内容不存在', hint: '作品可能已删除、被设为私密或仅粉丝可见' },
+  forbidden: { zh: '无权访问', hint: '当前账号看不到这份内容（付费 / 地区 / 权限）' },
+  unavailable: { zh: '服务不可用', hint: '平台侧临时故障，稍后重试' },
+  network: { zh: '网络错误', hint: '检查代理配置与出口网络' },
+  timeout: { zh: '请求超时', hint: '调大 amagi.timeout，或检查代理链路' },
+  parse: { zh: '响应解析失败', hint: '平台改了协议，或返回的是反爬页面' },
+  internal: { zh: 'amagi 内部错误', hint: '解析库内部异常，建议反馈' },
+  unknown: { zh: '未分类错误', hint: '平台返回了未被识别的错误码' }
+}
+
+/** 诊断区的一格：小标签 + 大值，值缺失时整格不渲染 */
+const DetailCell: React.FC<{
+  icon: React.ReactNode
+  label: string
+  value?: string | number
+  color: string
+  valueColor: string
+}> = ({ icon, label, value, color, valueColor }) => {
+  if (value === undefined || value === null || value === '') return null
+  return (
+    <div className="flex flex-col gap-2">
+      <div className="flex items-center gap-3 opacity-70">
+        {icon}
+        <span className="text-xl font-semibold tracking-[0.12em]" style={{ color }}>
+          {label}
+        </span>
+      </div>
+      <span className="text-3xl font-bold font-mono break-all" style={{ color: valueColor }}>
+        {value}
+      </span>
+    </div>
+  )
 }
 
 const SectionTitle: React.FC<{ icon: React.ReactNode; en: string; zh: string; color: string }> = ({ icon, en, zh, color }) => (
@@ -463,6 +523,141 @@ export const handlerError: React.FC<PosterProps<ApiErrorData>> = (props) => {
             {displayMethod}
           </p>
         </div>
+
+        {/* amagi 错误诊断：只有失败来自解析库时才有这一块 */}
+        {data.amagi && (
+          <div className="mb-16">
+            <SectionTitle
+              icon={<ShieldAlert size={36} style={{ color: mutedColor }} />}
+              en="Amagi Diagnosis"
+              zh="解析库错误诊断"
+              color={mutedColor}
+            />
+            <div
+              className="p-12 rounded-[36px]"
+              style={{
+                backgroundColor: dark ? 'rgba(0,0,0,0.22)' : 'rgba(255,255,255,0.55)',
+                border: `1px solid ${dark ? 'rgba(248,113,113,0.18)' : 'rgba(252,165,165,0.45)'}`
+              }}
+            >
+              {/* 第一行：错误大类 + 是否可重试。这两个决定「现在该做什么」 */}
+              <div className="flex items-center gap-6 flex-wrap mb-4">
+                <span
+                  className="px-8 py-3 rounded-full text-3xl font-black tracking-wide"
+                  style={{
+                    backgroundColor: dark ? 'rgba(248,113,113,0.18)' : 'rgba(220,38,38,0.12)',
+                    color: primaryColor
+                  }}
+                >
+                  {ERROR_KIND_META[data.amagi.kind].zh}
+                </span>
+                <span
+                  className="px-6 py-3 rounded-full text-2xl font-bold tracking-wide"
+                  style={{
+                    backgroundColor: data.amagi.retryable
+                      ? dark
+                        ? 'rgba(74,222,128,0.16)'
+                        : 'rgba(22,163,74,0.12)'
+                      : dark
+                        ? 'rgba(148,163,184,0.16)'
+                        : 'rgba(100,116,139,0.12)',
+                    color: data.amagi.retryable ? (dark ? '#4ade80' : '#15803d') : dark ? '#cbd5e1' : '#475569'
+                  }}
+                >
+                  {data.amagi.retryable ? '可以重试' : '重试无用'}
+                </span>
+                <span className="font-mono text-2xl opacity-70" style={{ color: mutedColor }}>
+                  {data.amagi.kind}
+                </span>
+              </div>
+
+              <p className="text-3xl mb-10" style={{ color: secondaryColor }}>
+                {ERROR_KIND_META[data.amagi.kind].hint}
+              </p>
+
+              {/* 平台返回的原文：与堆栈里那份 inspect 转储不同，这里是干净的一句话 */}
+              <div
+                className="p-8 rounded-[28px] mb-10"
+                style={{ backgroundColor: dark ? 'rgba(220,38,38,0.12)' : 'rgba(254,202,202,0.35)' }}
+              >
+                <div className="text-xl font-semibold tracking-[0.12em] opacity-70 mb-3" style={{ color: mutedColor }}>
+                  平台原文
+                </div>
+                <p className="text-3xl leading-relaxed break-all" style={{ color: accentColor }}>
+                  {data.amagi.reason || '(平台未给出说明)'}
+                </p>
+              </div>
+
+              {/* 分层错误码与请求归因 */}
+              <div className="grid grid-cols-3 gap-x-12 gap-y-10">
+                <DetailCell
+                  icon={<AlertCircle size={26} style={{ color: mutedColor }} />}
+                  label="AMAGI 码"
+                  value={data.amagi.code}
+                  color={mutedColor}
+                  valueColor={accentColor}
+                />
+                <DetailCell
+                  icon={<Radio size={26} style={{ color: mutedColor }} />}
+                  label="平台业务码"
+                  value={data.amagi.platformCode}
+                  color={mutedColor}
+                  valueColor={accentColor}
+                />
+                <DetailCell
+                  icon={<Gauge size={26} style={{ color: mutedColor }} />}
+                  label="HTTP 状态"
+                  value={data.amagi.httpStatus}
+                  color={mutedColor}
+                  valueColor={accentColor}
+                />
+                <DetailCell
+                  icon={<Fingerprint size={26} style={{ color: mutedColor }} />}
+                  label="请求 ID"
+                  value={data.amagi.requestId}
+                  color={mutedColor}
+                  valueColor={accentColor}
+                />
+                <DetailCell
+                  icon={<Repeat size={26} style={{ color: mutedColor }} />}
+                  label="实际请求次数"
+                  value={data.amagi.attempts}
+                  color={mutedColor}
+                  valueColor={accentColor}
+                />
+                <DetailCell
+                  icon={<Timer size={26} style={{ color: mutedColor }} />}
+                  label="耗时"
+                  value={data.amagi.durationMs === undefined ? undefined : `${data.amagi.durationMs} ms`}
+                  color={mutedColor}
+                  valueColor={accentColor}
+                />
+              </div>
+
+              {/* 参数校验的字段级错误，只有 kind === 'validation' 时有 */}
+              {data.amagi.issues && data.amagi.issues.length > 0 && (
+                <div className="mt-12">
+                  <div className="flex items-center gap-3 mb-5 opacity-70">
+                    <ListChecks size={26} style={{ color: mutedColor }} />
+                    <span className="text-xl font-semibold tracking-[0.12em]" style={{ color: mutedColor }}>
+                      参数问题
+                    </span>
+                  </div>
+                  <ul className="space-y-4">
+                    {data.amagi.issues.map((issue, index) => (
+                      <li key={`${issue.path}-${index}`} className="flex gap-5 text-2xl leading-relaxed">
+                        <span className="font-mono font-bold shrink-0" style={{ color: primaryColor }}>
+                          {issue.path || '(根)'}
+                        </span>
+                        <span style={{ color: accentColor }}>{issue.message}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* 验证二维码 */}
         {data.isVerification && data.verificationUrl && (
