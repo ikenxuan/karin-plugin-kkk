@@ -1,5 +1,5 @@
 /** 本模板的数据类型（路由 index.tsx 与 components/ 实现共用）。 */
-import type { AmagiErrorCode, ErrorKind, ValidationIssue } from '@ikenxuan/amagi'
+import type { AmagiErrorCode, ErrorKind, RequestTrace, ValidationIssue } from '@ikenxuan/amagi'
 import type { AdapterInfo as KarinAdapterInfo } from 'node-karin'
 
 /** 业务错误类型。组件内需要时从总类型取：ApiErrorData['error'] */
@@ -46,6 +46,15 @@ export interface AmagiErrorDetail {
   durationMs?: number
   /** 参数校验的字段级错误，仅 `kind === 'validation'` 时有 */
   issues?: ValidationIssue[]
+  /**
+   * 逐个请求的明细：URL（含签名参数）、方法、HTTP 状态、耗时与发起原因
+   * （`initial` / `retry` / `page` / `segment` / `prepare`）。
+   *
+   * amagi 只在 `debug: true` 时把它放进 `meta.trace`。它替代了原先靠
+   * `util.inspect` 整体转储才能看到的那部分上下文 —— 一次「翻 3 页 + 重试 1 次」
+   * 的调用在这里就是 4 行，而转储要几十行还会把同一个 URL 印两遍。
+   */
+  trace?: RequestTrace[]
 }
 
 /** 日志等级类型。组件内需要时从总类型逐步取：NonNullable<ApiErrorData['logs']>[number]['level'] */
