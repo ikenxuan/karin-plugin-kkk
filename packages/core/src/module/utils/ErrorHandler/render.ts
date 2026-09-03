@@ -40,6 +40,31 @@ const amagiPlatformOf = (error: Error): RenderErrorOptions['platform'] | undefin
 }
 
 /**
+ * 错误堆栈：amagi 的错误只印真正的调用帧，其余异常保留完整对象转储。
+ *
+ * 对 `AmagiError` 做 `util.inspect(error, { depth: 10, showHidden: true })` 会把
+ * 同一份数据打印四遍 —— message 一遍、`showHidden` 把 message 当自有属性再打一遍
+ * （连 ANSI 转义都成了字面量）、`rawError` 一遍、`envelope` 又一遍，实测 118 行里
+ * 只有 7 行是调用帧，`trace` 里那条上百字符的签名 URL 出现两次。
+ *
+ * 这些字段现在由「解析库错误诊断」那一节单独渲染，堆栈只需要回答「从哪儿抛的」。
+ * 非 amagi 异常仍走转储：那种情况下自有属性往往是唯一线索。
+ * @param error - 捕获的异常
+ * @param override - 调用方显式指定的堆栈文本
+ * @returns 供模板渲染的堆栈文本
+ */
+const stackOf = (error: Error, override?: string): string => {
+  if (override) return override
+  if (error instanceof AmagiError) return error.stack ?? error.message
+  return util
+    .inspect(error, { depth: 10, colors: true, breakLength: 120, showHidden: true })
+    // oxlint-disable-next-line no-control-regex
+    .replace(/\x1b\[90m/g, '\x1b[90;2m')
+    // oxlint-disable-next-line no-control-regex
+    .replace(/\x1b\[32m/g, '\x1b[31m')
+}
+
+/**
  * 渲染错误图片
  *
  * @param ctx - 错误处理上下文
@@ -72,14 +97,7 @@ export const renderErrorImage = async (ctx: ErrorContext, opts: RenderErrorOptio
     error: {
       message: opts.errorMessage || error.message,
       name: opts.errorName || error.name,
-      stack:
-        opts.stack ||
-        util
-          .inspect(error, { depth: 10, colors: true, breakLength: 120, showHidden: true })
-          // oxlint-disable-next-line no-control-regex
-          .replace(/\x1b\[90m/g, '\x1b[90;2m')
-          // oxlint-disable-next-line no-control-regex
-          .replace(/\x1b\[32m/g, '\x1b[31m'),
+      stack: stackOf(error, opts.stack),
       businessName: options.businessName
     },
     amagi,
