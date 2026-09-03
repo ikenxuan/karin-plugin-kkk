@@ -1,5 +1,5 @@
-import type { AdapterType } from 'node-karin'
-import karin, { config } from 'node-karin'
+import type { AdapterType, Message } from 'node-karin'
+import karin, { config, logger } from 'node-karin'
 
 import { Config } from '@/module/utils/Config'
 
@@ -90,4 +90,26 @@ export const resolveUsableBot = async (selfId?: string): Promise<AdapterType | u
   if (!fallbackBotId) return undefined
 
   return karin.getBot(fallbackBotId) as AdapterType | undefined
+}
+
+/**
+ * 取触发者头像 URL，用于嵌到登录二维码中心当 logo。
+ *
+ * 适配器（如 console）可能不实现 getAvatarUrl 或返回空串，模板侧 avatarUrl 缺省即退化为普通二维码，
+ * 所以这里任何失败都只记 debug 日志并返回 undefined，不影响登录流程。
+ *
+ * @param e - 触发登录的消息事件
+ * @returns 头像 URL，取不到时为 undefined
+ */
+export const resolveTriggerAvatarUrl = async (e: Message): Promise<string | undefined> => {
+  const userId = e.sender?.userId || e.userId
+  if (!userId) return undefined
+
+  try {
+    const url = await e.bot.getAvatarUrl(userId)
+    return url || undefined
+  } catch (error) {
+    logger.debug('[karin-plugin-kkk] 获取触发者头像失败，二维码将不嵌入头像:', error)
+    return undefined
+  }
 }

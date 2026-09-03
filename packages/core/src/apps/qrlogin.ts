@@ -2,6 +2,7 @@ import os from 'node:os'
 
 import karin, { logger } from 'node-karin'
 
+import { resolveTriggerAvatarUrl } from '@/module/utils/bot'
 import { Config } from '@/module/utils/Config'
 import { wrapWithErrorHandler } from '@/module/utils/ErrorHandler'
 import { Render } from '@/module/utils/Render'
@@ -137,7 +138,8 @@ const handleQrLogin = wrapWithErrorHandler(
     // 使用模板系统渲染二维码图片
     const images = await Render(e, 'other/qrlogin', {
       share_url: qrData,
-      serverUrl
+      serverUrl,
+      avatarUrl: await resolveTriggerAvatarUrl(e)
     })
 
     // 私发给触发命令的用户

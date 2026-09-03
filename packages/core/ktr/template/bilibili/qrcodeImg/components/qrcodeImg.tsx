@@ -3,9 +3,9 @@ import { AlertTriangle, ScanLine, User } from 'lucide-react'
 import React from 'react'
 import { RiArrowRightFill } from 'react-icons/ri'
 
-import { generateQRCode } from '../../../../utils/QRcode'
 import { isDark } from '../../../../utils/theme'
 import { DefaultLayout } from '../../../components/DefaultLayout'
+import { QRCodeWithAvatar } from '../../../components/QRCodeWithAvatar'
 import type { PosterProps } from '../../../types/ctx'
 import type { BilibiliQrcodeImgData } from './types'
 
@@ -16,7 +16,6 @@ import type { BilibiliQrcodeImgData } from './types'
  */
 export const BilibiliQrcodeImg: React.FC<PosterProps<BilibiliQrcodeImgData>> = React.memo((props) => {
   const dark = isDark(props.ctx)
-  const qrCodeDataUrl = generateQRCode(props.data.share_url, dark)
 
   const theme = {
     bg: dark ? '#000000' : '#FFFFFF',
@@ -126,8 +125,14 @@ export const BilibiliQrcodeImg: React.FC<PosterProps<BilibiliQrcodeImgData>> = R
               height: '800px'
             }}
           >
-            {qrCodeDataUrl ? (
-              <img src={qrCodeDataUrl} alt="QR Code" className="w-full h-full object-contain" />
+            {props.data.share_url ? (
+              <QRCodeWithAvatar
+                value={props.data.share_url}
+                avatarUrl={props.data.avatarUrl}
+                useDarkTheme={dark}
+                alt="QR Code"
+                className="w-full h-full object-contain"
+              />
             ) : (
               <div className="w-full h-full flex flex-col items-center justify-center gap-8">
                 <div className="w-24 h-24 border-4 border-gray-200 rounded-full animate-spin" style={{ borderTopColor: theme.accent }} />

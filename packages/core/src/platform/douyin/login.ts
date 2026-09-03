@@ -12,6 +12,7 @@ import { karin, logger, type Message } from 'node-karin'
 
 import { Common, Render } from '@/module'
 import { reloadAmagiConfig } from '@/module/utils/amagiClient'
+import { resolveTriggerAvatarUrl } from '@/module/utils/bot'
 import { Config } from '@/module/utils/Config'
 
 /** 等待用户扫码的时限上限，与消息可撤回窗口（2 分钟）对齐；二维码本身更早失效时以它为准 */
@@ -216,7 +217,10 @@ export const douyinLogin = async (e: Message) => {
     const validFor = qrcode.data.expires_in
     logger.mark(`[抖音登录] 二维码已获取，有效期 ${validFor} 秒`)
 
-    const rendered = await Render(e, 'douyin/qrcodeImg', { share_url: qrcode.data.content })
+    const rendered = await Render(e, 'douyin/qrcodeImg', {
+      share_url: qrcode.data.content,
+      avatarUrl: await resolveTriggerAvatarUrl(e)
+    })
     const base64Data = rendered[0]?.file
     if (!base64Data) throw new Error('生成二维码图片失败')
 

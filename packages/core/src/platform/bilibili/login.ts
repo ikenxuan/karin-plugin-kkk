@@ -6,13 +6,17 @@ import { common } from 'node-karin'
 
 import { Common, Render } from '@/module/utils'
 import { bilibiliFetcher } from '@/module/utils/amagiClient'
+import { resolveTriggerAvatarUrl } from '@/module/utils/bot'
 import { Config } from '@/module/utils/Config'
 
 /** B站登录 */
 export const bilibiliLogin = async (e: Message) => {
   /** 申请二维码 */
   const qrcodeurl = await bilibiliFetcher.requestLoginQrcode({ typeMode: 'strict' })
-  const qrimg = await Render(e, 'bilibili/qrcodeImg', { share_url: qrcodeurl.data.data.url })
+  const qrimg = await Render(e, 'bilibili/qrcodeImg', {
+    share_url: qrcodeurl.data.data.url,
+    avatarUrl: await resolveTriggerAvatarUrl(e)
+  })
 
   const base64Data = qrimg[0]?.file
   if (!base64Data) {

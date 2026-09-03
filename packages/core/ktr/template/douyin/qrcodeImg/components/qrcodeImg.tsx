@@ -2,9 +2,9 @@ import { Menu, ScanLine, ShieldCheck, Smartphone } from 'lucide-react'
 import React from 'react'
 import { RiArrowRightFill, RiTiktokFill } from 'react-icons/ri'
 
-import { generateQRCode } from '../../../../utils/QRcode'
 import { isDark } from '../../../../utils/theme'
 import { DefaultLayout } from '../../../components/DefaultLayout'
+import { QRCodeWithAvatar } from '../../../components/QRCodeWithAvatar'
 import type { PosterProps } from '../../../types/ctx'
 import type { DouyinQrcodeImgData } from './types'
 
@@ -15,7 +15,6 @@ import type { DouyinQrcodeImgData } from './types'
  */
 export const DouyinQrcodeImg: React.FC<PosterProps<DouyinQrcodeImgData>> = React.memo((props) => {
   const dark = isDark(props.ctx)
-  const qrCodeImage = generateQRCode(props.data.share_url || '', dark)
 
   const theme = {
     bg: dark ? '#000000' : '#FFFFFF',
@@ -111,8 +110,14 @@ export const DouyinQrcodeImg: React.FC<PosterProps<DouyinQrcodeImgData>> = React
               height: '800px'
             }}
           >
-            {qrCodeImage ? (
-              <img src={qrCodeImage} alt="QR Code" className="w-full h-full object-contain" />
+            {props.data.share_url ? (
+              <QRCodeWithAvatar
+                value={props.data.share_url}
+                avatarUrl={props.data.avatarUrl}
+                useDarkTheme={dark}
+                alt="QR Code"
+                className="w-full h-full object-contain"
+              />
             ) : (
               <div className="w-full h-full flex flex-col items-center justify-center gap-8">
                 <div className="w-24 h-24 border-4 border-gray-200 border-t-black rounded-full animate-spin" />

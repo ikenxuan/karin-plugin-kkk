@@ -1,3 +1,5 @@
+import { isProxyableAvatarUrl, toProxiedAvatarUrl } from './avatarProxy'
+
 const MAX_QRCODE_AVATAR_BYTES = 2 * 1024 * 1024
 const QRCODE_AVATAR_TIMEOUT_MS = 5000
 const QRCODE_AVATAR_CACHE_SIZE = 128
@@ -31,7 +33,7 @@ const isSupportedImageBytes = (image: Uint8Array): boolean => {
   return isPng || isJpeg || isWebp
 }
 
-const fetchQRCodeAvatar = async (url: string): Promise<Uint8Array | undefined> => {
+const requestAvatarBytes = async (url: string): Promise<Uint8Array | undefined> => {
   try {
     const response = await fetch(url, {
       headers: {
@@ -54,6 +56,27 @@ const fetchQRCodeAvatar = async (url: string): Promise<Uint8Array | undefined> =
   } catch {
     return undefined
   }
+}
+
+/**
+ * 依次尝试的取图地址。
+ *
+ * 浏览器（只有 ktr 开发面板会走到）里头像 CDN 多半缺 CORS 头，直连必被同源策略拦，
+ * 所以优先走 dev 服务器的同源代理，代理不在（如面板未启动）时再退回直连。
+ * Node SSR 侧没有同源策略，始终直连。
+ */
+const avatarCandidates = (url: string): string[] => {
+  if (typeof window === 'undefined' || !isProxyableAvatarUrl(url)) return [url]
+  return [toProxiedAvatarUrl(url), url]
+}
+
+const fetchQRCodeAvatar = async (url: string): Promise<Uint8Array | undefined> => {
+  for (const candidate of avatarCandidates(url)) {
+    const image = await requestAvatarBytes(candidate)
+    if (image) return image
+  }
+
+  return undefined
 }
 
 /**
