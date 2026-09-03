@@ -1,4 +1,4 @@
 {
   "files": [],
-  "references": [{ "path": "./packages/richtext" }, { "path": "./packages/core" }, { "path": "./packages/amagi" }]
+  "references": [{ "path": "./packages/richtext" }, { "path": "./packages/core" }]
 }
