@@ -9,7 +9,7 @@ import {
   type RichTextEmojiDefinition,
   type RichTextNode
 } from '@kkk/richtext'
-import type { KuaishouCommentData } from '@template/kuaishou/comment/components/types'
+import type { KuaishouCommentData } from '@template/template/kuaishou/comment/components/types'
 
 import { Config } from '@/module/utils/Config'
 

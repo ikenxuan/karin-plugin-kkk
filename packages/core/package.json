@@ -69,8 +69,7 @@
     "watch": "ktr sync && cross-env EBV_FILE=\"development.env\" tsx watch --include \"src/**/*.ts\" --include \"ktr/**/*.ts\" --include \"ktr/**/*.tsx\" src/app.ts --trace-deprecation"
   },
   "dependencies": {
-    "@ikenxuan/qrcode": "1.5.0",
-    "@ikenxuan/watermark": "1.3.1"
+    "@ikenxuan/qrcode": "1.5.0"
   },
   "devDependencies": {
     "@heroui/react": "3.2.4",
@@ -136,5 +135,5 @@
     "web": "./lib/web.config.js",
     "ts-web": "./src/web.config.ts"
   },
-  "timestamp": "2026-09-03T05:22:50.400Z"
+  "timestamp": "2026-09-03T07:57:39.480Z"
 }

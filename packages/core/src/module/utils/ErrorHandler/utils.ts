@@ -1,4 +1,4 @@
-import type { ApiErrorData } from '@template/other/handlerError/components/types'
+import type { ApiErrorData } from '@template/template/other/handlerError/components/types'
 import type { AdapterType, Message } from 'node-karin'
 import karin from 'node-karin'
 

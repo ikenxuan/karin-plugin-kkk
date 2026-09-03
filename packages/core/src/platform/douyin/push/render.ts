@@ -476,8 +476,6 @@ export interface RenderWorkImageOptions {
   create_time: number
   /** 分享链接地址 */
   shareLink: string
-  /** 是否跳过水印嵌入（推送场景为 true，避免重复水印） */
-  skipWatermark?: boolean
   /** 作品类型标签，显示在图片头部 */
   dynamicTypeLabel?: string
   /**
@@ -510,7 +508,7 @@ function getDefaultPushLabel(workTypeInfo: DouyinWorkTypeInfo): string {
  * @returns 渲染后的图片元素数组
  */
 export async function renderWorkImage(options: RenderWorkImageOptions): Promise<ImageElement[]> {
-  const { e, Detail_Data, create_time, shareLink, skipWatermark = false, videoSource } = options
+  const { e, Detail_Data, create_time, shareLink, videoSource } = options
   const workTypeInfo = getWorkTypeInfo(Detail_Data)
   const dynamicTypeLabel = options.dynamicTypeLabel ?? getDefaultPushLabel(workTypeInfo)
   const coverUrl = getWorkCoverUrl(workTypeInfo, Detail_Data)
@@ -523,37 +521,30 @@ export async function renderWorkImage(options: RenderWorkImageOptions): Promise<
   const cooperationInfo = buildCooperationInfo(Detail_Data)
   const mentionCache = new Map<string, string | null>()
 
-  const renderOpts = skipWatermark ? { skipWatermark: true } : undefined
-
   switch (workTypeInfo.mainType) {
     case DouyinWorkMainType.ARTICLE: {
       const articleInfo = Detail_Data.article_info
       if (!articleInfo) return []
       const content = JSON.parse(articleInfo.article_content)
       const fe_data = JSON.parse(articleInfo.fe_data)
-      return await Render(
-        e,
-        'douyin/article-work',
-        {
-          title: articleInfo.article_title,
-          markdown: content.markdown,
-          images: fe_data.image_list || [],
-          read_time: fe_data.read_time || 0,
-          dianzan: Count(Detail_Data.statistics.digg_count),
-          pinglun: Count(Detail_Data.statistics.comment_count),
-          shouchang: Count(Detail_Data.statistics.collect_count),
-          share: Count(Detail_Data.statistics.share_count),
-          create_time: formatTime,
-          avater_url: avatarUrl,
-          username: authorNickname,
-          抖音号: userDouyinId,
-          获赞: Count(user.total_favorited),
-          关注: Count(user.following_count),
-          粉丝: Count(user.follower_count),
-          share_url: shareLink
-        },
-        renderOpts
-      )
+      return await Render(e, 'douyin/article-work', {
+        title: articleInfo.article_title,
+        markdown: content.markdown,
+        images: fe_data.image_list || [],
+        read_time: fe_data.read_time || 0,
+        dianzan: Count(Detail_Data.statistics.digg_count),
+        pinglun: Count(Detail_Data.statistics.comment_count),
+        shouchang: Count(Detail_Data.statistics.collect_count),
+        share: Count(Detail_Data.statistics.share_count),
+        create_time: formatTime,
+        avater_url: avatarUrl,
+        username: authorNickname,
+        抖音号: userDouyinId,
+        获赞: Count(user.total_favorited),
+        关注: Count(user.following_count),
+        粉丝: Count(user.follower_count),
+        share_url: shareLink
+      })
     }
 
     case DouyinWorkMainType.VIDEO: {
@@ -561,44 +552,39 @@ export async function renderWorkImage(options: RenderWorkImageOptions): Promise<
       const title = await buildDescRichText(desc(rawDesc), Detail_Data.text_extra, 0, mentionCache)
       const emptyDesc = createRichTextDocument([], { platform: 'douyin' })
 
-      return await Render(
-        e,
-        'douyin/video-work',
-        {
-          image_url: coverUrl,
-          title,
-          desc: emptyDesc,
-          ip_location: extractIpLocation(Detail_Data),
-          suggest_word: extractSuggestWord(Detail_Data),
-          music: buildMusicInfo(Detail_Data.music),
-          duration: Detail_Data.duration,
-          // 清晰度/分辨率/HDR 都从选档后的那一路视频源派生，保证卡片展示与实际下载一致；
-          // 未选档（如分享信息图场景未触发选档）时不展示分辨率块
-          resolution: videoSource
-            ? {
-                name: formatDouyinQualityLabel(videoSource),
-                width: videoSource.play_addr.width,
-                height: videoSource.play_addr.height
-              }
-            : undefined,
-          is_HDR: videoSource ? String(videoSource.HDR_type) === '1' : false,
-          dianzan: Count(Detail_Data.statistics.digg_count),
-          pinglun: Count(Detail_Data.statistics.comment_count),
-          share: Count(Detail_Data.statistics.share_count),
-          shouchang: Count(Detail_Data.statistics.collect_count),
-          create_time,
-          avater_url: avatarUrl,
-          share_url: shareLink,
-          username: user.nickname,
-          抖音号: userDouyinId,
-          粉丝: Count(user.follower_count),
-          获赞: Count(user.total_favorited),
-          关注: Count(user.following_count),
-          dynamicTYPE: dynamicTypeLabel,
-          cooperation_info: cooperationInfo
-        },
-        renderOpts
-      )
+      return await Render(e, 'douyin/video-work', {
+        image_url: coverUrl,
+        title,
+        desc: emptyDesc,
+        ip_location: extractIpLocation(Detail_Data),
+        suggest_word: extractSuggestWord(Detail_Data),
+        music: buildMusicInfo(Detail_Data.music),
+        duration: Detail_Data.duration,
+        // 清晰度/分辨率/HDR 都从选档后的那一路视频源派生，保证卡片展示与实际下载一致；
+        // 未选档（如分享信息图场景未触发选档）时不展示分辨率块
+        resolution: videoSource
+          ? {
+              name: formatDouyinQualityLabel(videoSource),
+              width: videoSource.play_addr.width,
+              height: videoSource.play_addr.height
+            }
+          : undefined,
+        is_HDR: videoSource ? String(videoSource.HDR_type) === '1' : false,
+        dianzan: Count(Detail_Data.statistics.digg_count),
+        pinglun: Count(Detail_Data.statistics.comment_count),
+        share: Count(Detail_Data.statistics.share_count),
+        shouchang: Count(Detail_Data.statistics.collect_count),
+        create_time,
+        avater_url: avatarUrl,
+        share_url: shareLink,
+        username: user.nickname,
+        抖音号: userDouyinId,
+        粉丝: Count(user.follower_count),
+        获赞: Count(user.total_favorited),
+        关注: Count(user.following_count),
+        dynamicTYPE: dynamicTypeLabel,
+        cooperation_info: cooperationInfo
+      })
     }
 
     case DouyinWorkMainType.IMAGE: {
@@ -609,33 +595,28 @@ export async function renderWorkImage(options: RenderWorkImageOptions): Promise<
       const title = splitDesc.title ? await buildDescRichText(splitDesc.title, Detail_Data.text_extra, 0, mentionCache) : undefined
       const bodyText = splitDesc.title && !splitDesc.body ? '' : desc(splitDesc.body)
       const richDesc = await buildDescRichText(bodyText, Detail_Data.text_extra, titleOffset, mentionCache)
-      return await Render(
-        e,
-        'douyin/image-work',
-        {
-          image_list: buildImageList(Detail_Data.images, cover),
-          title,
-          desc: richDesc,
-          ip_location: extractIpLocation(Detail_Data),
-          suggest_word: extractSuggestWord(Detail_Data),
-          music: buildMusicInfo(Detail_Data.music),
-          dianzan: Count(Detail_Data.statistics.digg_count),
-          pinglun: Count(Detail_Data.statistics.comment_count),
-          share: Count(Detail_Data.statistics.share_count),
-          shouchang: Count(Detail_Data.statistics.collect_count),
-          create_time,
-          avater_url: avatarUrl,
-          share_url: shareLink,
-          username: user.nickname,
-          抖音号: userDouyinId,
-          粉丝: Count(user.follower_count),
-          获赞: Count(user.total_favorited),
-          关注: Count(user.following_count),
-          dynamicTYPE: dynamicTypeLabel,
-          cooperation_info: cooperationInfo
-        },
-        renderOpts
-      )
+      return await Render(e, 'douyin/image-work', {
+        image_list: buildImageList(Detail_Data.images, cover),
+        title,
+        desc: richDesc,
+        ip_location: extractIpLocation(Detail_Data),
+        suggest_word: extractSuggestWord(Detail_Data),
+        music: buildMusicInfo(Detail_Data.music),
+        dianzan: Count(Detail_Data.statistics.digg_count),
+        pinglun: Count(Detail_Data.statistics.comment_count),
+        share: Count(Detail_Data.statistics.share_count),
+        shouchang: Count(Detail_Data.statistics.collect_count),
+        create_time,
+        avater_url: avatarUrl,
+        share_url: shareLink,
+        username: user.nickname,
+        抖音号: userDouyinId,
+        粉丝: Count(user.follower_count),
+        获赞: Count(user.total_favorited),
+        关注: Count(user.following_count),
+        dynamicTYPE: dynamicTypeLabel,
+        cooperation_info: cooperationInfo
+      })
     }
 
     default:
@@ -655,8 +636,6 @@ export interface RenderFavoriteRecommendOptions {
   shareLink: string
   /** 订阅者/推荐者昵称（remark） */
   remark: string
-  /** 是否跳过水印 */
-  skipWatermark?: boolean
 }
 
 /**
@@ -666,34 +645,29 @@ export interface RenderFavoriteRecommendOptions {
  * @returns 渲染后的图片元素数组
  */
 export async function renderFavoriteImage(options: RenderFavoriteRecommendOptions): Promise<ImageElement[]> {
-  const { e, Detail_Data, create_time, shareLink, remark, skipWatermark = false } = options
+  const { e, Detail_Data, create_time, shareLink, remark } = options
   const workTypeInfo = getWorkTypeInfo(Detail_Data)
   const coverUrl = getWorkCoverUrl(workTypeInfo, Detail_Data)
   const authorUserInfo = Detail_Data.author_user_info
   const subscriberUser = Detail_Data.user_info.data.user
 
-  return await Render(
-    e,
-    'douyin/favorite-list',
-    {
-      image_url: coverUrl,
-      desc: desc(Detail_Data.desc),
-      dianzan: Count(Detail_Data.statistics.digg_count),
-      pinglun: Count(Detail_Data.statistics.comment_count),
-      share: Count(Detail_Data.statistics.share_count),
-      shouchang: Count(Detail_Data.statistics.collect_count),
-      tuijian: Count(Detail_Data.statistics.recommend_count),
-      create_time: format(fromUnixTime(create_time), 'yyyy-MM-dd HH:mm'),
-      liker_username: remark,
-      liker_avatar: cdnAvatar(subscriberUser.avatar_larger.uri),
-      liker_douyin_id: douyinId(subscriberUser),
-      author_username: Detail_Data.author.nickname,
-      author_avatar: authorUserInfo ? cdnAvatar(authorUserInfo.data.user.avatar_larger.uri) : Detail_Data.author.avatar_thumb.url_list[0],
-      author_douyin_id: authorUserInfo ? douyinId(authorUserInfo.data.user) : douyinId(Detail_Data.author),
-      share_url: shareLink
-    },
-    skipWatermark ? { skipWatermark: true } : undefined
-  )
+  return await Render(e, 'douyin/favorite-list', {
+    image_url: coverUrl,
+    desc: desc(Detail_Data.desc),
+    dianzan: Count(Detail_Data.statistics.digg_count),
+    pinglun: Count(Detail_Data.statistics.comment_count),
+    share: Count(Detail_Data.statistics.share_count),
+    shouchang: Count(Detail_Data.statistics.collect_count),
+    tuijian: Count(Detail_Data.statistics.recommend_count),
+    create_time: format(fromUnixTime(create_time), 'yyyy-MM-dd HH:mm'),
+    liker_username: remark,
+    liker_avatar: cdnAvatar(subscriberUser.avatar_larger.uri),
+    liker_douyin_id: douyinId(subscriberUser),
+    author_username: Detail_Data.author.nickname,
+    author_avatar: authorUserInfo ? cdnAvatar(authorUserInfo.data.user.avatar_larger.uri) : Detail_Data.author.avatar_thumb.url_list[0],
+    author_douyin_id: authorUserInfo ? douyinId(authorUserInfo.data.user) : douyinId(Detail_Data.author),
+    share_url: shareLink
+  })
 }
 
 /**
@@ -703,34 +677,29 @@ export async function renderFavoriteImage(options: RenderFavoriteRecommendOption
  * @returns 渲染后的图片元素数组
  */
 export async function renderRecommendImage(options: RenderFavoriteRecommendOptions): Promise<ImageElement[]> {
-  const { e, Detail_Data, create_time, shareLink, remark, skipWatermark = false } = options
+  const { e, Detail_Data, create_time, shareLink, remark } = options
   const workTypeInfo = getWorkTypeInfo(Detail_Data)
   const coverUrl = getWorkCoverUrl(workTypeInfo, Detail_Data)
   const authorUserInfo = Detail_Data.author_user_info
   const recommenderUser = Detail_Data.user_info.data.user
 
-  return await Render(
-    e,
-    'douyin/recommend-list',
-    {
-      image_url: coverUrl,
-      desc: desc(Detail_Data.desc),
-      dianzan: Count(Detail_Data.statistics.digg_count),
-      pinglun: Count(Detail_Data.statistics.comment_count),
-      share: Count(Detail_Data.statistics.share_count),
-      shouchang: Count(Detail_Data.statistics.collect_count),
-      tuijian: Count(Detail_Data.statistics.recommend_count),
-      create_time: format(fromUnixTime(create_time), 'yyyy-MM-dd HH:mm'),
-      recommender_username: remark,
-      recommender_avatar: cdnAvatar(recommenderUser.avatar_larger.uri),
-      recommender_douyin_id: douyinId(recommenderUser),
-      author_username: Detail_Data.author.nickname,
-      author_avatar: authorUserInfo ? cdnAvatar(authorUserInfo.data.user.avatar_larger.uri) : Detail_Data.author.avatar_thumb.url_list[0],
-      author_douyin_id: authorUserInfo ? douyinId(authorUserInfo.data.user) : douyinId(Detail_Data.author),
-      share_url: shareLink
-    },
-    skipWatermark ? { skipWatermark: true } : undefined
-  )
+  return await Render(e, 'douyin/recommend-list', {
+    image_url: coverUrl,
+    desc: desc(Detail_Data.desc),
+    dianzan: Count(Detail_Data.statistics.digg_count),
+    pinglun: Count(Detail_Data.statistics.comment_count),
+    share: Count(Detail_Data.statistics.share_count),
+    shouchang: Count(Detail_Data.statistics.collect_count),
+    tuijian: Count(Detail_Data.statistics.recommend_count),
+    create_time: format(fromUnixTime(create_time), 'yyyy-MM-dd HH:mm'),
+    recommender_username: remark,
+    recommender_avatar: cdnAvatar(recommenderUser.avatar_larger.uri),
+    recommender_douyin_id: douyinId(recommenderUser),
+    author_username: Detail_Data.author.nickname,
+    author_avatar: authorUserInfo ? cdnAvatar(authorUserInfo.data.user.avatar_larger.uri) : Detail_Data.author.avatar_thumb.url_list[0],
+    author_douyin_id: authorUserInfo ? douyinId(authorUserInfo.data.user) : douyinId(Detail_Data.author),
+    share_url: shareLink
+  })
 }
 
 /** 直播状态推送图片渲染参数 */
@@ -739,8 +708,6 @@ export interface RenderLiveImageOptions {
   e: Message
   /** 直播详情数据，包含 user_info、room_data、live_data 等字段 */
   Detail_Data: DouyinLiveDetailData
-  /** 是否跳过水印 */
-  skipWatermark?: boolean
   /** 推送类型标签，显示在图片头部 */
   dynamicTypeLabel?: string
 }
@@ -753,7 +720,7 @@ export interface RenderLiveImageOptions {
  * @returns 渲染后的图片元素数组
  */
 export async function renderLiveImage(options: RenderLiveImageOptions): Promise<ImageElement[]> {
-  const { e, Detail_Data, skipWatermark = false } = options
+  const { e, Detail_Data } = options
   const dynamicTypeLabel = options.dynamicTypeLabel ?? '直播动态推送'
   const user = Detail_Data.user_info.data.user
 
@@ -764,32 +731,27 @@ export async function renderLiveImage(options: RenderLiveImageOptions): Promise<
   const streamExtra = liveItem.stream_url?.extra
   const resolution = streamExtra ? `${streamExtra.width}x${streamExtra.height}` : liveItem.stream_url?.default_resolution
 
-  return await Render(
-    e,
-    'douyin/live',
-    {
-      image_url: liveItem.cover ? liveItem.cover?.url_list[0] : '',
-      text: liveItem.title ?? '',
-      partition_title: Detail_Data.live_data.data.data.partition_road_map?.partition?.title || '未知分区',
-      room_id: room_data.owner.web_rid,
-      online_viewers: Count(Number(liveItem.room_view_stats?.display_value)),
-      total_viewers: liveItem.stats?.total_user_str || '',
-      username: user.nickname,
-      avater_url: cdnAvatar(user.avatar_larger.uri),
-      fans: Count(user.follower_count),
-      share_url: 'https://live.douyin.com/' + room_data.owner.web_rid,
-      dynamicTYPE: dynamicTypeLabel,
-      like_count: Count(Number(liveItem.like_count || 0)),
-      user_count_str: liveItem.user_count_str ?? '',
-      resolution: resolution ?? '',
-      signature: user.signature || '',
-      // 上游生成类型把 city 标成 null，真实数据可能是字符串
-      city: user.city || '',
-      aweme_count: Count(user.aweme_count || 0),
-      following_count: Count(user.following_count || 0),
-      total_favorited: Count(user.total_favorited || 0),
-      has_commerce_goods: liveItem.has_commerce_goods || false
-    },
-    skipWatermark ? { skipWatermark: true } : undefined
-  )
+  return await Render(e, 'douyin/live', {
+    image_url: liveItem.cover ? liveItem.cover?.url_list[0] : '',
+    text: liveItem.title ?? '',
+    partition_title: Detail_Data.live_data.data.data.partition_road_map?.partition?.title || '未知分区',
+    room_id: room_data.owner.web_rid,
+    online_viewers: Count(Number(liveItem.room_view_stats?.display_value)),
+    total_viewers: liveItem.stats?.total_user_str || '',
+    username: user.nickname,
+    avater_url: cdnAvatar(user.avatar_larger.uri),
+    fans: Count(user.follower_count),
+    share_url: 'https://live.douyin.com/' + room_data.owner.web_rid,
+    dynamicTYPE: dynamicTypeLabel,
+    like_count: Count(Number(liveItem.like_count || 0)),
+    user_count_str: liveItem.user_count_str ?? '',
+    resolution: resolution ?? '',
+    signature: user.signature || '',
+    // 上游生成类型把 city 标成 null，真实数据可能是字符串
+    city: user.city || '',
+    aweme_count: Count(user.aweme_count || 0),
+    following_count: Count(user.following_count || 0),
+    total_favorited: Count(user.total_favorited || 0),
+    has_commerce_goods: liveItem.has_commerce_goods || false
+  })
 }

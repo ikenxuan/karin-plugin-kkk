@@ -56,8 +56,6 @@ export interface ConfigType {
       /** 压色罩中间带不透明度 */
       overlayMiddleOpacity: number
     }
-    /** 移除水印 */
-    RemoveWatermark: boolean
     /** 渲染等待时间 */
     RenderWaitTime: number
     /** 表情回应 */

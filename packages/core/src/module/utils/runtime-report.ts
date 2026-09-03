@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
 
-import type { RuntimeReportData } from '@template/other/runtime/components/types'
+import type { RuntimeReportData } from '@template/template/other/runtime/components/types'
 import { isDocker, logs, type Message } from 'node-karin'
 
 import { Root } from '../../root'

@@ -97,7 +97,6 @@ const AppConfigPage = ({ config, renderers }: ConfigPageProps) => {
               </Popover.Content>
             </Popover>
           </div>
-          {renderSwitch(['app', 'RemoveWatermark'], '移除版本信息', '渲染的图片是否移除底部版本信息。')}
           {renderTextField(['app', 'RenderWaitTime'], '渲染图片的等待时间', '单位：秒，Linux系统下不能为0；其他系统传递 0 可禁用。', {
             type: 'number',
             fallback: 60,

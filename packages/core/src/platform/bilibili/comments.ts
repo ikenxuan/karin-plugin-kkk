@@ -9,7 +9,7 @@ import {
   type RichTextEmojiDefinition,
   type RichTextNode
 } from '@kkk/richtext'
-import type { CommentItem, SubCommentItem } from '@template/bilibili/components/types'
+import type { CommentItem, SubCommentItem } from '@template/template/bilibili/components/types'
 
 import { Config } from '@/module/utils/Config'
 

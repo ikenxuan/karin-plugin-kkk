@@ -16,7 +16,6 @@ import type { AdapterType, ImageElement, Message, SendMsgResults } from 'node-ka
 import karin, { common, logger, segment } from 'node-karin'
 
 import {
-  applyWatermarkToImages,
   Base,
   baseHeaders,
   bilibiliDB,
@@ -376,39 +375,34 @@ export class Bilibilipush extends Base {
               data[dynamicId].Dynamic_Data.modules.module_dynamic.major!.opus.summary.text =
                 `${name}\n\n` + data[dynamicId].Dynamic_Data.modules.module_dynamic.major?.opus?.summary?.text
             }
-            img = await Render(
-              this.e,
-              'bilibili/dynamic/DYNAMIC_TYPE_DRAW',
-              {
-                image_url: Object.values(data[dynamicId].Dynamic_Data.modules.module_dynamic.major?.opus?.pics ?? [])
-                  .filter((item): item is { url: string } => typeof item?.url === 'string')
-                  .map((item) => ({ image_src: item.url })),
-                title: data[dynamicId].Dynamic_Data.modules.module_dynamic.major?.opus?.title ?? undefined,
-                text: buildBilibiliDynamicRichText(
-                  data[dynamicId].Dynamic_Data.modules.module_dynamic.major?.opus?.summary?.text ?? '',
-                  data[dynamicId].Dynamic_Data.modules.module_dynamic.major?.opus?.summary?.rich_text_nodes ?? []
-                ),
-                dianzan: Count(data[dynamicId].Dynamic_Data.modules.module_stat.like.count),
-                pinglun: Count(data[dynamicId].Dynamic_Data.modules.module_stat.comment.count),
-                share: Count(data[dynamicId].Dynamic_Data.modules.module_stat.forward.count),
-                create_time: TimeFormatter.toDateTime(data[dynamicId].Dynamic_Data.modules.module_author.pub_ts),
-                avatar_url: data[dynamicId].Dynamic_Data.modules.module_author.face,
-                frame: data[dynamicId].Dynamic_Data.modules.module_author.pendant.image,
-                share_url: 'https://t.bilibili.com/' + data[dynamicId].Dynamic_Data.id_str,
-                usernameMeta: getUsernameMetadata(userINFO.data.data.card),
-                fans: Count(userINFO.data.data.follower),
-                user_shortid: data[dynamicId].host_mid,
-                total_favorited: Count(userINFO.data.data.like_num),
-                following_count: Count(userINFO.data.data.card.attention),
-                decoration_card: generateDecorationCard(data[dynamicId].Dynamic_Data.modules.module_author.decorate_card),
-                render_time: TimeFormatter.now(),
-                imageLayout: Config.bilibili.imageLayout,
-                additional: parseAdditionalCard(data[dynamicId].Dynamic_Data.modules.module_dynamic.additional),
-                dynamicTYPE: '图文动态推送',
-                dynamic_id: dynamicId
-              },
-              { skipWatermark: true }
-            )
+            img = await Render(this.e, 'bilibili/dynamic/DYNAMIC_TYPE_DRAW', {
+              image_url: Object.values(data[dynamicId].Dynamic_Data.modules.module_dynamic.major?.opus?.pics ?? [])
+                .filter((item): item is { url: string } => typeof item?.url === 'string')
+                .map((item) => ({ image_src: item.url })),
+              title: data[dynamicId].Dynamic_Data.modules.module_dynamic.major?.opus?.title ?? undefined,
+              text: buildBilibiliDynamicRichText(
+                data[dynamicId].Dynamic_Data.modules.module_dynamic.major?.opus?.summary?.text ?? '',
+                data[dynamicId].Dynamic_Data.modules.module_dynamic.major?.opus?.summary?.rich_text_nodes ?? []
+              ),
+              dianzan: Count(data[dynamicId].Dynamic_Data.modules.module_stat.like.count),
+              pinglun: Count(data[dynamicId].Dynamic_Data.modules.module_stat.comment.count),
+              share: Count(data[dynamicId].Dynamic_Data.modules.module_stat.forward.count),
+              create_time: TimeFormatter.toDateTime(data[dynamicId].Dynamic_Data.modules.module_author.pub_ts),
+              avatar_url: data[dynamicId].Dynamic_Data.modules.module_author.face,
+              frame: data[dynamicId].Dynamic_Data.modules.module_author.pendant.image,
+              share_url: 'https://t.bilibili.com/' + data[dynamicId].Dynamic_Data.id_str,
+              usernameMeta: getUsernameMetadata(userINFO.data.data.card),
+              fans: Count(userINFO.data.data.follower),
+              user_shortid: data[dynamicId].host_mid,
+              total_favorited: Count(userINFO.data.data.like_num),
+              following_count: Count(userINFO.data.data.card.attention),
+              decoration_card: generateDecorationCard(data[dynamicId].Dynamic_Data.modules.module_author.decorate_card),
+              render_time: TimeFormatter.now(),
+              imageLayout: Config.bilibili.imageLayout,
+              additional: parseAdditionalCard(data[dynamicId].Dynamic_Data.modules.module_dynamic.additional),
+              dynamicTYPE: '图文动态推送',
+              dynamic_id: dynamicId
+            })
             break
           }
           /** 处理纯文动态 */
@@ -436,31 +430,26 @@ export class Bilibilipush extends Base {
               data[dynamicId].Dynamic_Data.modules.module_dynamic.major?.opus?.summary?.rich_text_nodes ?? []
             )
 
-            img = await Render(
-              this.e,
-              'bilibili/dynamic/DYNAMIC_TYPE_WORD',
-              {
-                text,
-                dianzan: Count(data[dynamicId].Dynamic_Data.modules.module_stat.like.count),
-                pinglun: Count(data[dynamicId].Dynamic_Data.modules.module_stat.comment.count),
-                share: Count(data[dynamicId].Dynamic_Data.modules.module_stat.forward.count),
-                create_time: TimeFormatter.toDateTime(data[dynamicId].Dynamic_Data.modules.module_author.pub_ts),
-                avatar_url: data[dynamicId].Dynamic_Data.modules.module_author.face,
-                frame: data[dynamicId].Dynamic_Data.modules.module_author.pendant.image,
-                share_url: 'https://t.bilibili.com/' + data[dynamicId].Dynamic_Data.id_str,
-                usernameMeta: getUsernameMetadata(userINFO.data.data.card),
-                fans: Count(userINFO.data.data.follower),
-                user_shortid: data[dynamicId].host_mid,
-                total_favorited: Count(userINFO.data.data.like_num),
-                following_count: Count(userINFO.data.data.card.attention),
-                decoration_card: generateDecorationCard(data[dynamicId].Dynamic_Data.modules.module_author.decorate_card),
-                render_time: TimeFormatter.now(),
-                additional: parseAdditionalCard(data[dynamicId].Dynamic_Data.modules.module_dynamic.additional),
-                dynamicTYPE: '纯文动态推送',
-                dynamic_id: dynamicId
-              },
-              { skipWatermark: true }
-            )
+            img = await Render(this.e, 'bilibili/dynamic/DYNAMIC_TYPE_WORD', {
+              text,
+              dianzan: Count(data[dynamicId].Dynamic_Data.modules.module_stat.like.count),
+              pinglun: Count(data[dynamicId].Dynamic_Data.modules.module_stat.comment.count),
+              share: Count(data[dynamicId].Dynamic_Data.modules.module_stat.forward.count),
+              create_time: TimeFormatter.toDateTime(data[dynamicId].Dynamic_Data.modules.module_author.pub_ts),
+              avatar_url: data[dynamicId].Dynamic_Data.modules.module_author.face,
+              frame: data[dynamicId].Dynamic_Data.modules.module_author.pendant.image,
+              share_url: 'https://t.bilibili.com/' + data[dynamicId].Dynamic_Data.id_str,
+              usernameMeta: getUsernameMetadata(userINFO.data.data.card),
+              fans: Count(userINFO.data.data.follower),
+              user_shortid: data[dynamicId].host_mid,
+              total_favorited: Count(userINFO.data.data.like_num),
+              following_count: Count(userINFO.data.data.card.attention),
+              decoration_card: generateDecorationCard(data[dynamicId].Dynamic_Data.modules.module_author.decorate_card),
+              render_time: TimeFormatter.now(),
+              additional: parseAdditionalCard(data[dynamicId].Dynamic_Data.modules.module_dynamic.additional),
+              dynamicTYPE: '纯文动态推送',
+              dynamic_id: dynamicId
+            })
             break
           }
           /** 处理视频动态 */
@@ -514,63 +503,53 @@ export class Bilibilipush extends Base {
                 data[dynamicId].Dynamic_Data.modules.module_dynamic.desc?.rich_text_nodes ?? []
               )
 
-              img = await Render(
-                this.e,
-                'bilibili/dynamic/DYNAMIC_TYPE_AV',
-                {
-                  image_url: INFODATA.data.data.pic,
-                  text: buildBilibiliDynamicRichText(INFODATA.data.data.title, []),
-                  desc: INFODATA.data.data.desc_v2?.length
-                    ? buildBilibiliVideoDescRichText(INFODATA.data.data.desc_v2)
-                    : buildBilibiliDynamicRichText(INFODATA.data.data.desc || '', []),
-                  dynamic_text: dynamicText,
-                  dianzan: Count(INFODATA.data.data.stat.like),
-                  pinglun: Count(INFODATA.data.data.stat.reply),
-                  share: Count(INFODATA.data.data.stat.share),
-                  view: Count(INFODATA.data.data.stat.view),
-                  coin: Count(INFODATA.data.data.stat.coin),
-                  duration_text: data[dynamicId].Dynamic_Data.modules.module_dynamic.major?.archive?.duration_text ?? '0:00',
-                  page_length: INFODATA.data.data.pages.length,
-                  create_time: TimeFormatter.toDateTime(data[dynamicId].Dynamic_Data.modules.module_author.pub_ts),
-                  avatar_url: userINFO.data.data.card.face,
-                  frame: data[dynamicId].Dynamic_Data.modules.module_author.pendant.image,
-                  share_url: 'https://www.bilibili.com/video/' + bvid,
-                  usernameMeta: getUsernameMetadata(userINFO.data.data.card),
-                  fans: Count(userINFO.data.data.follower),
-                  user_shortid: data[dynamicId].host_mid,
-                  total_favorited: Count(userINFO.data.data.like_num),
-                  following_count: Count(userINFO.data.data.card.attention),
-                  render_time: TimeFormatter.now(),
-                  dynamicTYPE: '视频动态推送',
-                  dynamic_id: dynamicId,
-                  staff
-                },
-                { skipWatermark: true }
-              )
+              img = await Render(this.e, 'bilibili/dynamic/DYNAMIC_TYPE_AV', {
+                image_url: INFODATA.data.data.pic,
+                text: buildBilibiliDynamicRichText(INFODATA.data.data.title, []),
+                desc: INFODATA.data.data.desc_v2?.length
+                  ? buildBilibiliVideoDescRichText(INFODATA.data.data.desc_v2)
+                  : buildBilibiliDynamicRichText(INFODATA.data.data.desc || '', []),
+                dynamic_text: dynamicText,
+                dianzan: Count(INFODATA.data.data.stat.like),
+                pinglun: Count(INFODATA.data.data.stat.reply),
+                share: Count(INFODATA.data.data.stat.share),
+                view: Count(INFODATA.data.data.stat.view),
+                coin: Count(INFODATA.data.data.stat.coin),
+                duration_text: data[dynamicId].Dynamic_Data.modules.module_dynamic.major?.archive?.duration_text ?? '0:00',
+                page_length: INFODATA.data.data.pages.length,
+                create_time: TimeFormatter.toDateTime(data[dynamicId].Dynamic_Data.modules.module_author.pub_ts),
+                avatar_url: userINFO.data.data.card.face,
+                frame: data[dynamicId].Dynamic_Data.modules.module_author.pendant.image,
+                share_url: 'https://www.bilibili.com/video/' + bvid,
+                usernameMeta: getUsernameMetadata(userINFO.data.data.card),
+                fans: Count(userINFO.data.data.follower),
+                user_shortid: data[dynamicId].host_mid,
+                total_favorited: Count(userINFO.data.data.like_num),
+                following_count: Count(userINFO.data.data.card.attention),
+                render_time: TimeFormatter.now(),
+                dynamicTYPE: '视频动态推送',
+                dynamic_id: dynamicId,
+                staff
+              })
             }
             break
           }
           /** 处理直播动态 */
           case DynamicType.LIVE_RCMD: {
             const liveInfo = JSON.parse(data[dynamicId].Dynamic_Data.modules.module_dynamic.major.live_rcmd.content)
-            img = await Render(
-              this.e,
-              'bilibili/dynamic/DYNAMIC_TYPE_LIVE_RCMD',
-              {
-                image_url: liveInfo.live_play_info.cover,
-                text: buildBilibiliDynamicRichText(liveInfo.live_play_info.title, []),
-                liveinf: br(`${liveInfo.live_play_info.area_name} | 房间号: ${liveInfo.live_play_info.room_id}`),
-                usernameMeta: getUsernameMetadata(userINFO.data.data.card),
-                avatar_url: userINFO.data.data.card.face,
-                frame: data[dynamicId].Dynamic_Data.modules.module_author.pendant.image,
-                fans: Count(userINFO.data.data.follower),
-                create_time: TimeFormatter.toDateTime(data[dynamicId].Dynamic_Data.modules.module_author.pub_ts),
-                now_time: TimeFormatter.now(),
-                share_url: 'https://live.bilibili.com/' + liveInfo.live_play_info.room_id,
-                dynamicTYPE: '直播动态推送'
-              },
-              { skipWatermark: true }
-            )
+            img = await Render(this.e, 'bilibili/dynamic/DYNAMIC_TYPE_LIVE_RCMD', {
+              image_url: liveInfo.live_play_info.cover,
+              text: buildBilibiliDynamicRichText(liveInfo.live_play_info.title, []),
+              liveinf: br(`${liveInfo.live_play_info.area_name} | 房间号: ${liveInfo.live_play_info.room_id}`),
+              usernameMeta: getUsernameMetadata(userINFO.data.data.card),
+              avatar_url: userINFO.data.data.card.face,
+              frame: data[dynamicId].Dynamic_Data.modules.module_author.pendant.image,
+              fans: Count(userINFO.data.data.follower),
+              create_time: TimeFormatter.toDateTime(data[dynamicId].Dynamic_Data.modules.module_author.pub_ts),
+              now_time: TimeFormatter.now(),
+              share_url: 'https://live.bilibili.com/' + liveInfo.live_play_info.room_id,
+              dynamicTYPE: '直播动态推送'
+            })
             break
           }
           /** 处理转发动态 */
@@ -727,32 +706,27 @@ export class Bilibilipush extends Base {
                 break
               }
             }
-            img = await Render(
-              this.e,
-              'bilibili/dynamic/DYNAMIC_TYPE_FORWARD',
-              {
-                text,
-                dianzan: Count(data[dynamicId].Dynamic_Data.modules.module_stat.like.count),
-                pinglun: Count(data[dynamicId].Dynamic_Data.modules.module_stat.comment.count),
-                share: Count(data[dynamicId].Dynamic_Data.modules.module_stat.forward.count),
-                create_time: TimeFormatter.toDateTime(data[dynamicId].Dynamic_Data.modules.module_author.pub_ts),
-                avatar_url: data[dynamicId].Dynamic_Data.modules.module_author.face,
-                frame: data[dynamicId].Dynamic_Data.modules.module_author.pendant.image,
-                share_url: 'https://t.bilibili.com/' + data[dynamicId].Dynamic_Data.id_str,
-                usernameMeta: getUsernameMetadata(userINFO.data.data.card),
-                fans: Count(userINFO.data.data.follower),
-                user_shortid: data[dynamicId].Dynamic_Data.modules.module_author.mid,
-                total_favorited: Count(userINFO.data.data.like_num),
-                following_count: Count(userINFO.data.data.card.attention),
-                dynamicTYPE: '转发动态推送',
-                decoration_card: generateDecorationCard(data[dynamicId].Dynamic_Data.modules.module_author.decorate_card),
-                render_time: TimeFormatter.now(),
-                original_content,
-                imgList: imgList.length > 0 ? imgList : null,
-                dynamic_id: dynamicId
-              },
-              { skipWatermark: true }
-            )
+            img = await Render(this.e, 'bilibili/dynamic/DYNAMIC_TYPE_FORWARD', {
+              text,
+              dianzan: Count(data[dynamicId].Dynamic_Data.modules.module_stat.like.count),
+              pinglun: Count(data[dynamicId].Dynamic_Data.modules.module_stat.comment.count),
+              share: Count(data[dynamicId].Dynamic_Data.modules.module_stat.forward.count),
+              create_time: TimeFormatter.toDateTime(data[dynamicId].Dynamic_Data.modules.module_author.pub_ts),
+              avatar_url: data[dynamicId].Dynamic_Data.modules.module_author.face,
+              frame: data[dynamicId].Dynamic_Data.modules.module_author.pendant.image,
+              share_url: 'https://t.bilibili.com/' + data[dynamicId].Dynamic_Data.id_str,
+              usernameMeta: getUsernameMetadata(userINFO.data.data.card),
+              fans: Count(userINFO.data.data.follower),
+              user_shortid: data[dynamicId].Dynamic_Data.modules.module_author.mid,
+              total_favorited: Count(userINFO.data.data.like_num),
+              following_count: Count(userINFO.data.data.card.attention),
+              dynamicTYPE: '转发动态推送',
+              decoration_card: generateDecorationCard(data[dynamicId].Dynamic_Data.modules.module_author.decorate_card),
+              render_time: TimeFormatter.now(),
+              original_content,
+              imgList: imgList.length > 0 ? imgList : null,
+              dynamic_id: dynamicId
+            })
             break
           }
           /** 文章/专栏动态 */
@@ -782,39 +756,34 @@ export class Bilibilipush extends Base {
             }
 
             // 构建渲染数据
-            img = await Render(
-              this.e,
-              'bilibili/dynamic/DYNAMIC_TYPE_ARTICLE',
-              {
-                // 用户信息
-                usernameMeta: getUsernameMetadata(data[dynamicId].Dynamic_Data.modules.module_author),
-                avatar_url: data[dynamicId].Dynamic_Data.modules.module_author.face,
-                frame: data[dynamicId].Dynamic_Data.modules.module_author.pendant.image,
-                create_time: TimeFormatter.toDateTime(data[dynamicId].Dynamic_Data.modules.module_author.pub_ts),
-                user_shortid: data[dynamicId].host_mid,
-                fans: Count(userINFO.data.data.follower),
-                total_favorited: Count(userINFO.data.data.like_num),
-                following_count: Count(userINFO.data.data.card.attention),
+            img = await Render(this.e, 'bilibili/dynamic/DYNAMIC_TYPE_ARTICLE', {
+              // 用户信息
+              usernameMeta: getUsernameMetadata(data[dynamicId].Dynamic_Data.modules.module_author),
+              avatar_url: data[dynamicId].Dynamic_Data.modules.module_author.face,
+              frame: data[dynamicId].Dynamic_Data.modules.module_author.pendant.image,
+              create_time: TimeFormatter.toDateTime(data[dynamicId].Dynamic_Data.modules.module_author.pub_ts),
+              user_shortid: data[dynamicId].host_mid,
+              fans: Count(userINFO.data.data.follower),
+              total_favorited: Count(userINFO.data.data.like_num),
+              following_count: Count(userINFO.data.data.card.attention),
 
-                // 专栏内容信息
-                title: articleData.title,
-                summary: articleData.summary,
-                banner_url: articleData.banner_url || (articleData.image_urls && articleData.image_urls[0]) || '',
-                categories: articleData.categories || [],
-                words: articleData.words || 0,
+              // 专栏内容信息
+              title: articleData.title,
+              summary: articleData.summary,
+              banner_url: articleData.banner_url || (articleData.image_urls && articleData.image_urls[0]) || '',
+              categories: articleData.categories || [],
+              words: articleData.words || 0,
 
-                // 专栏正文内容（richtext 格式）
-                body,
+              // 专栏正文内容（richtext 格式）
+              body,
 
-                // 统计信息
-                stats: articleData.stats,
-                render_time: TimeFormatter.now(),
-                // 分享链接
-                share_url: shareUrl,
-                dynamicTYPE: '专栏动态推送'
-              },
-              { skipWatermark: true }
-            )
+              // 统计信息
+              stats: articleData.stats,
+              render_time: TimeFormatter.now(),
+              // 分享链接
+              share_url: shareUrl,
+              dynamicTYPE: '专栏动态推送'
+            })
             break
           }
           /** 未处理的动态类型 */
@@ -837,11 +806,11 @@ export class Bilibilipush extends Base {
           const bot = karin.getBot(botId) as AdapterType
           const Contact = karin.contactGroup(groupId)
 
-          // 为当前目标注入 bot 并应用水印
+          // 为当前目标注入 bot，后续解析下载沿用该 bot 身份
           const eventWithBot = this.e as Message & { bot?: AdapterType; selfId?: string }
           eventWithBot.bot = bot
           eventWithBot.selfId = botId
-          const watermarkedImg = img ? applyWatermarkToImages(img, this.e) : []
+          const pushImg = img ?? []
 
           // 仅 QQ 官方机器人支持按钮：非直播动态在卡片末尾追加「解析」回调按钮，点击后下发 #解析 + 动态/视频地址
           const parseUrl = buildParseUrl(data[dynamicId])
@@ -855,7 +824,7 @@ export class Bilibilipush extends Base {
                 ]
               : []
 
-          status = await karin.sendMsg(botId, Contact, [...watermarkedImg, ...parseButton])
+          status = await karin.sendMsg(botId, Contact, [...pushImg, ...parseButton])
           const shouldParseDynamic =
             Config.bilibili.push.parsedynamic &&
             Config.bilibili.push.parseDynamicTypes.includes(

@@ -7,7 +7,6 @@ import type { AdapterType, ImageElement, Message } from 'node-karin'
 import karin, { common, logger, segment } from 'node-karin'
 
 import {
-  applyWatermarkToImages,
   Base,
   baseHeaders,
   buildGoogleMotionPhoto,
@@ -314,7 +313,6 @@ export class DouYinpush extends Base {
             img = await renderLiveImage({
               e: this.e,
               Detail_Data: pushItem.Detail_Data,
-              skipWatermark: true,
               dynamicTypeLabel: '直播动态推送'
             })
             break
@@ -326,8 +324,7 @@ export class DouYinpush extends Base {
               Detail_Data: pushItem.Detail_Data,
               create_time: pushItem.create_time,
               shareLink: workShareLink!,
-              remark: pushItem.remark,
-              skipWatermark: true
+              remark: pushItem.remark
             })
             break
           }
@@ -338,8 +335,7 @@ export class DouYinpush extends Base {
               Detail_Data: pushItem.Detail_Data,
               create_time: pushItem.create_time,
               shareLink: workShareLink!,
-              remark: pushItem.remark,
-              skipWatermark: true
+              remark: pushItem.remark
             })
             break
           }
@@ -351,8 +347,7 @@ export class DouYinpush extends Base {
               Detail_Data: pushItem.Detail_Data,
               create_time: pushItem.create_time,
               shareLink: workShareLink!,
-              videoSource: selectedVideo,
-              skipWatermark: true
+              videoSource: selectedVideo
             })
             break
           }
@@ -367,12 +362,12 @@ export class DouYinpush extends Base {
         if (!skip) {
           const Contact = karin.contactGroup(groupId)
 
-          // 为当前目标注入 bot 并应用水印
+          // 为当前目标注入 bot，后续解析下载沿用该 bot 身份
           const bot = karin.getBot(botId) as AdapterType
           const eventWithBot = this.e as Message & { bot?: AdapterType; selfId?: string }
           eventWithBot.bot = bot
           eventWithBot.selfId = botId
-          const watermarkedImg = img ? applyWatermarkToImages(img, this.e) : []
+          const pushImg = img ?? []
 
           // 仅 QQ 官方机器人支持按钮：非直播作品在卡片末尾追加「解析」回调按钮，点击后下发 #解析 + 分享链接
           const parseButton =
@@ -386,7 +381,7 @@ export class DouYinpush extends Base {
               : []
 
           // 发送消息
-          status = await karin.sendMsg(botId, Contact, [...watermarkedImg, ...parseButton])
+          status = await karin.sendMsg(botId, Contact, [...pushImg, ...parseButton])
 
           // 如果是直播推送，更新直播状态
           if (pushItem.pushType === 'live' && 'room_data' in pushItem.Detail_Data && status.message_id) {
