@@ -848,6 +848,38 @@ interface DouyinMethodOptionsMap {
     /** 合辑ID */
     aweme_id: string;
   };
+  /** 获取游客用户信息（iesdouyin v2，免鉴权） */
+  GuestUserParams: {
+    methodType: 'guestUserInfo';
+    /** 抖音号 */
+    unique_id: string;
+  };
+  /** 获取游客原声信息（iesdouyin v2，免鉴权） */
+  GuestMusicParams: {
+    methodType: 'guestMusicInfo';
+    /** 原声ID */
+    music_id: string;
+  };
+  /** 获取使用某原声的作品列表（iesdouyin v2，免鉴权） */
+  GuestMusicListParams: {
+    methodType: 'guestMusicAwemeList';
+    /** 原声ID */
+    music_id: string;
+    /**
+     * 获取的数量
+     * @defaultValue 10
+     */
+    number?: number;
+    /**
+     * 游标，用于获取下一页
+     * @defaultValue 0
+     */
+    cursor?: number;
+  };
+  /** 获取表情资源包元信息（App 接口，免鉴权） */
+  EmojiResourceParams: {
+    methodType: 'emojiResourceMeta';
+  };
 }
 /**
  * 抖音方法类型到参数的映射
@@ -874,6 +906,10 @@ type DouyinMethodOptMap = {
   dynamicEmojiList: DouyinMethodOptionsMap['EmojiProParams'];
   commentReplies: DouyinMethodOptionsMap['CommentReplyParams'];
   danmakuList: DouyinMethodOptionsMap['DanmakuParams'];
+  guestUserInfo: DouyinMethodOptionsMap['GuestUserParams'];
+  guestMusicInfo: DouyinMethodOptionsMap['GuestMusicParams'];
+  guestMusicAwemeList: DouyinMethodOptionsMap['GuestMusicListParams'];
+  emojiResourceMeta: DouyinMethodOptionsMap['EmojiResourceParams'];
 };
 //#endregion
 //#region src/validation/douyin.d.ts
@@ -903,6 +939,14 @@ declare const DouyinEmojiListParamsSchema: zod.ZodType<DouyinMethodOptionsMap['E
 declare const DouyinEmojiProParamsSchema: zod.ZodType<DouyinMethodOptionsMap['EmojiProParams']>;
 /** 弹幕参数验证 */
 declare const DouyinDanmakuParamsSchema: zod.ZodType<DouyinMethodOptionsMap['DanmakuParams']>;
+/** 游客用户参数验证 */
+declare const DouyinGuestUserParamsSchema: zod.ZodType<DouyinMethodOptionsMap['GuestUserParams']>;
+/** 游客原声参数验证 */
+declare const DouyinGuestMusicParamsSchema: zod.ZodType<DouyinMethodOptionsMap['GuestMusicParams']>;
+/** 游客原声作品列表参数验证 */
+declare const DouyinGuestMusicListParamsSchema: zod.ZodType<DouyinMethodOptionsMap['GuestMusicListParams']>;
+/** 表情资源包参数验证（该接口不接受任何参数） */
+declare const DouyinEmojiResourceParamsSchema: zod.ZodType<DouyinMethodOptionsMap['EmojiResourceParams']>;
 /** 抖音参数验证模式映射 */
 declare const DouyinValidationSchemas: {
   readonly textWork: zod.ZodType<{
@@ -1070,6 +1114,36 @@ declare const DouyinValidationSchemas: {
     end_time?: number;
     duration: number;
   }, unknown>>;
+  readonly guestUserInfo: zod.ZodType<{
+    methodType: "guestUserInfo";
+    unique_id: string;
+  }, unknown, zod.core.$ZodTypeInternals<{
+    methodType: "guestUserInfo";
+    unique_id: string;
+  }, unknown>>;
+  readonly guestMusicInfo: zod.ZodType<{
+    methodType: "guestMusicInfo";
+    music_id: string;
+  }, unknown, zod.core.$ZodTypeInternals<{
+    methodType: "guestMusicInfo";
+    music_id: string;
+  }, unknown>>;
+  readonly guestMusicAwemeList: zod.ZodType<{
+    methodType: "guestMusicAwemeList";
+    music_id: string;
+    number?: number;
+    cursor?: number;
+  }, unknown, zod.core.$ZodTypeInternals<{
+    methodType: "guestMusicAwemeList";
+    music_id: string;
+    number?: number;
+    cursor?: number;
+  }, unknown>>;
+  readonly emojiResourceMeta: zod.ZodType<{
+    methodType: "emojiResourceMeta";
+  }, unknown, zod.core.$ZodTypeInternals<{
+    methodType: "emojiResourceMeta";
+  }, unknown>>;
 };
 /** 抖音方法路由映射 */
 declare const DouyinMethodRoutes: {
@@ -1092,6 +1166,10 @@ declare const DouyinMethodRoutes: {
   readonly liveRoomInfo: "/fetch_user_live_videos";
   readonly danmakuList: "/fetch_work_danmaku";
   readonly loginQrcode: "/fetch_login_qrcode";
+  readonly guestUserInfo: "/fetch_guest_user_info";
+  readonly guestMusicInfo: "/fetch_guest_music_info";
+  readonly guestMusicAwemeList: "/fetch_guest_music_aweme_list";
+  readonly emojiResourceMeta: "/fetch_emoji_resource_meta";
 };
 /** 抖音方法类型 */
 type DouyinMethodType = keyof typeof DouyinValidationSchemas;
@@ -24254,6 +24332,14 @@ interface DouyinReturnTypeMap {
   passportQrcodeStatus: DyPassportQrcodeStatus;
   passportSendCode: DyPassportSendCode;
   passportValidateCode: DyPassportValidateCode;
+  /** iesdouyin v2 原样响应，字段怎么读由调用方决定 */
+  guestUserInfo: any;
+  /** iesdouyin v2 原样响应，字段怎么读由调用方决定 */
+  guestMusicInfo: any;
+  /** iesdouyin v2 原样响应，字段怎么读由调用方决定 */
+  guestMusicAwemeList: any;
+  /** App 资源包元信息原样响应 */
+  emojiResourceMeta: any;
 }
 //#endregion
 //#region src/types/ReturnDataType/Kuaishou/EmojiList/EmojiList_V0.d.ts
@@ -27315,6 +27401,25 @@ interface DouyinDanmakuOptions extends BaseRequestOptions {
   /** 视频总时长 (毫秒)，必填 */
   duration: number;
 }
+/** 抖音游客用户请求参数 */
+interface DouyinGuestUserOptions extends BaseRequestOptions {
+  /** 抖音号，如 `ubb_up` */
+  unique_id: string;
+}
+/** 抖音游客原声请求参数 */
+interface DouyinGuestMusicOptions extends BaseRequestOptions {
+  /** 原声 ID (mid) */
+  music_id: string;
+}
+/** 抖音游客原声作品列表请求参数 */
+interface DouyinGuestMusicListOptions extends BaseRequestOptions {
+  /** 原声 ID (mid) */
+  music_id: string;
+  /** 获取数量，默认 10 */
+  number?: number;
+  /** 游标，用于翻页 */
+  cursor?: number;
+}
 /**
  * 抖音 Fetcher 接口定义
  * 包含所有抖音 API 方法的类型签名
@@ -27418,6 +27523,22 @@ interface IDouyinFetcher {
    * 获取抖音动态表情列表
    */
   fetchDynamicEmojiList: NoParamMethodOverload<DouyinReturnTypeMap['dynamicEmojiList']>;
+  /**
+   * 通过抖音号获取用户信息 (免鉴权)
+   */
+  fetchGuestUserInfo: MethodOverload<DouyinGuestUserOptions, DouyinReturnTypeMap['guestUserInfo']>;
+  /**
+   * 获取原声本体 (免鉴权)
+   */
+  fetchGuestMusicInfo: MethodOverload<DouyinGuestMusicOptions, DouyinReturnTypeMap['guestMusicInfo']>;
+  /**
+   * 获取使用某条原声的作品列表 (免鉴权)
+   */
+  fetchGuestMusicAwemeList: MethodOverload<DouyinGuestMusicListOptions, DouyinReturnTypeMap['guestMusicAwemeList']>;
+  /**
+   * 获取表情资源包元信息 (免鉴权)
+   */
+  fetchEmojiResourceMeta: NoParamMethodOverload<DouyinReturnTypeMap['emojiResourceMeta']>;
 }
 //#endregion
 //#region src/model/fetchers/kuaishou/types.d.ts
@@ -27887,6 +28008,14 @@ interface IBoundDouyinFetcher {
   fetchEmojiList: BoundNoParamMethodOverload<DouyinReturnTypeMap['emojiList']>;
   /** 获取抖音动态表情列表 */
   fetchDynamicEmojiList: BoundNoParamMethodOverload<DouyinReturnTypeMap['dynamicEmojiList']>;
+  /** 通过抖音号获取用户信息 (免鉴权) */
+  fetchGuestUserInfo: BoundMethodOverload<DouyinGuestUserOptions, DouyinReturnTypeMap['guestUserInfo']>;
+  /** 获取原声本体 (免鉴权) */
+  fetchGuestMusicInfo: BoundMethodOverload<DouyinGuestMusicOptions, DouyinReturnTypeMap['guestMusicInfo']>;
+  /** 获取使用某条原声的作品列表 (免鉴权) */
+  fetchGuestMusicAwemeList: BoundMethodOverload<DouyinGuestMusicListOptions, DouyinReturnTypeMap['guestMusicAwemeList']>;
+  /** 获取表情资源包元信息 (免鉴权) */
+  fetchEmojiResourceMeta: BoundNoParamMethodOverload<DouyinReturnTypeMap['emojiResourceMeta']>;
 }
 /**
  * 创建绑定了 Cookie 和请求配置的抖音 Fetcher
@@ -28496,6 +28625,22 @@ type bilibiliUtilsModel = {
 /** B站相关功能模块 (工具集) */
 declare const bilibiliUtils: bilibiliUtilsModel;
 //#endregion
+//#region src/platform/douyin/sign/secsdkWebSign.d.ts
+/** 签名入参 */
+interface SecsdkSignOptions {
+  /** 10 位秒级时间戳，缺省取当前时间 */
+  ts?: number;
+  /** query 里没有 uifid 时的兜底值（对应 `UIFID` cookie） */
+  uifid?: string;
+}
+/** {@link applySecsdkWebSign} 的入参 */
+interface ApplySecsdkOptions extends SecsdkSignOptions {
+  /** 请求 cookie，用于在 `uifid` 缺省时取 `UIFID` */
+  cookie?: string | null;
+  /** HTTP 方法，默认 `GET` */
+  method?: string;
+}
+//#endregion
 //#region src/platform/douyin/sign/index.d.ts
 declare class douyinSign {
   /**
@@ -28516,6 +28661,18 @@ declare class douyinSign {
    * @returns 对此地址签名后的URL查询参数
    */
   static XB(url: string, userAgent?: string): string;
+  /**
+   * `x-secsdk-web-signature` 签名算法
+   *
+   * 与 `AB` / `XB` 不同，它改写整条 URL 而不是返回一个参数值：签名算的是规范化后的 query，
+   * 服务端也按收到的 query 校验，所以必须发送返回的这条 URL。只对 SDK 策略表内的 path 生效，
+   * 其余原样返回，因此可以无条件套用。必须是最后一步（webid → a_bogus → 本签名）。
+   *
+   * @param url 已拼好全部参数（含 a_bogus）的完整地址
+   * @param options `uifid`（query 缺失时从 cookie 取）、`cookie`、`method`、`ts`
+   * @returns 需要加签时返回带签名的完整 URL，否则原样返回
+   */
+  static SecSdk(url: string, options?: ApplySecsdkOptions): string;
   /** 生成一个唯一的验证字符串 */
   static VerifyFpManager(): string;
 }
@@ -28552,6 +28709,14 @@ declare class DouyinAPI {
   getSlidesInfo(data: DouyinMethodOptionsWithoutMethodType['parseWork']): string;
   /** 获取表情数据 */
   getEmojiList(): string;
+  /** 抖音号（unique_id）转用户信息，唯一免签名的 sec_uid 获取途径 */
+  getGuestUserInfo(data: DouyinMethodOptionsWithoutMethodType['guestUserInfo']): string;
+  /** 获取原声本体，响应中没有 play_url，mp3 需从源作品上取 */
+  getGuestMusicInfo(data: DouyinMethodOptionsWithoutMethodType['guestMusicInfo']): string;
+  /** 获取使用某原声的作品列表，每条的 music 字段被抖音裁空，只能取 aweme_id */
+  getGuestMusicAwemeList(data: DouyinMethodOptionsWithoutMethodType['guestMusicAwemeList']): string;
+  /** 获取表情资源包元信息 `{ id, md5, resource_url, update_time }`，md5 同时是版本号 */
+  getEmojiResourceMeta(): string;
   /** 获取用户主页视频数据 */
   getUserVideoList(data: DouyinMethodOptionsWithoutMethodType['userVideoList']): string;
   /** 获取用户喜欢列表数据 */
@@ -29340,4 +29505,4 @@ declare const CreateApp: AmagiConstructor;
 declare const Client: typeof CreateApp;
 declare const amagi: typeof Client;
 //#endregion
-export { APIErrorType, AdditionalType, AmagiEventMap, AmagiEventType, type AnonymousFetcherRequestConfig, type ApiEndpoint, ApiError, ApiErrorEventData, ApiSuccessEventData, ArticleCard, ArticleContent, ArticleInfo, ArticleWork, BaseRequestOptions, BaseResponse, BiliAv2Bv, BiliBangumiVideoInfo, BiliBangumiVideoPlayurlIsLogin, BiliBangumiVideoPlayurlNoLogin, BiliBiliVideoPlayurlNoLogin, BiliBv2AV, BiliCheckQrcode, BiliCommentReply, BiliDynamicInfo, BiliDynamicInfoUnion, BiliEmojiList, BiliLiveRoomDef, BiliLiveRoomDetail, BiliNewLoginQrcode, BiliOneWork, BiliProtobufDanmaku, BiliUserDynamic, BiliUserFullView, BiliUserLiveStatus, BiliUserProfile, BiliVideoPlayurlIsLogin, BiliWorkComments, BilibiliApiRoutes, type BilibiliApplyCaptchaOptions, BilibiliApplyCaptchaParamsSchema, type BilibiliArticleCardOptions, BilibiliArticleCardParamsSchema, BilibiliArticleInfoParamsSchema, type BilibiliArticleOptions, BilibiliArticleParamsSchema, type BilibiliAv2BvOptions, BilibiliAv2BvParamsSchema, type BilibiliBangumiInfoOptions, BilibiliBangumiInfoParamsSchema, type BilibiliBangumiStreamOptions, BilibiliBangumiStreamParamsSchema, type BilibiliBv2AvOptions, BilibiliBv2AvParamsSchema, BilibiliColumnInfoParamsSchema, BilibiliCommentParamsSchema, type BilibiliCommentRepliesOptions, BilibiliCommentReplyParamsSchema, type BilibiliCommentsOptions, type BilibiliDanmakuOptions, BilibiliDanmakuParamsSchema, BilibiliDataOptions, BilibiliDataOptionsMap, type BilibiliDynamicOptions, BilibiliDynamicParamsSchema, BilibiliEmojiParamsSchema, type BilibiliFetcher, BilibiliFetcherMethodKey, BilibiliFetcherMethods, BilibiliInternalMethodKey, BilibiliInternalMethods, BilibiliLiveParamsSchema, type BilibiliLiveRoomOptions, BilibiliLoginParamsSchema, type BilibiliMethodKey, BilibiliMethodMapping, BilibiliMethodOptMap, BilibiliMethodOptionsMap, BilibiliMethodRoutes, BilibiliMethodToFetcher, BilibiliMethodType, type BilibiliMethodValue, BilibiliQrcodeParamsSchema, type BilibiliQrcodeStatusOptions, BilibiliQrcodeStatusParamsSchema, BilibiliReturnTypeMap, type BilibiliUserOptions, BilibiliUserParamsSchema, type BilibiliValidateCaptchaOptions, BilibiliValidateCaptchaParamsSchema, BilibiliValidationSchemas, BilibiliVideoDownloadParamsSchema, type BilibiliVideoInfoOptions, BilibiliVideoParamsSchema, type BilibiliVideoStreamOptions, type BoundBilibiliFetcher, type BoundDouyinFetcher, type BoundKuaishouFetcher, type BoundXiaohongshuFetcher, ColumnInfo, CommentReply, CommentType, ConditionalReturnType, CookieConfig, CreateApp, DouyinApiRoutes, DouyinCommentParamsSchema, type DouyinCommentRepliesOptions, DouyinCommentReplyParamsSchema, type DouyinCommentsOptions, type DouyinDanmakuOptions, DouyinDanmakuParamsSchema, DouyinDataOptions, DouyinDataOptionsMap, DouyinEmojiListParamsSchema, DouyinEmojiProParamsSchema, type DouyinFetcher, DouyinFetcherMethodKey, DouyinFetcherMethods, DouyinHotWordsParamsSchema, DouyinInternalMethodKey, DouyinInternalMethods, type DouyinLiveRoomOptions, DouyinLiveRoomParamsSchema, type DouyinMethodKey, DouyinMethodMapping, DouyinMethodOptMap, DouyinMethodOptionsMap, DouyinMethodRoutes, DouyinMethodToFetcher, DouyinMethodType, type DouyinMethodValue, type DouyinMusicOptions, DouyinMusicParamsSchema, type PollResult as DouyinPassportPollResult, type DouyinPassportQrcode, type QrcodeInfo as DouyinPassportQrcodeInfo, type DouyinPassportQrcodeStatus, type DouyinPassportQrcodeStatusOptions, type DouyinPassportSendCode, type DouyinPassportSendCodeOptions, type SendCodeResult as DouyinPassportSendCodeResult, type DouyinPassportValidateCode, type DouyinPassportValidateCodeOptions, type ValidateCodeResult as DouyinPassportValidateCodeResult, type VerifyContext as DouyinPassportVerifyContext, type VerifyWay as DouyinPassportVerifyWay, type DouyinQrcodeOptions, DouyinQrcodeParamsSchema, DouyinReturnTypeMap, type DouyinSearchOptions, DouyinSearchParamsSchema, type DouyinSuggestWordsOptions, type DouyinUserListOptions, DouyinUserListParamsSchema, type DouyinUserOptions, DouyinUserParamsSchema, DouyinValidationSchemas, type DouyinWorkOptions, DouyinWorkParamsSchema, DyDanmakuList, DyEmojiList, DyEmojiProList, DyImageAlbumWork, DyMusicWork, DyPassportPollResult, DyPassportQrcode, DyPassportQrcodeStatus, DyPassportSendCode, DyPassportSendCodeResult, DyPassportValidateCode, DyPassportValidateCodeResult, DyPassportVerifyContext, DyPassportVerifyWay, DySearchInfo, DySlidesWork, DySuggestWords, DyUserInfo, DyUserLiveVideos, DyUserPostVideos, DyVideoWork, DyWorkComments, DynamicType, DynamicTypeAV, DynamicTypeArticle, DynamicTypeDraw, DynamicTypeForward, DynamicTypeForwardUnion, DynamicTypeLiveRcmd, DynamicTypeWord, ErrorResult, ExtractTypeMode, FetcherConfig, type FetcherCookieForRequestConfig, type FetcherRequestConfigWithCookie, type FetcherRequestConfigWithoutCookie, HomeFeed, type HttpMethod, HttpRequestEventData, HttpResponseEventData, type IBilibiliFetcher, type IBoundBilibiliFetcher, type IBoundDouyinFetcher, type IBoundKuaishouFetcher, type IBoundXiaohongshuFetcher, type IDouyinFetcher, type IKuaishouFetcher, type IXiaohongshuFetcher, type KsBannedStatus, KsEmojiList, KsLiveRoomInfo, KsOneWork, type KsUserHomeWork, KsUserProfile, type KsUserProfileCounts, type KsUserProfileGameInfo, type KsUserProfileLiveInfo, type KsUserProfileSensitiveInfo, type KsUserProfileUserInfo, KsUserWorkList, type KsVerifiedStatus, KsWorkComments, KuaishouApiRoutes, KuaishouCommentParamsSchema, type KuaishouCommentsOptions, KuaishouDataOptions, KuaishouDataOptionsMap, KuaishouEmojiParamsSchema, type KuaishouFetcher, KuaishouFetcherMethodKey, KuaishouFetcherMethods, type KuaishouGraphqlRequest, KuaishouInternalMethodKey, KuaishouInternalMethods, type KuaishouLiveApiRequest, type KuaishouLiveRoomInfoOptions, KuaishouLiveRoomInfoParamsSchema, type KuaishouMethodKey, KuaishouMethodMapping, KuaishouMethodOptMap, KuaishouMethodOptionsMap, KuaishouMethodRoutes, KuaishouMethodToFetcher, KuaishouMethodType, type KuaishouMethodValue, KuaishouReturnTypeMap, type KuaishouUserProfileOptions, KuaishouUserProfileParamsSchema, type KuaishouUserWorkListOptions, KuaishouUserWorkListParamsSchema, KuaishouValidationSchemas, KuaishouVideoParamsSchema, type KuaishouVideoWorkOptions, LogEventData, MajorType, MethodMaps, NetworkErrorEventData, NetworkRetryEventData, type NetworksConfigType, NoteComments, OmitMethodType, OneNote, Options, type Platform, RequestConfig, Result, SearchInfoGeneralData, SearchInfoUser, SearchInfoVideo, SearchNotes, SuccessResult, TypeControl, TypeMode, ValidationError, XiaohongshuApiRoutes, type XiaohongshuCommentsOptions, XiaohongshuDataOptions, XiaohongshuDataOptionsMap, XiaohongshuEmojiList, type XiaohongshuFetcher, XiaohongshuFetcherMethodKey, XiaohongshuFetcherMethods, type XiaohongshuHomeFeedOptions, XiaohongshuInternalMethodKey, XiaohongshuInternalMethods, type XiaohongshuMethodKey, XiaohongshuMethodMapping, XiaohongshuMethodOptMap, XiaohongshuMethodOptionsMap, XiaohongshuMethodRoutes, XiaohongshuMethodToFetcher, XiaohongshuMethodType, type XiaohongshuMethodValue, type XiaohongshuNoteDetailOptions, XiaohongshuReturnTypeMap, type XiaohongshuSearchNotesOptions, type XiaohongshuUserNotesOptions, XiaohongshuUserProfile, type XiaohongshuUserProfileOptions, XiaohongshuValidationSchemas, amagi, amagiEvents, av2bv, bilibiliApiUrls, bilibiliErrorCodeMap, bilibiliFetcher, bilibiliUtils, bv2av, checkPassportQrcode, createAmagiClient, createBilibiliRoutes, createBilibiliRoutes as registerBilibiliRoutes, createBoundBilibiliFetcher, createBoundDouyinFetcher, createBoundKuaishouFetcher, createBoundXiaohongshuFetcher, createDouyinRoutes, createDouyinRoutes as registerDouyinRoutes, createErrorResponse, createKuaishouRoutes, createKuaishouRoutes as registerKuaishouRoutes, createSuccessResponse, createXiaohongshuRoutes, createXiaohongshuRoutes as registerXiaohongshuRoutes, douyinApiUrls, douyinFetcher, index_d_exports as douyinPassport, douyinSign, douyinUtils, emitApiError, emitApiSuccess, emitHttpRequest, emitHttpResponse, emitLog, emitLogDebug, emitLogError, emitLogInfo, emitLogMark, emitLogWarn, emitNetworkError, emitNetworkRetry, fetchData, fetchResponse, getApiRoute, getEnglishMethodName, getHeadersAndData, handleError, isNetworkErrorResult, isSmsCodeVerifyWay, kuaishouApiUrls, kuaishouFetcher, kuaishouSign, kuaishouUtils, parseDmSegMobileReply, qtparam, requestPassportQrcode, sendPassportVerifyCode, toFetcherMethod, validateBilibiliParams, validateDouyinParams, validateKuaishouParams, validatePassportVerifyCode, validateXiaohongshuParams, wbi_sign, xiaohongshuApiUrls, xiaohongshuFetcher, xiaohongshuSign, xiaohongshuUtils };
+export { APIErrorType, AdditionalType, AmagiEventMap, AmagiEventType, type AnonymousFetcherRequestConfig, type ApiEndpoint, ApiError, ApiErrorEventData, ApiSuccessEventData, ArticleCard, ArticleContent, ArticleInfo, ArticleWork, BaseRequestOptions, BaseResponse, BiliAv2Bv, BiliBangumiVideoInfo, BiliBangumiVideoPlayurlIsLogin, BiliBangumiVideoPlayurlNoLogin, BiliBiliVideoPlayurlNoLogin, BiliBv2AV, BiliCheckQrcode, BiliCommentReply, BiliDynamicInfo, BiliDynamicInfoUnion, BiliEmojiList, BiliLiveRoomDef, BiliLiveRoomDetail, BiliNewLoginQrcode, BiliOneWork, BiliProtobufDanmaku, BiliUserDynamic, BiliUserFullView, BiliUserLiveStatus, BiliUserProfile, BiliVideoPlayurlIsLogin, BiliWorkComments, BilibiliApiRoutes, type BilibiliApplyCaptchaOptions, BilibiliApplyCaptchaParamsSchema, type BilibiliArticleCardOptions, BilibiliArticleCardParamsSchema, BilibiliArticleInfoParamsSchema, type BilibiliArticleOptions, BilibiliArticleParamsSchema, type BilibiliAv2BvOptions, BilibiliAv2BvParamsSchema, type BilibiliBangumiInfoOptions, BilibiliBangumiInfoParamsSchema, type BilibiliBangumiStreamOptions, BilibiliBangumiStreamParamsSchema, type BilibiliBv2AvOptions, BilibiliBv2AvParamsSchema, BilibiliColumnInfoParamsSchema, BilibiliCommentParamsSchema, type BilibiliCommentRepliesOptions, BilibiliCommentReplyParamsSchema, type BilibiliCommentsOptions, type BilibiliDanmakuOptions, BilibiliDanmakuParamsSchema, BilibiliDataOptions, BilibiliDataOptionsMap, type BilibiliDynamicOptions, BilibiliDynamicParamsSchema, BilibiliEmojiParamsSchema, type BilibiliFetcher, BilibiliFetcherMethodKey, BilibiliFetcherMethods, BilibiliInternalMethodKey, BilibiliInternalMethods, BilibiliLiveParamsSchema, type BilibiliLiveRoomOptions, BilibiliLoginParamsSchema, type BilibiliMethodKey, BilibiliMethodMapping, BilibiliMethodOptMap, BilibiliMethodOptionsMap, BilibiliMethodRoutes, BilibiliMethodToFetcher, BilibiliMethodType, type BilibiliMethodValue, BilibiliQrcodeParamsSchema, type BilibiliQrcodeStatusOptions, BilibiliQrcodeStatusParamsSchema, BilibiliReturnTypeMap, type BilibiliUserOptions, BilibiliUserParamsSchema, type BilibiliValidateCaptchaOptions, BilibiliValidateCaptchaParamsSchema, BilibiliValidationSchemas, BilibiliVideoDownloadParamsSchema, type BilibiliVideoInfoOptions, BilibiliVideoParamsSchema, type BilibiliVideoStreamOptions, type BoundBilibiliFetcher, type BoundDouyinFetcher, type BoundKuaishouFetcher, type BoundXiaohongshuFetcher, ColumnInfo, CommentReply, CommentType, ConditionalReturnType, CookieConfig, CreateApp, DouyinApiRoutes, DouyinCommentParamsSchema, type DouyinCommentRepliesOptions, DouyinCommentReplyParamsSchema, type DouyinCommentsOptions, type DouyinDanmakuOptions, DouyinDanmakuParamsSchema, DouyinDataOptions, DouyinDataOptionsMap, DouyinEmojiListParamsSchema, DouyinEmojiProParamsSchema, DouyinEmojiResourceParamsSchema, type DouyinFetcher, DouyinFetcherMethodKey, DouyinFetcherMethods, type DouyinGuestMusicListOptions, DouyinGuestMusicListParamsSchema, type DouyinGuestMusicOptions, DouyinGuestMusicParamsSchema, type DouyinGuestUserOptions, DouyinGuestUserParamsSchema, DouyinHotWordsParamsSchema, DouyinInternalMethodKey, DouyinInternalMethods, type DouyinLiveRoomOptions, DouyinLiveRoomParamsSchema, type DouyinMethodKey, DouyinMethodMapping, DouyinMethodOptMap, DouyinMethodOptionsMap, DouyinMethodRoutes, DouyinMethodToFetcher, DouyinMethodType, type DouyinMethodValue, type DouyinMusicOptions, DouyinMusicParamsSchema, type PollResult as DouyinPassportPollResult, type DouyinPassportQrcode, type QrcodeInfo as DouyinPassportQrcodeInfo, type DouyinPassportQrcodeStatus, type DouyinPassportQrcodeStatusOptions, type DouyinPassportSendCode, type DouyinPassportSendCodeOptions, type SendCodeResult as DouyinPassportSendCodeResult, type DouyinPassportValidateCode, type DouyinPassportValidateCodeOptions, type ValidateCodeResult as DouyinPassportValidateCodeResult, type VerifyContext as DouyinPassportVerifyContext, type VerifyWay as DouyinPassportVerifyWay, type DouyinQrcodeOptions, DouyinQrcodeParamsSchema, DouyinReturnTypeMap, type DouyinSearchOptions, DouyinSearchParamsSchema, type DouyinSuggestWordsOptions, type DouyinUserListOptions, DouyinUserListParamsSchema, type DouyinUserOptions, DouyinUserParamsSchema, DouyinValidationSchemas, type DouyinWorkOptions, DouyinWorkParamsSchema, DyDanmakuList, DyEmojiList, DyEmojiProList, DyImageAlbumWork, DyMusicWork, DyPassportPollResult, DyPassportQrcode, DyPassportQrcodeStatus, DyPassportSendCode, DyPassportSendCodeResult, DyPassportValidateCode, DyPassportValidateCodeResult, DyPassportVerifyContext, DyPassportVerifyWay, DySearchInfo, DySlidesWork, DySuggestWords, DyUserInfo, DyUserLiveVideos, DyUserPostVideos, DyVideoWork, DyWorkComments, DynamicType, DynamicTypeAV, DynamicTypeArticle, DynamicTypeDraw, DynamicTypeForward, DynamicTypeForwardUnion, DynamicTypeLiveRcmd, DynamicTypeWord, ErrorResult, ExtractTypeMode, FetcherConfig, type FetcherCookieForRequestConfig, type FetcherRequestConfigWithCookie, type FetcherRequestConfigWithoutCookie, HomeFeed, type HttpMethod, HttpRequestEventData, HttpResponseEventData, type IBilibiliFetcher, type IBoundBilibiliFetcher, type IBoundDouyinFetcher, type IBoundKuaishouFetcher, type IBoundXiaohongshuFetcher, type IDouyinFetcher, type IKuaishouFetcher, type IXiaohongshuFetcher, type KsBannedStatus, KsEmojiList, KsLiveRoomInfo, KsOneWork, type KsUserHomeWork, KsUserProfile, type KsUserProfileCounts, type KsUserProfileGameInfo, type KsUserProfileLiveInfo, type KsUserProfileSensitiveInfo, type KsUserProfileUserInfo, KsUserWorkList, type KsVerifiedStatus, KsWorkComments, KuaishouApiRoutes, KuaishouCommentParamsSchema, type KuaishouCommentsOptions, KuaishouDataOptions, KuaishouDataOptionsMap, KuaishouEmojiParamsSchema, type KuaishouFetcher, KuaishouFetcherMethodKey, KuaishouFetcherMethods, type KuaishouGraphqlRequest, KuaishouInternalMethodKey, KuaishouInternalMethods, type KuaishouLiveApiRequest, type KuaishouLiveRoomInfoOptions, KuaishouLiveRoomInfoParamsSchema, type KuaishouMethodKey, KuaishouMethodMapping, KuaishouMethodOptMap, KuaishouMethodOptionsMap, KuaishouMethodRoutes, KuaishouMethodToFetcher, KuaishouMethodType, type KuaishouMethodValue, KuaishouReturnTypeMap, type KuaishouUserProfileOptions, KuaishouUserProfileParamsSchema, type KuaishouUserWorkListOptions, KuaishouUserWorkListParamsSchema, KuaishouValidationSchemas, KuaishouVideoParamsSchema, type KuaishouVideoWorkOptions, LogEventData, MajorType, MethodMaps, NetworkErrorEventData, NetworkRetryEventData, type NetworksConfigType, NoteComments, OmitMethodType, OneNote, Options, type Platform, RequestConfig, Result, SearchInfoGeneralData, SearchInfoUser, SearchInfoVideo, SearchNotes, SuccessResult, TypeControl, TypeMode, ValidationError, XiaohongshuApiRoutes, type XiaohongshuCommentsOptions, XiaohongshuDataOptions, XiaohongshuDataOptionsMap, XiaohongshuEmojiList, type XiaohongshuFetcher, XiaohongshuFetcherMethodKey, XiaohongshuFetcherMethods, type XiaohongshuHomeFeedOptions, XiaohongshuInternalMethodKey, XiaohongshuInternalMethods, type XiaohongshuMethodKey, XiaohongshuMethodMapping, XiaohongshuMethodOptMap, XiaohongshuMethodOptionsMap, XiaohongshuMethodRoutes, XiaohongshuMethodToFetcher, XiaohongshuMethodType, type XiaohongshuMethodValue, type XiaohongshuNoteDetailOptions, XiaohongshuReturnTypeMap, type XiaohongshuSearchNotesOptions, type XiaohongshuUserNotesOptions, XiaohongshuUserProfile, type XiaohongshuUserProfileOptions, XiaohongshuValidationSchemas, amagi, amagiEvents, av2bv, bilibiliApiUrls, bilibiliErrorCodeMap, bilibiliFetcher, bilibiliUtils, bv2av, checkPassportQrcode, createAmagiClient, createBilibiliRoutes, createBilibiliRoutes as registerBilibiliRoutes, createBoundBilibiliFetcher, createBoundDouyinFetcher, createBoundKuaishouFetcher, createBoundXiaohongshuFetcher, createDouyinRoutes, createDouyinRoutes as registerDouyinRoutes, createErrorResponse, createKuaishouRoutes, createKuaishouRoutes as registerKuaishouRoutes, createSuccessResponse, createXiaohongshuRoutes, createXiaohongshuRoutes as registerXiaohongshuRoutes, douyinApiUrls, douyinFetcher, index_d_exports as douyinPassport, douyinSign, douyinUtils, emitApiError, emitApiSuccess, emitHttpRequest, emitHttpResponse, emitLog, emitLogDebug, emitLogError, emitLogInfo, emitLogMark, emitLogWarn, emitNetworkError, emitNetworkRetry, fetchData, fetchResponse, getApiRoute, getEnglishMethodName, getHeadersAndData, handleError, isNetworkErrorResult, isSmsCodeVerifyWay, kuaishouApiUrls, kuaishouFetcher, kuaishouSign, kuaishouUtils, parseDmSegMobileReply, qtparam, requestPassportQrcode, sendPassportVerifyCode, toFetcherMethod, validateBilibiliParams, validateDouyinParams, validateKuaishouParams, validatePassportVerifyCode, validateXiaohongshuParams, wbi_sign, xiaohongshuApiUrls, xiaohongshuFetcher, xiaohongshuSign, xiaohongshuUtils };
