@@ -271,20 +271,6 @@ export class DouYinpush extends Base {
       }
 
       if (!skip) {
-        const realUrl =
-          pushItem.pushType !== 'live' &&
-          workTypeInfo.isVideo &&
-          Config.douyin.push.shareType === 'web' &&
-          (await new Networks({
-            url: pushItem.Detail_Data.share_url,
-            headers: {
-              'User-Agent': 'Apifox/1.0.0 (https://apifox.com)',
-              Accept: '*/*',
-              'Accept-Encoding': 'gzip, deflate, br',
-              Connection: 'keep-alive'
-            }
-          }).getLocation())
-
         // 画质选档必须早于渲染和分享链接拼接：卡片上展示的清晰度要和后面实际下载的那一路视频源完全一致，
         // 否则会出现「卡片写 4K、实际下载 720p」的错位。
         if (pushItem.pushType !== 'live' && workTypeInfo.isVideo && pushItem.Detail_Data.video?.bit_rate?.length) {
@@ -299,7 +285,8 @@ export class DouYinpush extends Base {
             // 图文和合辑使用无追踪参数的短链接，降低二维码密度并提高扫描识别率。
             workShareLink = `https://www.douyin.com/note/${actualAwemeId}`
           } else if (Config.douyin.push.shareType === 'web') {
-            workShareLink = realUrl || `https://www.douyin.com/video/${actualAwemeId}`
+            // 视频同样用无追踪参数的规范链接：share_url 302 之后只是多出一串追踪参数，白搭一次网络请求还会拉高二维码密度
+            workShareLink = `https://www.douyin.com/video/${actualAwemeId}`
           } else {
             // 直链模式：优先用选档后的视频源拼播放地址，二维码内容与卡片展示的清晰度一致
             const playAddr = selectedVideo?.play_addr ?? pushItem.Detail_Data.video?.play_addr
