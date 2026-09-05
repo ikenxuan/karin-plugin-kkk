@@ -2,6 +2,18 @@
 
 # Changelog
 
+## [2.42.6](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.42.5...v2.42.6) (2026-09-05)
+
+
+### 🐛 错误修复
+
+* 抖音部分接口失效 ([#356](https://github.com/ikenxuan/karin-plugin-kkk/issues/356)) ([ac5d3c2](https://github.com/ikenxuan/karin-plugin-kkk/commit/ac5d3c29b42081f7f7878371adf6b3ecba798c64))
+
+
+### 🧰 其他更新
+
+* **main:** release  2.42.5 ([#355](https://github.com/ikenxuan/karin-plugin-kkk/issues/355)) ([6b64a9c](https://github.com/ikenxuan/karin-plugin-kkk/commit/6b64a9c1bf36069bcd01bf71541d1aba44554b6c))
+
 ## [2.42.5](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.42.4...v2.42.5) (2026-09-05)
 
 
