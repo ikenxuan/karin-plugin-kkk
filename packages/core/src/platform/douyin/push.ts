@@ -123,7 +123,8 @@ export class DouYinpush extends Base {
           logger.info(`自动获取用户 ${item.remark || item.short_id} 的 sec_uid`)
           const searchResult = await this.amagi.douyin.fetcher.searchContent({
             query: item.short_id,
-            type: 'user'
+            type: 'user',
+            typeMode: 'strict'
           })
 
           // 在搜索结果中查找匹配的用户
@@ -806,7 +807,7 @@ export class DouYinpush extends Base {
 
         logger.debug(`开始获取用户：${item.remark}（${sec_uid}）的内容，推送类型：${pushTypes.join(', ')}`)
 
-        const userinfo = await this.amagi.douyin.fetcher.fetchUserProfile({ sec_uid })
+        const userinfo = await this.amagi.douyin.fetcher.fetchUserProfile({ sec_uid, typeMode: 'strict' })
 
         const targets = item.group_id.map((groupWithBot) => {
           const [groupId, botId] = groupWithBot.split(':')
@@ -844,7 +845,8 @@ export class DouYinpush extends Base {
               listName = '作品列表'
               const videolist = await this.amagi.douyin.fetcher.fetchUserVideoList({
                 sec_uid,
-                number: 15
+                number: 15,
+                typeMode: 'strict'
               })
               contentList = videolist.data.aweme_list || []
               break
@@ -852,7 +854,8 @@ export class DouYinpush extends Base {
               listName = '喜欢列表'
               const favoritelist = await this.amagi.douyin.fetcher.fetchUserFavoriteList({
                 sec_uid,
-                number: 15
+                number: 15,
+                typeMode: 'strict'
               })
               if (favoritelist.data.aweme_list.length === 0)
                 logger.warn(`${item.remark}(${item.short_id}) 获取到的喜欢列表数量为零！此博主可能未公开他/她的喜欢列表`)
@@ -862,7 +865,8 @@ export class DouYinpush extends Base {
               listName = '推荐列表'
               const recommendlist = await this.amagi.douyin.fetcher.fetchUserRecommendList({
                 sec_uid,
-                number: 15
+                number: 15,
+                typeMode: 'strict'
               })
               if (recommendlist.data.aweme_list.length === 0)
                 logger.warn(`${item.remark}(${item.short_id}) 获取到的推荐列表数量为零！此博主可能未公开他/她的推荐列表`)
@@ -952,7 +956,7 @@ export class DouYinpush extends Base {
 
       // 使用匹配到的用户的 sec_uid 进行下一步请求
       const sec_uid = matchedUser.sec_uid
-      const UserInfoData = await this.amagi.douyin.fetcher.fetchUserProfile({ sec_uid })
+      const UserInfoData = await this.amagi.douyin.fetcher.fetchUserProfile({ sec_uid, typeMode: 'strict' })
 
       /** 处理抖音号 */
       let user_shortid
@@ -1075,7 +1079,7 @@ export class DouYinpush extends Base {
 
     for (const subscription of subscriptions) {
       const sec_uid = subscription.sec_uid
-      const userInfo = await this.amagi.douyin.fetcher.fetchUserProfile({ sec_uid })
+      const userInfo = await this.amagi.douyin.fetcher.fetchUserProfile({ sec_uid, typeMode: 'strict' })
 
       // 查找配置文件中对应的全局开关状态
       const configItem = Config.pushlist.douyin?.find((item: douyinPushItem) => item.sec_uid === sec_uid)
@@ -1169,7 +1173,7 @@ export class DouYinpush extends Base {
     if (updateList.length > 0) {
       for (const i of updateList) {
         // 从外部数据源获取用户备注信息
-        const userinfo = await this.amagi.douyin.fetcher.fetchUserProfile({ sec_uid: i.sec_uid })
+        const userinfo = await this.amagi.douyin.fetcher.fetchUserProfile({ sec_uid: i.sec_uid, typeMode: 'strict' })
         const remark = userinfo.data.user.nickname
 
         // 在配置文件中找到对应的用户，并更新其备注信息

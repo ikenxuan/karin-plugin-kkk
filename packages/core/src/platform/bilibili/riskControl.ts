@@ -32,7 +32,8 @@ export const bilibiliRiskControlStrategy: ErrorStrategy = {
 
     // 申请验证码
     const verification = await bilibiliFetcher.requestCaptchaFromVoucher({
-      v_voucher: amagiError.data.data.v_voucher
+      v_voucher: amagiError.data.data.v_voucher,
+      typeMode: 'strict'
     })
 
     if (!verification.data?.data?.geetest) {
@@ -84,7 +85,8 @@ export const bilibiliRiskControlStrategy: ErrorStrategy = {
         challenge: geetest.challenge,
         token,
         validate,
-        seccode
+        seccode,
+        typeMode: 'strict'
       })
 
       if (verifyResult.success && verifyResult.data?.data?.grisk_id) {
@@ -101,7 +103,7 @@ export const bilibiliRiskControlStrategy: ErrorStrategy = {
           event.reply('❌ 验证失败，建议使用「#B站登录」重新配置 ck 以绕过风控')
           return 'handled'
         }
-        event.reply(`❌ 验证失败: ${err.reason}`)
+        event.reply(`❌ 验证失败: ${err.rawError?.errorDescription}`)
       } else {
         event.reply(`❌ 验证失败: ${(err as Error).message}`)
       }

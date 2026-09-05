@@ -1,7 +1,6 @@
 packages:
   - packages/*
-  # amagi 已改为 link: 指向仓库外的本地工作树（见根 package.json），
-  # 子模块里的那份不再参与 workspace，否则同名包会有两份
+  - packages/amagi/packages/core
 
 overrides:
   node-karin: 1.16.2

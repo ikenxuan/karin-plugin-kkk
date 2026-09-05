@@ -1,4 +1,4 @@
-import { AmagiSuccess, DyUserInfo } from '@ikenxuan/amagi'
+import { DyUserInfo, Result } from '@ikenxuan/amagi'
 import { logger } from 'node-karin'
 
 import { douyinDB } from '@/module'
@@ -16,7 +16,7 @@ import type { DouyinWorkPushItem } from './types'
 export async function processRecommendList(
   contentList: any[],
   sec_uid: string,
-  userinfo: AmagiSuccess<DyUserInfo>,
+  userinfo: Result<DyUserInfo>,
   item: douyinPushItem,
   targets: Array<{ groupId: string; botId: string }>,
   force: boolean = false
@@ -56,11 +56,12 @@ export async function processRecommendList(
     }
 
     // 获取作品作者的用户信息
-    let authorUserInfo: AmagiSuccess<DyUserInfo> | undefined
+    let authorUserInfo: Result<DyUserInfo> | undefined
     try {
       if (aweme.author?.sec_uid) {
         authorUserInfo = await douyinFetcher.fetchUserProfile({
-          sec_uid: aweme.author.sec_uid
+          sec_uid: aweme.author.sec_uid,
+          typeMode: 'strict'
         })
         logger.debug(`获取作品作者 ${aweme.author.nickname} 的用户信息成功`)
       }

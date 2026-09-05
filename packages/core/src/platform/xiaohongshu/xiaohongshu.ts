@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 
-import type { AmagiSuccess, NoteComments } from '@ikenxuan/amagi'
+import type { NoteComments, Result } from '@ikenxuan/amagi'
 import { format } from 'date-fns'
 import { common, type Message, segment } from 'node-karin'
 import { logger } from 'node-karin'
@@ -53,21 +53,45 @@ export class Xiaohongshu extends Base {
     this.type = iddata?.type
   }
 
-  /**
-   * 取够配置条数的笔记评论。
-   *
-   * v7 的 `noteComments` 端点自带声明式翻页：只传目标条数 `number`，游标由管线
-   * 携带、跨页条目由端点的 `normalize` 回填到最后一页原位 —— 所以这里不再手写
-   * cursor 循环（v6 时代那 30 行）。
-   * @param data - 笔记 id 与 xsec_token
-   * @returns 成功信封，`data.data.comments` 已是合并后的全部评论
-   */
-  private async fetchConfiguredNoteComments (data: XiaohongshuIdData): Promise<AmagiSuccess<NoteComments>> {
-    return this.amagi.xiaohongshu.fetcher.fetchNoteComments({
+  private async fetchConfiguredNoteComments(data: XiaohongshuIdData): Promise<Result<NoteComments>> {
+    const targetCount = Math.max(1, Config.xiaohongshu.numcomment)
+    const firstPage = await this.amagi.xiaohongshu.fetcher.fetchNoteComments({
+      typeMode: 'strict',
       note_id: data.note_id,
-      xsec_token: data.xsec_token,
-      number: Math.max(1, Config.xiaohongshu.numcomment)
+      xsec_token: data.xsec_token
     })
+
+    const comments = [...(firstPage.data.data.comments ?? [])]
+    let cursor = firstPage.data.data.cursor
+    let hasMore = firstPage.data.data.has_more
+    const seenCursors = new Set<string>()
+
+    while (comments.length < targetCount && hasMore && cursor && !seenCursors.has(cursor)) {
+      seenCursors.add(cursor)
+      const nextPage = await this.amagi.xiaohongshu.fetcher.fetchNoteComments({
+        typeMode: 'strict',
+        note_id: data.note_id,
+        cursor,
+        xsec_token: data.xsec_token
+      })
+
+      comments.push(...(nextPage.data.data.comments ?? []))
+      cursor = nextPage.data.data.cursor
+      hasMore = nextPage.data.data.has_more
+    }
+
+    return {
+      ...firstPage,
+      data: {
+        ...firstPage.data,
+        data: {
+          ...firstPage.data.data,
+          comments,
+          cursor,
+          has_more: hasMore
+        }
+      }
+    } as Result<NoteComments>
   }
 
   async XiaohongshuHandler(data: XiaohongshuIdData) {
@@ -78,10 +102,11 @@ export class Xiaohongshu extends Base {
       await this.e.reply('检测到小红书链接，开始解析')
     }
     const NoteData = await this.amagi.xiaohongshu.fetcher.fetchNoteDetail({
+      typeMode: 'strict',
       note_id: data.note_id,
       xsec_token: data.xsec_token
     })
-    const EmojiList = await this.amagi.xiaohongshu.fetcher.fetchEmojiList()
+    const EmojiList = await this.amagi.xiaohongshu.fetcher.fetchEmojiList({ typeMode: 'strict' })
     const formattedEmojis = XiaohongshuEmoji(EmojiList)
 
     // 笔记信息

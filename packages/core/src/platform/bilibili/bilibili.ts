@@ -1,7 +1,6 @@
 import fs from 'node:fs'
 
 import {
-  AmagiSuccess,
   ArticleContent,
   BiliBangumiVideoInfo,
   BiliBangumiVideoPlayurlIsLogin,
@@ -12,7 +11,8 @@ import {
   BiliOneWork,
   BiliVideoPlayurlIsLogin,
   DynamicType,
-  DynamicTypeDraw
+  DynamicTypeDraw,
+  Result
 } from '@ikenxuan/amagi'
 import type { BilibiliForwardOriginalContentProps } from '@template/template/bilibili/dynamic/types'
 import { DecorationCardData } from '@template/template/bilibili/dynamic/types'
@@ -39,7 +39,7 @@ import {
   Render,
   uploadFile
 } from '@/module/utils'
-import { bilibiliFetcher, isSoftFailure, SOFT_ERROR_CODES, softFetch } from '@/module/utils/amagiClient'
+import { bilibiliFetcher, SOFT_ERROR_CODES, softFetch } from '@/module/utils/amagiClient'
 import { Config } from '@/module/utils/Config'
 import { bilibiliComments, BilibiliId, checkCk, genParams } from '@/platform/bilibili'
 import { type BiliDanmakuElem, burnBiliDanmaku, getHotDanmaku, mergeAndBurnBili } from '@/platform/bilibili/danmaku'
@@ -94,11 +94,12 @@ export class Bilibili extends Base {
     }
     switch (this.Type) {
       case 'one_video': {
-        const infoData = await this.amagi.bilibili.fetcher.fetchVideoInfo({ bvid: iddata.bvid })
+        const infoData = await this.amagi.bilibili.fetcher.fetchVideoInfo({ bvid: iddata.bvid, typeMode: 'strict' })
         const playUrlData = (await this.amagi.bilibili.fetcher.fetchVideoStreamUrl({
           avid: infoData.data.data.aid,
-          cid: iddata.p ? (infoData.data.data.pages[iddata.p - 1]?.cid ?? infoData.data.data.cid) : infoData.data.data.cid
-        })) as AmagiSuccess<BiliVideoPlayurlIsLogin>
+          cid: iddata.p ? (infoData.data.data.pages[iddata.p - 1]?.cid ?? infoData.data.data.cid) : infoData.data.data.cid,
+          typeMode: 'strict'
+        })) as Result<BiliVideoPlayurlIsLogin>
         // const playUrl = bilibiliApiUrls.视频流信息({ avid: infoData.data.aid, cid: infoData.data.cid })
         this.islogin = (await checkCk()).Status === 'isLogin'
 
@@ -111,7 +112,7 @@ export class Bilibili extends Base {
               cid: iddata.p ? (infoData.data.data.pages[iddata.p - 1]?.cid ?? infoData.data.data.cid) : infoData.data.data.cid
             }) + '&platform=html5',
           headers: this.headers
-        }).getData()) as AmagiSuccess<BiliBiliVideoPlayurlNoLogin>
+        }).getData()) as Result<BiliBiliVideoPlayurlNoLogin>
 
         // 如果配置项不存在或长度为0，则不显示任何内容
         if (Config.bilibili.sendContent.some((content) => content === 'info')) {
@@ -140,7 +141,8 @@ export class Bilibili extends Base {
           } else {
             // 渲染为图片
             const userProfileData = await this.amagi.bilibili.fetcher.fetchUserCard({
-              host_mid: infoData.data.data.owner.mid
+              host_mid: infoData.data.data.owner.mid,
+              typeMode: 'strict'
             })
             // 获取弹幕并统计出现次数最多的几条，用于模板展示（仅当配置开启时）
             let hotDanmaku: ReturnType<typeof getHotDanmaku> | undefined
@@ -218,13 +220,14 @@ export class Bilibili extends Base {
                 {
                   number: Config.bilibili.numcomment,
                   type: 1,
-                  oid: infoData.data.data.aid.toString()
+                  oid: infoData.data.data.aid.toString(),
+                  typeMode: 'strict'
                 },
                 bilibiliAnonymousRequestConfig
               ),
             [SOFT_ERROR_CODES.BILIBILI_COMMENTS_DISABLED]
           )
-          if (isSoftFailure(commentsData, SOFT_ERROR_CODES.BILIBILI_COMMENTS_DISABLED)) {
+          if (commentsData.code === SOFT_ERROR_CODES.BILIBILI_COMMENTS_DISABLED) {
             this.e.reply('UP主已关闭评论区，无法获取评论')
           } else {
             const { comments: commentsdata, image_urls } = bilibiliComments(commentsData.data, infoData.data.data.owner.mid.toString())
@@ -307,7 +310,8 @@ export class Bilibili extends Base {
       }
       case 'bangumi_video_info': {
         const videoInfo = await this.amagi.bilibili.fetcher.fetchBangumiInfo({
-          [iddata.isEpid ? 'ep_id' : 'season_id']: iddata.realid
+          [iddata.isEpid ? 'ep_id' : 'season_id']: iddata.realid,
+          typeMode: 'strict'
         })
         this.islogin = (await checkCk()).Status === 'isLogin'
         this.isVIP = (await checkCk()).isVIP
@@ -406,10 +410,12 @@ export class Bilibili extends Base {
       }
       case 'dynamic_info': {
         const dynamicInfo = await this.amagi.bilibili.fetcher.fetchDynamicDetail({
-          dynamic_id: iddata.dynamic_id
+          dynamic_id: iddata.dynamic_id,
+          typeMode: 'strict'
         })
         const userProfileData = await this.amagi.bilibili.fetcher.fetchUserCard({
-          host_mid: dynamicInfo.data.data.item.modules.module_author.mid
+          host_mid: dynamicInfo.data.data.item.modules.module_author.mid,
+          typeMode: 'strict'
         })
 
         switch (dynamicInfo.data.data.item.type) {
@@ -807,7 +813,7 @@ export class Bilibili extends Base {
           case DynamicType.AV: {
             if (dynamicInfo.data.data.item.modules.module_dynamic.major.type === 'MAJOR_TYPE_ARCHIVE') {
               const bvid = dynamicInfo.data.data.item.modules.module_dynamic.major.archive.bvid
-              const INFODATA = await bilibiliFetcher.fetchVideoInfo({ bvid })
+              const INFODATA = await bilibiliFetcher.fetchVideoInfo({ bvid, typeMode: 'strict' })
 
               // 处理共创者信息
               let staff = undefined
@@ -880,7 +886,8 @@ export class Bilibili extends Base {
           /** 直播动态 */
           case DynamicType.LIVE_RCMD: {
             const userINFO = await bilibiliFetcher.fetchUserCard({
-              host_mid: dynamicInfo.data.data.item.modules.module_author.mid
+              host_mid: dynamicInfo.data.data.item.modules.module_author.mid,
+              typeMode: 'strict'
             })
             const liveInfo = JSON.parse(dynamicInfo.data.data.item.modules.module_dynamic.major.live_rcmd.content)
             img = await Render(this.e, 'bilibili/dynamic/DYNAMIC_TYPE_LIVE_RCMD', {
@@ -902,10 +909,12 @@ export class Bilibili extends Base {
           /** 文章/专栏动态 */
           case DynamicType.ARTICLE: {
             const articleInfoBase = await this.amagi.bilibili.fetcher.fetchArticleInfo({
-              id: dynamicInfo.data.data.item.basic.rid_str
+              id: dynamicInfo.data.data.item.basic.rid_str,
+              typeMode: 'strict'
             })
             const articleInfo = await this.amagi.bilibili.fetcher.fetchArticleContent({
-              id: dynamicInfo.data.data.item.basic.rid_str
+              id: dynamicInfo.data.data.item.basic.rid_str,
+              typeMode: 'strict'
             })
 
             // 提取专栏基本信息
@@ -995,13 +1004,14 @@ export class Bilibili extends Base {
                 {
                   type: mapping_table(dynamicInfo.data.data.item.type),
                   oid: oid(dynamicInfo.data.data.item.type, dynamicInfo.data),
-                  number: Config.bilibili.numcomment
+                  number: Config.bilibili.numcomment,
+                  typeMode: 'strict'
                 },
                 bilibiliAnonymousRequestConfig
               ),
             [SOFT_ERROR_CODES.BILIBILI_COMMENTS_DISABLED]
           )
-          if (isSoftFailure(commentsData, SOFT_ERROR_CODES.BILIBILI_COMMENTS_DISABLED)) {
+          if (commentsData.code === SOFT_ERROR_CODES.BILIBILI_COMMENTS_DISABLED) {
             this.e.reply('UP主已关闭评论区，无法获取评论')
           } else {
             const { comments: commentsdata, image_urls } = bilibiliComments(
@@ -1062,13 +1072,16 @@ export class Bilibili extends Base {
       }
       case 'live_room_detail': {
         const liveInfo = await this.amagi.bilibili.fetcher.fetchLiveRoomInfo({
-          room_id: iddata.room_id
+          room_id: iddata.room_id,
+          typeMode: 'strict'
         })
         const roomInitInfo = await this.amagi.bilibili.fetcher.fetchLiveRoomInitInfo({
-          room_id: iddata.room_id
+          room_id: iddata.room_id,
+          typeMode: 'strict'
         })
         const userProfileData = await this.amagi.bilibili.fetcher.fetchUserCard({
-          host_mid: roomInitInfo.data.data.uid
+          host_mid: roomInitInfo.data.data.uid,
+          typeMode: 'strict'
         })
 
         if (roomInitInfo.data.data.live_status === 0) {
@@ -1108,7 +1121,7 @@ export class Bilibili extends Base {
       logger.debug(`视频时长: ${duration}秒, 需要获取 ${segmentCount} 个弹幕分段`)
       const danmakuPromises = Array.from({ length: segmentCount }, (_, i) =>
         this.amagi.bilibili.fetcher
-          .fetchVideoDanmaku({ cid, segment_index: i + 1 })
+          .fetchVideoDanmaku({ cid, segment_index: i + 1, typeMode: 'strict' })
           .then((res) => res.data?.data?.elems || [])
           .catch(() => [] as BiliDanmakuElem[])
       )
