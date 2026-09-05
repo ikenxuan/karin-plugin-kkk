@@ -2,6 +2,19 @@
 
 # Changelog
 
+## [2.42.5](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.42.4...v2.42.5) (2026-09-05)
+
+
+### 🐛 错误修复
+
+* 移除 `@ikenxuan/watermark` ，所有图片强制展示底部版本信息。 ([ac96199](https://github.com/ikenxuan/karin-plugin-kkk/commit/ac96199847062c74c051be4fe1dd5ca6dca632dc))
+
+
+### 💄 UI 优化
+
+* **bilibili:** 添加站内图文链接节点及相关图标支持 ([f9932f8](https://github.com/ikenxuan/karin-plugin-kkk/commit/f9932f8d480a929e3cb7c1b7cf7321179cc023dc))
+* 登录二维码添加触发者头像 ([e498c5f](https://github.com/ikenxuan/karin-plugin-kkk/commit/e498c5f4469ef43c0a0e046dcdbd551b088fc927))
+
 ## [2.42.4](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.42.3...v2.42.4) (2026-09-03)
 
 
