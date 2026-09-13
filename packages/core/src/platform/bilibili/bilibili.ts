@@ -2,15 +2,14 @@ import fs from 'node:fs'
 
 import {
   AmagiSuccess,
-  ArticleContent,
-  BiliBangumiVideoInfo,
-  BiliBangumiVideoPlayurlIsLogin,
-  BiliBangumiVideoPlayurlNoLogin,
+  BilibiliArticleContentResponse,
+  BilibiliBangumiInfoResponse,
+  BilibiliBangumiStreamResponse,
   bilibiliApiUrls,
   BiliBiliVideoPlayurlNoLogin,
-  BiliDynamicInfoUnion,
-  BiliOneWork,
-  BiliVideoPlayurlIsLogin,
+  BilibiliDynamicDetailResponse,
+  BilibiliVideoInfoResponse,
+  BilibiliVideoStreamResponse,
   DynamicType,
   DynamicTypeDraw
 } from '@ikenxuan/amagi'
@@ -53,7 +52,7 @@ import {
 import { BilibiliDataTypes } from '@/types'
 
 let img: ElementTypes[]
-type videoDownloadUrlList = BiliVideoPlayurlIsLogin['data']['dash']['video']
+type videoDownloadUrlList = BilibiliVideoStreamResponse['data']['dash']['video']
 
 /** 评论请求统一使用匿名态，避免账号 Cookie 改变评论热度池结果。 */
 const bilibiliAnonymousRequestConfig = {
@@ -95,15 +94,19 @@ export class Bilibili extends Base {
     switch (this.Type) {
       case 'one_video': {
         const infoData = await this.amagi.bilibili.fetcher.fetchVideoInfo({ bvid: iddata.bvid })
-        const playUrlData = (await this.amagi.bilibili.fetcher.fetchVideoStreamUrl({
+        const playUrlData = await this.amagi.bilibili.fetcher.fetchVideoStreamUrl({
           avid: infoData.data.data.aid,
           cid: iddata.p ? (infoData.data.data.pages[iddata.p - 1]?.cid ?? infoData.data.data.cid) : infoData.data.data.cid
-        })) as AmagiSuccess<BiliVideoPlayurlIsLogin>
+        })
         // const playUrl = bilibiliApiUrls.视频流信息({ avid: infoData.data.aid, cid: infoData.data.cid })
         this.islogin = (await checkCk()).Status === 'isLogin'
 
         this.downloadfilename = infoData.data.data.title.substring(0, 50).replace(/[\\/:*?"<>|\r\n\s]/g, ' ')
 
+        /**
+         * 免登录 360P 那条不走 amagi（URL 上多一个 `platform=html5`），拿到的也不是登录态那种
+         * `dash` 形状，所以这里仍用手写快照树的 `BiliBiliVideoPlayurlNoLogin` —— 它不是任何端点的响应。
+         */
         const nockData = (await new Networks({
           url:
             bilibiliApiUrls.getVideoStream({
@@ -408,11 +411,20 @@ export class Bilibili extends Base {
         const dynamicInfo = await this.amagi.bilibili.fetcher.fetchDynamicDetail({
           dynamic_id: iddata.dynamic_id
         })
+        /**
+         * 动态类型取成枚举再用。
+         *
+         * 生成树的判别联合目前只录到 AV / DRAW / FORWARD 三种形状，其余（WORD / LIVE_RCMD /
+         * ARTICLE）落在兜底支上，判别字段声明成 `?: never` —— 拿 `item.type` 直接 switch 时，
+         * 枚举里那些没录到的取值会被判成「与判别字段无重叠」，连带把已知支一起收窄成 never。
+         * 转成枚举后各支照旧按运行时的 `type` 字符串走，字段读取仍走每层的索引签名。
+         */
+        const dynamicType = String(dynamicInfo.data.data.item.type) as DynamicType
         const userProfileData = await this.amagi.bilibili.fetcher.fetchUserCard({
           host_mid: dynamicInfo.data.data.item.modules.module_author.mid
         })
 
-        switch (dynamicInfo.data.data.item.type) {
+        switch (dynamicType) {
           /** 图文、纯图 */
           case DynamicType.DRAW: {
             const imgArray = []
@@ -555,8 +567,10 @@ export class Bilibili extends Base {
             }
             this.e.reply(
               await Render(this.e, 'bilibili/dynamic/DYNAMIC_TYPE_DRAW', {
+                // 生成类型在判别联合里把 `pics` 记成 `any`（各支索引签名），`Object.values` 于是推出
+                // `unknown[]` —— 谓词里先把元素当成「可能有 url 的对象」再判，形状仍然照旧收窄
                 image_url: Object.values(dynamicInfo.data.data.item.modules.module_dynamic.major.opus.pics)
-                  .filter((item): item is { url: string } => typeof item?.url === 'string')
+                  .filter((item): item is { url: string } => typeof (item as { url?: unknown })?.url === 'string')
                   .map((item) => ({ image_src: item.url })),
                 // TIP: 2025/08/20, 动态卡片数据中，图文动态的描述文本在 major.opus.summary 中
                 title: dynamicInfo.data.data.item.modules.module_dynamic.major.opus.title ?? undefined,
@@ -712,8 +726,9 @@ export class Bilibili extends Base {
                       dynamicInfo.data.data.item.orig.modules.module_dynamic.major.opus.summary.text,
                       dynamicInfo.data.data.item.orig.modules.module_dynamic.major.opus.summary.rich_text_nodes
                     ),
+                    // 同上：生成类型的 `pics` 是 `any`，`Object.values` 出 `unknown[]`
                     image_url: Object.values(dynamicInfo.data.data.item.orig.modules.module_dynamic.major.opus.pics)
-                      .filter((item): item is { url: string } => typeof item?.url === 'string')
+                      .filter((item): item is { url: string } => typeof (item as { url?: unknown })?.url === 'string')
                       .map((item) => ({ image_src: item.url })),
                     decoration_card: generateDecorationCard(dynamicInfo.data.data.item.orig.modules.module_author.decoration_card),
                     frame: dynamicInfo.data.data.item.orig.modules.module_author.pendant.image
@@ -910,8 +925,12 @@ export class Bilibili extends Base {
 
             // 提取专栏基本信息
             const articleData = articleInfoBase.data.data
-            // 提取专栏正文内容
+            // 提取专栏正文内容（生成类型里 `data` 可空：样本里就有一条只有 code/message 的响应）
             const articleContent = articleInfo.data.data
+            if (!articleContent) {
+              this.e.reply('获取专栏正文失败，该专栏可能已被删除或设为私密')
+              break
+            }
 
             // TODO: 还未完全支持B站的富文本格式，后续需要根据实际情况补充更多类型的节点解析
             // 构建富文本文档
@@ -985,16 +1004,13 @@ export class Bilibili extends Base {
         }
 
         // 统一处理评论（直播动态除外）
-        if (
-          Config.bilibili.sendContent.some((content) => content === 'comment') &&
-          dynamicInfo.data.data.item.type !== DynamicType.LIVE_RCMD
-        ) {
+        if (Config.bilibili.sendContent.some((content) => content === 'comment') && dynamicType !== DynamicType.LIVE_RCMD) {
           const commentsData = await softFetch(
             () =>
               this.amagi.bilibili.fetcher.fetchComments(
                 {
-                  type: mapping_table(dynamicInfo.data.data.item.type),
-                  oid: oid(dynamicInfo.data.data.item.type, dynamicInfo.data),
+                  type: mapping_table(dynamicType),
+                  oid: oid(dynamicType, dynamicInfo.data),
                   number: Config.bilibili.numcomment
                 },
                 bilibiliAnonymousRequestConfig
@@ -1015,9 +1031,9 @@ export class Bilibili extends Base {
                 const messageElements = []
                 // 获取动态标题用于图片命名
                 let title = 'bilibili_dynamic'
-                if (dynamicInfo.data.data.item.type === DynamicType.DRAW) {
+                if (dynamicType === DynamicType.DRAW) {
                   title = dynamicInfo.data.data.item.modules.module_dynamic.major.opus.title || 'bilibili_dynamic'
-                } else if (dynamicInfo.data.data.item.type === DynamicType.AV) {
+                } else if (dynamicType === DynamicType.AV) {
                   title = dynamicInfo.data.data.item.modules.module_dynamic.major.archive.title || 'bilibili_dynamic'
                 }
 
@@ -1044,7 +1060,7 @@ export class Bilibili extends Base {
                 CommentsData: commentsdata,
                 CommentLength: String(commentsdata.length),
                 share_url:
-                  dynamicInfo.data.data.item.type === DynamicType.AV
+                  dynamicType === DynamicType.AV
                     ? `https://www.bilibili.com/video/${dynamicInfo.data.data.item.modules.module_dynamic.major.archive.bvid}`
                     : `https://t.bilibili.com/${dynamicInfo.data.data.item.id_str}`,
                 ImageLength: dynamicInfo.data.data.item.modules?.module_dynamic?.major?.draw?.items?.length ?? 0,
@@ -1127,8 +1143,8 @@ export class Bilibili extends Base {
     playUrlData,
     danmakuList = []
   }: {
-    infoData?: BiliBangumiVideoInfo | BiliOneWork
-    playUrlData: BiliVideoPlayurlIsLogin | BiliBiliVideoPlayurlNoLogin | BiliBangumiVideoPlayurlIsLogin | BiliBangumiVideoPlayurlNoLogin
+    infoData?: BilibiliBangumiInfoResponse | BilibiliVideoInfoResponse
+    playUrlData: BilibiliVideoStreamResponse | BiliBiliVideoPlayurlNoLogin | BilibiliBangumiStreamResponse
     danmakuList?: BiliDanmakuElem[]
   }) {
     /** 获取视频 => FFmpeg合成 */
@@ -1519,7 +1535,7 @@ const mapping_table = (type: any): number => {
  * @param dynamicData 动态数据
  * @returns
  */
-const oid = (dynamicType: DynamicType, dynamicData: BiliDynamicInfoUnion) => {
+const oid = (dynamicType: DynamicType, dynamicData: BilibiliDynamicDetailResponse) => {
   switch (dynamicType) {
     case DynamicType.WORD:
     case DynamicType.FORWARD: {
@@ -1761,7 +1777,7 @@ const getStringDisplayWidth = (str: string): number => {
  * @param content
  * @returns
  */
-export const extractArticleImages = (content: ArticleContent['data']): string[] => {
+export const extractArticleImages = (content: NonNullable<BilibiliArticleContentResponse['data']>): string[] => {
   const images: string[] = []
 
   // 处理 opus 格式（结构化数据）

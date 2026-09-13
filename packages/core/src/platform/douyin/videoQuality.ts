@@ -1,10 +1,10 @@
-import type { DyVideoWork } from '@ikenxuan/amagi'
+import type { DouyinVideoWorkResponse } from '@ikenxuan/amagi'
 import { logger } from 'node-karin'
 
 import { Config } from '@/module/utils/Config'
 
 /** 抖音视频源对象，对应 `aweme_detail.video.bit_rate` 数组项（直接复用 amagi 生成类型，避免手写漂移） */
-export type dyVideo = DyVideoWork['aweme_detail']['video']['bit_rate'][number]
+export type dyVideo = NonNullable<DouyinVideoWorkResponse['aweme_detail']>['video']['bit_rate'][number]
 
 /** 插件内部使用的清晰度档位，取值域与 `Config.douyin.videoQuality` 保持一致 */
 export type DouyinQualityLevel = '4k' | '2k' | '1080p' | '720p' | '540p'

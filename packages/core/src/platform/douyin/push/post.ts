@@ -1,4 +1,4 @@
-import { AmagiSuccess, DyUserInfo } from '@ikenxuan/amagi'
+import { DouyinUserProfileResponse } from '@ikenxuan/amagi'
 import { format, fromUnixTime } from 'date-fns'
 import { logger } from 'node-karin'
 
@@ -16,7 +16,7 @@ import type { DouyinWorkPushItem } from './types'
 export async function processPostList(
   contentList: any[],
   sec_uid: string,
-  userinfo: AmagiSuccess<DyUserInfo>,
+  userinfo: DouyinUserProfileResponse,
   item: douyinPushItem,
   targets: Array<{ groupId: string; botId: string }>
 ): Promise<DouyinWorkPushItem[]> {
@@ -64,7 +64,7 @@ export async function processPostList(
           targets: validTargets,
           pushType,
           Detail_Data: buildDouyinWorkDetail(aweme, { user_info: userinfo }),
-          avatar_img: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + userinfo.data.user.avatar_larger.uri,
+          avatar_img: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + userinfo.user.avatar_larger.uri,
           living: false
         })
       }

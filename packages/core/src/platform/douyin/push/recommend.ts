@@ -1,4 +1,4 @@
-import { AmagiSuccess, DyUserInfo } from '@ikenxuan/amagi'
+import { DouyinUserProfileResponse } from '@ikenxuan/amagi'
 import { logger } from 'node-karin'
 
 import { douyinDB } from '@/module'
@@ -16,7 +16,7 @@ import type { DouyinWorkPushItem } from './types'
 export async function processRecommendList(
   contentList: any[],
   sec_uid: string,
-  userinfo: AmagiSuccess<DyUserInfo>,
+  userinfo: DouyinUserProfileResponse,
   item: douyinPushItem,
   targets: Array<{ groupId: string; botId: string }>,
   force: boolean = false
@@ -56,12 +56,14 @@ export async function processRecommendList(
     }
 
     // 获取作品作者的用户信息
-    let authorUserInfo: AmagiSuccess<DyUserInfo> | undefined
+    let authorUserInfo: DouyinUserProfileResponse | undefined
     try {
       if (aweme.author?.sec_uid) {
-        authorUserInfo = await douyinFetcher.fetchUserProfile({
-          sec_uid: aweme.author.sec_uid
-        })
+        authorUserInfo = (
+          await douyinFetcher.fetchUserProfile({
+            sec_uid: aweme.author.sec_uid
+          })
+        ).data
         logger.debug(`获取作品作者 ${aweme.author.nickname} 的用户信息成功`)
       }
     } catch (error) {
@@ -76,7 +78,7 @@ export async function processRecommendList(
       targets: validTargets,
       pushType,
       Detail_Data: buildDouyinWorkDetail(aweme, { user_info: userinfo, author_user_info: authorUserInfo }),
-      avatar_img: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + userinfo.data.user.avatar_larger.uri,
+      avatar_img: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + userinfo.user.avatar_larger.uri,
       living: false
     })
 

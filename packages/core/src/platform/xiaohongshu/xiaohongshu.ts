@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 
-import type { AmagiSuccess, NoteComments } from '@ikenxuan/amagi'
+import type { NoteComments } from '@ikenxuan/amagi'
 import { format } from 'date-fns'
 import { common, type Message, segment } from 'node-karin'
 import { logger } from 'node-karin'
@@ -59,15 +59,20 @@ export class Xiaohongshu extends Base {
    * v7 的 `noteComments` 端点自带声明式翻页：只传目标条数 `number`，游标由管线
    * 携带、跨页条目由端点的 `normalize` 回填到最后一页原位 —— 所以这里不再手写
    * cursor 循环（v6 时代那 30 行）。
+   *
+   * 这条端点在 amagi 那边还没有生成响应类型（声明回退 `any`），形状仍按手写快照树的
+   * `NoteComments` 断言；等它补上样本、生成类型之后换成生成的那份。
    * @param data - 笔记 id 与 xsec_token
-   * @returns 成功信封，`data.data.comments` 已是合并后的全部评论
+   * @returns 响应体（fetcher 失败即抛），`data.comments` 已是合并后的全部评论
    */
-  private async fetchConfiguredNoteComments (data: XiaohongshuIdData): Promise<AmagiSuccess<NoteComments>> {
-    return this.amagi.xiaohongshu.fetcher.fetchNoteComments({
-      note_id: data.note_id,
-      xsec_token: data.xsec_token,
-      number: Math.max(1, Config.xiaohongshu.numcomment)
-    })
+  private async fetchConfiguredNoteComments(data: XiaohongshuIdData): Promise<NoteComments> {
+    return (
+      await this.amagi.xiaohongshu.fetcher.fetchNoteComments({
+        note_id: data.note_id,
+        xsec_token: data.xsec_token,
+        number: Math.max(1, Config.xiaohongshu.numcomment)
+      })
+    ).data
   }
 
   async XiaohongshuHandler(data: XiaohongshuIdData) {
@@ -108,11 +113,11 @@ export class Xiaohongshu extends Base {
     if (Config.xiaohongshu.sendContent.some((item) => item === 'comment')) {
       const CommentData = await this.fetchConfiguredNoteComments(data)
 
-      if (!CommentData.data.data.comments || CommentData.data.data.comments.length === 0) {
+      if (!CommentData.data.comments || CommentData.data.comments.length === 0) {
         await this.e.reply('这个笔记没有评论 ~')
       } else {
         // 使用简化的评论处理函数，直接返回评论数组
-        const processedComments = await xiaohongshuComments(CommentData.data, formattedEmojis)
+        const processedComments = await xiaohongshuComments(CommentData, formattedEmojis)
 
         const commentListImg = await Render(this.e, 'xiaohongshu/comment', {
           Type: NoteData.data.data.items[0].note_card!.video ? '视频' : '图文',

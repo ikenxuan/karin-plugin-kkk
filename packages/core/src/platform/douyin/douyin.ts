@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 
-import { type DyEmojiList, DyVideoWork } from '@ikenxuan/amagi'
+import { type DouyinEmojiListResponse, DouyinVideoWorkResponse } from '@ikenxuan/amagi'
 import type { DouyinUserVideoListData } from '@template/template/douyin/user_profile/components/types'
 import { format } from 'date-fns'
 import karin, { type Elements, Message, SendMessage } from 'node-karin'
@@ -149,8 +149,14 @@ export class DouYin extends Base {
                     continue
                   }
 
-                  /** live 图 */
-                  const liveimg = await downloadFile(buildDouyinPlayUrl(imageItem.video.play_addr_h264), {
+                  /**
+                   * live 图。
+                   * 生成类型里 `video` 是可选的（静态图不带它），静态图上面已经 `continue` 掉了；
+                   * 这里再兜一层，遇到标着 clip_type 却没有视频源的脏数据就跳过，别拿 undefined 去拼 URL。
+                   */
+                  const liveVideo = imageItem.video
+                  if (!liveVideo) continue
+                  const liveimg = await downloadFile(buildDouyinPlayUrl(liveVideo.play_addr_h264), {
                     title: `Douyin_tmp_V_${Date.now()}.mp4`,
                     headers: this.headers
                   })
@@ -354,8 +360,10 @@ export class DouYin extends Base {
                   images.push(segment.image(imageUrl))
                   continue
                 }
-                /** 动图/短片 */
-                const livePhoto = await downloadFile(buildDouyinPlayUrl(item.video.play_addr_h264), {
+                /** 动图/短片（同图集分支：`video` 在生成类型里是可选的，没有就跳过这一项） */
+                const liveVideo = item.video
+                if (!liveVideo) continue
+                const livePhoto = await downloadFile(buildDouyinPlayUrl(liveVideo.play_addr_h264), {
                   title: `Douyin_tmp_V_${Date.now()}.mp4`,
                   headers: this.headers
                 })
@@ -514,7 +522,7 @@ export class DouYin extends Base {
         /** 视频 */
         let FPS
         const sendvideofile = true
-        type VideoType = DyVideoWork['aweme_detail']['video']
+        type VideoType = NonNullable<DouyinVideoWorkResponse['aweme_detail']>['video']
         /**
          * 图文/文章作品的 video 字段不含 bit_rate，不能无条件初始化，
          * 否则会在这里直接抛 TypeError；仅在视频分支内赋值，其余场景保持 null。
@@ -590,7 +598,7 @@ export class DouYin extends Base {
               // 不再向 Detail_Data 里覆盖 video.bit_rate 塞入选档结果：
               // 那会篡改原始 aweme 结构（还会给图文/文章作品注入伪造的 video 字段），
               // 清晰度展示信息改由 videoSource 显式传递。
-              Detail_Data: buildDouyinWorkDetail(aweme, { user_info: userProfile }),
+              Detail_Data: buildDouyinWorkDetail(aweme, { user_info: userProfile.data }),
               videoSource: selectedVideo,
               create_time: aweme.create_time,
               shareLink,
@@ -603,7 +611,7 @@ export class DouYin extends Base {
         if (Config.douyin.sendContent.includes('comment')) {
           const EmojiData = await this.amagi.douyin.fetcher.fetchEmojiList()
           const list = Emoji(EmojiData.data)
-          const douyinCommentsRes = await douyinComments(CommentsData, list)
+          const douyinCommentsRes = await douyinComments(CommentsData.data, list)
           if (!douyinCommentsRes.CommentsData.length) {
             await this.e.reply('这个作品没有评论 ~')
           } else {
@@ -790,7 +798,7 @@ export class DouYin extends Base {
               user.cover_and_head_image_info.profile_cover_list.length > 0
                 ? user.cover_and_head_image_info.profile_cover_list[0].cover_url?.url_list[0] || null
                 : null,
-            nickname: user.nickname,
+            nickname: user.nickname ?? '',
             short_id: user.unique_id === '' ? user.short_id : user.unique_id,
             avatar: user.avatar_larger?.url_list?.[0] || user.avatar_thumb?.url_list?.[0] || '',
             signature: user.signature,
@@ -798,7 +806,7 @@ export class DouYin extends Base {
             following_count: user.following_count,
             total_favorited: user.total_favorited,
             verified: !!user.custom_verify || !!user.enterprise_verify_reason,
-            ip_location: user.ip_location
+            ip_location: user.ip_location ?? ''
           },
           videos: displayVideos,
           timeoutSeconds
@@ -858,7 +866,13 @@ export class DouYin extends Base {
         const MusicData = await this.amagi.douyin.fetcher.fetchMusicInfo({
           music_id: data.music_id
         })
-        const sec_uid = MusicData.data.music_info.sec_uid
+        // 生成类型里 `music_info` 可空（样本里有一条就是 null），先兜住再往下读
+        const musicInfo = MusicData.data.music_info
+        if (!musicInfo) {
+          await this.e.reply('解析错误！未获取到音乐信息，无法下载', { reply: true })
+          return true
+        }
+        const sec_uid = musicInfo.sec_uid
         const UserData = await this.amagi.douyin.fetcher.fetchUserProfile({ sec_uid })
         // if (UserData.data.status_code === 2) {
         //   const new_UserData.data = await getDouyinData('搜索数据', Config.cookies.douyin, { query: data.music_info.author })
@@ -867,34 +881,32 @@ export class DouYin extends Base {
         //   }
         //   const search_data = new_UserData.data
         // }
-        if (!MusicData.data.music_info.play_url) {
+        if (!musicInfo.play_url) {
           await this.e.reply('解析错误！该音乐抖音未提供下载链接，无法下载', { reply: true })
           return true
         }
         img = await Render(this.e, 'douyin/musicinfo', {
-          image_url: MusicData.data.music_info.cover_hd.url_list[0],
-          desc: MusicData.data.music_info.title,
-          music_id: MusicData.data.music_info.id.toString(),
+          image_url: musicInfo.cover_hd.url_list[0],
+          desc: musicInfo.title,
+          music_id: musicInfo.id.toString(),
           create_time: Time(0),
-          user_count: Count(MusicData.data.music_info.user_count),
-          avater_url: MusicData.data.music_info.avatar_large?.url_list[0] || UserData.data.user.avatar_larger.url_list[0],
+          user_count: Count(musicInfo.user_count),
+          avater_url: musicInfo.avatar_large?.url_list[0] || UserData.data.user.avatar_larger.url_list[0],
           fans: UserData.data.user.mplatform_followers_count || UserData.data.user.follower_count,
           following_count: UserData.data.user.following_count,
           total_favorited: UserData.data.user.total_favorited,
           user_shortid: UserData.data.user.unique_id === '' ? UserData.data.user.short_id : UserData.data.user.unique_id,
-          share_url: MusicData.data.music_info.play_url.uri,
+          share_url: musicInfo.play_url.uri,
           username:
-            MusicData.data.music_info?.original_musician_display_name || MusicData.data.music_info.owner_nickname === ''
-              ? MusicData.data.music_info.author
-              : MusicData.data.music_info.owner_nickname
+            musicInfo?.original_musician_display_name || musicInfo.owner_nickname === '' ? musicInfo.author : musicInfo.owner_nickname
         })
         await this.e.reply([
           ...img,
-          `\n正在上传 ${MusicData.data.music_info.title}\n`,
-          `作曲: ${MusicData.data.music_info.original_musician_display_name || MusicData.data.music_info.owner_nickname === '' ? MusicData.data.music_info.author : MusicData.data.music_info.owner_nickname}\n`,
-          `music_id: ${MusicData.data.music_info.id}`
+          `\n正在上传 ${musicInfo.title}\n`,
+          `作曲: ${musicInfo.original_musician_display_name || musicInfo.owner_nickname === '' ? musicInfo.author : musicInfo.owner_nickname}\n`,
+          `music_id: ${musicInfo.id}`
         ])
-        const musicFile = await downloadFile(MusicData.data.music_info.play_url.uri, {
+        const musicFile = await downloadFile(musicInfo.play_url.uri, {
           title: `Douyin_Music_${Date.now()}.mp3`,
           headers: this.headers
         })
@@ -914,29 +926,28 @@ export class DouYin extends Base {
           if (!UserInfoData.data.user?.live_status || UserInfoData.data.user.live_status !== 1) {
             logger.error((UserInfoData?.data?.user?.nickname ?? '用户') + '当前未在直播')
           }
-          if (!UserInfoData.data.user.room_data) {
+          // 生成类型里 `room_data` 是可选的：拿不到直播间数据就没法继续，原来只打日志会一路
+          // 走到 JSON.parse(undefined) 抛 TypeError
+          const roomDataRaw = UserInfoData.data.user.room_data
+          if (!roomDataRaw) {
             logger.error('未获取到直播间信息！')
+            return true
           }
 
-          const room_data = JSON.parse(UserInfoData.data.user.room_data)
+          const room_data = JSON.parse(roomDataRaw)
           const live_data = await this.amagi.douyin.fetcher.fetchLiveRoomInfo({
             room_id: UserInfoData.data.user.room_id_str,
             web_rid: room_data.owner.web_rid
           })
-          const liveItem = live_data.data.data[0]
+          const liveItem = live_data.data.data.data[0]
           const user = UserInfoData.data.user
-          //@ts-ignore
           const streamExtra = liveItem.stream_url?.extra
-          const resolution = streamExtra
-            ? //@ts-ignore
-              `${streamExtra.width}x${streamExtra.height}`
-            : //@ts-ignore
-              liveItem.stream_url?.default_resolution || ''
+          const resolution = streamExtra ? `${streamExtra.width}x${streamExtra.height}` : liveItem.stream_url?.default_resolution || ''
 
           const img = await Render(this.e, 'douyin/live', {
             image_url: liveItem.cover?.url_list[0],
             text: liveItem.title,
-            partition_title: live_data.data.partition_road_map?.partition?.title || '未知分区',
+            partition_title: live_data.data.data.partition_road_map?.partition?.title || '未知分区',
             room_id: room_data.owner.web_rid,
             online_viewers: Count(Number(liveItem.room_view_stats?.display_value)),
             total_viewers: liveItem.stats?.total_user_str || '刚开播无法获取',
@@ -945,22 +956,14 @@ export class DouYin extends Base {
             fans: Count(user.follower_count),
             share_url: 'https://live.douyin.com/' + room_data.owner.web_rid,
             dynamicTYPE: '直播间信息',
-            //@ts-ignore
             like_count: Count(Number(liveItem.like_count || 0)),
-            //@ts-ignore
             user_count_str: liveItem.user_count_str || '',
             resolution,
-            //@ts-ignore
             signature: user.signature || '',
-            //@ts-ignore
             city: user.city || '',
-            //@ts-ignore
             aweme_count: Count(Number(user.aweme_count || 0)),
-            //@ts-ignore
             following_count: Count(Number(user.following_count || 0)),
-            //@ts-ignore
             total_favorited: Count(Number(user.total_favorited || 0)),
-            //@ts-ignore
             has_commerce_goods: liveItem.has_commerce_goods || false
           })
           await this.e.reply(img)
@@ -994,7 +997,7 @@ export const Time = (delay: number): string => {
   return `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`
 }
 
-export const Emoji = (data: DyEmojiList) => {
+export const Emoji = (data: DouyinEmojiListResponse) => {
   const ListArray = []
 
   for (const i of data.emoji_list) {

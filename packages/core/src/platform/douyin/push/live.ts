@@ -1,4 +1,4 @@
-import type { AmagiSuccess, DyUserInfo } from '@ikenxuan/amagi'
+import type { DouyinUserProfileResponse } from '@ikenxuan/amagi'
 import { logger } from 'node-karin'
 
 import { douyinDB } from '@/module'
@@ -14,7 +14,7 @@ import type { DouyinLivePushItem } from './types'
  */
 export async function processLiveStream(
   sec_uid: string,
-  userinfo: AmagiSuccess<DyUserInfo>,
+  userinfo: DouyinUserProfileResponse,
   item: douyinPushItem,
   targets: Array<{ groupId: string; botId: string }>,
   amagi: { douyin: { fetcher: typeof douyinFetcher } }
@@ -23,9 +23,17 @@ export async function processLiveStream(
   const liveStatus = await douyinDB.getLiveStatus(sec_uid)
 
   // 检查用户是否正在直播
-  if (userinfo.data.user.live_status === 1) {
+  if (userinfo.user.live_status === 1) {
+    // 生成类型里 `room_data` 是可选的：进推送详情前先确认订阅者那一份也在，
+    // 否则下面拼 Detail_Data 时会 JSON.parse(undefined)
+    const userRoomData = userinfo.user.room_data
+    if (!userRoomData) {
+      logger.error('未获取到直播间信息！')
+      return null
+    }
+
     const UserInfoData = await amagi.douyin.fetcher.fetchUserProfile({
-      sec_uid: userinfo.data.user.sec_uid
+      sec_uid: userinfo.user.sec_uid
     })
 
     if (!UserInfoData.data.user?.live_status || UserInfoData.data.user.live_status !== 1) {
@@ -56,15 +64,15 @@ export async function processLiveStream(
         pushType: 'live',
         Detail_Data: {
           user_info: userinfo,
-          room_data: JSON.parse(userinfo.data.user.room_data),
-          live_data: liveInfo,
+          room_data: JSON.parse(userRoomData),
+          live_data: liveInfo.data,
           liveStatus: {
             liveStatus: 'open',
             isChanged: true,
             isliving: true
           }
         },
-        avatar_img: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + userinfo.data.user.avatar_larger.uri,
+        avatar_img: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + userinfo.user.avatar_larger.uri,
         living: true
       }
     }

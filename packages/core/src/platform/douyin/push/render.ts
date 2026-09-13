@@ -1,4 +1,4 @@
-import type { AmagiSuccess, DyUserInfo } from '@ikenxuan/amagi'
+import type { DouyinUserProfileResponse } from '@ikenxuan/amagi'
 import {
   createHashtagNode,
   createLineBreakNode,
@@ -19,7 +19,7 @@ import { type dyVideo, formatDouyinQualityLabel } from '@/platform/douyin/videoQ
 import { DouyinWorkMainType, type DouyinWorkTypeInfo, getWorkCoverUrl, getWorkTypeInfo } from '../workType'
 
 /** 作品作者或订阅者用户对象（aweme author 与用户主页 user 的联合） */
-type DouyinUserLike = DouyinWorkDetailData['author'] | DyUserInfo['user']
+type DouyinUserLike = DouyinWorkDetailData['author'] | DouyinUserProfileResponse['user']
 
 /**
  * 处理作品描述
@@ -629,7 +629,7 @@ export interface RenderFavoriteRecommendOptions {
   /** Karin 消息事件 */
   e: Message
   /** 作品详情数据，必带 user_info（订阅者/推荐者）、author（作品作者），可选 author_user_info（作者主页信息） */
-  Detail_Data: DouyinWorkDetailData & { user_info: AmagiSuccess<DyUserInfo> }
+  Detail_Data: DouyinWorkDetailData & { user_info: DouyinUserProfileResponse }
   /** 作品创建时间（Unix 时间戳，秒） */
   create_time: number
   /** 分享链接地址 */
@@ -649,7 +649,7 @@ export async function renderFavoriteImage(options: RenderFavoriteRecommendOption
   const workTypeInfo = getWorkTypeInfo(Detail_Data)
   const coverUrl = getWorkCoverUrl(workTypeInfo, Detail_Data)
   const authorUserInfo = Detail_Data.author_user_info
-  const subscriberUser = Detail_Data.user_info.data.user
+  const subscriberUser = Detail_Data.user_info.user
 
   return await Render(e, 'douyin/favorite-list', {
     image_url: coverUrl,
@@ -681,7 +681,7 @@ export async function renderRecommendImage(options: RenderFavoriteRecommendOptio
   const workTypeInfo = getWorkTypeInfo(Detail_Data)
   const coverUrl = getWorkCoverUrl(workTypeInfo, Detail_Data)
   const authorUserInfo = Detail_Data.author_user_info
-  const recommenderUser = Detail_Data.user_info.data.user
+  const recommenderUser = Detail_Data.user_info.user
 
   return await Render(e, 'douyin/recommend-list', {
     image_url: coverUrl,
@@ -722,11 +722,11 @@ export interface RenderLiveImageOptions {
 export async function renderLiveImage(options: RenderLiveImageOptions): Promise<ImageElement[]> {
   const { e, Detail_Data } = options
   const dynamicTypeLabel = options.dynamicTypeLabel ?? '直播动态推送'
-  const user = Detail_Data.user_info.data.user
+  const user = Detail_Data.user_info.user
 
   if (!Detail_Data.room_data || !Detail_Data.live_data) return []
 
-  const liveItem = Detail_Data.live_data.data.data.data[0]
+  const liveItem = Detail_Data.live_data.data.data[0]
   const room_data = Detail_Data.room_data
   const streamExtra = liveItem.stream_url?.extra
   const resolution = streamExtra ? `${streamExtra.width}x${streamExtra.height}` : liveItem.stream_url?.default_resolution
@@ -734,7 +734,7 @@ export async function renderLiveImage(options: RenderLiveImageOptions): Promise<
   return await Render(e, 'douyin/live', {
     image_url: liveItem.cover ? liveItem.cover?.url_list[0] : '',
     text: liveItem.title ?? '',
-    partition_title: Detail_Data.live_data.data.data.partition_road_map?.partition?.title || '未知分区',
+    partition_title: Detail_Data.live_data.data.partition_road_map?.partition?.title || '未知分区',
     room_id: room_data.owner.web_rid,
     online_viewers: Count(Number(liveItem.room_view_stats?.display_value)),
     total_viewers: liveItem.stats?.total_user_str || '',

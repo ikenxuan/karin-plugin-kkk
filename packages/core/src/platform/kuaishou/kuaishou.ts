@@ -1,4 +1,4 @@
-import type { KsOneWork } from '@ikenxuan/amagi'
+import type { KuaishouVideoWorkResponse } from '@ikenxuan/amagi'
 import { type Message } from 'node-karin'
 
 import { Base, downloadVideo, extractTotalBytesFromHeaders, Networks, Render } from '@/module'
@@ -19,7 +19,7 @@ import type { ExtendedKuaishouOptionsType, KuaishouDataTypes } from '@/types'
  * @param work - `fetchVideoWork` 的响应体
  * @returns 视频直链；取不到时为空串
  */
-const pickVideoUrl = (work: KsOneWork): string => {
+const pickVideoUrl = (work: KuaishouVideoWorkResponse): string => {
   const representations = work.photo?.manifest?.adaptationSet?.flatMap((set) => set.representation ?? []) ?? []
   const preferred = representations.find((item) => item.defaultSelect) ?? representations[0]
   return preferred?.url ?? work.photo?.mainMvUrls?.[0]?.url ?? ''
@@ -39,7 +39,7 @@ export class Kuaishou extends Base {
     // 入参保持 any（调用方给的是 fetchKuaishouData 的联合类型），这里先收窄到
     // one_work 那一支：H5 换形状后所有取值都得靠 tsc 检查，不能再裸读 any
     const payload = data as KuaishouOneWorkPayload
-    const work = payload.VideoData.data
+    const work = payload.VideoData
 
     // H5 这条响应没有 `data.visionVideoDetail.status`（那是 PC GraphQL 的字段），
     // 顶层 `result` 才是接口状态位（1 = 成功）；再加一道「拿不到视频直链」，
@@ -53,10 +53,10 @@ export class Kuaishou extends Base {
       this.e.reply('检测到快手链接，开始解析')
     }
     // 表情接口没换，还是 graphql 那条，`data.visionBaseEmoticons` 两层照旧
-    const transformedData = Object.entries(payload.EmojiData.data.data.visionBaseEmoticons.iconUrls).map(([name, path]) => {
+    const transformedData = Object.entries(payload.EmojiData.data.visionBaseEmoticons.iconUrls).map(([name, path]) => {
       return { name, url: `https:${path}` }
     })
-    const CommentsData = await kuaishouComments(payload.CommentsData.data, transformedData)
+    const CommentsData = await kuaishouComments(payload.CommentsData, transformedData)
     const fileHeaders = await new Networks({ url: video_url, headers: this.headers }).getHeaders()
     const fileSizeContent = extractTotalBytesFromHeaders(fileHeaders)
     const fileSizeInMB = (fileSizeContent / (1024 * 1024)).toFixed(2)

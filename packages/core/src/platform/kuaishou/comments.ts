@@ -1,4 +1,4 @@
-import type { KsWorkComments } from '@ikenxuan/amagi'
+import type { KuaishouCommentsResponse } from '@ikenxuan/amagi'
 import {
   createEmojiNode,
   createLineBreakNode,
@@ -24,7 +24,7 @@ import { Config } from '@/module/utils/Config'
  * 本函数只用到根评论和 `subCommentCount` 这个计数，所以 `subCommentsMap` 暂不读。
  */
 export const kuaishouComments = async (
-  data: KsWorkComments,
+  data: KuaishouCommentsResponse,
   emojiData: RichTextEmojiDefinition[]
 ): Promise<KuaishouCommentData['CommentsData']> => {
   const rootComments = data?.rootComments
@@ -33,8 +33,9 @@ export const kuaishouComments = async (
   }
 
   const comments = rootComments.map((comment) => ({
-    cid: comment.comment_id ?? '',
-    aweme_id: comment.comment_id ?? '',
+    // 生成类型里 `comment_id` 是数字（H5 这条的 id 就是数字），模板侧要字符串
+    cid: String(comment.comment_id ?? ''),
+    aweme_id: String(comment.comment_id ?? ''),
     nickname: comment.author_name ?? '',
     userimageurl: comment.headurl ?? '',
     text: buildKuaishouRichText(comment.content ?? '', emojiData),

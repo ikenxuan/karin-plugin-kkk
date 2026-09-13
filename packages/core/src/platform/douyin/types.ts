@@ -1,6 +1,6 @@
-import type { AmagiSuccess, DyUserInfo, DyUserLiveVideos, DyVideoWork } from '@ikenxuan/amagi'
+import type { DouyinUserProfileResponse, DouyinLiveRoomInfoResponse, DouyinVideoWorkResponse } from '@ikenxuan/amagi'
 
-type AwemeDetail = DyVideoWork['aweme_detail']
+type AwemeDetail = NonNullable<DouyinVideoWorkResponse['aweme_detail']>
 
 /**
  * 作品描述 text_extra 数组项。
@@ -87,24 +87,29 @@ export interface DouyinWorkDetailData {
     fe_data: string
   }
   cooperation_info?: DouyinCooperationInfo
-  /** 流程附加：作品作者/订阅者主页信息（解析与作品列表推送场景注入） */
-  user_info?: AmagiSuccess<DyUserInfo>
+  /**
+   * 流程附加：作品作者/订阅者主页信息（解析与作品列表推送场景注入）。
+   *
+   * 存的是响应体本身，不是 amagi 的信封 —— fetcher 失败即抛，信封的 `success`/`message`/`meta`
+   * 在这条链路上没人读。
+   */
+  user_info?: DouyinUserProfileResponse
   /** 流程附加：喜欢/推荐列表场景下作品作者的主页信息 */
-  author_user_info?: AmagiSuccess<DyUserInfo>
+  author_user_info?: DouyinUserProfileResponse
   [key: string]: any
 }
 
 /** 直播推送的详情数据（非 aweme 结构） */
 export interface DouyinLiveDetailData {
-  /** 主播主页信息 */
-  user_info: AmagiSuccess<DyUserInfo>
-  /** 直播间信息，由 user_info.data.user.room_data JSON 解析而来 */
+  /** 主播主页信息（响应体，非信封） */
+  user_info: DouyinUserProfileResponse
+  /** 直播间信息，由 user_info.user.room_data JSON 解析而来 */
   room_data?: {
     owner: { web_rid: string }
     [key: string]: any
   }
   /** 直播间详情接口返回 */
-  live_data?: AmagiSuccess<DyUserLiveVideos>
+  live_data?: DouyinLiveRoomInfoResponse
   /** 本次推送的直播状态标记 */
   liveStatus?: {
     liveStatus: 'open' | 'close'
@@ -121,7 +126,7 @@ export interface DouyinLiveDetailData {
  * @param aweme - amagi 返回的作品详情（aweme_detail 或作品列表项）
  * @param extra - 流程附加字段（作者/订阅者主页信息）
  */
-export const buildDouyinWorkDetail = <E extends { user_info?: AmagiSuccess<DyUserInfo>; author_user_info?: AmagiSuccess<DyUserInfo> }>(
+export const buildDouyinWorkDetail = <E extends { user_info?: DouyinUserProfileResponse; author_user_info?: DouyinUserProfileResponse }>(
   aweme: unknown,
   extra: E = {} as E
 ): DouyinWorkDetailData & E => ({ ...(aweme as object), ...extra }) as DouyinWorkDetailData & E
