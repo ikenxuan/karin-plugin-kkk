@@ -1,6 +1,25 @@
-import type { DouyinUserProfileResponse, DouyinLiveRoomInfoResponse, DouyinVideoWorkResponse } from '@ikenxuan/amagi'
+import type {
+  DouyinUserProfileResponse,
+  DouyinLiveRoomInfoResponse,
+  DouyinUserFavoriteListResponse,
+  DouyinUserRecommendListResponse,
+  DouyinUserVideoListResponse,
+  DouyinVideoWorkResponse
+} from '@ikenxuan/amagi'
 
 type AwemeDetail = NonNullable<DouyinVideoWorkResponse['aweme_detail']>
+
+/**
+ * 作品列表推送要遍历的条目。
+ *
+ * 作品 / 喜欢 / 推荐三个列表拿到的是同一套 aweme 对象，但生成树按各自样本分别派生了一份形状
+ * （字段可选性略有出入），这里取三者的并集 —— 推送链路只读 `aweme_id` / `create_time` /
+ * `author.nickname` / `author.sec_uid` / `is_top`，三个形状都带这些字段。
+ */
+export type DouyinListItem =
+  | DouyinUserVideoListResponse['aweme_list'][number]
+  | DouyinUserFavoriteListResponse['aweme_list'][number]
+  | DouyinUserRecommendListResponse['aweme_list'][number]
 
 /**
  * 作品描述 text_extra 数组项。

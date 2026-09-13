@@ -1,4 +1,4 @@
-import { DouyinCommentsResponse } from '@ikenxuan/amagi'
+import { DouyinCommentRepliesResponse, DouyinCommentsResponse } from '@ikenxuan/amagi'
 import {
   createEmojiNode,
   createLineBreakNode,
@@ -18,18 +18,31 @@ import { Networks } from '@/module/utils'
 import { douyinFetcher } from '@/module/utils/amagiClient'
 import { Config } from '@/module/utils/Config'
 
+/** 一级评论（`douyin.comments` 的元素） */
+type DyComment = DouyinCommentsResponse['comments'][number]
+/** `text_extra` 项：一级评论那支在生成树里有完整类型 */
+type DyTextExtra = DyComment['text_extra'][number]
+/** 回复评论（`douyin.commentReplies` 的元素） */
+type DyReplyComment = DouyinCommentRepliesResponse['comments'][number]
+
+/**
+ * 回复评论 + 图片列表。
+ *
+ * 生成树这份样本里回复都没带图，`commentReplies` 的 `image_list` 被记成 `null`；
+ * 实际带图时形状与一级评论一致 —— 只在这一处借用 {@link DyComment} 的那一格，
+ * 下游取图就按精确类型写。等 amagi 补上带图的回复样本后删掉本别名。
+ */
+type DyReplyWithImages = Omit<DyReplyComment, 'image_list'> & { image_list: DyComment['image_list'] }
+
 /**
  * @description 提取评论里的 @ 用户 sec_uid 列表
  */
-const extractMentionSecUids = (textExtra: unknown): string[] | null => {
+const extractMentionSecUids = (textExtra: DyTextExtra[] | undefined): string[] | null => {
   if (!Array.isArray(textExtra) || textExtra.length === 0) {
     return null
   }
 
-  const secUids = textExtra
-    .filter((item): item is { sec_uid?: string } => typeof item === 'object' && item !== null)
-    .map((item) => item.sec_uid)
-    .filter((secUid): secUid is string => Boolean(secUid))
+  const secUids = textExtra.map((item) => item.sec_uid).filter((secUid): secUid is string => Boolean(secUid))
 
   return secUids.length > 0 ? secUids : null
 }
@@ -37,16 +50,15 @@ const extractMentionSecUids = (textExtra: unknown): string[] | null => {
 /**
  * @description 解析评论中的搜索词信息
  */
-const extractSearchText = (textExtra: unknown) => {
+const extractSearchText = (textExtra: DyTextExtra[] | undefined) => {
   if (!Array.isArray(textExtra) || textExtra.length === 0) {
     return null
   }
 
   const searchItems = textExtra
-    .filter((item): item is { search_text?: string; search_query_id?: string } => typeof item === 'object' && item !== null)
     .filter((item) => Boolean(item.search_text))
     .map((item) => ({
-      search_text: item.search_text!,
+      search_text: item.search_text ?? '',
       search_query_id: item.search_query_id ?? ''
     }))
 
@@ -74,31 +86,14 @@ type DouyinReplyCommentItem = NonNullable<DouyinCommentItem['replyComment']>[num
  * 抖音会把高亮搜索词单独放在 `text_extra` 里，但用户实际看到的是“正文里某一段文字高亮”。
  * 所以这里不能只把它单独透传给 template，而是要把范围信息重新合回正文解析流程里。
  */
-const extractSearchTokens = (textExtra: unknown, text: string): DouyinSearchToken[] => {
+const extractSearchTokens = (textExtra: DyTextExtra[] | undefined, text: string): DouyinSearchToken[] => {
   if (!Array.isArray(textExtra) || textExtra.length === 0 || !text) {
     return []
   }
 
   return textExtra
     .filter(
-      (
-        item
-      ): item is {
-        start?: number
-        end?: number
-        search_text?: string
-        search_query_id?: string
-      } => typeof item === 'object' && item !== null
-    )
-    .filter(
-      (
-        item
-      ): item is {
-        start: number
-        end: number
-        search_text: string
-        search_query_id?: string
-      } =>
+      (item) =>
         typeof item.start === 'number' &&
         typeof item.end === 'number' &&
         typeof item.search_text === 'string' &&
@@ -110,7 +105,7 @@ const extractSearchTokens = (textExtra: unknown, text: string): DouyinSearchToke
     .map((item) => ({
       start: item.start,
       end: item.end,
-      text: item.search_text,
+      text: item.search_text ?? '',
       queryId: item.search_query_id ?? ''
     }))
     .filter((item) => text.slice(item.start, item.end) === item.text)
@@ -276,7 +271,7 @@ const processCommentImage = async (imageUrl: string | null): Promise<string | nu
  * @param {*} emojidata 处理过后的emoji列表
  * @returns obj
  */
-export const douyinComments = async (data: DouyinCommentsResponse, emojidata: any) => {
+export const douyinComments = async (data: DouyinCommentsResponse, emojidata: RichTextEmojiDefinition[]) => {
   const commentsData: DouyinCommentItem[] = []
   let imageUrls: string[] = []
   if (data.comments === null) return { CommentsData: [], image_url: [] }
@@ -328,13 +323,14 @@ export const douyinComments = async (data: DouyinCommentsResponse, emojidata: an
 
     if (replyComment.data.comments && replyComment.data.comments.length > 0) {
       for (const reply of replyComment.data.comments) {
-        const replyItem = reply
+        // 生成树里回复的 image_list 是 null（样本没录到带图的回复），见 DyReplyWithImages
+        const replyItem = reply as unknown as DyReplyWithImages
         const replyUserintextlongid = extractMentionSecUids(replyItem.text_extra)
         const replySearchTokens = extractSearchTokens(replyItem.text_extra, replyItem.text)
         const replyRichText = await buildDouyinRichText(replyItem.text, emojidata, replyUserintextlongid, replySearchTokens)
 
         // 处理回复评论的图片列表
-        const replyImageUrl = (replyItem as any).image_list?.[0]?.origin_url?.url_list?.[0]
+        const replyImageUrl = replyItem.image_list?.[0]?.origin_url?.url_list?.[0]
         const replyStickerUrl = replyItem.sticker?.animate_url?.url_list?.[0]
 
         let replyImageList: string[] | null = null

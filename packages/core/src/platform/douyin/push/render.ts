@@ -402,9 +402,9 @@ function extractSuggestWord(Detail_Data: DouyinWorkDetailData): { hint_text: str
  * @param images - 可能存在的多种封面对象
  * @returns 可直接渲染的图片 URL，不存在时返回 undefined
  */
-function pickImageUrl(...images: Array<{ url_list?: unknown[] } | null | undefined>): string | undefined {
+function pickImageUrl(...images: Array<{ url_list?: (string | undefined)[] } | null | undefined>): string | undefined {
   for (const image of images) {
-    const url = image?.url_list?.find((item: unknown): item is string => typeof item === 'string' && item.length > 0)
+    const url = image?.url_list?.find((item): item is string => typeof item === 'string' && item.length > 0)
     if (url) return url
   }
   return undefined
@@ -415,13 +415,24 @@ function pickImageUrl(...images: Array<{ url_list?: unknown[] } | null | undefin
  * @param extra - 抖音 music.extra 原始字符串
  * @returns 解析后的对象，解析失败时返回空对象
  */
-function parseMusicExtra(extra: unknown): Record<string, any> {
+function parseMusicExtra(extra: unknown): Record<string, unknown> {
   if (typeof extra !== 'string' || extra.length === 0) return {}
   try {
     return JSON.parse(extra)
   } catch {
     return {}
   }
+}
+
+/**
+ * 从解析出来的 `music.extra` 里取字符串字段。
+ *
+ * `extra` 是平台塞的 JSON 字符串，值的类型不可信（解析出来是 `unknown`）——
+ * 不是字符串就当没有，交给调用方的 `||` 链继续回退。
+ */
+function readExtraString(extra: Record<string, unknown>, key: string): string | undefined {
+  const value = extra[key]
+  return typeof value === 'string' && value.length > 0 ? value : undefined
 }
 
 /**
@@ -435,7 +446,7 @@ function buildMusicInfo(music: DouyinWorkDetailData['music']): { author: string;
 
   const extra = parseMusicExtra(music.extra)
   const matched = music.matched_pgc_sound
-  const title = matched?.title || matched?.mixed_title || extra.music_display_mapping_title || music.title
+  const title = matched?.title || matched?.mixed_title || readExtraString(extra, 'music_display_mapping_title') || music.title
   const author = matched?.author || matched?.mixed_author || music.author || music.owner_nickname
   const cover = pickImageUrl(
     matched?.cover_medium,

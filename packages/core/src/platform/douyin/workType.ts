@@ -1,3 +1,5 @@
+import type { DouyinWorkDetailData } from './types'
+
 /**
  * 抖音作品类型工具模块
  * 提供统一的作品类型判断和处理逻辑
@@ -80,11 +82,12 @@ export function getWorkTypeFromUrl(url: string): DouyinWorkMainType {
 export function getWorkTypeInfo(data: {
   aweme_type?: number
   media_type?: number
-  images?: any[] | null
-  video?: any
+  images?: DouyinWorkDetailData['images']
+  video?: DouyinWorkDetailData['video']
   is_slides?: boolean
-  article_info?: any
-  live_data?: any
+  article_info?: DouyinWorkDetailData['article_info']
+  /** 直播推送的详情数据（只有无值判断，形状由上游合流后再读） */
+  live_data?: unknown
 }): DouyinWorkTypeInfo {
   // 直播类型（有 live_data 对象）
   if (data.live_data) {

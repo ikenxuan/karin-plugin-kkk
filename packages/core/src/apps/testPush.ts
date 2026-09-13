@@ -7,11 +7,12 @@ import { wrapWithErrorHandler } from '@/module/utils/ErrorHandler'
 import { getDouyinID } from '@/platform/douyin/getID'
 import { renderFavoriteImage, renderLiveImage, renderRecommendImage, renderWorkImage } from '@/platform/douyin/push/render'
 import { buildDouyinWorkDetail } from '@/platform/douyin/types'
+import type { DouyinWorkDetailData } from '@/platform/douyin/types'
 import { buildDouyinPlayUrl, douyinProcessVideos, type dyVideo } from '@/platform/douyin/videoQuality'
 import { getWorkTypeInfo } from '@/platform/douyin/workType'
 
 /** 构建与生产推送一致的作品二维码链接。 */
-function buildWorkShareLink(aweme: any, selectedVideo: dyVideo | null): string {
+function buildWorkShareLink(aweme: DouyinWorkDetailData, selectedVideo: dyVideo | null): string {
   const workTypeInfo = getWorkTypeInfo(aweme)
   if (workTypeInfo.isArticle) return `https://www.douyin.com/article/${aweme.aweme_id}`
   if (workTypeInfo.isImage) return `https://www.douyin.com/note/${aweme.aweme_id}`
