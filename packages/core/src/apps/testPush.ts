@@ -1,4 +1,4 @@
-import type { AmagiSuccess, DyUserInfo } from '@ikenxuan/amagi'
+import type { DouyinUserProfileResponse } from '@ikenxuan/amagi'
 import karin, { type ImageElement, logger } from 'node-karin'
 
 import { douyinFetcher } from '@/module/utils/amagiClient'
@@ -67,7 +67,7 @@ const handleTestPush = wrapWithErrorHandler(
         }
         const aweme = workData.data.aweme_detail
         const userinfo = await douyinFetcher.fetchUserProfile({ sec_uid: aweme.author.sec_uid })
-        const Detail_Data = buildDouyinWorkDetail(aweme, { user_info: userinfo })
+        const Detail_Data = buildDouyinWorkDetail(aweme, { user_info: userinfo.data })
         // 与生产推送一致：先按画质配置选档，二维码链接和卡片清晰度都从选中那一路视频源派生
         const selectedVideo = aweme.video?.bit_rate?.length
           ? douyinProcessVideos(aweme.video.bit_rate, Config.douyin.videoQuality)[0]
@@ -104,13 +104,13 @@ const handleTestPush = wrapWithErrorHandler(
           return true
         }
         const aweme = favoriteData.data.aweme_list[0]
-        let authorUserInfo: AmagiSuccess<DyUserInfo> | undefined
+        let authorUserInfo: DouyinUserProfileResponse | undefined
         try {
-          authorUserInfo = await douyinFetcher.fetchUserProfile({ sec_uid: aweme.author.sec_uid })
+          authorUserInfo = (await douyinFetcher.fetchUserProfile({ sec_uid: aweme.author.sec_uid })).data
         } catch {
           /* ignore */
         }
-        const Detail_Data = buildDouyinWorkDetail(aweme, { user_info: userinfo, author_user_info: authorUserInfo })
+        const Detail_Data = buildDouyinWorkDetail(aweme, { user_info: userinfo.data, author_user_info: authorUserInfo })
         const selectedVideo = aweme.video?.bit_rate?.length
           ? douyinProcessVideos(aweme.video.bit_rate, Config.douyin.videoQuality)[0]
           : null
@@ -146,13 +146,13 @@ const handleTestPush = wrapWithErrorHandler(
           return true
         }
         const aweme = recommendData.data.aweme_list[0]
-        let authorUserInfo: AmagiSuccess<DyUserInfo> | undefined
+        let authorUserInfo: DouyinUserProfileResponse | undefined
         try {
-          authorUserInfo = await douyinFetcher.fetchUserProfile({ sec_uid: aweme.author.sec_uid })
+          authorUserInfo = (await douyinFetcher.fetchUserProfile({ sec_uid: aweme.author.sec_uid })).data
         } catch {
           /* ignore */
         }
-        const Detail_Data = buildDouyinWorkDetail(aweme, { user_info: userinfo, author_user_info: authorUserInfo })
+        const Detail_Data = buildDouyinWorkDetail(aweme, { user_info: userinfo.data, author_user_info: authorUserInfo })
         const selectedVideo = aweme.video?.bit_rate?.length
           ? douyinProcessVideos(aweme.video.bit_rate, Config.douyin.videoQuality)[0]
           : null
@@ -194,7 +194,7 @@ const handleTestPush = wrapWithErrorHandler(
           room_id: user.room_id_str,
           web_rid: room_data.owner.web_rid
         })
-        const Detail_Data = { user_info: userinfo, room_data, live_data: liveInfo }
+        const Detail_Data = { user_info: userinfo.data, room_data, live_data: liveInfo.data }
         images = await renderLiveImage({ e, Detail_Data })
         if (!images.length) {
           e.reply('渲染直播状态推送图片失败')

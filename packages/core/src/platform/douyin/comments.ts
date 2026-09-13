@@ -1,4 +1,4 @@
-import { AmagiSuccess, DyWorkComments } from '@ikenxuan/amagi'
+import { DouyinCommentsResponse } from '@ikenxuan/amagi'
 import {
   createEmojiNode,
   createLineBreakNode,
@@ -272,16 +272,16 @@ const processCommentImage = async (imageUrl: string | null): Promise<string | nu
 
 /**
  *
- * @param {*} data 完整的评论数据
+ * @param {*} data 评论接口的响应体（`fetchWorkComments` 的 `data.data`）
  * @param {*} emojidata 处理过后的emoji列表
  * @returns obj
  */
-export const douyinComments = async (data: AmagiSuccess<DyWorkComments>, emojidata: any) => {
+export const douyinComments = async (data: DouyinCommentsResponse, emojidata: any) => {
   const commentsData: DouyinCommentItem[] = []
   let imageUrls: string[] = []
-  if (data.data.comments === null) return { CommentsData: [], image_url: [] }
+  if (data.comments === null) return { CommentsData: [], image_url: [] }
   let id = 1
-  for (const comment of data.data.comments) {
+  for (const comment of data.comments) {
     const cid = comment.cid
     const aweme_id = comment.aweme_id
     const nickname = comment.user.nickname

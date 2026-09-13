@@ -1,4 +1,4 @@
-import type { BiliWorkComments } from '@ikenxuan/amagi'
+import type { BilibiliCommentsResponse } from '@ikenxuan/amagi'
 import {
   createEmojiNode,
   createLineBreakNode,
@@ -20,7 +20,7 @@ import { Config } from '@/module/utils/Config'
  * @returns 处理后的评论数据数组和图片URL数组
  */
 export const bilibiliComments = (
-  commentsData: BiliWorkComments,
+  commentsData: BilibiliCommentsResponse,
   host_mid: string
 ): { comments: CommentItem[] | []; image_urls: string[] } => {
   if (!commentsData || commentsData.code === 404) {
@@ -63,7 +63,7 @@ export const bilibiliComments = (
 }
 
 const buildCommentItem = (
-  reply: BiliWorkComments['data']['replies'][number] | NonNullable<BiliWorkComments['data']['top']['upper']>,
+  reply: BilibiliCommentsResponse['data']['replies'][number] | NonNullable<BilibiliCommentsResponse['data']['top']['upper']>,
   hostMid: string,
   imageUrls: string[],
   options: {
@@ -99,8 +99,8 @@ const buildCommentItem = (
 
 const buildSubReplies = (
   replies:
-    | BiliWorkComments['data']['replies'][number]['replies']
-    | NonNullable<BiliWorkComments['data']['top']['upper']>['replies']
+    | BilibiliCommentsResponse['data']['replies'][number]['replies']
+    | NonNullable<BilibiliCommentsResponse['data']['top']['upper']>['replies']
     | undefined,
   hostMid: string,
   imageUrls: string[]
@@ -116,8 +116,8 @@ const buildSubReplies = (
 
 const buildSubCommentItem = (
   reply:
-    | NonNullable<BiliWorkComments['data']['replies'][number]['replies']>[number]
-    | NonNullable<NonNullable<BiliWorkComments['data']['top']['upper']>['replies']>[number],
+    | NonNullable<BilibiliCommentsResponse['data']['replies'][number]['replies']>[number]
+    | NonNullable<NonNullable<BilibiliCommentsResponse['data']['top']['upper']>['replies']>[number],
   hostMid: string,
   imageUrls: string[]
 ): SubCommentItem => {

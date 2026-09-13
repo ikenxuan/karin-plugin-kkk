@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 
-import type { DySearchInfo } from '@ikenxuan/amagi'
+import type { DouyinSearchResponse } from '@ikenxuan/amagi'
 import type { DouyinUserListData } from '@template/template/douyin/userlist/components/types'
 import { format } from 'date-fns'
 import type { AdapterType, ImageElement, Message } from 'node-karin'
@@ -828,7 +828,7 @@ export class DouYinpush extends Base {
 
           // 处理直播推送
           if (pushType === 'live') {
-            const liveItem = await processLiveStream(sec_uid, userinfo, item, targets, this.amagi)
+            const liveItem = await processLiveStream(sec_uid, userinfo.data, item, targets, this.amagi)
             if (liveItem) {
               willbepushlist[`live_${sec_uid}`] = liveItem
             }
@@ -877,13 +877,13 @@ export class DouYinpush extends Base {
             let pushItems: DouyinWorkPushItem[] = []
             switch (pushType) {
               case 'post':
-                pushItems = await processPostList(contentList, sec_uid, userinfo, item, targets)
+                pushItems = await processPostList(contentList, sec_uid, userinfo.data, item, targets)
                 break
               case 'favorite':
-                pushItems = await processFavoriteList(contentList, sec_uid, userinfo, item, targets, this.force)
+                pushItems = await processFavoriteList(contentList, sec_uid, userinfo.data, item, targets, this.force)
                 break
               case 'recommend':
-                pushItems = await processRecommendList(contentList, sec_uid, userinfo, item, targets, this.force)
+                pushItems = await processRecommendList(contentList, sec_uid, userinfo.data, item, targets, this.force)
                 break
             }
 
@@ -925,7 +925,7 @@ export class DouYinpush extends Base {
    * @param data 抖音的搜索结果数据。需要接口返回的原始数据
    * @returns 操作成功或失败的消息字符串。
    */
-  async setting(data: DySearchInfo): Promise<void> {
+  async setting(data: DouyinSearchResponse): Promise<void> {
     const groupInfo = await this.e.bot.getGroupInfo('groupId' in this.e && this.e.groupId ? this.e.groupId : '')
     const config = Config.pushlist // 读取配置文件
     const groupId = 'groupId' in this.e && this.e.groupId ? this.e.groupId : ''
@@ -934,6 +934,15 @@ export class DouYinpush extends Base {
     try {
       // 获取用户输入的抖音号
       const inputDouyinId = this.e.msg.replace(/^#设置抖音推送/, '').trim()
+
+      /**
+       * 搜索结果按响应形态自述（判别式 `__search_type`，由 amagi 的 normalize 按响应结构 +
+       * 请求类型写入）。订阅只认「用户搜索」那一支：抖音把 user 请求回成别的形态时在这里说清楚，
+       * 而不是拿一个 undefined 去遍历。
+       */
+      if (data.__search_type !== 'user') {
+        throw new Error(`抖音没有返回用户搜索结果（返回形态：${data.__search_type ?? '未知'}）`)
+      }
 
       // 在用户列表中查找匹配的用户
       let matchedUser = null

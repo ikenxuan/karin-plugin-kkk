@@ -1,12 +1,11 @@
 import fs from 'node:fs'
 
 import {
-  AmagiSuccess,
-  type BiliLiveRoomDetail,
   BiliUserDynamic,
-  type BiliUserLiveStatus,
-  BiliUserProfile,
-  BiliVideoPlayurlIsLogin,
+  type BilibiliLiveRoomInfoResponse,
+  type BilibiliUserLiveStatusResponse,
+  BilibiliUserCardResponse,
+  BilibiliVideoStreamResponse,
   DynamicType,
   MajorType
 } from '@ikenxuan/amagi'
@@ -59,6 +58,14 @@ const pushTypeToDynamicType: Record<BilibiliPushType, DynamicType> = {
 /** 所有支持的 BilibiliPushType */
 const allBilibiliPushTypes: BilibiliPushType[] = ['video', 'draw', 'word', 'live', 'forward', 'article']
 
+/**
+ * 空间动态列表里的一条动态。
+ *
+ * 用 amagi 手写快照树（`BiliUserDynamic`）而不是 `BilibiliUserDynamicListResponse`：生成树这条
+ * 响应没有按动态类型分形状（`type` 只是 `string`、各支共用同一套 `modules`，样本里没有的字段
+ * 还常被记成 `null`），而推送链路要按类型读各自的字段（图文读 `opus`、视频读 `archive`、
+ * 转发读 `orig`……）。快照树正是这个用法需要的判别联合，仍是 amagi 在导出的 v6 兼容面。
+ */
 type DataItem = BiliUserDynamic['data']['items'][number]
 
 type BilibiliPushItemMap = {
@@ -226,7 +233,7 @@ export class Bilibilipush extends Base {
     const liveSubscriptions = userList.filter((item) => item.switch !== false && (item.pushTypes || allBilibiliPushTypes).includes('live'))
 
     for (const item of liveSubscriptions) {
-      let liveStatus: BiliUserLiveStatus['data']
+      let liveStatus: BilibiliUserLiveStatusResponse['data']
       try {
         const liveStatusResult = await this.amagi.bilibili.fetcher.fetchUserLiveStatus({
           host_mid: item.host_mid
@@ -733,8 +740,13 @@ export class Bilibilipush extends Base {
 
             // 提取专栏基本信息
             const articleData = articleInfoBase.data.data
-            // 提取专栏正文内容
+            // 提取专栏正文内容（生成类型里 `data` 可空：拿不到正文就没东西可推，按未支持类型一样跳过）
             const articleContent = articleInfo.data.data
+            if (!articleContent) {
+              skip = true
+              logger.warn(`UP主：${data[dynamicId].remark} 的专栏 ${data[dynamicId].Dynamic_Data.basic.rid_str} 未返回正文，跳过本次推送`)
+              break
+            }
             const body = buildBilibiliArticleRichText(articleContent.opus, articleContent.content, Common.useDarkTheme())
             const shareUrl = articleContent.dyn_id_str
               ? `https://www.bilibili.com/opus/${articleContent.dyn_id_str}`
@@ -828,16 +840,16 @@ export class Bilibilipush extends Base {
                 if (send_video) {
                   let correctList!: {
                     accept_description: string[]
-                    videoList: BiliVideoPlayurlIsLogin['data']['dash']['video']
+                    videoList: BilibiliVideoStreamResponse['data']['dash']['video']
                   }
                   let videoSize = ''
                   const videoInfo = await this.amagi.bilibili.fetcher.fetchVideoInfo({
                     bvid: data[dynamicId].Dynamic_Data.modules.module_dynamic.major.archive.bvid
                   })
-                  const playUrlData = (await this.amagi.bilibili.fetcher.fetchVideoStreamUrl({
+                  const playUrlData = await this.amagi.bilibili.fetcher.fetchVideoStreamUrl({
                     avid: parseInt(data[dynamicId].Dynamic_Data.modules.module_dynamic.major.archive.aid),
                     cid: videoInfo.data.data.cid
-                  })) as AmagiSuccess<BiliVideoPlayurlIsLogin>
+                  })
                   /** 提取出视频流信息对象，并排除清晰度重复的视频流 */
                   const simplify = playUrlData.data.data.dash.video.filter((item, index: any, self: any[]) => {
                     return (
@@ -1063,7 +1075,12 @@ export class Bilibilipush extends Base {
                   const articleInfo = await this.amagi.bilibili.fetcher.fetchArticleContent({
                     id: data[dynamicId].Dynamic_Data.basic.rid_str
                   })
+                  // 生成类型里 `data` 可空，没正文就没什么可转发的
                   const articleContent = articleInfo.data.data
+                  if (!articleContent) {
+                    logger.warn(`专栏 ${data[dynamicId].Dynamic_Data.basic.rid_str} 未返回正文，跳过解析`)
+                    break
+                  }
                   payload = {
                     body: buildBilibiliArticleRichText(articleContent.opus, articleContent.content, Common.useDarkTheme()),
                     title: articleInfoBase.data.data.title,
@@ -1128,9 +1145,11 @@ export class Bilibilipush extends Base {
         const dynamic_list = await this.amagi.bilibili.fetcher.fetchUserDynamicList({
           host_mid: item.host_mid
         })
-        if (dynamic_list.data.data.items.length > 0) {
+        // 生成树这条响应没按动态类型分形状，推送链路要的是判别联合（见 DataItem 的说明），这里换一次
+        const dynamicItems = dynamic_list.data.data.items as unknown as DataItem[]
+        if (dynamicItems.length > 0) {
           // 遍历接口返回的视频列表
-          for (const dynamic of dynamic_list.data.data.items) {
+          for (const dynamic of dynamicItems) {
             const nowSeconds = Math.floor(Date.now() / 1000) // 当前时间戳（秒）
             const createTime = dynamic.modules.module_author.pub_ts // 发布时间戳（秒）
             const timeDifference = nowSeconds - createTime // 时间差（秒）
@@ -1242,7 +1261,7 @@ export class Bilibilipush extends Base {
    * @param data 包含 card 对象。
    * @returns 操作成功或失败的消息字符串。
    */
-  async setting(data: BiliUserProfile): Promise<void> {
+  async setting(data: BilibiliUserCardResponse): Promise<void> {
     const groupInfo = await this.e.bot.getGroupInfo('groupId' in this.e && this.e.groupId ? this.e.groupId : '')
     const host_mid = Number(data.data.card.mid)
     const config = Config.pushlist // 读取配置文件
@@ -1476,8 +1495,8 @@ export class Bilibilipush extends Base {
 const createLiveDynamicItem = (
   sessionId: string,
   liveStartedAt: string,
-  liveInfo: BiliLiveRoomDetail['data'],
-  liveStatus: BiliUserLiveStatus['data']
+  liveInfo: BilibiliLiveRoomInfoResponse['data'],
+  liveStatus: BilibiliUserLiveStatusResponse['data']
 ): Extract<DataItem, { type: DynamicType.LIVE_RCMD }> => {
   const content = JSON.stringify({
     live_play_info: {
