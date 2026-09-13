@@ -19,6 +19,18 @@ type XiaohongshuCommentItem = XiaohongshuCommentData['CommentsData'][number]
 type XiaohongshuSubComment = XiaohongshuCommentItem['sub_comments'][number]
 
 /**
+ * 评论里被 @ 的人。
+ *
+ * 快照类型写的是 `string[]`，但线上两种形态都见过：web 接口给 `"@昵称"` 字符串，
+ * app 接口给对象（昵称在 `nickname` 或 `user_info.nickname`）—— 按实际读到的两格并集声明，
+ * `string[]` 天然是它的子集，调用处不用断言。
+ */
+type NoteAtUser = string | { nickname?: string; user_id?: string; user_info?: { nickname?: string; user_id?: string } }
+
+/** 评论标签：字符串，或带 `name` / `tag` 的对象（同样是快照类型没覆盖到的形态） */
+type NoteTag = string | { name?: string; tag?: string }
+
+/**
  * 处理小红书评论数据。
  *
  * 这里直接输出结构化评论 JSON，正文部分使用 richtext 文档，避免后端拼接 HTML。
@@ -91,7 +103,7 @@ const buildXiaohongshuSubComments = (
 export const buildXiaohongshuRichText = (
   text: string,
   emojiData: RichTextEmojiDefinition[],
-  atUsers: unknown = [],
+  atUsers: NoteAtUser[] = [],
   options: {
     stripTopicMarker?: boolean
   } = {}
@@ -164,7 +176,7 @@ const normalizeXiaohongshuText = (
   return normalized
 }
 
-const normalizeTagNames = (tags: unknown): string[] => {
+const normalizeTagNames = (tags: NoteTag[] | undefined): string[] => {
   if (!Array.isArray(tags)) {
     return []
   }
@@ -176,7 +188,7 @@ const normalizeTagNames = (tags: unknown): string[] => {
       }
 
       if (tag && typeof tag === 'object') {
-        const candidate = (tag as { name?: string; tag?: string }).name ?? (tag as { tag?: string }).tag
+        const candidate = tag.name ?? tag.tag
         return typeof candidate === 'string' ? candidate : ''
       }
 
@@ -185,7 +197,7 @@ const normalizeTagNames = (tags: unknown): string[] => {
     .filter(Boolean)
 }
 
-const normalizeAtUsers = (atUsers: unknown): Array<{ text: string; userId?: string }> => {
+const normalizeAtUsers = (atUsers: NoteAtUser[] | undefined): Array<{ text: string; userId?: string }> => {
   if (!Array.isArray(atUsers)) {
     return []
   }
@@ -198,12 +210,8 @@ const normalizeAtUsers = (atUsers: unknown): Array<{ text: string; userId?: stri
       }
 
       if (item && typeof item === 'object') {
-        const nickname =
-          (item as { nickname?: string; user_info?: { nickname?: string } }).nickname ??
-          (item as { user_info?: { nickname?: string } }).user_info?.nickname
-        const userId =
-          (item as { user_id?: string; user_info?: { user_id?: string } }).user_id ??
-          (item as { user_info?: { user_id?: string } }).user_info?.user_id
+        const nickname = item.nickname ?? item.user_info?.nickname
+        const userId = item.user_id ?? item.user_info?.user_id
 
         if (typeof nickname === 'string' && nickname.trim()) {
           return {

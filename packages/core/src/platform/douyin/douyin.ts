@@ -1,6 +1,7 @@
 import fs from 'node:fs'
 
 import { type DouyinEmojiListResponse, DouyinVideoWorkResponse } from '@ikenxuan/amagi'
+import type { RichTextEmojiDefinition } from '@kkk/richtext'
 import type { DouyinUserVideoListData } from '@template/template/douyin/user_profile/components/types'
 import { format } from 'date-fns'
 import karin, { type Elements, Message, SendMessage } from 'node-karin'
@@ -997,20 +998,18 @@ export const Time = (delay: number): string => {
   return `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`
 }
 
-export const Emoji = (data: DouyinEmojiListResponse) => {
-  const ListArray = []
+/** 表情列表 → 富文本渲染器的表情定义（`name` 是 `[表情名]`，`url` 已在模板侧过协议白名单） */
+export const Emoji = (data: DouyinEmojiListResponse): RichTextEmojiDefinition[] => {
+  const list: RichTextEmojiDefinition[] = []
 
   for (const i of data.emoji_list) {
-    const display_name = i.display_name
-    const url = i.emoji_url.url_list[0]
-
-    const Objject = {
-      name: display_name,
-      url
-    }
-    ListArray.push(Objject)
+    list.push({
+      name: i.display_name,
+      url: i.emoji_url.url_list[0] ?? ''
+    })
   }
-  return ListArray
+
+  return list
 }
 
 /**

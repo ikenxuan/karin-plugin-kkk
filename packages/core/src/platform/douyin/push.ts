@@ -3,7 +3,7 @@ import fs from 'node:fs'
 import type { DouyinSearchResponse } from '@ikenxuan/amagi'
 import type { DouyinUserListData } from '@template/template/douyin/userlist/components/types'
 import { format } from 'date-fns'
-import type { AdapterType, ImageElement, Message } from 'node-karin'
+import type { AdapterType, Elements, ImageElement, Message } from 'node-karin'
 import karin, { common, logger, segment } from 'node-karin'
 
 import {
@@ -17,6 +17,7 @@ import {
   downLoadFileOptions,
   downloadVideo,
   fileInfo,
+  type LiveImageMergeOptions,
   loopVideoWithTransition,
   Networks,
   processLocalImageFile,
@@ -25,6 +26,7 @@ import {
 } from '@/module'
 import { Config } from '@/module/utils/Config'
 import { DouyinIdData, buildDouyinPlayUrl, douyinProcessVideos, type dyVideo, getDouyinID } from '@/platform/douyin'
+import type { DouyinListItem } from '@/platform/douyin/types'
 import { getDouyinLiveImageSendPolicy, getWorkTypeDisplayName, getWorkTypeInfo } from '@/platform/douyin/workType'
 import type { douyinPushItem } from '@/types/config/pushlist'
 
@@ -412,13 +414,13 @@ export class DouYinpush extends Base {
 
               if (isSlides && Detail_Data.images) {
                 // 合辑处理逻辑
-                const images: any[] = []
+                const images: Elements[] = []
                 const temp: fileInfo[] = []
                 let hasGeneratedLivePhoto = false // 标记是否生成了实况图
 
                 /** 下载 BGM（如果存在） */
                 let liveimgbgm: fileInfo | null = null
-                let bgmContext: any = null
+                let bgmContext: LiveImageMergeOptions['context'] | null = null
                 const mergeMode = Config.douyin.liveImageMergeMode ?? 'independent'
 
                 if (Detail_Data.music) {
@@ -582,13 +584,13 @@ export class DouYinpush extends Base {
 
                 if (hasLiveImage) {
                   // 包含 live 图，需要特殊处理
-                  const processedImages: any[] = []
+                  const processedImages: Elements[] = []
                   const temp: fileInfo[] = []
                   let hasGeneratedLivePhoto = false // 标记是否生成了实况图
 
                   /** 下载 BGM（如果存在） */
                   let liveimgbgm: fileInfo | null = null
-                  let bgmContext: any = null
+                  let bgmContext: LiveImageMergeOptions['context'] | null = null
                   const mergeMode = Config.douyin.liveImageMergeMode ?? 'independent'
 
                   if (Detail_Data.music) {
@@ -835,7 +837,7 @@ export class DouYinpush extends Base {
             continue
           }
 
-          let contentList: any[] = []
+          let contentList: DouyinListItem[] = []
           let listName = ''
 
           // 根据推送类型获取不同的列表

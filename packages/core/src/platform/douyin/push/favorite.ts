@@ -3,7 +3,7 @@ import { logger } from 'node-karin'
 
 import { douyinDB } from '@/module'
 import { douyinFetcher } from '@/module/utils/amagiClient'
-import { buildDouyinWorkDetail } from '@/platform/douyin/types'
+import { buildDouyinWorkDetail, type DouyinListItem } from '@/platform/douyin/types'
 import { douyinPushItem } from '@/types/config/pushlist'
 
 import type { DouyinWorkPushItem } from './types'
@@ -14,7 +14,7 @@ import type { DouyinWorkPushItem } from './types'
  * @returns 返回需要推送的作品项数组
  */
 export async function processFavoriteList(
-  contentList: any[],
+  contentList: DouyinListItem[],
   sec_uid: string,
   userinfo: DouyinUserProfileResponse,
   item: douyinPushItem,

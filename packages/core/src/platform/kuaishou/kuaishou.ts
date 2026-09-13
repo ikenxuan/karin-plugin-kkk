@@ -3,7 +3,7 @@ import { type Message } from 'node-karin'
 
 import { Base, downloadVideo, extractTotalBytesFromHeaders, Networks, Render } from '@/module'
 import { Config } from '@/module/utils/Config'
-import { kuaishouComments, type KuaishouOneWorkPayload } from '@/platform/kuaishou'
+import { kuaishouComments, type KuaishouDataResult, type KuaishouOneWorkPayload } from '@/platform/kuaishou'
 import type { ExtendedKuaishouOptionsType, KuaishouDataTypes } from '@/types'
 
 /**
@@ -28,16 +28,15 @@ const pickVideoUrl = (work: KuaishouVideoWorkResponse): string => {
 export class Kuaishou extends Base {
   e: Message
   type: KuaishouDataTypes[keyof KuaishouDataTypes]
-  is_mp4: any
   constructor(e: Message, iddata: ExtendedKuaishouOptionsType) {
     super(e)
     this.e = e
     this.type = iddata?.type
   }
 
-  async KuaishouHandler(data: any) {
-    // 入参保持 any（调用方给的是 fetchKuaishouData 的联合类型），这里先收窄到
-    // one_work 那一支：H5 换形状后所有取值都得靠 tsc 检查，不能再裸读 any
+  async KuaishouHandler(data: KuaishouDataResult) {
+    // 入参是 fetchKuaishouData 的联合返回，本插件只解析视频，先收窄到 one_work 那一支：
+    // H5 换形状后所有取值都得靠 tsc 检查，不能再裸读 any
     const payload = data as KuaishouOneWorkPayload
     const work = payload.VideoData
 
