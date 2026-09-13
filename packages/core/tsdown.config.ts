@@ -23,7 +23,7 @@ export default defineConfig({
       paths: {
         '@kkk/richtext': ['../richtext/src/index.ts'],
         '@template/*': ['./template/*'],
-        '@ikenxuan/amagi': ['../../../amagi/packages/core/src/index.ts']
+        '@ikenxuan/amagi': ['../amagi/packages/core/src/index.ts']
       }
     }
   }

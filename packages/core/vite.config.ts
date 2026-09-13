@@ -14,7 +14,7 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
 // 读取 amagi 的版本号
-const amagiPkg = JSON.parse(fs.readFileSync(resolve(__dirname, '../../../amagi/packages/core/package.json'), 'utf-8'))
+const amagiPkg = JSON.parse(fs.readFileSync(resolve(__dirname, '../amagi/packages/core/package.json'), 'utf-8'))
 
 const entry: string[] = [
   'src/index.ts',
@@ -44,7 +44,7 @@ const mainSrcPrefixes = [
   resolve(__dirname, 'src'),
   resolve(__dirname, '.ktr'),
   resolve(__dirname, 'ktr'),
-  resolve(__dirname, '../../../amagi/packages/core/src'),
+  resolve(__dirname, '../amagi/packages/core/src'),
   resolve(__dirname, '../richtext/src')
 ].map((p) => p.replace(/\\/g, '/'))
 
@@ -138,8 +138,8 @@ export default defineConfig({
       { find: '@', replacement: resolve(__dirname, './src') },
       { find: '@kkk/richtext', replacement: resolve(__dirname, '../richtext/src/index.ts') },
       { find: '@template', replacement: resolve(__dirname, './ktr') },
-      { find: '@ikenxuan/amagi', replacement: resolve(__dirname, '../../../amagi/packages/core/src/index.ts') },
-      { find: 'amagi', replacement: resolve(__dirname, '../../../amagi/packages/core/src') }
+      { find: '@ikenxuan/amagi', replacement: resolve(__dirname, '../amagi/packages/core/src/index.ts') },
+      { find: 'amagi', replacement: resolve(__dirname, '../amagi/packages/core/src') }
     ]
   },
   plugins: [injectStartTimerPlugin(), generateBuildMetadataPlugin(__dirname), ktrBuildPlugin()]
