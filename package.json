@@ -18,13 +18,13 @@
     "format:check": "oxfmt --check",
     "prepare": "husky",
     "sort": "pnpm -r sort",
-    "postinstall": "pnpm --dir ../amagi/packages/core run build",
+    "postinstall": "pnpm --filter @ikenxuan/amagi run build",
     "web": "pnpm --filter web run dev",
     "template": "pnpm --filter karin-plugin-kkk run template",
     "watch": "pnpm --filter karin-plugin-kkk run watch"
   },
   "dependencies": {
-    "@ikenxuan/amagi": "link:../amagi/packages/core",
+    "@ikenxuan/amagi": "workspace:*",
     "node-karin": "1.16.3"
   },
   "devDependencies": {
