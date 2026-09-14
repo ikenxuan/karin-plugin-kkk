@@ -6,7 +6,11 @@ packages:
 
 overrides:
   node-karin: 1.16.2
-  typescript: 6.0.3
+  typescript: 7.0.2
+  # amagi 是子模块、有自己的 lockfile 与安装，源码侧不随主仓升级 TS7。
+  # 但根 workspace 的 `packages/*` 会命中 packages/amagi，根安装会覆写它的
+  # node_modules —— 不钉住的话每次根 install 都会把它拽到 7.0.2。
+  '@ikenxuan/amagi-monorepo>typescript': 6.0.3
   vite: 8.1.4
 
 publicHoistPattern:
