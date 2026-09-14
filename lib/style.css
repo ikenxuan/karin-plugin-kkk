@@ -15387,6 +15387,10 @@
     column-gap: calc(var(--spacing) * 10);
   }
 
+  .gap-x-12 {
+    column-gap: calc(var(--spacing) * 12);
+  }
+
   .gap-x-14 {
     column-gap: calc(var(--spacing) * 14);
   }
@@ -15571,6 +15575,10 @@
 
   .rounded-\[25px\] {
     border-radius: 25px;
+  }
+
+  .rounded-\[28px\] {
+    border-radius: 28px;
   }
 
   .rounded-\[36px\] {
@@ -17924,6 +17932,11 @@
   .tracking-\[0\.08em\] {
     --tw-tracking: .08em;
     letter-spacing: .08em;
+  }
+
+  .tracking-\[0\.12em\] {
+    --tw-tracking: .12em;
+    letter-spacing: .12em;
   }
 
   .tracking-\[0\.14em\] {

@@ -1,9 +1,24728 @@
-import { EventEmitter as EventEmitter$1 } from "node:events";
+import express, { Router } from "express";
+import { AxiosRequestConfig, AxiosResponse } from "axios";
+import { EventEmitter } from "node:events";
 import zod from "zod";
-import { AxiosRequestConfig, AxiosResponse, RawAxiosResponseHeaders } from "axios";
-import express from "express";
-//#region ../amagi/packages/core/dist/default/index.d.ts
-//#region src/platform/bilibili/sign/wbi.d.ts
+//#region ../../node_modules/.pnpm/zod@4.4.3/node_modules/zod/v4/core/schemas.d.cts
+type $strip = {
+  out: {};
+  in: {};
+};
+//#endregion
+//#region ../amagi/packages/core/dist/index-BSCf3lVD.d.ts
+//#region ../response-types/dist/generated/bilibili/ArticleCards/ArticleCards_V0.d.ts
+type ArticleCards_V0 = {
+  code: number;
+  data: Data$50;
+  message: string;
+  ttl: number;
+  [property: string]: any;
+};
+type Data$50 = {
+  av2: Av2$1;
+  cv1: Cv1$1;
+  cv2: Cv2$1;
+  lv5440: Lv5440$1;
+  [property: string]: any;
+};
+type Av2$1 = {
+  aid: number;
+  bvid: string;
+  cid: number;
+  copyright: number;
+  cover43: string;
+  ctime: number;
+  desc: string;
+  dimension: Dimension$3;
+  duration: number;
+  dynamic: string;
+  owner: Owner$4;
+  pic: string;
+  pubdate: number;
+  rights: Rights$4;
+  short_link_v2: string;
+  stat: Stat$9;
+  state: number;
+  tid: number;
+  title: string;
+  tname: string;
+  videos: number;
+  vt_switch: boolean;
+  [property: string]: any;
+};
+type Dimension$3 = {
+  height: number;
+  rotate: number;
+  width: number;
+  [property: string]: any;
+};
+type Owner$4 = {
+  face: string;
+  mid: number;
+  name: string;
+  [property: string]: any;
+};
+type Rights$4 = {
+  arc_pay: number;
+  autoplay: number;
+  bp: number;
+  download: number;
+  elec: number;
+  hd5: number;
+  is_cooperation: number;
+  movie: number;
+  no_background: number;
+  no_reprint: number;
+  pay: number;
+  pay_free_watch: number;
+  ugc_pay: number;
+  ugc_pay_preview: number;
+  [property: string]: any;
+};
+type Stat$9 = {
+  aid: number;
+  coin: number;
+  danmaku: number;
+  dislike: number;
+  favorite: number;
+  his_rank: number;
+  like: number;
+  now_rank: number;
+  reply: number;
+  share: number;
+  view: number;
+  vt: number;
+  vv: number;
+  [property: string]: any;
+};
+type Cv1$1 = {
+  act_id: number;
+  apply_time: string;
+  attributes: number;
+  authenMark: null;
+  author: Author$24;
+  banner_url: string;
+  categories: Category$3[];
+  category: Category$3;
+  check_state: number;
+  check_time: string;
+  content_pic_list: null;
+  cover_avid: number;
+  ctime: number;
+  dispute: null;
+  dynamic: string;
+  id: number;
+  image_urls: string[];
+  is_like: boolean;
+  list: List$4;
+  media: Media$2;
+  mtime: number;
+  origin_image_urls: string[];
+  origin_template_id: number;
+  original: number;
+  private_pub: number;
+  publish_time: number;
+  reprint: number;
+  state: number;
+  stats: Stats$9;
+  summary: string;
+  template_id: number;
+  title: string;
+  top_video_info: null;
+  type: number;
+  words: number;
+  [property: string]: any;
+};
+type Author$24 = {
+  face: string;
+  fans: number;
+  level: number;
+  mid: number;
+  name: string;
+  nameplate: Nameplate$11;
+  official_verify: OfficialVerify$19;
+  pendant: Pendant$22;
+  vip: Vip$21;
+  [property: string]: any;
+};
+type Nameplate$11 = {
+  condition: string;
+  image: string;
+  image_small: string;
+  level: string;
+  name: string;
+  nid: number;
+  [property: string]: any;
+};
+type OfficialVerify$19 = {
+  desc: string;
+  type: number;
+  [property: string]: any;
+};
+type Pendant$22 = {
+  expire: number;
+  image: string;
+  name: string;
+  pid: number;
+  [property: string]: any;
+};
+type Vip$21 = {
+  avatar_subscript: number;
+  due_date: number;
+  label: Label$21;
+  nickname_color: string;
+  status: number;
+  theme_type: number;
+  type: number;
+  vip_pay_type: number;
+  [property: string]: any;
+};
+type Label$21 = {
+  label_theme: string;
+  path: string;
+  text: string;
+  [property: string]: any;
+};
+type Category$3 = {
+  id: number;
+  name: string;
+  parent_id: number;
+  [property: string]: any;
+};
+type List$4 = {
+  apply_time: string;
+  articles_count: number;
+  check_time: string;
+  ctime: number;
+  id: number;
+  image_url: string;
+  mid: number;
+  name: string;
+  publish_time: number;
+  read: number;
+  reason: string;
+  state: number;
+  summary: string;
+  update_time: number;
+  words: number;
+  [property: string]: any;
+};
+type Media$2 = {
+  area: string;
+  cover: string;
+  media_id: number;
+  score: number;
+  season_id: number;
+  spoiler: number;
+  title: string;
+  type_id: number;
+  type_name: string;
+  [property: string]: any;
+};
+type Stats$9 = {
+  coin: number;
+  dislike: number;
+  dynamic: number;
+  favorite: number;
+  like: number;
+  reply: number;
+  share: number;
+  view: number;
+  [property: string]: any;
+};
+type Cv2$1 = {
+  act_id: number;
+  apply_time: string;
+  authenMark: null;
+  author: Author$24;
+  banner_url: string;
+  categories: Category$3[];
+  category: Category$3;
+  check_state: number;
+  check_time: string;
+  content_pic_list: null;
+  cover_avid: number;
+  ctime: number;
+  dispute: null;
+  id: number;
+  image_urls: string[];
+  is_like: boolean;
+  list: null;
+  media: Media$2;
+  mtime: number;
+  origin_image_urls: string[];
+  origin_template_id: number;
+  original: number;
+  private_pub: number;
+  publish_time: number;
+  reprint: number;
+  state: number;
+  stats: Stats$9;
+  summary: string;
+  template_id: number;
+  title: string;
+  top_video_info: null;
+  type: number;
+  words: number;
+  [property: string]: any;
+};
+type Lv5440$1 = {
+  area_v2_name: string;
+  cover: string;
+  face: string;
+  live_status: number;
+  online: number;
+  pendent_ru: string;
+  pendent_ru_color: string;
+  pendent_ru_pic: string;
+  role: number;
+  room_id: number;
+  title: string;
+  uid: number;
+  uname: string;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/bilibili/ArticleCards/index.d.ts
+type ArticleCardsSuccess = ArticleCards_V0;
+type ArticleCardsError = never;
+type ArticleCards = ArticleCardsSuccess | ArticleCardsError;
+//#endregion
+//#region ../response-types/dist/generated/bilibili/ArticleContent/ArticleContent_V0.d.ts
+type ArticleContent_V0$1 = {
+  code: number;
+  data?: Data$49;
+  message: string;
+  ttl: number;
+  [property: string]: any;
+};
+type Data$49 = {
+  act_id: number;
+  apply_time: string;
+  authenMark: null;
+  author: Author$23;
+  banner_url: string;
+  categories: Category$2[];
+  category: Category$2;
+  check_state: number;
+  check_time: string;
+  content: string;
+  content_pic_list: null;
+  cover_avid: number;
+  ctime: number;
+  dispute: null;
+  dyn_id_str: string;
+  id: number;
+  image_urls: string[];
+  is_like: boolean;
+  keywords: string;
+  list: List$3;
+  media: Media$1;
+  mtime: number;
+  opus: Opus$8;
+  origin_image_urls: string[];
+  origin_template_id: number;
+  original: number;
+  private_pub: number;
+  publish_time: number;
+  reprint: number;
+  state: number;
+  stats: Stats$8;
+  summary: string;
+  tags: Tag3[];
+  template_id: number;
+  title: string;
+  top_video_info: null;
+  total_art_num: number;
+  type: number;
+  version_id: number;
+  words: number;
+  [property: string]: any;
+};
+type Author$23 = {
+  face: string;
+  fans: number;
+  level: number;
+  mid: number;
+  name: string;
+  nameplate: Nameplate$10;
+  official_verify: OfficialVerify$18;
+  pendant: Pendant$21;
+  vip: Vip$20;
+  [property: string]: any;
+};
+type Nameplate$10 = {
+  condition: string;
+  image: string;
+  image_small: string;
+  level: string;
+  name: string;
+  nid: number;
+  [property: string]: any;
+};
+type OfficialVerify$18 = {
+  desc: string;
+  type: number;
+  [property: string]: any;
+};
+type Pendant$21 = {
+  expire: number;
+  image: string;
+  name: string;
+  pid: number;
+  [property: string]: any;
+};
+type Vip$20 = {
+  avatar_subscript: number;
+  due_date: number;
+  label: Label$20;
+  nickname_color: string;
+  status: number;
+  theme_type: number;
+  type: number;
+  vip_pay_type: number;
+  [property: string]: any;
+};
+type Label$20 = {
+  label_theme: string;
+  path: string;
+  text: string;
+  [property: string]: any;
+};
+type Category$2 = {
+  id: number;
+  name: string;
+  parent_id: number;
+  [property: string]: any;
+};
+type List$3 = {
+  apply_time: string;
+  articles_count: number;
+  check_time: string;
+  ctime: number;
+  id: number;
+  image_url: string;
+  mid: number;
+  name: string;
+  publish_time: number;
+  read: number;
+  reason: string;
+  state: number;
+  summary: string;
+  update_time: number;
+  words: number;
+  [property: string]: any;
+};
+type Media$1 = {
+  area: string;
+  cover: string;
+  media_id: number;
+  score: number;
+  season_id: number;
+  spoiler: number;
+  title: string;
+  type_id: number;
+  type_name: string;
+  [property: string]: any;
+};
+type Opus$8 = {
+  article: Article$3;
+  content: Content$6;
+  opus_id: number;
+  opus_source: number;
+  pub_info: PubInfo$1;
+  tags: Tag$4[];
+  title: string;
+  translate_result: TranslateResult$1;
+  version: Version$1;
+  [property: string]: any;
+};
+type Article$3 = {
+  biz_tags: string[];
+  category_id: number;
+  cover: Cover$13[];
+  list_id: number;
+  originality: number;
+  reproduced: number;
+  [property: string]: any;
+};
+type Cover$13 = {
+  height: number;
+  size: number;
+  url: string;
+  width: number;
+  [property: string]: any;
+};
+type Content$6 = {
+  paragraphs: Paragraph$1[];
+  [property: string]: any;
+};
+type Paragraph$1 = {
+  format?: Format;
+  para_type: number;
+  pic?: Pic$5;
+  text?: Text$2;
+  [property: string]: any;
+};
+type Format = {
+  list_format: ListFormat;
+  [property: string]: any;
+};
+type ListFormat = {
+  level: number;
+  order: number;
+  [property: string]: any;
+};
+type Pic$5 = {
+  pics: Cover$13[];
+  style: number;
+  [property: string]: any;
+};
+type Text$2 = {
+  nodes: Node$1[];
+  [property: string]: any;
+};
+type Node$1 = {
+  node_type: number;
+  word: Word$20;
+  [property: string]: any;
+};
+type Word$20 = {
+  font_level: string;
+  font_size: number;
+  style: Style$3;
+  words: string;
+  [property: string]: any;
+};
+type Style$3 = {
+  bold?: boolean;
+  [property: string]: any;
+};
+type PubInfo$1 = {
+  pub_time: number;
+  uid: number;
+  [property: string]: any;
+};
+type Tag$4 = {
+  tag: Tag2;
+  [property: string]: any;
+};
+type Tag2 = {
+  link_type: number;
+  show_text: string;
+  [property: string]: any;
+};
+type TranslateResult$1 = {
+  lang_match_result: number;
+  state: number;
+  [property: string]: any;
+};
+type Version$1 = {
+  cvid: number;
+  version_id: number;
+  [property: string]: any;
+};
+type Stats$8 = {
+  coin: number;
+  dislike: number;
+  dynamic: number;
+  favorite: number;
+  like: number;
+  reply: number;
+  share: number;
+  view: number;
+  [property: string]: any;
+};
+type Tag3 = {
+  name: string;
+  tid: number;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/bilibili/ArticleContent/index.d.ts
+type ArticleContentSuccess = ArticleContent_V0$1;
+type ArticleContentError = never;
+type ArticleContent$1 = ArticleContentSuccess | ArticleContentError;
+//#endregion
+//#region ../response-types/dist/generated/bilibili/ArticleInfo/ArticleInfo_V0.d.ts
+type ArticleInfo_V0$1 = {
+  code: number;
+  data: Data$48;
+  message: string;
+  ttl: number;
+  [property: string]: any;
+};
+type Data$48 = {
+  attention: boolean;
+  author_name: string;
+  banner_url: string;
+  coin: number;
+  disable_share: boolean;
+  favorite: boolean;
+  image_urls: string[];
+  in_list: boolean;
+  is_author: boolean;
+  like: number;
+  location: string;
+  mid: number;
+  next: number;
+  origin_image_urls: string[];
+  pre: number;
+  share_channels: ShareChannel$1[];
+  shareable: boolean;
+  show_later_watch: boolean;
+  show_small_window: boolean;
+  stats: Stats$7;
+  title: string;
+  type: number;
+  video_url: string;
+  [property: string]: any;
+};
+type ShareChannel$1 = {
+  name: string;
+  picture: string;
+  share_channel: string;
+  [property: string]: any;
+};
+type Stats$7 = {
+  coin: number;
+  dislike: number;
+  dynamic: number;
+  favorite: number;
+  like: number;
+  reply: number;
+  share: number;
+  view: number;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/bilibili/ArticleInfo/index.d.ts
+type ArticleInfoSuccess = ArticleInfo_V0$1;
+type ArticleInfoError = never;
+type ArticleInfo$3 = ArticleInfoSuccess | ArticleInfoError;
+//#endregion
+//#region ../response-types/dist/generated/bilibili/ArticleListInfo/ArticleListInfo_V0.d.ts
+type ArticleListInfo_V0 = {
+  code: number;
+  data: Data$47;
+  message: string;
+  ttl: number;
+  [property: string]: any;
+};
+type Data$47 = {
+  articles: null;
+  attention: boolean;
+  author: Author$22;
+  last: Last$1;
+  list: List$2;
+  [property: string]: any;
+};
+type Author$22 = {
+  face: string;
+  fans: number;
+  level: number;
+  mid: number;
+  name: string;
+  nameplate: Nameplate$9;
+  official_verify: OfficialVerify$17;
+  pendant: Pendant$20;
+  vip: Vip$19;
+  [property: string]: any;
+};
+type Nameplate$9 = {
+  condition: string;
+  image: string;
+  image_small: string;
+  level: string;
+  name: string;
+  nid: number;
+  [property: string]: any;
+};
+type OfficialVerify$17 = {
+  desc: string;
+  type: number;
+  [property: string]: any;
+};
+type Pendant$20 = {
+  expire: number;
+  image: string;
+  name: string;
+  pid: number;
+  [property: string]: any;
+};
+type Vip$19 = {
+  avatar_subscript: number;
+  due_date: number;
+  label: Label$19;
+  nickname_color: string;
+  status: number;
+  theme_type: number;
+  type: number;
+  vip_pay_type: number;
+  [property: string]: any;
+};
+type Label$19 = {
+  label_theme: string;
+  path: string;
+  text: string;
+  [property: string]: any;
+};
+type Last$1 = {
+  attributes: number;
+  author_uid: number;
+  categories: unknown[];
+  category: Category$1;
+  dyn_id_str: string;
+  id: number;
+  image_urls: unknown[];
+  only_fans: number;
+  publish_time: number;
+  state: number;
+  summary: string;
+  title: string;
+  type: number;
+  words: number;
+  [property: string]: any;
+};
+type Category$1 = {
+  id: number;
+  name: string;
+  parent_id: number;
+  [property: string]: any;
+};
+type List$2 = {
+  apply_time: string;
+  articles_count: number;
+  check_time: string;
+  ctime: number;
+  id: number;
+  image_url: string;
+  mid: number;
+  name: string;
+  publish_time: number;
+  read: number;
+  reason: string;
+  state: number;
+  summary: string;
+  update_time: number;
+  words: number;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/bilibili/ArticleListInfo/index.d.ts
+type ArticleListInfoSuccess = ArticleListInfo_V0;
+type ArticleListInfoError = never;
+type ArticleListInfo = ArticleListInfoSuccess | ArticleListInfoError;
+//#endregion
+//#region ../response-types/dist/generated/bilibili/BangumiInfo/BangumiInfo_V0.d.ts
+type BangumiInfo_V0 = {
+  code: number;
+  message: string;
+  result: Result$9;
+  [property: string]: any;
+};
+type Result$9 = {
+  activity: Activity$13;
+  actors: string;
+  alias: string;
+  areas: Area$1[];
+  bkg_cover: string;
+  cover: string;
+  delivery_fragment_video: boolean;
+  enable_vt: boolean;
+  episodes: Episode$1[];
+  evaluate: string;
+  freya: Freya$1;
+  hide_ep_vv_vt_dm: number;
+  icon_font: IconFont;
+  jp_title: string;
+  link: string;
+  media_id: number;
+  mode: number;
+  new_ep: NewEp;
+  payment: Payment$1;
+  play_strategy: PlayStrategy$1;
+  positive: Positive$1;
+  publish: Publish$1;
+  rating: Rating$1;
+  record: string;
+  rights: Rights2$1;
+  season_id: number;
+  season_title: string;
+  seasons: Season$1[];
+  section: Section$2[];
+  series: Series$3;
+  share_copy: string;
+  share_sub_title: string;
+  share_url: string;
+  show: Show$1;
+  show_season_type: number;
+  square_cover: string;
+  staff: string;
+  stat: Stat3$1;
+  status: number;
+  styles: string[];
+  subtitle: string;
+  title: string;
+  total: number;
+  type: number;
+  up_info: UpInfo$1;
+  user_status: UserStatus$1;
+  [property: string]: any;
+};
+type Activity$13 = {
+  head_bg_url: string;
+  id: number;
+  title: string;
+  [property: string]: any;
+};
+type Area$1 = {
+  id: number;
+  name: string;
+  [property: string]: any;
+};
+type Episode$1 = {
+  aid: number;
+  badge: string;
+  badge_info: BadgeInfo;
+  badge_type: number;
+  bvid: string;
+  cid: number;
+  cover: string;
+  dimension: Dimension$2;
+  duration: number;
+  enable_vt: boolean;
+  ep_id: number;
+  from: string;
+  id: number;
+  is_view_hide: boolean;
+  link: string;
+  long_title: string;
+  pub_time: number;
+  pv: number;
+  release_date: string;
+  rights: Rights$3;
+  section_type: number;
+  share_copy: string;
+  share_url: string;
+  short_link: string;
+  showDrmLoginDialog: boolean;
+  show_title: string;
+  skip: Skip;
+  status: number;
+  subtitle: string;
+  title: string;
+  vid: string;
+  [property: string]: any;
+};
+type BadgeInfo = {
+  bg_color: string;
+  bg_color_night: string;
+  text: string;
+  [property: string]: any;
+};
+type Dimension$2 = {
+  height: number;
+  rotate: number;
+  width: number;
+  [property: string]: any;
+};
+type Rights$3 = {
+  allow_dm: number;
+  allow_download: number;
+  area_limit: number;
+  cache_auth: number;
+  [property: string]: any;
+};
+type Skip = {
+  ed: Ed;
+  op: Ed;
+  [property: string]: any;
+};
+type Ed = {
+  end: number;
+  start: number;
+  [property: string]: any;
+};
+type Freya$1 = {
+  bubble_desc: string;
+  bubble_show_cnt: number;
+  icon_show: number;
+  [property: string]: any;
+};
+type IconFont = {
+  name: string;
+  text: string;
+  [property: string]: any;
+};
+type NewEp = {
+  desc: string;
+  id: number;
+  is_new: number;
+  title: string;
+  [property: string]: any;
+};
+type Payment$1 = {
+  discount: number;
+  pay_type: PayType$1;
+  price: string;
+  promotion: string;
+  tip: string;
+  view_start_time: number;
+  vip_discount: number;
+  vip_first_promotion: string;
+  vip_price: string;
+  vip_promotion: string;
+  [property: string]: any;
+};
+type PayType$1 = {
+  allow_discount: number;
+  allow_pack: number;
+  allow_ticket: number;
+  allow_time_limit: number;
+  allow_vip_discount: number;
+  forbid_bb: number;
+  [property: string]: any;
+};
+type PlayStrategy$1 = {
+  strategies: string[];
+  [property: string]: any;
+};
+type Positive$1 = {
+  id: number;
+  title: string;
+  [property: string]: any;
+};
+type Publish$1 = {
+  is_finish: number;
+  is_started: number;
+  pub_time: string;
+  pub_time_show: string;
+  unknow_pub_date: number;
+  weekday: number;
+  [property: string]: any;
+};
+type Rating$1 = {
+  count: number;
+  score: number;
+  [property: string]: any;
+};
+type Rights2$1 = {
+  allow_bp: number;
+  allow_bp_rank: number;
+  allow_download: number;
+  allow_review: number;
+  area_limit: number;
+  ban_area_show: number;
+  can_watch: number;
+  copyright: string;
+  forbid_pre: number;
+  freya_white: number;
+  is_cover_show: number;
+  is_preview: number;
+  is_sponsor: number;
+  only_vip_download: number;
+  resource: string;
+  watch_platform: number;
+  [property: string]: any;
+};
+type Season$1 = {
+  badge: string;
+  badge_info: BadgeInfo;
+  badge_type: number;
+  cover: string;
+  enable_vt: boolean;
+  horizontal_cover_1610: string;
+  horizontal_cover_169: string;
+  icon_font: IconFont;
+  media_id: number;
+  new_ep: NewEp2;
+  season_id: number;
+  season_title: string;
+  season_type: number;
+  stat: Stat$8;
+  [property: string]: any;
+};
+type NewEp2 = {
+  cover: string;
+  id: number;
+  index_show: string;
+  [property: string]: any;
+};
+type Stat$8 = {
+  favorites: number;
+  series_follow: number;
+  views: number;
+  vt: number;
+  [property: string]: any;
+};
+type Section$2 = {
+  attr: number;
+  episode_id: number;
+  episode_ids: unknown[];
+  episodes: Episode2[];
+  id: number;
+  title: string;
+  type: number;
+  type2: number;
+  [property: string]: any;
+};
+type Episode2 = {
+  aid: number;
+  badge: string;
+  badge_info: BadgeInfo;
+  badge_type: number;
+  bvid: string;
+  cid: number;
+  cover: string;
+  dimension: Dimension$2;
+  duration: number;
+  enable_vt: boolean;
+  ep_id: number;
+  from: string;
+  icon_font: IconFont;
+  id: number;
+  is_view_hide: boolean;
+  link: string;
+  long_title: string;
+  pub_time: number;
+  pv: number;
+  release_date: string;
+  rights: Rights$3;
+  section_type: number;
+  share_copy: string;
+  share_url: string;
+  short_link: string;
+  showDrmLoginDialog: boolean;
+  show_title: string;
+  skip: Skip;
+  stat: Stat2$1;
+  stat_for_unity: StatForUnity$1;
+  status: number;
+  subtitle: string;
+  title: string;
+  vid: string;
+  [property: string]: any;
+};
+type Stat2$1 = {
+  coin: number;
+  danmakus: number;
+  likes: number;
+  play: number;
+  reply: number;
+  vt: number;
+  [property: string]: any;
+};
+type StatForUnity$1 = {
+  coin: number;
+  danmaku: Danmaku$2;
+  likes: number;
+  reply: number;
+  vt: Danmaku$2;
+  [property: string]: any;
+};
+type Danmaku$2 = {
+  icon: string;
+  pure_text: string;
+  text: string;
+  value: number;
+  [property: string]: any;
+};
+type Series$3 = {
+  display_type: number;
+  series_id: number;
+  series_title: string;
+  [property: string]: any;
+};
+type Show$1 = {
+  wide_screen: number;
+  [property: string]: any;
+};
+type Stat3$1 = {
+  coins: number;
+  danmakus: number;
+  favorite: number;
+  favorites: number;
+  follow_text: string;
+  likes: number;
+  reply: number;
+  share: number;
+  views: number;
+  vt: number;
+  [property: string]: any;
+};
+type UpInfo$1 = {
+  avatar: string;
+  avatar_subscript_url: string;
+  follower: number;
+  is_follow: number;
+  mid: number;
+  nickname_color: string;
+  pendant: Pendant$19;
+  theme_type: number;
+  uname: string;
+  verify_type: number;
+  vip_label: VipLabel$1;
+  vip_status: number;
+  vip_type: number;
+  [property: string]: any;
+};
+type Pendant$19 = {
+  image: string;
+  name: string;
+  pid: number;
+  [property: string]: any;
+};
+type VipLabel$1 = {
+  bg_color: string;
+  bg_style: number;
+  border_color: string;
+  text: string;
+  text_color: string;
+  [property: string]: any;
+};
+type UserStatus$1 = {
+  area_limit: number;
+  ban_area_show: number;
+  follow: number;
+  follow_status: number;
+  login: number;
+  pay: number;
+  pay_pack_paid: number;
+  sponsor: number;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/bilibili/BangumiInfo/index.d.ts
+type BangumiInfoSuccess = BangumiInfo_V0;
+type BangumiInfoError = never;
+type BangumiInfo = BangumiInfoSuccess | BangumiInfoError;
+//#endregion
+//#region ../response-types/dist/generated/bilibili/BangumiStream/BangumiStream_V0.d.ts
+type BangumiStream_V0 = {
+  code: number;
+  message: string;
+  result: Result$8;
+  [property: string]: any;
+};
+type Result$8 = {
+  accept_description: string[];
+  accept_format: string;
+  accept_quality: number[];
+  bp: number;
+  can_watch_reason: number;
+  clip_info_list: ClipInfoList[];
+  code: number;
+  dash: Dash$3;
+  durls: unknown[];
+  dyeid: string;
+  error_code: number;
+  fnval: number;
+  fnver: number;
+  format: string;
+  from: string;
+  has_paid: boolean;
+  is_drm: boolean;
+  is_preview: number;
+  message: string;
+  no_rexcode: number;
+  quality: number;
+  record_info: RecordInfo$2;
+  result: string;
+  seek_param: string;
+  seek_type: string;
+  status: number;
+  support_formats: SupportFormat$5[];
+  timelength: number;
+  type: string;
+  video_codecid: number;
+  video_project: boolean;
+  [property: string]: any;
+};
+type ClipInfoList = {
+  clipType: string;
+  end: number;
+  materialNo: number;
+  start: number;
+  toastText: string;
+  [property: string]: any;
+};
+type Dash$3 = {
+  audio: Audio$10[];
+  dolby: Dolby$3;
+  duration: number;
+  minBufferTime: number;
+  min_buffer_time: number;
+  video: Audio$10[];
+  [property: string]: any;
+};
+type Audio$10 = {
+  SegmentBase: SegmentBase$1;
+  backupUrl: string[];
+  backup_url: string[];
+  bandwidth: number;
+  baseUrl: string;
+  base_url: string;
+  codecid: number;
+  codecs: string;
+  frameRate: string;
+  frame_rate: string;
+  height: number;
+  id: number;
+  md5: string;
+  mimeType: string;
+  mime_type: string;
+  sar: string;
+  segment_base: SegmentBase2$1;
+  size: number;
+  startWithSAP: number;
+  start_with_sap: number;
+  width: number;
+  [property: string]: any;
+};
+type SegmentBase$1 = {
+  Initialization: string;
+  indexRange: string;
+  [property: string]: any;
+};
+type SegmentBase2$1 = {
+  index_range: string;
+  initialization: string;
+  [property: string]: any;
+};
+type Dolby$3 = {
+  audio: unknown[];
+  type: number;
+  [property: string]: any;
+};
+type RecordInfo$2 = {
+  record: string;
+  record_icon: string;
+  [property: string]: any;
+};
+type SupportFormat$5 = {
+  attribute: number;
+  can_watch_qn_reason: number;
+  codecs: string[];
+  description: string;
+  display_desc: string;
+  format: string;
+  has_preview: boolean;
+  limit_watch_reason: number;
+  need_login?: boolean;
+  need_vip?: boolean;
+  new_description: string;
+  quality: number;
+  report_params: string;
+  sub_description: string;
+  superscript: string;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/bilibili/BangumiStream/index.d.ts
+type BangumiStreamSuccess = BangumiStream_V0;
+type BangumiStreamError = never;
+type BangumiStream = BangumiStreamSuccess | BangumiStreamError;
+//#endregion
+//#region ../response-types/dist/generated/bilibili/CommentReplies/CommentReplies_V0.d.ts
+type CommentReplies_V0$1 = {
+  code: number;
+  data: Data$46;
+  message: string;
+  ttl: number;
+  [property: string]: any;
+};
+type Data$46 = {
+  config: Config$4;
+  control: Control$3;
+  page: Page$2;
+  replies: Reply$2[];
+  root: Root$1;
+  upper: Upper$2;
+  [property: string]: any;
+};
+type Config$4 = {
+  read_only: boolean;
+  show_up_flag: boolean;
+  showtopic: number;
+  [property: string]: any;
+};
+type Control$3 = {
+  answer_guide_android_url: string;
+  answer_guide_icon_url: string;
+  answer_guide_ios_url: string;
+  answer_guide_text: string;
+  bg_text: string;
+  child_input_text: string;
+  disable_jump_emote: boolean;
+  empty_page: null;
+  enable_charged: boolean;
+  enable_cm_biz_helper: boolean;
+  giveup_input_text: string;
+  input_disable: boolean;
+  preload_resources: null;
+  root_input_text: string;
+  screenshot_icon_state: number;
+  show_text: string;
+  show_type: number;
+  upload_picture_icon_state: number;
+  web_selection: boolean;
+  [property: string]: any;
+};
+type Page$2 = {
+  count: number;
+  num: number;
+  size: number;
+  [property: string]: any;
+};
+type Reply$2 = {
+  action: number;
+  assist: number;
+  attr: number;
+  content: Content$5;
+  count: number;
+  ctime: number;
+  dialog: number;
+  dialog_str: string;
+  dynamic_id_str: string;
+  fansgrade: number;
+  folder: Folder$2;
+  invisible: boolean;
+  like: number;
+  member: Member$2;
+  mid: number;
+  mid_str: string;
+  note_cvid_str: string;
+  oid: number;
+  oid_str: string;
+  parent: number;
+  parent_str: string;
+  rcount: number;
+  replies: null;
+  reply_control: ReplyControl$2;
+  root: number;
+  root_str: string;
+  rpid: number;
+  rpid_str: string;
+  state: number;
+  track_info: string;
+  type: number;
+  up_action: UpAction$2;
+  [property: string]: any;
+};
+type Content$5 = {
+  emote?: Emote$4;
+  jump_url: {
+    [property: string]: any;
+  };
+  max_line: number;
+  members: unknown[];
+  message: string;
+  [property: string]: any;
+};
+type Emote$4 = {
+  '[冷]'?: Anonymous$1;
+  '[笑哭]'?: Anonymous$1;
+  [property: string]: any;
+};
+type Anonymous$1 = {
+  attr: number;
+  id: number;
+  jump_title: string;
+  meta: Meta$3;
+  mtime: number;
+  package_id: number;
+  state: number;
+  text: string;
+  type: number;
+  url: string;
+  [property: string]: any;
+};
+type Meta$3 = {
+  size: number;
+  suggest: string[];
+  [property: string]: any;
+};
+type Folder$2 = {
+  has_folded: boolean;
+  is_folded: boolean;
+  rule: string;
+  [property: string]: any;
+};
+type Member$2 = {
+  avatar: string;
+  avatar_item: AvatarItem$2;
+  contract_desc: string;
+  face_nft_new: number;
+  fans_detail: FansDetail$2 | null;
+  handle: string;
+  is_contractor: boolean;
+  is_senior_member: number;
+  level_info: LevelInfo$5;
+  mid: string;
+  nameplate: Nameplate$8;
+  nft_interaction: null;
+  official_verify: OfficialVerify$16;
+  pendant: Pendant$18;
+  rank: string;
+  senior: Senior$2;
+  sex: string;
+  sign: string;
+  uname: string;
+  user_sailing: UserSailing$2;
+  user_sailing_v2: UserSailingV2$2;
+  vip: Vip$18;
+  [property: string]: any;
+};
+type AvatarItem$2 = {
+  container_size: ContainerSize$11;
+  fallback_layers: FallbackLayers$11;
+  mid: string;
+  [property: string]: any;
+};
+type ContainerSize$11 = {
+  height: number;
+  width: number;
+  [property: string]: any;
+};
+type FallbackLayers$11 = {
+  is_critical_group: boolean;
+  layers: Layer$11[];
+  [property: string]: any;
+};
+type Layer$11 = {
+  general_spec: GeneralSpec$11;
+  layer_config: LayerConfig$11;
+  resource: Resource$11;
+  visible: boolean;
+  [property: string]: any;
+};
+type GeneralSpec$11 = {
+  pos_spec: PosSpec$11;
+  render_spec: RenderSpec$11;
+  size_spec: ContainerSize$11;
+  [property: string]: any;
+};
+type PosSpec$11 = {
+  axis_x: number;
+  axis_y: number;
+  coordinate_pos: number;
+  [property: string]: any;
+};
+type RenderSpec$11 = {
+  opacity: number;
+  [property: string]: any;
+};
+type LayerConfig$11 = {
+  is_critical?: boolean;
+  layer_mask?: LayerMask$1;
+  tags: Tags$11;
+  [property: string]: any;
+};
+type LayerMask$1 = {
+  general_spec: GeneralSpec$11;
+  mask_src: MaskSrc$1;
+  [property: string]: any;
+};
+type MaskSrc$1 = {
+  draw: Draw$1;
+  src_type: number;
+  [property: string]: any;
+};
+type Draw$1 = {
+  color_config: ColorConfig$1;
+  draw_type: number;
+  fill_mode: number;
+  [property: string]: any;
+};
+type ColorConfig$1 = {
+  day: Day$1;
+  [property: string]: any;
+};
+type Day$1 = {
+  argb: string;
+  [property: string]: any;
+};
+type Tags$11 = {
+  AVATAR_LAYER?: {
+    [property: string]: any;
+  };
+  ICON_LAYER?: {
+    [property: string]: any;
+  };
+  PENDENT_LAYER?: {
+    [property: string]: any;
+  };
+  [property: string]: any;
+};
+type Resource$11 = {
+  res_animation?: ResAnimation$3;
+  res_image?: ResImage$11;
+  res_native_draw?: ResNativeDraw$1;
+  res_type: number;
+  [property: string]: any;
+};
+type ResAnimation$3 = {
+  webp_src: WebpSrc$3;
+  [property: string]: any;
+};
+type WebpSrc$3 = {
+  remote: Remote$11;
+  src_type: number;
+  [property: string]: any;
+};
+type Remote$11 = {
+  bfs_style: string;
+  url: string;
+  [property: string]: any;
+};
+type ResImage$11 = {
+  image_src: ImageSrc$11;
+  [property: string]: any;
+};
+type ImageSrc$11 = {
+  placeholder?: number;
+  remote: Remote$11;
+  src_type: number;
+  [property: string]: any;
+};
+type ResNativeDraw$1 = {
+  draw_src: DrawSrc$1;
+  [property: string]: any;
+};
+type DrawSrc$1 = {
+  draw: Draw2$1;
+  src_type: number;
+  [property: string]: any;
+};
+type Draw2$1 = {
+  color_config: ColorConfig2$1;
+  draw_type: number;
+  fill_mode: number;
+  [property: string]: any;
+};
+type ColorConfig2$1 = {
+  day: Day$1;
+  is_dark_mode_aware: boolean;
+  night: Day$1;
+  [property: string]: any;
+};
+type FansDetail$2 = {
+  guard_icon: string;
+  guard_level: number;
+  honor_icon: string;
+  intimacy: number;
+  is_receive: number;
+  level: number;
+  master_status: number;
+  medal_color: number;
+  medal_color_border: number;
+  medal_color_end: number;
+  medal_color_level: number;
+  medal_color_name: number;
+  medal_id: number;
+  medal_level_bg_color: number;
+  medal_name: string;
+  score: number;
+  uid: number;
+  [property: string]: any;
+};
+type LevelInfo$5 = {
+  current_exp: number;
+  current_level: number;
+  current_min: number;
+  next_exp: number;
+  [property: string]: any;
+};
+type Nameplate$8 = {
+  condition: string;
+  image: string;
+  image_small: string;
+  level: string;
+  name: string;
+  nid: number;
+  [property: string]: any;
+};
+type OfficialVerify$16 = {
+  desc: string;
+  type: number;
+  [property: string]: any;
+};
+type Pendant$18 = {
+  expire: number;
+  image: string;
+  image_enhance: string;
+  image_enhance_frame: string;
+  n_pid: number;
+  name: string;
+  pid: number;
+  [property: string]: any;
+};
+type Senior$2 = {
+  status?: number;
+  [property: string]: any;
+};
+type UserSailing$2 = {
+  cardbg: Cardbg$2 | null;
+  cardbg_with_focus: null;
+  pendant: Pendant2$1 | null;
+  [property: string]: any;
+};
+type Cardbg$2 = {
+  fan: Fan$9;
+  id: number;
+  image: string;
+  image_group: null;
+  jump_url: string;
+  name: string;
+  type: string;
+  [property: string]: any;
+};
+type Fan$9 = {
+  color: string;
+  color_format: ColorFormat$9;
+  is_fan: number;
+  name: string;
+  num_desc: string;
+  num_prefix: string;
+  number: number;
+  [property: string]: any;
+};
+type ColorFormat$9 = {
+  colors: string[];
+  end_point: string;
+  gradients: number[];
+  start_point: string;
+  [property: string]: any;
+};
+type Pendant2$1 = {
+  id: number;
+  image: string;
+  image_enhance: string;
+  image_enhance_frame: string;
+  jump_url: string;
+  name: string;
+  type: string;
+  [property: string]: any;
+};
+type UserSailingV2$2 = {
+  card_bg?: CardBg$2;
+  pendant?: Pendant3$1;
+  [property: string]: any;
+};
+type CardBg$2 = {
+  fan: Fan2$1;
+  id: number;
+  image: string;
+  jump_url: string;
+  name: string;
+  type: string;
+  [property: string]: any;
+};
+type Fan2$1 = {
+  color: string;
+  color_format: ColorFormat$9;
+  is_fan: number;
+  name?: string;
+  num_desc: string;
+  num_prefix: string;
+  number: number;
+  [property: string]: any;
+};
+type Pendant3$1 = {
+  id: number;
+  image: string;
+  image_enhance: string;
+  image_enhance_frame?: string;
+  name: string;
+  type?: string;
+  [property: string]: any;
+};
+type Vip$18 = {
+  accessStatus: number;
+  avatar_subscript: number;
+  dueRemark: string;
+  label: Label$18;
+  nickname_color: string;
+  themeType: number;
+  vipDueDate: number;
+  vipStatus: number;
+  vipStatusWarn: string;
+  vipType: number;
+  [property: string]: any;
+};
+type Label$18 = {
+  bg_color: string;
+  bg_style: number;
+  border_color: string;
+  img_label_uri_hans: string;
+  img_label_uri_hans_static: string;
+  img_label_uri_hant: string;
+  img_label_uri_hant_static: string;
+  img_label_uri_i18n: string;
+  img_label_uri_i18n_static: string;
+  label_goto: LabelGoto$5 | null;
+  label_id: number;
+  label_theme: string;
+  label_type: number;
+  path: string;
+  text: string;
+  text_color: string;
+  use_img_label: boolean;
+  [property: string]: any;
+};
+type LabelGoto$5 = {
+  mobile: string;
+  pc_web: string;
+  [property: string]: any;
+};
+type ReplyControl$2 = {
+  max_line: number;
+  support_share: boolean;
+  time_desc: string;
+  translation_switch: number;
+  [property: string]: any;
+};
+type UpAction$2 = {
+  like: boolean;
+  reply: boolean;
+  [property: string]: any;
+};
+type Root$1 = {
+  action: number;
+  assist: number;
+  attr: number;
+  content: Content2$1;
+  count: number;
+  ctime: number;
+  dialog: number;
+  dialog_str: string;
+  dynamic_id: number;
+  dynamic_id_str: string;
+  fansgrade: number;
+  folder: Folder$2;
+  invisible: boolean;
+  like: number;
+  member: Member2$1;
+  mid: number;
+  mid_str: string;
+  note_cvid_str: string;
+  oid: number;
+  oid_str: string;
+  parent: number;
+  parent_str: string;
+  rcount: number;
+  replies: null;
+  reply_control: ReplyControl2$1;
+  root: number;
+  root_str: string;
+  rpid: number;
+  rpid_str: string;
+  state: number;
+  track_info: string;
+  type: number;
+  up_action: UpAction$2;
+  [property: string]: any;
+};
+type Content2$1 = {
+  emote: Emote2$1;
+  jump_url: {
+    [property: string]: any;
+  };
+  max_line: number;
+  members: unknown[];
+  message: string;
+  picture_scale: number;
+  pictures: Picture$3[];
+  [property: string]: any;
+};
+type Emote2$1 = {
+  '[笑哭]': Anonymous$1;
+  [property: string]: any;
+};
+type Picture$3 = {
+  img_height: number;
+  img_size: number;
+  img_src: string;
+  img_width: number;
+  [property: string]: any;
+};
+type Member2$1 = {
+  avatar: string;
+  avatar_item: AvatarItem2;
+  contract_desc: string;
+  face_nft_new: number;
+  fans_detail: null;
+  handle: string;
+  is_contractor: boolean;
+  is_senior_member: number;
+  level_info: LevelInfo$5;
+  mid: string;
+  nameplate: Nameplate$8;
+  nft_interaction: null;
+  official_verify: OfficialVerify$16;
+  pendant: Pendant$18;
+  rank: string;
+  senior: {
+    [property: string]: any;
+  };
+  sex: string;
+  sign: string;
+  uname: string;
+  user_sailing: UserSailing2$1;
+  user_sailing_v2: {
+    [property: string]: any;
+  };
+  vip: Vip2$1;
+  [property: string]: any;
+};
+type AvatarItem2 = {
+  container_size: ContainerSize$11;
+  fallback_layers: FallbackLayers2$1;
+  mid: string;
+  [property: string]: any;
+};
+type FallbackLayers2$1 = {
+  is_critical_group: boolean;
+  layers: Layer2$2[];
+  [property: string]: any;
+};
+type Layer2$2 = {
+  general_spec: GeneralSpec$11;
+  layer_config: LayerConfig2$1;
+  resource: Resource2$2;
+  visible: boolean;
+  [property: string]: any;
+};
+type LayerConfig2$1 = {
+  is_critical: boolean;
+  layer_mask: LayerMask$1;
+  tags: Tags2$1;
+  [property: string]: any;
+};
+type Tags2$1 = {
+  AVATAR_LAYER: {
+    [property: string]: any;
+  };
+  [property: string]: any;
+};
+type Resource2$2 = {
+  res_image: ResImage2;
+  res_type: number;
+  [property: string]: any;
+};
+type ResImage2 = {
+  image_src: ImageSrc2;
+  [property: string]: any;
+};
+type ImageSrc2 = {
+  placeholder: number;
+  remote: Remote$11;
+  src_type: number;
+  [property: string]: any;
+};
+type UserSailing2$1 = {
+  cardbg: null;
+  cardbg_with_focus: null;
+  pendant: null;
+  [property: string]: any;
+};
+type Vip2$1 = {
+  accessStatus: number;
+  avatar_subscript: number;
+  dueRemark: string;
+  label: Label2$1;
+  nickname_color: string;
+  themeType: number;
+  vipDueDate: number;
+  vipStatus: number;
+  vipStatusWarn: string;
+  vipType: number;
+  [property: string]: any;
+};
+type Label2$1 = {
+  bg_color: string;
+  bg_style: number;
+  border_color: string;
+  img_label_uri_hans: string;
+  img_label_uri_hans_static: string;
+  img_label_uri_hant: string;
+  img_label_uri_hant_static: string;
+  img_label_uri_i18n: string;
+  img_label_uri_i18n_static: string;
+  label_goto: null;
+  label_id: number;
+  label_theme: string;
+  label_type: number;
+  path: string;
+  text: string;
+  text_color: string;
+  use_img_label: boolean;
+  [property: string]: any;
+};
+type ReplyControl2$1 = {
+  biz_scene: string;
+  is_note_v2: boolean;
+  max_line: number;
+  sub_reply_entry_text: string;
+  sub_reply_title_text: string;
+  support_share: boolean;
+  time_desc: string;
+  translation_switch: number;
+  [property: string]: any;
+};
+type Upper$2 = {
+  mid: number;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/bilibili/CommentReplies/index.d.ts
+type CommentRepliesSuccess$1 = CommentReplies_V0$1;
+type CommentRepliesError$1 = never;
+type CommentReplies$1 = CommentRepliesSuccess$1 | CommentRepliesError$1;
+//#endregion
+//#region ../response-types/dist/generated/bilibili/Comments/Comments_V0.d.ts
+type Comments_V0$2 = {
+  code: number;
+  data: Data$45;
+  message: string;
+  ttl: number;
+  [property: string]: any;
+};
+type Data$45 = {
+  assist: number;
+  blacklist: number;
+  callbacks: null;
+  config: Config$3;
+  control: Control$2;
+  cursor: Cursor$2;
+  effects: Effects$2;
+  note: number;
+  replies: Reply$1[];
+  top: Top$2;
+  top_replies: unknown[];
+  upper: Upper$1;
+  vote: number;
+  [property: string]: any;
+};
+type Config$3 = {
+  read_only: boolean;
+  show_up_flag: boolean;
+  showtopic: number;
+  [property: string]: any;
+};
+type Control$2 = {
+  answer_guide_android_url: string;
+  answer_guide_icon_url: string;
+  answer_guide_ios_url: string;
+  answer_guide_text: string;
+  bg_text: string;
+  child_input_text: string;
+  disable_jump_emote: boolean;
+  empty_page: null;
+  enable_charged: boolean;
+  enable_cm_biz_helper: boolean;
+  giveup_input_text: string;
+  input_disable: boolean;
+  preload_resources: null;
+  root_input_text: string;
+  screenshot_icon_state: number;
+  show_text: string;
+  show_type: number;
+  upload_picture_icon_state: number;
+  web_selection: boolean;
+  [property: string]: any;
+};
+type Cursor$2 = {
+  all_count: number;
+  is_begin: boolean;
+  is_end: boolean;
+  mode: number;
+  mode_text: string;
+  name: string;
+  next: number;
+  pagination_reply: PaginationReply$2;
+  prev: number;
+  session_id: string;
+  support_mode: number[];
+  [property: string]: any;
+};
+type PaginationReply$2 = {
+  next_offset: string;
+  [property: string]: any;
+};
+type Effects$2 = {
+  preloading: string;
+  [property: string]: any;
+};
+type Reply$1 = {
+  action: number;
+  assist: number;
+  attr: number;
+  content: Content$4;
+  count: number;
+  ctime: number;
+  dialog: number;
+  dialog_str: string;
+  dynamic_id?: number;
+  dynamic_id_str: string;
+  fansgrade: number;
+  folder: Folder$1;
+  invisible: boolean;
+  like: number;
+  member: Member$1;
+  mid: number;
+  mid_str: string;
+  note_cvid_str: string;
+  oid: number;
+  oid_str: string;
+  parent: number;
+  parent_str: string;
+  rcount: number;
+  replies: Reply2[] | null;
+  reply_control: ReplyControl2;
+  root: number;
+  root_str: string;
+  rpid: number;
+  rpid_str: string;
+  state: number;
+  track_info: string;
+  type: number;
+  up_action: UpAction$1;
+  [property: string]: any;
+};
+type Content$4 = {
+  emote?: Emote$3;
+  jump_url: {
+    [property: string]: any;
+  };
+  max_line: number;
+  members: unknown[];
+  message: string;
+  picture_scale?: number;
+  pictures?: Picture$2[];
+  [property: string]: any;
+};
+type Emote$3 = {
+  '[doge]'?: Doge;
+  '[笑哭]'?: Doge;
+  '[给心心]'?: Doge;
+  [property: string]: any;
+};
+type Doge = {
+  attr: number;
+  id: number;
+  jump_title: string;
+  meta: Meta$2;
+  mtime: number;
+  package_id: number;
+  state: number;
+  text: string;
+  type: number;
+  url: string;
+  [property: string]: any;
+};
+type Meta$2 = {
+  size: number;
+  suggest: string[];
+  [property: string]: any;
+};
+type Picture$2 = {
+  img_height: number;
+  img_size: number;
+  img_src: string;
+  img_width: number;
+  play_gif_thumbnail?: boolean;
+  top_right_icon?: string;
+  [property: string]: any;
+};
+type Folder$1 = {
+  has_folded: boolean;
+  is_folded: boolean;
+  rule: string;
+  [property: string]: any;
+};
+type Member$1 = {
+  avatar: string;
+  avatar_item: AvatarItem$1;
+  contract_desc: string;
+  face_nft_new: number;
+  fans_detail: FansDetail$1 | null;
+  handle: string;
+  is_contractor: boolean;
+  is_senior_member: number;
+  level_info: LevelInfo$4;
+  mid: string;
+  nameplate: Nameplate$7;
+  nft_interaction: null;
+  official_verify: OfficialVerify$15;
+  pendant: Pendant$17;
+  rank: string;
+  senior: Senior$1;
+  sex: string;
+  sign: string;
+  uname: string;
+  user_sailing: UserSailing$1;
+  user_sailing_v2: UserSailingV2$1;
+  vip: Vip$17;
+  [property: string]: any;
+};
+type AvatarItem$1 = {
+  container_size: ContainerSize$10;
+  fallback_layers: FallbackLayers$10;
+  mid: string;
+  [property: string]: any;
+};
+type ContainerSize$10 = {
+  height: number;
+  width: number;
+  [property: string]: any;
+};
+type FallbackLayers$10 = {
+  is_critical_group: boolean;
+  layers: Layer$10[];
+  [property: string]: any;
+};
+type Layer$10 = {
+  general_spec: GeneralSpec$10;
+  layer_config: LayerConfig$10;
+  resource: Resource$10;
+  visible: boolean;
+  [property: string]: any;
+};
+type GeneralSpec$10 = {
+  pos_spec: PosSpec$10;
+  render_spec: RenderSpec$10;
+  size_spec: ContainerSize$10;
+  [property: string]: any;
+};
+type PosSpec$10 = {
+  axis_x: number;
+  axis_y: number;
+  coordinate_pos: number;
+  [property: string]: any;
+};
+type RenderSpec$10 = {
+  opacity: number;
+  [property: string]: any;
+};
+type LayerConfig$10 = {
+  is_critical?: boolean;
+  layer_mask?: LayerMask;
+  tags: Tags$10;
+  [property: string]: any;
+};
+type LayerMask = {
+  general_spec: GeneralSpec$10;
+  mask_src: MaskSrc;
+  [property: string]: any;
+};
+type MaskSrc = {
+  draw: Draw;
+  src_type: number;
+  [property: string]: any;
+};
+type Draw = {
+  color_config: ColorConfig;
+  draw_type: number;
+  fill_mode: number;
+  [property: string]: any;
+};
+type ColorConfig = {
+  day: Day;
+  [property: string]: any;
+};
+type Day = {
+  argb: string;
+  [property: string]: any;
+};
+type Tags$10 = {
+  AVATAR_LAYER?: {
+    [property: string]: any;
+  };
+  ICON_LAYER?: {
+    [property: string]: any;
+  };
+  PENDENT_LAYER?: {
+    [property: string]: any;
+  };
+  [property: string]: any;
+};
+type Resource$10 = {
+  res_animation?: ResAnimation$2;
+  res_image?: ResImage$10;
+  res_native_draw?: ResNativeDraw;
+  res_type: number;
+  [property: string]: any;
+};
+type ResAnimation$2 = {
+  webp_src: WebpSrc$2;
+  [property: string]: any;
+};
+type WebpSrc$2 = {
+  remote: Remote$10;
+  src_type: number;
+  [property: string]: any;
+};
+type Remote$10 = {
+  bfs_style: string;
+  url: string;
+  [property: string]: any;
+};
+type ResImage$10 = {
+  image_src: ImageSrc$10;
+  [property: string]: any;
+};
+type ImageSrc$10 = {
+  placeholder?: number;
+  remote: Remote$10;
+  src_type: number;
+  [property: string]: any;
+};
+type ResNativeDraw = {
+  draw_src: DrawSrc;
+  [property: string]: any;
+};
+type DrawSrc = {
+  draw: Draw2;
+  src_type: number;
+  [property: string]: any;
+};
+type Draw2 = {
+  color_config: ColorConfig2;
+  draw_type: number;
+  fill_mode: number;
+  [property: string]: any;
+};
+type ColorConfig2 = {
+  day: Day;
+  is_dark_mode_aware: boolean;
+  night: Day;
+  [property: string]: any;
+};
+type FansDetail$1 = {
+  guard_icon: string;
+  guard_level: number;
+  honor_icon: string;
+  intimacy: number;
+  is_receive: number;
+  level: number;
+  master_status: number;
+  medal_color: number;
+  medal_color_border: number;
+  medal_color_end: number;
+  medal_color_level: number;
+  medal_color_name: number;
+  medal_id: number;
+  medal_level_bg_color: number;
+  medal_name: string;
+  score: number;
+  uid: number;
+  [property: string]: any;
+};
+type LevelInfo$4 = {
+  current_exp: number;
+  current_level: number;
+  current_min: number;
+  next_exp: number;
+  [property: string]: any;
+};
+type Nameplate$7 = {
+  condition: string;
+  image: string;
+  image_small: string;
+  level: string;
+  name: string;
+  nid: number;
+  [property: string]: any;
+};
+type OfficialVerify$15 = {
+  desc: string;
+  type: number;
+  [property: string]: any;
+};
+type Pendant$17 = {
+  expire: number;
+  image: string;
+  image_enhance: string;
+  image_enhance_frame: string;
+  n_pid: number;
+  name: string;
+  pid: number;
+  [property: string]: any;
+};
+type Senior$1 = {
+  status?: number;
+  [property: string]: any;
+};
+type UserSailing$1 = {
+  cardbg: Cardbg$1 | null;
+  cardbg_with_focus: null;
+  pendant: Pendant2 | null;
+  [property: string]: any;
+};
+type Cardbg$1 = {
+  fan: Fan$8;
+  id: number;
+  image: string;
+  image_group: null;
+  jump_url: string;
+  name: string;
+  type: string;
+  [property: string]: any;
+};
+type Fan$8 = {
+  color: string;
+  color_format: ColorFormat$8;
+  is_fan: number;
+  name: string;
+  num_desc: string;
+  num_prefix: string;
+  number: number;
+  [property: string]: any;
+};
+type ColorFormat$8 = {
+  colors: string[];
+  end_point: string;
+  gradients: number[];
+  start_point: string;
+  [property: string]: any;
+};
+type Pendant2 = {
+  id: number;
+  image: string;
+  image_enhance: string;
+  image_enhance_frame: string;
+  jump_url: string;
+  name: string;
+  type: string;
+  [property: string]: any;
+};
+type UserSailingV2$1 = {
+  card_bg?: CardBg$1;
+  pendant?: Pendant3;
+  [property: string]: any;
+};
+type CardBg$1 = {
+  fan: Fan2;
+  id: number;
+  image: string;
+  jump_url: string;
+  name: string;
+  type: string;
+  [property: string]: any;
+};
+type Fan2 = {
+  color: string;
+  color_format: ColorFormat$8;
+  is_fan: number;
+  name?: string;
+  num_desc: string;
+  num_prefix: string;
+  number: number;
+  [property: string]: any;
+};
+type Pendant3 = {
+  id: number;
+  image: string;
+  image_enhance: string;
+  image_enhance_frame?: string;
+  name: string;
+  type?: string;
+  [property: string]: any;
+};
+type Vip$17 = {
+  accessStatus: number;
+  avatar_subscript: number;
+  dueRemark: string;
+  label: Label$17;
+  nickname_color: string;
+  themeType: number;
+  vipDueDate: number;
+  vipStatus: number;
+  vipStatusWarn: string;
+  vipType: number;
+  [property: string]: any;
+};
+type Label$17 = {
+  bg_color: string;
+  bg_style: number;
+  border_color: string;
+  img_label_uri_hans: string;
+  img_label_uri_hans_static: string;
+  img_label_uri_hant: string;
+  img_label_uri_hant_static: string;
+  img_label_uri_i18n: string;
+  img_label_uri_i18n_static: string;
+  label_goto: LabelGoto$4 | null;
+  label_id: number;
+  label_theme: string;
+  label_type: number;
+  path: string;
+  text: string;
+  text_color: string;
+  use_img_label: boolean;
+  [property: string]: any;
+};
+type LabelGoto$4 = {
+  mobile: string;
+  pc_web: string;
+  [property: string]: any;
+};
+type Reply2 = {
+  action: number;
+  assist: number;
+  attr: number;
+  content: Content2;
+  count: number;
+  ctime: number;
+  dialog: number;
+  dialog_str: string;
+  dynamic_id_str: string;
+  fansgrade: number;
+  folder: Folder$1;
+  invisible: boolean;
+  like: number;
+  member: Member3;
+  mid: number;
+  mid_str: string;
+  note_cvid_str: string;
+  oid: number;
+  oid_str: string;
+  parent: number;
+  parent_reply_member?: ParentReplyMember;
+  parent_str: string;
+  rcount: number;
+  replies: null;
+  reply_control: ReplyControl$1;
+  root: number;
+  root_str: string;
+  rpid: number;
+  rpid_str: string;
+  state: number;
+  track_info: string;
+  type: number;
+  up_action: UpAction$1;
+  [property: string]: any;
+};
+type Content2 = {
+  at_name_to_mid?: AtNameToMid;
+  at_name_to_mid_str?: AtNameToMidStr;
+  emote?: Emote2;
+  jump_url: {
+    [property: string]: any;
+  };
+  max_line: number;
+  members: Member2[];
+  message: string;
+  [property: string]: any;
+};
+type AtNameToMid = {
+  '你看到我硬币了吗'?: number;
+  '莳瘾SIN'?: number;
+  [property: string]: any;
+};
+type AtNameToMidStr = {
+  '你看到我硬币了吗'?: string;
+  '莳瘾SIN'?: string;
+  [property: string]: any;
+};
+type Emote2 = {
+  '[doge_金箍]'?: Doge;
+  '[tv_惊吓]'?: Tv;
+  '[冷]'?: Doge;
+  '[原神_哭哭]'?: Doge;
+  '[大哭]'?: Doge;
+  '[委屈]'?: Doge;
+  '[抓狂]'?: Doge;
+  '[辣眼睛]'?: Doge;
+  [property: string]: any;
+};
+type Tv = {
+  attr: number;
+  gif_url: string;
+  id: number;
+  jump_title: string;
+  meta: Meta$2;
+  mtime: number;
+  package_id: number;
+  state: number;
+  text: string;
+  type: number;
+  url: string;
+  [property: string]: any;
+};
+type Member2 = {
+  avatar: string;
+  face_nft_new: number;
+  handle: string;
+  is_senior_member: number;
+  level_info: LevelInfo$4;
+  mid: string;
+  nameplate: Nameplate$7;
+  official_verify: OfficialVerify$15;
+  pendant: Pendant$17;
+  rank: string;
+  senior: {
+    [property: string]: any;
+  };
+  sex: string;
+  sign: string;
+  uname: string;
+  vip: Vip2;
+  [property: string]: any;
+};
+type Vip2 = {
+  accessStatus: number;
+  avatar_subscript: number;
+  dueRemark: string;
+  label: Label2;
+  nickname_color: string;
+  themeType: number;
+  vipDueDate: number;
+  vipStatus: number;
+  vipStatusWarn: string;
+  vipType: number;
+  [property: string]: any;
+};
+type Label2 = {
+  bg_color: string;
+  bg_style: number;
+  border_color: string;
+  img_label_uri_hans: string;
+  img_label_uri_hans_static: string;
+  img_label_uri_hant: string;
+  img_label_uri_hant_static: string;
+  img_label_uri_i18n: string;
+  img_label_uri_i18n_static: string;
+  label_goto: null;
+  label_id: number;
+  label_theme: string;
+  label_type: number;
+  path: string;
+  text: string;
+  text_color: string;
+  use_img_label: boolean;
+  [property: string]: any;
+};
+type Member3 = {
+  avatar: string;
+  avatar_item: AvatarItem$1;
+  contract_desc: string;
+  face_nft_new: number;
+  fans_detail: FansDetail$1 | null;
+  handle: string;
+  is_contractor: boolean;
+  is_senior_member: number;
+  level_info: LevelInfo$4;
+  mid: string;
+  nameplate: Nameplate$7;
+  nft_interaction: null;
+  official_verify: OfficialVerify$15;
+  pendant: Pendant$17;
+  rank: string;
+  senior: Senior$1;
+  sex: string;
+  sign: string;
+  uname: string;
+  user_sailing: UserSailing2 | null;
+  user_sailing_v2?: UserSailingV22;
+  vip: Vip$17;
+  [property: string]: any;
+};
+type UserSailing2 = {
+  cardbg: Cardbg$1;
+  cardbg_with_focus: null;
+  pendant: Pendant2;
+  [property: string]: any;
+};
+type UserSailingV22 = {
+  card_bg: CardBg2;
+  pendant: Pendant3;
+  [property: string]: any;
+};
+type CardBg2 = {
+  fan: Fan$8;
+  id: number;
+  image: string;
+  jump_url: string;
+  name: string;
+  type: string;
+  [property: string]: any;
+};
+type ParentReplyMember = {
+  mid: string;
+  name: string;
+  [property: string]: any;
+};
+type ReplyControl$1 = {
+  max_line: number;
+  support_share: boolean;
+  time_desc: string;
+  translation_switch: number;
+  [property: string]: any;
+};
+type UpAction$1 = {
+  like: boolean;
+  reply: boolean;
+  [property: string]: any;
+};
+type ReplyControl2 = {
+  biz_scene?: string;
+  is_note_v2?: boolean;
+  max_line: number;
+  sub_reply_entry_text?: string;
+  sub_reply_title_text?: string;
+  support_share: boolean;
+  time_desc: string;
+  translation_switch: number;
+  [property: string]: any;
+};
+type Top$2 = {
+  admin: null;
+  upper: null;
+  vote: null;
+  [property: string]: any;
+};
+type Upper$1 = {
+  mid: number;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/bilibili/Comments/index.d.ts
+type CommentsSuccess$2 = Comments_V0$2;
+type CommentsError$2 = never;
+type Comments$2 = CommentsSuccess$2 | CommentsError$2;
+//#endregion
+//#region ../response-types/dist/generated/bilibili/DynamicDetail/DYNAMIC_TYPE_AV/DYNAMIC_TYPE_AV_V0.d.ts
+type DynamicTypeAV_V0$2 = {
+  code: number;
+  data: Data$44;
+  message: string;
+  ttl: number;
+  [property: string]: any;
+};
+type Data$44 = {
+  item: Item$26;
+  [property: string]: any;
+};
+type Item$26 = {
+  basic: Basic$8;
+  id_str: string;
+  modules: Modules$8;
+  type: 'DYNAMIC_TYPE_AV';
+  visible: boolean;
+  [property: string]: any;
+};
+type Basic$8 = {
+  comment_id_str: string;
+  comment_type: number;
+  like_icon: LikeIcon$8;
+  rid_str: string;
+  [property: string]: any;
+};
+type LikeIcon$8 = {
+  action_url: string;
+  end_url: string;
+  id: number;
+  start_url: string;
+  [property: string]: any;
+};
+type Modules$8 = {
+  module_author: ModuleAuthor$8;
+  module_dynamic: ModuleDynamic$8;
+  module_more: ModuleMore$12;
+  module_stat: ModuleStat$12;
+  [property: string]: any;
+};
+type ModuleAuthor$8 = {
+  avatar: Avatar$11;
+  face: string;
+  face_nft: boolean;
+  following: boolean;
+  jump_url: string;
+  label: string;
+  mid: number;
+  name: string;
+  official_verify: OfficialVerify$14;
+  pendant: Pendant$16;
+  pub_action: string;
+  pub_location_text: string;
+  pub_time: string;
+  pub_ts: number;
+  type: string;
+  vip: Vip$16;
+  [property: string]: any;
+};
+type Avatar$11 = {
+  container_size: ContainerSize$9;
+  fallback_layers: FallbackLayers$9;
+  mid: string;
+  [property: string]: any;
+};
+type ContainerSize$9 = {
+  height: number;
+  width: number;
+  [property: string]: any;
+};
+type FallbackLayers$9 = {
+  is_critical_group: boolean;
+  layers: Layer$9[];
+  [property: string]: any;
+};
+type Layer$9 = {
+  general_spec: GeneralSpec$9;
+  layer_config: LayerConfig$9;
+  resource: Resource$9;
+  visible: boolean;
+  [property: string]: any;
+};
+type GeneralSpec$9 = {
+  pos_spec: PosSpec$9;
+  render_spec: RenderSpec$9;
+  size_spec: ContainerSize$9;
+  [property: string]: any;
+};
+type PosSpec$9 = {
+  axis_x: number;
+  axis_y: number;
+  coordinate_pos: number;
+  [property: string]: any;
+};
+type RenderSpec$9 = {
+  opacity: number;
+  [property: string]: any;
+};
+type LayerConfig$9 = {
+  is_critical?: boolean;
+  tags: Tags$9;
+  [property: string]: any;
+};
+type Tags$9 = {
+  AVATAR_LAYER?: {
+    [property: string]: any;
+  };
+  GENERAL_CFG: GENERALCFG$3;
+  ICON_LAYER?: {
+    [property: string]: any;
+  };
+  [property: string]: any;
+};
+type GENERALCFG$3 = {
+  config_type: number;
+  general_config: GeneralConfig$9;
+  [property: string]: any;
+};
+type GeneralConfig$9 = {
+  web_css_style: WebCssStyle$3;
+  [property: string]: any;
+};
+type WebCssStyle$3 = {
+  'background-color'?: string;
+  border?: string;
+  borderRadius: string;
+  boxSizing?: string;
+  [property: string]: any;
+};
+type Resource$9 = {
+  res_image: ResImage$9;
+  res_type: number;
+  [property: string]: any;
+};
+type ResImage$9 = {
+  image_src: ImageSrc$9;
+  [property: string]: any;
+};
+type ImageSrc$9 = {
+  local?: number;
+  placeholder?: number;
+  remote?: Remote$9;
+  src_type: number;
+  [property: string]: any;
+};
+type Remote$9 = {
+  bfs_style: string;
+  url: string;
+  [property: string]: any;
+};
+type OfficialVerify$14 = {
+  desc: string;
+  type: number;
+  [property: string]: any;
+};
+type Pendant$16 = {
+  expire: number;
+  image: string;
+  image_enhance: string;
+  image_enhance_frame: string;
+  n_pid: number;
+  name: string;
+  pid: number;
+  [property: string]: any;
+};
+type Vip$16 = {
+  avatar_subscript: number;
+  avatar_subscript_url: string;
+  due_date: number;
+  label: Label$16;
+  nickname_color: string;
+  status: number;
+  theme_type: number;
+  type: number;
+  [property: string]: any;
+};
+type Label$16 = {
+  bg_color: string;
+  bg_style: number;
+  border_color: string;
+  img_label_uri_hans: string;
+  img_label_uri_hans_static: string;
+  img_label_uri_hant: string;
+  img_label_uri_hant_static: string;
+  label_theme: string;
+  path: string;
+  text: string;
+  text_color: string;
+  use_img_label: boolean;
+  [property: string]: any;
+};
+type ModuleDynamic$8 = {
+  additional: Additional$7;
+  desc: Desc$7;
+  major: Major$12;
+  topic: null;
+  [property: string]: any;
+};
+type Additional$7 = {
+  common: Common$4;
+  type: string;
+  [property: string]: any;
+};
+type Common$4 = {
+  button: Button$9;
+  cover: string;
+  desc1: string;
+  desc2: string;
+  head_text: string;
+  id_str: string;
+  jump_url: string;
+  style: number;
+  sub_type: string;
+  title: string;
+  [property: string]: any;
+};
+type Button$9 = {
+  jump_style: JumpStyle$5;
+  jump_url: string;
+  type: number;
+  [property: string]: any;
+};
+type JumpStyle$5 = {
+  icon_url: string;
+  text: string;
+  [property: string]: any;
+};
+type Desc$7 = {
+  rich_text_nodes: RichTextNode$9[];
+  text: string;
+  [property: string]: any;
+};
+type RichTextNode$9 = {
+  jump_url?: string;
+  orig_text: string;
+  style?: null;
+  text: string;
+  type: string;
+  [property: string]: any;
+};
+type Major$12 = {
+  archive: Archive$6;
+  type: string;
+  [property: string]: any;
+};
+type Archive$6 = {
+  aid: string;
+  badge: Badge$6;
+  bvid: string;
+  cover: string;
+  desc: string;
+  disable_preview: number;
+  duration_text: string;
+  jump_url: string;
+  stat: Stat$7;
+  title: string;
+  type: number;
+  [property: string]: any;
+};
+type Badge$6 = {
+  bg_color: string;
+  color: string;
+  icon_url: null;
+  text: string;
+  [property: string]: any;
+};
+type Stat$7 = {
+  danmaku: string;
+  play: string;
+  [property: string]: any;
+};
+type ModuleMore$12 = {
+  three_point_items: ThreePointItem$12[];
+  [property: string]: any;
+};
+type ThreePointItem$12 = {
+  label: string;
+  type: string;
+  [property: string]: any;
+};
+type ModuleStat$12 = {
+  comment: Comment$16;
+  forward: Comment$16;
+  like: Like$12;
+  [property: string]: any;
+};
+type Comment$16 = {
+  count: number;
+  forbidden: boolean;
+  [property: string]: any;
+};
+type Like$12 = {
+  count: number;
+  forbidden: boolean;
+  status: boolean;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/bilibili/DynamicDetail/DYNAMIC_TYPE_AV/index.d.ts
+type DynamicTypeAV$2 = DynamicTypeAV_V0$2;
+//#endregion
+//#region ../response-types/dist/generated/bilibili/DynamicDetail/DYNAMIC_TYPE_DRAW/DYNAMIC_TYPE_DRAW_V0.d.ts
+type DynamicTypeDraw_V0$2 = {
+  code: number;
+  data: Data$43;
+  message: string;
+  ttl: number;
+  [property: string]: any;
+};
+type Data$43 = {
+  item: Item$25;
+  [property: string]: any;
+};
+type Item$25 = {
+  basic: Basic$7;
+  id_str: string;
+  modules: Modules$7;
+  type: 'DYNAMIC_TYPE_DRAW';
+  visible: boolean;
+  [property: string]: any;
+};
+type Basic$7 = {
+  comment_id_str: string;
+  comment_type: number;
+  jump_url: string;
+  like_icon: LikeIcon$7;
+  rid_str: string;
+  [property: string]: any;
+};
+type LikeIcon$7 = {
+  action_url: string;
+  end_url: string;
+  id: number;
+  start_url: string;
+  [property: string]: any;
+};
+type Modules$7 = {
+  module_author: ModuleAuthor$7;
+  module_dynamic: ModuleDynamic$7;
+  module_more: ModuleMore$11;
+  module_stat: ModuleStat$11;
+  [property: string]: any;
+};
+type ModuleAuthor$7 = {
+  avatar: Avatar$10;
+  face: string;
+  face_nft: boolean;
+  following: boolean;
+  jump_url: string;
+  label: string;
+  mid: number;
+  name: string;
+  official_verify: OfficialVerify$13;
+  pendant: Pendant$15;
+  pub_action: string;
+  pub_location_text: string;
+  pub_time: string;
+  pub_ts: number;
+  type: string;
+  vip: Vip$15;
+  [property: string]: any;
+};
+type Avatar$10 = {
+  container_size: ContainerSize$8;
+  fallback_layers: FallbackLayers$8;
+  mid: string;
+  [property: string]: any;
+};
+type ContainerSize$8 = {
+  height: number;
+  width: number;
+  [property: string]: any;
+};
+type FallbackLayers$8 = {
+  is_critical_group: boolean;
+  layers: Layer$8[];
+  [property: string]: any;
+};
+type Layer$8 = {
+  general_spec: GeneralSpec$8;
+  layer_config: LayerConfig$8;
+  resource: Resource$8;
+  visible: boolean;
+  [property: string]: any;
+};
+type GeneralSpec$8 = {
+  pos_spec: PosSpec$8;
+  render_spec: RenderSpec$8;
+  size_spec: ContainerSize$8;
+  [property: string]: any;
+};
+type PosSpec$8 = {
+  axis_x: number;
+  axis_y: number;
+  coordinate_pos: number;
+  [property: string]: any;
+};
+type RenderSpec$8 = {
+  opacity: number;
+  [property: string]: any;
+};
+type LayerConfig$8 = {
+  is_critical?: boolean;
+  tags: Tags$8;
+  [property: string]: any;
+};
+type Tags$8 = {
+  AVATAR_LAYER?: {
+    [property: string]: any;
+  };
+  GENERAL_CFG: GENERALCFG$2;
+  ICON_LAYER?: {
+    [property: string]: any;
+  };
+  [property: string]: any;
+};
+type GENERALCFG$2 = {
+  config_type: number;
+  general_config: GeneralConfig$8;
+  [property: string]: any;
+};
+type GeneralConfig$8 = {
+  web_css_style: WebCssStyle$2;
+  [property: string]: any;
+};
+type WebCssStyle$2 = {
+  'background-color'?: string;
+  border?: string;
+  borderRadius: string;
+  boxSizing?: string;
+  [property: string]: any;
+};
+type Resource$8 = {
+  res_image: ResImage$8;
+  res_type: number;
+  [property: string]: any;
+};
+type ResImage$8 = {
+  image_src: ImageSrc$8;
+  [property: string]: any;
+};
+type ImageSrc$8 = {
+  local?: number;
+  placeholder?: number;
+  remote?: Remote$8;
+  src_type: number;
+  [property: string]: any;
+};
+type Remote$8 = {
+  bfs_style: string;
+  url: string;
+  [property: string]: any;
+};
+type OfficialVerify$13 = {
+  desc: string;
+  type: number;
+  [property: string]: any;
+};
+type Pendant$15 = {
+  expire: number;
+  image: string;
+  image_enhance: string;
+  image_enhance_frame: string;
+  n_pid: number;
+  name: string;
+  pid: number;
+  [property: string]: any;
+};
+type Vip$15 = {
+  avatar_subscript: number;
+  avatar_subscript_url: string;
+  due_date: number;
+  label: Label$15;
+  nickname_color: string;
+  status: number;
+  theme_type: number;
+  type: number;
+  [property: string]: any;
+};
+type Label$15 = {
+  bg_color: string;
+  bg_style: number;
+  border_color: string;
+  img_label_uri_hans: string;
+  img_label_uri_hans_static: string;
+  img_label_uri_hant: string;
+  img_label_uri_hant_static: string;
+  label_theme: string;
+  path: string;
+  text: string;
+  text_color: string;
+  use_img_label: boolean;
+  [property: string]: any;
+};
+type ModuleDynamic$7 = {
+  additional: Additional$6;
+  desc: null;
+  major: Major$11;
+  topic: null;
+  [property: string]: any;
+};
+type Additional$6 = {
+  common: Common$3;
+  type: string;
+  [property: string]: any;
+};
+type Common$3 = {
+  button: Button$8;
+  cover: string;
+  desc1: string;
+  desc2: string;
+  head_text: string;
+  id_str: string;
+  jump_url: string;
+  style: number;
+  sub_type: string;
+  title: string;
+  [property: string]: any;
+};
+type Button$8 = {
+  jump_style: JumpStyle$4;
+  jump_url: string;
+  type: number;
+  [property: string]: any;
+};
+type JumpStyle$4 = {
+  icon_url: string;
+  text: string;
+  [property: string]: any;
+};
+type Major$11 = {
+  opus: Opus$7;
+  type: string;
+  [property: string]: any;
+};
+type Opus$7 = {
+  fold_action: string[];
+  jump_url: string;
+  pics: Pic$4[];
+  summary: Summary$7;
+  title: null;
+  [property: string]: any;
+};
+type Pic$4 = {
+  aigc: null;
+  height: number;
+  live_url: null;
+  size: number;
+  url: string;
+  width: number;
+  [property: string]: any;
+};
+type Summary$7 = {
+  rich_text_nodes: RichTextNode$8[];
+  text: string;
+  [property: string]: any;
+};
+type RichTextNode$8 = {
+  jump_url?: string;
+  orig_text: string;
+  style?: Style$2;
+  text: string;
+  type: string;
+  [property: string]: any;
+};
+type Style$2 = {
+  font_level?: string;
+  font_size?: number;
+  [property: string]: any;
+};
+type ModuleMore$11 = {
+  three_point_items: ThreePointItem$11[];
+  [property: string]: any;
+};
+type ThreePointItem$11 = {
+  label: string;
+  type: string;
+  [property: string]: any;
+};
+type ModuleStat$11 = {
+  comment: Comment$15;
+  forward: Comment$15;
+  like: Like$11;
+  [property: string]: any;
+};
+type Comment$15 = {
+  count: number;
+  forbidden: boolean;
+  [property: string]: any;
+};
+type Like$11 = {
+  count: number;
+  forbidden: boolean;
+  status: boolean;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/bilibili/DynamicDetail/DYNAMIC_TYPE_DRAW/index.d.ts
+type DynamicTypeDraw$2 = DynamicTypeDraw_V0$2;
+//#endregion
+//#region ../response-types/dist/generated/bilibili/DynamicDetail/DYNAMIC_TYPE_FORWARD/DYNAMIC_TYPE_FORWARD_V0.d.ts
+type DynamicTypeForward_V0 = {
+  code: number;
+  data: Data$42;
+  message: string;
+  ttl: number;
+  [property: string]: any;
+};
+type Data$42 = {
+  item: Item$24;
+  [property: string]: any;
+};
+type Item$24 = {
+  basic: Basic$6;
+  id_str: string;
+  modules: Modules$6;
+  orig: Orig$5;
+  type: 'DYNAMIC_TYPE_FORWARD';
+  visible: boolean;
+  [property: string]: any;
+};
+type Basic$6 = {
+  comment_id_str: string;
+  comment_type: number;
+  like_icon: LikeIcon$6;
+  rid_str: string;
+  [property: string]: any;
+};
+type LikeIcon$6 = {
+  action_url: string;
+  end_url: string;
+  id: number;
+  start_url: string;
+  [property: string]: any;
+};
+type Modules$6 = {
+  module_author: ModuleAuthor$6;
+  module_dynamic: ModuleDynamic$6;
+  module_more: ModuleMore$10;
+  module_stat: ModuleStat$10;
+  [property: string]: any;
+};
+type ModuleAuthor$6 = {
+  avatar: Avatar$9;
+  decoration_card: DecorationCard$6;
+  face: string;
+  face_nft: boolean;
+  following: boolean;
+  jump_url: string;
+  label: string;
+  mid: number;
+  name: string;
+  official_verify: OfficialVerify$12;
+  pendant: Pendant$14;
+  pub_action: string;
+  pub_location_text: string;
+  pub_time: string;
+  pub_ts: number;
+  type: string;
+  vip: Vip$14;
+  [property: string]: any;
+};
+type Avatar$9 = {
+  container_size: ContainerSize$7;
+  fallback_layers: FallbackLayers$7;
+  layers: Layer2$1[];
+  mid: string;
+  [property: string]: any;
+};
+type ContainerSize$7 = {
+  height: number;
+  width: number;
+  [property: string]: any;
+};
+type FallbackLayers$7 = {
+  is_critical_group: boolean;
+  layers: Layer$7[];
+  [property: string]: any;
+};
+type Layer$7 = {
+  general_spec: GeneralSpec$7;
+  layer_config: LayerConfig$7;
+  resource: Resource$7;
+  visible: boolean;
+  [property: string]: any;
+};
+type GeneralSpec$7 = {
+  pos_spec: PosSpec$7;
+  render_spec: RenderSpec$7;
+  size_spec: ContainerSize$7;
+  [property: string]: any;
+};
+type PosSpec$7 = {
+  axis_x: number;
+  axis_y: number;
+  coordinate_pos: number;
+  [property: string]: any;
+};
+type RenderSpec$7 = {
+  opacity: number;
+  [property: string]: any;
+};
+type LayerConfig$7 = {
+  is_critical?: boolean;
+  tags: Tags$7;
+  [property: string]: any;
+};
+type Tags$7 = {
+  AVATAR_LAYER?: {
+    [property: string]: any;
+  };
+  GENERAL_CFG?: GENERALCFG$1;
+  ICON_LAYER?: {
+    [property: string]: any;
+  };
+  PENDENT_LAYER?: {
+    [property: string]: any;
+  };
+  [property: string]: any;
+};
+type GENERALCFG$1 = {
+  config_type: number;
+  general_config: GeneralConfig$7;
+  [property: string]: any;
+};
+type GeneralConfig$7 = {
+  web_css_style: WebCssStyle$1;
+  [property: string]: any;
+};
+type WebCssStyle$1 = {
+  'background-color'?: string;
+  border?: string;
+  borderRadius: string;
+  boxSizing?: string;
+  [property: string]: any;
+};
+type Resource$7 = {
+  res_image: ResImage$7;
+  res_type: number;
+  [property: string]: any;
+};
+type ResImage$7 = {
+  image_src: ImageSrc$7;
+  [property: string]: any;
+};
+type ImageSrc$7 = {
+  local?: number;
+  placeholder?: number;
+  remote?: Remote$7;
+  src_type: number;
+  [property: string]: any;
+};
+type Remote$7 = {
+  bfs_style: string;
+  url: string;
+  [property: string]: any;
+};
+type Layer2$1 = {
+  is_critical_group?: boolean;
+  layers: Layer3$1[];
+  [property: string]: any;
+};
+type Layer3$1 = {
+  general_spec: GeneralSpec$7;
+  layer_config: LayerConfig$7;
+  resource: Resource2$1;
+  visible: boolean;
+  [property: string]: any;
+};
+type Resource2$1 = {
+  res_animation?: ResAnimation$1;
+  res_image?: ResImage$7;
+  res_type: number;
+  [property: string]: any;
+};
+type ResAnimation$1 = {
+  webp_src: WebpSrc$1;
+  [property: string]: any;
+};
+type WebpSrc$1 = {
+  remote: Remote$7;
+  src_type: number;
+  [property: string]: any;
+};
+type DecorationCard$6 = {
+  big_card_url: string;
+  card_type: number;
+  card_type_name: string;
+  card_url: string;
+  fan: Fan$7;
+  id: number;
+  image_enhance: string;
+  item_id: number;
+  jump_url: string;
+  name: string;
+  [property: string]: any;
+};
+type Fan$7 = {
+  color: string;
+  color_format: ColorFormat$7;
+  is_fan: number;
+  name: string;
+  num_desc: string;
+  number: number;
+  [property: string]: any;
+};
+type ColorFormat$7 = {
+  colors: string[];
+  end_point: string;
+  gradients: number[];
+  start_point: string;
+  [property: string]: any;
+};
+type OfficialVerify$12 = {
+  desc: string;
+  type: number;
+  [property: string]: any;
+};
+type Pendant$14 = {
+  expire: number;
+  image: string;
+  image_enhance: string;
+  image_enhance_frame: string;
+  n_pid: number;
+  name: string;
+  pid: number;
+  [property: string]: any;
+};
+type Vip$14 = {
+  avatar_subscript: number;
+  avatar_subscript_url: string;
+  due_date: number;
+  label: Label$14;
+  nickname_color: string;
+  status: number;
+  theme_type: number;
+  type: number;
+  [property: string]: any;
+};
+type Label$14 = {
+  bg_color: string;
+  bg_style: number;
+  border_color: string;
+  img_label_uri_hans: string;
+  img_label_uri_hans_static: string;
+  img_label_uri_hant: string;
+  img_label_uri_hant_static: string;
+  label_theme: string;
+  path: string;
+  text: string;
+  text_color: string;
+  use_img_label: boolean;
+  [property: string]: any;
+};
+type ModuleDynamic$6 = {
+  additional: Additional$5;
+  desc: Desc$6;
+  major: null;
+  topic: null;
+  [property: string]: any;
+};
+type Additional$5 = {
+  common: Common$2;
+  type: string;
+  [property: string]: any;
+};
+type Common$2 = {
+  button: Button$7;
+  cover: string;
+  desc1: string;
+  desc2: string;
+  head_text: string;
+  id_str: string;
+  jump_url: string;
+  style: number;
+  sub_type: string;
+  title: string;
+  [property: string]: any;
+};
+type Button$7 = {
+  jump_style: JumpStyle$3;
+  jump_url: string;
+  type: number;
+  [property: string]: any;
+};
+type JumpStyle$3 = {
+  icon_url: string;
+  text: string;
+  [property: string]: any;
+};
+type Desc$6 = {
+  rich_text_nodes: RichTextNode$7[];
+  text: string;
+  [property: string]: any;
+};
+type RichTextNode$7 = {
+  orig_text: string;
+  text: string;
+  type: string;
+  [property: string]: any;
+};
+type ModuleMore$10 = {
+  three_point_items: ThreePointItem$10[];
+  [property: string]: any;
+};
+type ThreePointItem$10 = {
+  label: string;
+  type: string;
+  [property: string]: any;
+};
+type ModuleStat$10 = {
+  comment: Comment$14;
+  forward: Comment$14;
+  like: Like$10;
+  [property: string]: any;
+};
+type Comment$14 = {
+  count: number;
+  forbidden: boolean;
+  [property: string]: any;
+};
+type Like$10 = {
+  count: number;
+  forbidden: boolean;
+  status: boolean;
+  [property: string]: any;
+};
+type Orig$5 = {
+  basic: Basic$6;
+  id_str: string;
+  modules: Modules2$1;
+  type: string;
+  visible: boolean;
+  [property: string]: any;
+};
+type Modules2$1 = {
+  module_author: ModuleAuthor2$1;
+  module_dynamic: ModuleDynamic2$1;
+  [property: string]: any;
+};
+type ModuleAuthor2$1 = {
+  avatar: Avatar2;
+  face: string;
+  face_nft: boolean;
+  following: null;
+  jump_url: string;
+  label: string;
+  mid: number;
+  name: string;
+  official_verify: OfficialVerify$12;
+  pendant: Pendant$14;
+  pub_action: string;
+  pub_time: string;
+  pub_ts: number;
+  type: string;
+  vip: Vip$14;
+  [property: string]: any;
+};
+type Avatar2 = {
+  container_size: ContainerSize$7;
+  fallback_layers: FallbackLayers2;
+  mid: string;
+  [property: string]: any;
+};
+type FallbackLayers2 = {
+  is_critical_group: boolean;
+  layers: Layer4[];
+  [property: string]: any;
+};
+type Layer4 = {
+  general_spec: GeneralSpec$7;
+  layer_config: LayerConfig2;
+  resource: Resource$7;
+  visible: boolean;
+  [property: string]: any;
+};
+type LayerConfig2 = {
+  is_critical?: boolean;
+  tags: Tags2;
+  [property: string]: any;
+};
+type Tags2 = {
+  AVATAR_LAYER?: {
+    [property: string]: any;
+  };
+  GENERAL_CFG: GENERALCFG$1;
+  ICON_LAYER?: {
+    [property: string]: any;
+  };
+  [property: string]: any;
+};
+type ModuleDynamic2$1 = {
+  additional: null;
+  desc: Desc2$3;
+  major: Major$10;
+  topic: null;
+  [property: string]: any;
+};
+type Desc2$3 = {
+  rich_text_nodes: RichTextNode2$1[];
+  text: string;
+  [property: string]: any;
+};
+type RichTextNode2$1 = {
+  jump_url?: string;
+  orig_text: string;
+  style?: null;
+  text: string;
+  type: string;
+  [property: string]: any;
+};
+type Major$10 = {
+  archive: Archive$5;
+  type: string;
+  [property: string]: any;
+};
+type Archive$5 = {
+  aid: string;
+  badge: Badge$5;
+  bvid: string;
+  cover: string;
+  desc: string;
+  disable_preview: number;
+  duration_text: string;
+  jump_url: string;
+  stat: Stat$6;
+  title: string;
+  type: number;
+  [property: string]: any;
+};
+type Badge$5 = {
+  bg_color: string;
+  color: string;
+  icon_url: null;
+  text: string;
+  [property: string]: any;
+};
+type Stat$6 = {
+  danmaku: string;
+  play: string;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/bilibili/DynamicDetail/DYNAMIC_TYPE_FORWARD/index.d.ts
+type DynamicTypeForward$1 = DynamicTypeForward_V0;
+//#endregion
+//#region ../response-types/dist/generated/bilibili/DynamicDetail/Unknown.d.ts
+type DynamicDetailUnknown = {
+  code: number;
+  data: Data$41;
+  message: string;
+  ttl: number;
+  [property: string]: any;
+};
+type Data$41 = {
+  item: Item$23;
+  [property: string]: any;
+};
+type Item$23 = {
+  type?: never;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/bilibili/DynamicDetail/guards.d.ts
+/**
+ * 判别联合（PRD 5.1）。判别式在 `data.item.type`，成员是按判别式取值分组、各自合并出来的。
+ *
+ * 每一层都带 `[property: string]: any`（硬约束 1：`response-types.test-d.ts` 用它承诺
+ * 「平台加字段不算 breaking」）。所以判别字段**是字面量**时，裸
+ * `if (resp.data.item.type === '…')` / `switch` 就能收窄（收窄的是判别字段所在的那个对象，
+ * 不是整个信封）—— 下面的 `is*` 守卫是给「要收窄整个信封」的场景的加成，不是必需品。
+ *
+ * 末尾那支是**兜底支**：判别式取到样本里没见过的值时落到它，字段全走索引签名，
+ * 所以平台加新类型不会让下游编译红。它的判别字段是 `?: never`（见 emitFallback）。
+ */
+type DynamicDetailUnion = DynamicTypeAV$2 | DynamicTypeDraw$2 | DynamicTypeForward$1 | DynamicDetailUnknown;
+//#endregion
+//#region ../response-types/dist/generated/bilibili/DynamicDetail/index.d.ts
+type DynamicDetailSuccess = DynamicDetailUnion;
+type DynamicDetailError = never;
+type DynamicDetail = DynamicDetailSuccess | DynamicDetailError;
+//#endregion
+//#region ../response-types/dist/generated/bilibili/EmojiList/EmojiList_V0.d.ts
+type EmojiList_V0$3 = {
+  code: number;
+  data: Data$40;
+  message: string;
+  ttl: number;
+  [property: string]: any;
+};
+type Data$40 = {
+  packages: Package$1[];
+  setting: Setting$1;
+  [property: string]: any;
+};
+type Package$1 = {
+  attr: number;
+  emote: Emote$2[];
+  flags: Flags2;
+  id: number;
+  label: null;
+  meta: Meta2;
+  mtime: number;
+  package_sub_title: string;
+  ref_mid: number;
+  resource_type: number;
+  text: string;
+  type: number;
+  url: string;
+  [property: string]: any;
+};
+type Emote$2 = {
+  activity: null;
+  attr: number;
+  flags: Flags;
+  gif_url?: string;
+  id: number;
+  meta: Meta$1;
+  mtime: number;
+  package_id: number;
+  text: string;
+  type: number;
+  url: string;
+  [property: string]: any;
+};
+type Flags = {
+  unlocked: boolean;
+  [property: string]: any;
+};
+type Meta$1 = {
+  alias?: string;
+  size: number;
+  suggest: string[];
+  [property: string]: any;
+};
+type Flags2 = {
+  added: boolean;
+  preview?: boolean;
+  [property: string]: any;
+};
+type Meta2 = {
+  item_id: number;
+  size: number;
+  [property: string]: any;
+};
+type Setting$1 = {
+  attr: number;
+  focus_pkg_id: number;
+  recent_limit: number;
+  schema: string;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/bilibili/EmojiList/index.d.ts
+type EmojiListSuccess$3 = EmojiList_V0$3;
+type EmojiListError$3 = never;
+type EmojiList$4 = EmojiListSuccess$3 | EmojiListError$3;
+//#endregion
+//#region ../response-types/dist/generated/bilibili/LiveRoomInfo/LiveRoomInfo_V0.d.ts
+type LiveRoomInfo_V0$1 = {
+  code: number;
+  data: Data$39;
+  message: string;
+  msg: string;
+  [property: string]: any;
+};
+type Data$39 = {
+  allow_change_area_time: number;
+  allow_upload_cover_time: number;
+  area_id: number;
+  area_name: string;
+  area_pendants: string;
+  attention: number;
+  background: string;
+  battle_id: number;
+  description: string;
+  hot_words: string[];
+  hot_words_status: number;
+  is_anchor: number;
+  is_portrait: boolean;
+  is_strict_room: boolean;
+  keyframe: string;
+  live_status: number;
+  live_time: string;
+  new_pendants: NewPendants$1;
+  old_area_id: number;
+  online: number;
+  parent_area_id: number;
+  parent_area_name: string;
+  pendants: string;
+  pk_id: number;
+  pk_status: number;
+  room_id: number;
+  room_silent_level: number;
+  room_silent_second: number;
+  room_silent_type: string;
+  short_id: number;
+  studio_info: StudioInfo$1;
+  tags: string;
+  title: string;
+  uid: number;
+  up_session: string;
+  user_cover: string;
+  verify: string;
+  [property: string]: any;
+};
+type NewPendants$1 = {
+  badge: Badge$4;
+  frame: Frame$1;
+  mobile_badge: null;
+  mobile_frame: Frame$1;
+  [property: string]: any;
+};
+type Badge$4 = {
+  desc: string;
+  name: string;
+  position: number;
+  value: string;
+  [property: string]: any;
+};
+type Frame$1 = {
+  area: number;
+  area_old: number;
+  bg_color: string;
+  bg_pic: string;
+  desc: string;
+  name: string;
+  position: number;
+  use_old_area: boolean;
+  value: string;
+  [property: string]: any;
+};
+type StudioInfo$1 = {
+  master_list: unknown[];
+  status: number;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/bilibili/LiveRoomInfo/index.d.ts
+type LiveRoomInfoSuccess$1 = LiveRoomInfo_V0$1;
+type LiveRoomInfoError$1 = never;
+type LiveRoomInfo$1 = LiveRoomInfoSuccess$1 | LiveRoomInfoError$1;
+//#endregion
+//#region ../response-types/dist/generated/bilibili/LiveRoomInit/LiveRoomInit_V0.d.ts
+type LiveRoomInit_V0 = {
+  code: number;
+  data: Data$38;
+  message: string;
+  msg: string;
+  [property: string]: any;
+};
+type Data$38 = {
+  encrypted: boolean;
+  hidden_till: number;
+  is_hidden: boolean;
+  is_locked: boolean;
+  is_portrait: boolean;
+  is_sp: number;
+  live_status: number;
+  live_time: number;
+  lock_till: number;
+  need_p2p: number;
+  pwd_verified: boolean;
+  room_id: number;
+  room_shield: number;
+  short_id: number;
+  special_type: number;
+  uid: number;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/bilibili/LiveRoomInit/index.d.ts
+type LiveRoomInitSuccess = LiveRoomInit_V0;
+type LiveRoomInitError = never;
+type LiveRoomInit = LiveRoomInitSuccess | LiveRoomInitError;
+//#endregion
+//#region ../response-types/dist/generated/bilibili/LoginQrcode/LoginQrcode_V0.d.ts
+type LoginQrcode_V0 = {
+  code: number;
+  data: Data$37;
+  message: string;
+  ttl: number;
+  [property: string]: any;
+};
+type Data$37 = {
+  qrcode_key: string;
+  url: string;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/bilibili/LoginQrcode/index.d.ts
+type LoginQrcodeSuccess = LoginQrcode_V0;
+type LoginQrcodeError = never;
+type LoginQrcode = LoginQrcodeSuccess | LoginQrcodeError;
+//#endregion
+//#region ../response-types/dist/generated/bilibili/LoginStatus/LoginStatus_V0.d.ts
+type LoginStatus_V0 = {
+  code: number;
+  data: Data$36;
+  message: string;
+  ttl: number;
+  [property: string]: any;
+};
+type Data$36 = {
+  answer_status: number;
+  email_verified: number;
+  face: string;
+  face_nft: number;
+  face_nft_type: number;
+  has_shop: boolean;
+  ip_region: string;
+  isLogin: boolean;
+  is_jury: boolean;
+  is_senior_member: number;
+  legal_region: string;
+  level_info: LevelInfo$3;
+  mid: number;
+  mobile_verified: number;
+  money: number;
+  moral: number;
+  name_render: null;
+  official: Official$4;
+  officialVerify: OfficialVerify$11;
+  pendant: Pendant$13;
+  scores: number;
+  shop_url: string;
+  uname: string;
+  vip: Vip$13;
+  vipDueDate: number;
+  vipStatus: number;
+  vipType: number;
+  vip_avatar_subscript: number;
+  vip_label: Label$13;
+  vip_nickname_color: string;
+  vip_pay_type: number;
+  vip_theme_type: number;
+  wallet: Wallet;
+  wbi_img: WbiImg;
+  [property: string]: any;
+};
+type LevelInfo$3 = {
+  current_exp: number;
+  current_level: number;
+  current_min: number;
+  next_exp: number;
+  [property: string]: any;
+};
+type Official$4 = {
+  desc: string;
+  role: number;
+  title: string;
+  type: number;
+  [property: string]: any;
+};
+type OfficialVerify$11 = {
+  desc: string;
+  type: number;
+  [property: string]: any;
+};
+type Pendant$13 = {
+  expire: number;
+  image: string;
+  image_enhance: string;
+  image_enhance_frame: string;
+  n_pid: number;
+  name: string;
+  pid: number;
+  [property: string]: any;
+};
+type Vip$13 = {
+  avatar_icon: AvatarIcon$5;
+  avatar_subscript: number;
+  avatar_subscript_url: string;
+  due_date: number;
+  label: Label$13;
+  nickname_color: string;
+  ott_info: OttInfo$3;
+  role: number;
+  status: number;
+  super_vip: SuperVip$3;
+  theme_type: number;
+  tv_due_date: number;
+  tv_vip_pay_type: number;
+  tv_vip_status: number;
+  type: number;
+  vip_pay_type: number;
+  [property: string]: any;
+};
+type AvatarIcon$5 = {
+  icon_resource: IconResource$4;
+  icon_type: number;
+  [property: string]: any;
+};
+type IconResource$4 = {
+  type: number;
+  url: string;
+  [property: string]: any;
+};
+type Label$13 = {
+  bg_color: string;
+  bg_style: number;
+  border_color: string;
+  img_label_uri_hans: string;
+  img_label_uri_hans_static: string;
+  img_label_uri_hant: string;
+  img_label_uri_hant_static: string;
+  img_label_uri_i18n: string;
+  img_label_uri_i18n_static: string;
+  label_goto: LabelGoto$3;
+  label_id: number;
+  label_theme: string;
+  label_type: number;
+  path: string;
+  text: string;
+  text_color: string;
+  use_img_label: boolean;
+  [property: string]: any;
+};
+type LabelGoto$3 = {
+  mobile: string;
+  pc_web: string;
+  [property: string]: any;
+};
+type OttInfo$3 = {
+  overdue_time: number;
+  pay_channel_id: string;
+  pay_type: number;
+  status: number;
+  vip_type: number;
+  [property: string]: any;
+};
+type SuperVip$3 = {
+  is_super_vip: boolean;
+  [property: string]: any;
+};
+type Wallet = {
+  bcoin_balance: number;
+  coupon_balance: number;
+  coupon_due_time: number;
+  mid: number;
+  [property: string]: any;
+};
+type WbiImg = {
+  img_url: string;
+  sub_url: string;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/bilibili/LoginStatus/index.d.ts
+type LoginStatusSuccess = LoginStatus_V0;
+type LoginStatusError = never;
+type LoginStatus = LoginStatusSuccess | LoginStatusError;
+//#endregion
+//#region ../response-types/dist/generated/bilibili/QrcodeStatus/QrcodeStatus_V0.d.ts
+type QrcodeStatus_V0 = {
+  code: number;
+  data: Data$35;
+  message: string;
+  ttl: number;
+  [property: string]: any;
+};
+type Data$35 = {
+  code: number;
+  message: string;
+  refresh_token: string;
+  timestamp: number;
+  url: string;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/bilibili/QrcodeStatus/index.d.ts
+type QrcodeStatusSuccess = QrcodeStatus_V0;
+type QrcodeStatusError = never;
+type QrcodeStatus = QrcodeStatusSuccess | QrcodeStatusError;
+//#endregion
+//#region ../response-types/dist/generated/bilibili/UploaderTotalViews/UploaderTotalViews_V0.d.ts
+type UploaderTotalViews_V0 = {
+  code: number;
+  data: Data$34;
+  message: string;
+  ttl: number;
+  [property: string]: any;
+};
+type Data$34 = {
+  archive: Archive$4;
+  article: Article$2;
+  likes: number;
+  [property: string]: any;
+};
+type Archive$4 = {
+  enable_vt: number;
+  view: number;
+  vt: number;
+  [property: string]: any;
+};
+type Article$2 = {
+  view: number;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/bilibili/UploaderTotalViews/index.d.ts
+type UploaderTotalViewsSuccess = UploaderTotalViews_V0;
+type UploaderTotalViewsError = never;
+type UploaderTotalViews = UploaderTotalViewsSuccess | UploaderTotalViewsError;
+//#endregion
+//#region ../response-types/dist/generated/bilibili/UserCard/UserCard_V0.d.ts
+type UserCard_V0 = {
+  code: number;
+  data: Data$33;
+  message: string;
+  ttl: number;
+  [property: string]: any;
+};
+type Data$33 = {
+  archive_count: number;
+  article_count: number;
+  card: Card$1;
+  follower: number;
+  following: boolean;
+  like_num: number;
+  space: Space$1;
+  [property: string]: any;
+};
+type Card$1 = {
+  DisplayRank: string;
+  Official: Official$3;
+  approve: boolean;
+  article: number;
+  attention: number;
+  attentions: unknown[];
+  birthday: string;
+  description: string;
+  face: string;
+  face_nft: number;
+  face_nft_type: number;
+  fans: number;
+  friend: number;
+  is_senior_member: number;
+  level_info: LevelInfo$2;
+  mid: string;
+  name: string;
+  name_render: null;
+  nameplate: Nameplate$6;
+  official_verify: OfficialVerify$10;
+  pendant: Pendant$12;
+  place: string;
+  rank: string;
+  regtime: number;
+  sex: string;
+  sign: string;
+  spacesta: number;
+  vip: Vip$12;
+  [property: string]: any;
+};
+type Official$3 = {
+  desc: string;
+  role: number;
+  title: string;
+  type: number;
+  [property: string]: any;
+};
+type LevelInfo$2 = {
+  current_exp: number;
+  current_level: number;
+  current_min: number;
+  next_exp: number;
+  [property: string]: any;
+};
+type Nameplate$6 = {
+  condition: string;
+  image: string;
+  image_small: string;
+  level: string;
+  name: string;
+  nid: number;
+  [property: string]: any;
+};
+type OfficialVerify$10 = {
+  desc: string;
+  type: number;
+  [property: string]: any;
+};
+type Pendant$12 = {
+  expire: number;
+  image: string;
+  image_enhance: string;
+  image_enhance_frame: string;
+  n_pid: number;
+  name: string;
+  pid: number;
+  [property: string]: any;
+};
+type Vip$12 = {
+  avatar_icon: AvatarIcon$4;
+  avatar_subscript: number;
+  avatar_subscript_url: string;
+  due_date: number;
+  label: Label$12;
+  nickname_color: string;
+  ott_info: OttInfo$2;
+  role: number;
+  status: number;
+  super_vip: SuperVip$2;
+  theme_type: number;
+  tv_due_date: number;
+  tv_vip_pay_type: number;
+  tv_vip_status: number;
+  type: number;
+  vipStatus: number;
+  vipType: number;
+  vip_pay_type: number;
+  [property: string]: any;
+};
+type AvatarIcon$4 = {
+  icon_resource: IconResource$3;
+  icon_type: number;
+  [property: string]: any;
+};
+type IconResource$3 = {
+  type: number;
+  url: string;
+  [property: string]: any;
+};
+type Label$12 = {
+  bg_color: string;
+  bg_style: number;
+  border_color: string;
+  img_label_uri_hans: string;
+  img_label_uri_hans_static: string;
+  img_label_uri_hant: string;
+  img_label_uri_hant_static: string;
+  img_label_uri_i18n: string;
+  img_label_uri_i18n_static: string;
+  label_goto: LabelGoto$2;
+  label_id: number;
+  label_theme: string;
+  label_type: number;
+  path: string;
+  text: string;
+  text_color: string;
+  use_img_label: boolean;
+  [property: string]: any;
+};
+type LabelGoto$2 = {
+  mobile: string;
+  pc_web: string;
+  [property: string]: any;
+};
+type OttInfo$2 = {
+  overdue_time: number;
+  pay_channel_id: string;
+  pay_type: number;
+  status: number;
+  vip_type: number;
+  [property: string]: any;
+};
+type SuperVip$2 = {
+  is_super_vip: boolean;
+  [property: string]: any;
+};
+type Space$1 = {
+  l_img: string;
+  s_img: string;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/bilibili/UserCard/index.d.ts
+type UserCardSuccess = UserCard_V0;
+type UserCardError = never;
+type UserCard = UserCardSuccess | UserCardError;
+//#endregion
+//#region ../response-types/dist/generated/bilibili/UserDynamicList/UserDynamicList_V0.d.ts
+type UserDynamicList_V0 = {
+  code: number;
+  data: Data$32;
+  message: string;
+  ttl: number;
+  [property: string]: any;
+};
+type Data$32 = {
+  has_more: boolean;
+  items: Item$22[];
+  offset: string;
+  total: string;
+  update_baseline: string;
+  update_num: string;
+  [property: string]: any;
+};
+type Item$22 = {
+  basic: Basic$5;
+  id_str: string;
+  modules: Modules$5;
+  orig: Orig$4 | null;
+  type: string;
+  visible: boolean;
+  [property: string]: any;
+};
+type Basic$5 = {
+  aigc: boolean;
+  comment_id_str: string;
+  comment_type: number;
+  editable: boolean;
+  in_audit: boolean;
+  is_only_fans: boolean;
+  jump_url: string;
+  like_icon: LikeIcon$5;
+  open_app_extra: string;
+  rid_str: string;
+  [property: string]: any;
+};
+type LikeIcon$5 = {
+  action_url: string;
+  end_url: string;
+  id: string;
+  start_url: string;
+  [property: string]: any;
+};
+type Modules$5 = {
+  module_author: ModuleAuthor$5;
+  module_dispute: null;
+  module_dynamic: ModuleDynamic$5;
+  module_extend: null;
+  module_fold: null;
+  module_interaction: ModuleInteraction | null;
+  module_more: ModuleMore$9;
+  module_share_info: null;
+  module_stat: ModuleStat$9;
+  module_tag: ModuleTag | null;
+  [property: string]: any;
+};
+type ModuleAuthor$5 = {
+  avatar: Avatar$8;
+  decorate: null;
+  decorate_card: DecorateCard;
+  decoration_card: DecorateCard;
+  face: string;
+  face_nft: boolean;
+  following: number;
+  icon_badge: null;
+  is_top: boolean;
+  jump_url: string;
+  label: string;
+  mid: number;
+  more: null;
+  name: string;
+  name_render: null;
+  nft_info: null;
+  official: null;
+  official_verify: OfficialVerify$9;
+  pendant: Pendant$11;
+  pub_action: string;
+  pub_location_text: string;
+  pub_time: string;
+  pub_ts: string;
+  type: string;
+  views_text: string;
+  vip: Vip$11;
+  [property: string]: any;
+};
+type Avatar$8 = {
+  container_size: ContainerSize$6;
+  fallback_layers: FallbackLayers$6;
+  layers: Layer2[];
+  mid: string;
+  [property: string]: any;
+};
+type ContainerSize$6 = {
+  height: number;
+  width: number;
+  [property: string]: any;
+};
+type FallbackLayers$6 = {
+  group_id: string;
+  group_mask: null;
+  is_critical_group: boolean;
+  layers: Layer$6[];
+  [property: string]: any;
+};
+type Layer$6 = {
+  general_spec: GeneralSpec$6;
+  layer_config: LayerConfig$6;
+  layer_id: string;
+  resource: Resource$6;
+  visible: boolean;
+  [property: string]: any;
+};
+type GeneralSpec$6 = {
+  pos_spec: PosSpec$6;
+  render_spec: RenderSpec$6;
+  size_spec: ContainerSize$6;
+  [property: string]: any;
+};
+type PosSpec$6 = {
+  axis_x: number;
+  axis_y: number;
+  coordinate_pos: number;
+  [property: string]: any;
+};
+type RenderSpec$6 = {
+  opacity: number;
+  [property: string]: any;
+};
+type LayerConfig$6 = {
+  allow_over_paint: boolean;
+  is_critical: boolean;
+  layer_mask: null;
+  tags: Tags$6;
+  [property: string]: any;
+};
+type Tags$6 = {
+  AVATAR_LAYER?: AVATARLAYER;
+  GENERAL_CFG?: GENERALCFG;
+  ICON_LAYER?: AVATARLAYER;
+  PENDENT_LAYER?: AVATARLAYER;
+  [property: string]: any;
+};
+type AVATARLAYER = {
+  config_type: number;
+  [property: string]: any;
+};
+type GENERALCFG = {
+  config_type: number;
+  general_config: GeneralConfig$6;
+  [property: string]: any;
+};
+type GeneralConfig$6 = {
+  web_css_style: WebCssStyle;
+  [property: string]: any;
+};
+type WebCssStyle = {
+  'background-color'?: string;
+  border?: string;
+  borderRadius: string;
+  boxSizing?: string;
+  [property: string]: any;
+};
+type Resource$6 = {
+  res_image: ResImage$6;
+  res_type: number;
+  [property: string]: any;
+};
+type ResImage$6 = {
+  image_src: ImageSrc$6;
+  [property: string]: any;
+};
+type ImageSrc$6 = {
+  local?: number;
+  placeholder: number;
+  remote?: Remote$6;
+  src_type: number;
+  [property: string]: any;
+};
+type Remote$6 = {
+  bfs_style: string;
+  url: string;
+  [property: string]: any;
+};
+type Layer2 = {
+  group_id: string;
+  group_mask: null;
+  is_critical_group: boolean;
+  layers: Layer3[];
+  [property: string]: any;
+};
+type Layer3 = {
+  general_spec: GeneralSpec$6;
+  layer_config: LayerConfig$6;
+  layer_id: string;
+  resource: Resource2;
+  visible: boolean;
+  [property: string]: any;
+};
+type Resource2 = {
+  res_animation?: ResAnimation;
+  res_image?: ResImage$6;
+  res_type: number;
+  [property: string]: any;
+};
+type ResAnimation = {
+  webp_src: WebpSrc;
+  [property: string]: any;
+};
+type WebpSrc = {
+  placeholder: number;
+  remote: Remote$6;
+  src_type: number;
+  [property: string]: any;
+};
+type DecorateCard = {
+  big_card_url: string;
+  card_type: string;
+  card_type_name: string;
+  card_url: string;
+  expire_time: string;
+  fan: Fan$6;
+  id: string;
+  image_enhance: string;
+  image_group: null;
+  item_id: string;
+  jump_url: string;
+  name: string;
+  [property: string]: any;
+};
+type Fan$6 = {
+  color: string;
+  color_format: ColorFormat$6;
+  is_fan: string;
+  name: string;
+  num_desc: string;
+  num_prefix: string;
+  number: string;
+  [property: string]: any;
+};
+type ColorFormat$6 = {
+  colors: string[];
+  end_point: string;
+  gradients: string[];
+  start_point: string;
+  [property: string]: any;
+};
+type OfficialVerify$9 = {
+  desc: string;
+  type: number;
+  [property: string]: any;
+};
+type Pendant$11 = {
+  expire: string;
+  image: string;
+  image_enhance: string;
+  image_enhance_frame: string;
+  n_pid: string;
+  name: string;
+  pid: number;
+  [property: string]: any;
+};
+type Vip$11 = {
+  avatar_icon: AvatarIcon$3;
+  avatar_subscript: number;
+  avatar_subscript_url: string;
+  due_date: string;
+  label: Label$11;
+  nickname_color: string;
+  role: string;
+  status: number;
+  theme_type: number;
+  tv_due_date: string;
+  tv_vip_pay_type: number;
+  tv_vip_status: number;
+  type: number;
+  vip_pay_type: number;
+  [property: string]: any;
+};
+type AvatarIcon$3 = {
+  icon_resource: IconResource$2;
+  icon_type: number;
+  [property: string]: any;
+};
+type IconResource$2 = {
+  type: number;
+  url: string;
+  [property: string]: any;
+};
+type Label$11 = {
+  bg_color: string;
+  bg_style: number;
+  border_color: string;
+  img_label_uri_hans: string;
+  img_label_uri_hans_static: string;
+  img_label_uri_hant: string;
+  img_label_uri_hant_static: string;
+  label_theme: string;
+  path: string;
+  text: string;
+  text_color: string;
+  use_img_label: boolean;
+  [property: string]: any;
+};
+type ModuleDynamic$5 = {
+  additional: Additional$4 | null;
+  desc: Desc$5 | null;
+  major: Major$9 | null;
+  topic: null;
+  [property: string]: any;
+};
+type Additional$4 = {
+  common: Common$1 | null;
+  goods: null;
+  match: null;
+  reserve: Reserve$2 | null;
+  type: string;
+  ugc: null;
+  upower_lottery: null;
+  vote: null;
+  [property: string]: any;
+};
+type Common$1 = {
+  button: Button$6;
+  cover: string;
+  desc1: string;
+  desc2: string;
+  head_text: string;
+  id_str: string;
+  jump_url: string;
+  style: number;
+  sub_type: string;
+  title: string;
+  [property: string]: any;
+};
+type Button$6 = {
+  check: null;
+  click_type: number;
+  jump_style: JumpStyle$2;
+  jump_url: string;
+  status: number;
+  type: number;
+  uncheck: null;
+  [property: string]: any;
+};
+type JumpStyle$2 = {
+  bg_style: number;
+  disable: number;
+  icon_url: string;
+  interactive: null;
+  text: string;
+  toast: string;
+  [property: string]: any;
+};
+type Reserve$2 = {
+  badge_text: string;
+  button: Button2;
+  desc1: Desc1$2;
+  desc2: Desc1$2;
+  desc3: null;
+  jump_url: string;
+  premiere: null;
+  reserve_total: number;
+  rid: number;
+  state: number;
+  stype: number;
+  title: string;
+  up_mid: string;
+  [property: string]: any;
+};
+type Button2 = {
+  check: JumpStyle$2;
+  click_type: number;
+  jump_style: null;
+  jump_url: string;
+  status: number;
+  type: number;
+  uncheck: JumpStyle$2;
+  [property: string]: any;
+};
+type Desc1$2 = {
+  icon_url: string;
+  jump_url: string;
+  style: number;
+  text: string;
+  visible: boolean;
+  [property: string]: any;
+};
+type Desc$5 = {
+  has_more: boolean;
+  paragraphs: unknown[];
+  rich_text_nodes: RichTextNode$6[];
+  text: string;
+  [property: string]: any;
+};
+type RichTextNode$6 = {
+  emoji: null;
+  goods: null;
+  icon_name: string;
+  icon_url: string;
+  jump_url: string;
+  orig_text: string;
+  pics: unknown[];
+  rid: string;
+  style: null;
+  text: string;
+  type: string;
+  video: null;
+  [property: string]: any;
+};
+type Major$9 = {
+  archive: Archive$3 | null;
+  article: null;
+  blocked: null;
+  common: null;
+  courses: null;
+  draw: null;
+  live: null;
+  live_rcmd: null;
+  medialist: null;
+  music: null;
+  none: null;
+  opus: Opus$6 | null;
+  pgc: null;
+  subscription: null;
+  subscription_new: null;
+  type: string;
+  ugc_season: null;
+  upower_common: null;
+  [property: string]: any;
+};
+type Archive$3 = {
+  aid: string;
+  badge: Badge$3;
+  bvid: string;
+  cover: string;
+  desc: string;
+  disable_preview: number;
+  duration_text: string;
+  enable_vt: number;
+  jump_url: string;
+  premiere_online: string;
+  stat: Stat$5;
+  stat_hidden: number;
+  title: string;
+  type: number;
+  [property: string]: any;
+};
+type Badge$3 = {
+  bg_color: string;
+  color: string;
+  icon_url: string;
+  text: string;
+  [property: string]: any;
+};
+type Stat$5 = {
+  danmaku: string;
+  play: string;
+  vt: string;
+  [property: string]: any;
+};
+type Opus$6 = {
+  fold_action: string[];
+  jump_url: string;
+  paywall: null;
+  pics: Pic$3[];
+  style: number;
+  summary: Summary$6;
+  title: string;
+  [property: string]: any;
+};
+type Pic$3 = {
+  aigc: number;
+  height: number;
+  live_url: string;
+  size: number;
+  url: string;
+  warning: null;
+  width: number;
+  [property: string]: any;
+};
+type Summary$6 = {
+  has_more: boolean;
+  paragraphs: unknown[];
+  rich_text_nodes: RichTextNode2[];
+  text: string;
+  [property: string]: any;
+};
+type RichTextNode2 = {
+  emoji: null;
+  goods: null;
+  icon_name: string;
+  icon_url: string;
+  jump_url: string;
+  orig_text: string;
+  pics: unknown[];
+  rid: string;
+  style: Style$1 | null;
+  text: string;
+  type: string;
+  video: null;
+  [property: string]: any;
+};
+type Style$1 = {
+  background: string;
+  bold: boolean;
+  color: string;
+  font_level: string;
+  font_size: number;
+  italic: boolean;
+  strikethrough: boolean;
+  underline: boolean;
+  [property: string]: any;
+};
+type ModuleInteraction = {
+  items: Item2$2[];
+  [property: string]: any;
+};
+type Item2$2 = {
+  desc: Desc2$2;
+  type: number;
+  [property: string]: any;
+};
+type Desc2$2 = {
+  has_more: boolean;
+  paragraphs: unknown[];
+  rich_text_nodes: RichTextNode3[];
+  text: string;
+  [property: string]: any;
+};
+type RichTextNode3 = {
+  emoji: Emoji$6 | null;
+  goods: null;
+  icon_name: string;
+  icon_url: string;
+  jump_url: string;
+  orig_text: string;
+  pics: unknown[];
+  rid: string;
+  style: null;
+  text: string;
+  type: string;
+  video: null;
+  [property: string]: any;
+};
+type Emoji$6 = {
+  gif_url: string;
+  icon_url: string;
+  id: string;
+  jump_title: string;
+  jump_url: string;
+  package_id: string;
+  size: number;
+  text: string;
+  type: string;
+  webp_url: string;
+  [property: string]: any;
+};
+type ModuleMore$9 = {
+  rcmd_text: string;
+  three_point_items: ThreePointItem$9[];
+  [property: string]: any;
+};
+type ThreePointItem$9 = {
+  jump_url: string;
+  label: string;
+  modal: null;
+  params: {
+    [property: string]: any;
+  };
+  type: string;
+  [property: string]: any;
+};
+type ModuleStat$9 = {
+  coin: null;
+  comment: Comment$13;
+  favorite: null;
+  forward: Comment$13;
+  like: Comment$13;
+  [property: string]: any;
+};
+type Comment$13 = {
+  count: number;
+  disabled: boolean;
+  forbidden: boolean;
+  hidden: boolean;
+  silent: boolean;
+  status: boolean;
+  [property: string]: any;
+};
+type ModuleTag = {
+  text: string;
+  [property: string]: any;
+};
+type Orig$4 = {
+  basic: Basic2;
+  id_str: string;
+  modules: Modules2;
+  orig: null;
+  type: string;
+  visible: boolean;
+  [property: string]: any;
+};
+type Basic2 = {
+  aigc: boolean;
+  comment_id_str: string;
+  comment_type: number;
+  editable: boolean;
+  in_audit: boolean;
+  is_only_fans: boolean;
+  jump_url: string;
+  like_icon: null;
+  open_app_extra: string;
+  rid_str: string;
+  [property: string]: any;
+};
+type Modules2 = {
+  module_author: ModuleAuthor2;
+  module_dispute: null;
+  module_dynamic: ModuleDynamic2;
+  module_extend: null;
+  module_fold: null;
+  module_interaction: null;
+  module_more: null;
+  module_share_info: null;
+  module_stat: null;
+  module_tag: null;
+  [property: string]: any;
+};
+type ModuleAuthor2 = {
+  avatar: Avatar$8;
+  decorate: null;
+  decorate_card: DecorateCard | null;
+  decoration_card: DecorateCard | null;
+  face: string;
+  face_nft: boolean;
+  following: number;
+  icon_badge: null;
+  is_top: boolean;
+  jump_url: string;
+  label: string;
+  mid: number;
+  more: null;
+  name: string;
+  name_render: null;
+  nft_info: null;
+  official: null;
+  official_verify: OfficialVerify$9;
+  pendant: Pendant$11;
+  pub_action: string;
+  pub_location_text: string;
+  pub_time: string;
+  pub_ts: string;
+  type: string;
+  views_text: string;
+  vip: Vip$11;
+  [property: string]: any;
+};
+type ModuleDynamic2 = {
+  additional: Additional2 | null;
+  desc: Desc$5 | null;
+  major: Major2;
+  topic: null;
+  [property: string]: any;
+};
+type Additional2 = {
+  common: Common$1;
+  goods: null;
+  match: null;
+  reserve: null;
+  type: string;
+  ugc: null;
+  upower_lottery: null;
+  vote: null;
+  [property: string]: any;
+};
+type Major2 = {
+  archive: Archive$3 | null;
+  article: null;
+  blocked: null;
+  common: null;
+  courses: null;
+  draw: null;
+  live: null;
+  live_rcmd: null;
+  medialist: null;
+  music: null;
+  none: null;
+  opus: Opus2 | null;
+  pgc: null;
+  subscription: null;
+  subscription_new: null;
+  type: string;
+  ugc_season: null;
+  upower_common: null;
+  [property: string]: any;
+};
+type Opus2 = {
+  fold_action: string[];
+  jump_url: string;
+  paywall: null;
+  pics: Pic$3[];
+  style: number;
+  summary: Desc$5;
+  title: string;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/bilibili/UserDynamicList/index.d.ts
+type UserDynamicListSuccess = UserDynamicList_V0;
+type UserDynamicListError = never;
+type UserDynamicList = UserDynamicListSuccess | UserDynamicListError;
+//#endregion
+//#region ../response-types/dist/generated/bilibili/UserLiveStatus/UserLiveStatus_V0.d.ts
+type UserLiveStatus_V0 = {
+  code: number;
+  data: Data$31;
+  message: string;
+  ttl: number;
+  [property: string]: any;
+};
+type Data$31 = {
+  broadcast_type: number;
+  cover: string;
+  link: string;
+  liveStatus: number;
+  online: number;
+  online_hidden: number;
+  roomStatus: number;
+  roomid: number;
+  roundStatus: number;
+  title: string;
+  url: string;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/bilibili/UserLiveStatus/index.d.ts
+type UserLiveStatusSuccess = UserLiveStatus_V0;
+type UserLiveStatusError = never;
+type UserLiveStatus = UserLiveStatusSuccess | UserLiveStatusError;
+//#endregion
+//#region ../response-types/dist/generated/bilibili/UserSpaceInfo/UserSpaceInfo_V0.d.ts
+type UserSpaceInfo_V0$1 = {
+  code: number;
+  data: Data$30;
+  message: string;
+  ttl: number;
+  [property: string]: any;
+};
+type Data$30 = {
+  attestation: Attestation$1;
+  birthday: string;
+  certificate_show: boolean;
+  coins: number;
+  contract: null;
+  control: number;
+  elec: Elec$1;
+  face: string;
+  face_nft: number;
+  face_nft_type: number;
+  fans_badge: boolean;
+  fans_medal: FansMedal$1;
+  gaia_data: null;
+  gaia_res_type: number;
+  is_followed: boolean;
+  is_risk: boolean;
+  is_senior_member: number;
+  jointime: number;
+  level: number;
+  live_room: LiveRoom$1;
+  mcn_info: null;
+  mid: number;
+  moral: number;
+  name: string;
+  name_render: null;
+  nameplate: Nameplate$5;
+  official: Official$2;
+  pendant: Pendant$10;
+  profession: Profession$1;
+  rank: number;
+  school: null;
+  series: Series$2;
+  sex: string;
+  sign: string;
+  silence: number;
+  sys_notice: {
+    [property: string]: any;
+  };
+  tags: null;
+  theme: null;
+  top_photo: string;
+  top_photo_v2: TopPhotoV2$1;
+  user_honour_info: UserHonourInfo$1;
+  vip: Vip$10;
+  [property: string]: any;
+};
+type Attestation$1 = {
+  common_info: CommonInfo$1;
+  desc: string;
+  icon: string;
+  splice_info: SpliceInfo$1;
+  type: number;
+  [property: string]: any;
+};
+type CommonInfo$1 = {
+  prefix: string;
+  prefix_title: string;
+  title: string;
+  [property: string]: any;
+};
+type SpliceInfo$1 = {
+  title: string;
+  [property: string]: any;
+};
+type Elec$1 = {
+  show_info: ShowInfo$1;
+  [property: string]: any;
+};
+type ShowInfo$1 = {
+  icon: string;
+  jump_url: string;
+  jump_url_web: string;
+  list: null;
+  long_title: string;
+  show: boolean;
+  state: number;
+  title: string;
+  total: number;
+  upower_count_show: boolean;
+  [property: string]: any;
+};
+type FansMedal$1 = {
+  detail: null;
+  medal: null;
+  show: boolean;
+  wear: boolean;
+  [property: string]: any;
+};
+type LiveRoom$1 = {
+  broadcast_type: number;
+  cover: string;
+  liveStatus: number;
+  roomStatus: number;
+  roomid: number;
+  roundStatus: number;
+  title: string;
+  url: string;
+  watched_show: WatchedShow$1;
+  [property: string]: any;
+};
+type WatchedShow$1 = {
+  icon: string;
+  icon_location: string;
+  icon_web: string;
+  num: number;
+  switch: boolean;
+  text_large: string;
+  text_small: string;
+  [property: string]: any;
+};
+type Nameplate$5 = {
+  condition: string;
+  image: string;
+  image_small: string;
+  level: string;
+  name: string;
+  nid: number;
+  [property: string]: any;
+};
+type Official$2 = {
+  desc: string;
+  role: number;
+  title: string;
+  type: number;
+  [property: string]: any;
+};
+type Pendant$10 = {
+  expire: number;
+  image: string;
+  image_enhance: string;
+  image_enhance_frame: string;
+  n_pid: number;
+  name: string;
+  pid: number;
+  [property: string]: any;
+};
+type Profession$1 = {
+  department: string;
+  is_show: number;
+  name: string;
+  title: string;
+  [property: string]: any;
+};
+type Series$2 = {
+  show_upgrade_window: boolean;
+  user_upgrade_status: number;
+  [property: string]: any;
+};
+type TopPhotoV2$1 = {
+  l_200h_img: string;
+  l_img: string;
+  sid: number;
+  [property: string]: any;
+};
+type UserHonourInfo$1 = {
+  colour: null;
+  is_latest_100honour: number;
+  mid: number;
+  tags: unknown[];
+  [property: string]: any;
+};
+type Vip$10 = {
+  avatar_icon: AvatarIcon$2;
+  avatar_subscript: number;
+  avatar_subscript_url: string;
+  due_date: number;
+  label: Label$10;
+  nickname_color: string;
+  ott_info: OttInfo$1;
+  role: number;
+  status: number;
+  super_vip: SuperVip$1;
+  theme_type: number;
+  tv_due_date: number;
+  tv_vip_pay_type: number;
+  tv_vip_status: number;
+  type: number;
+  vip_pay_type: number;
+  [property: string]: any;
+};
+type AvatarIcon$2 = {
+  icon_resource: IconResource$1;
+  icon_type: number;
+  [property: string]: any;
+};
+type IconResource$1 = {
+  type: number;
+  url: string;
+  [property: string]: any;
+};
+type Label$10 = {
+  bg_color: string;
+  bg_style: number;
+  border_color: string;
+  img_label_uri_hans: string;
+  img_label_uri_hans_static: string;
+  img_label_uri_hant: string;
+  img_label_uri_hant_static: string;
+  img_label_uri_i18n: string;
+  img_label_uri_i18n_static: string;
+  label_goto: LabelGoto$1;
+  label_id: number;
+  label_theme: string;
+  label_type: number;
+  path: string;
+  text: string;
+  text_color: string;
+  use_img_label: boolean;
+  [property: string]: any;
+};
+type LabelGoto$1 = {
+  mobile: string;
+  pc_web: string;
+  [property: string]: any;
+};
+type OttInfo$1 = {
+  overdue_time: number;
+  pay_channel_id: string;
+  pay_type: number;
+  status: number;
+  vip_type: number;
+  [property: string]: any;
+};
+type SuperVip$1 = {
+  is_super_vip: boolean;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/bilibili/UserSpaceInfo/index.d.ts
+type UserSpaceInfoSuccess = UserSpaceInfo_V0$1;
+type UserSpaceInfoError = never;
+type UserSpaceInfo$1 = UserSpaceInfoSuccess | UserSpaceInfoError;
+//#endregion
+//#region ../response-types/dist/generated/bilibili/VideoDanmaku/VideoDanmaku_V0.d.ts
+type VideoDanmaku_V0 = {
+  elems: Elem$1[];
+  [property: string]: any;
+};
+type Elem$1 = {
+  action: string;
+  animation: string;
+  attr: number;
+  color: number;
+  content: string;
+  ctime: string;
+  fontsize: number;
+  id: string;
+  idStr: string;
+  midHash: string;
+  mode: number;
+  pool: number;
+  progress: number;
+  weight: number;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/bilibili/VideoDanmaku/index.d.ts
+type VideoDanmakuSuccess = VideoDanmaku_V0;
+type VideoDanmakuError = never;
+type VideoDanmaku = VideoDanmakuSuccess | VideoDanmakuError;
+//#endregion
+//#region ../response-types/dist/generated/bilibili/VideoInfo/VideoInfo_V0.d.ts
+type VideoInfo_V0 = {
+  code: number;
+  data: Data$29;
+  message: string;
+  ttl: number;
+  [property: string]: any;
+};
+type Data$29 = {
+  aid: number;
+  argue_info: ArgueInfo$1;
+  bvid: string;
+  cid: number;
+  copyright: number;
+  ctime: number;
+  desc: string;
+  desc_v2: DescV2$1[];
+  dimension: Dimension$1;
+  disable_show_up_info: boolean;
+  duration: number;
+  dynamic: string;
+  enable_vt: number;
+  honor_reply: {
+    [property: string]: any;
+  };
+  is_chargeable_season: boolean;
+  is_hua_sheng: boolean;
+  is_season_display: boolean;
+  is_story: boolean;
+  is_story_play: number;
+  is_upower_exclusive: boolean;
+  is_upower_exclusive_with_qa: boolean;
+  is_upower_play: boolean;
+  is_upower_preview: boolean;
+  is_view_self: boolean;
+  like_icon: string;
+  need_jump_bv: boolean;
+  no_cache: boolean;
+  owner: Owner$3;
+  pages: Page$1[];
+  pic: string;
+  premiere: null;
+  pubdate: number;
+  rights: Rights$2;
+  season_id: number;
+  stat: Stat$4;
+  state: number;
+  subtitle: Subtitle$1;
+  teenage_mode: number;
+  tid: number;
+  tid_v2: number;
+  title: string;
+  tname: string;
+  tname_v2: string;
+  ugc_season: UgcSeason;
+  user_garb: UserGarb$1;
+  videos: number;
+  vt_display: string;
+  [property: string]: any;
+};
+type ArgueInfo$1 = {
+  argue_link: string;
+  argue_msg: string;
+  argue_type: number;
+  [property: string]: any;
+};
+type DescV2$1 = {
+  biz_id: number;
+  raw_text: string;
+  type: number;
+  [property: string]: any;
+};
+type Dimension$1 = {
+  height: number;
+  rotate: number;
+  width: number;
+  [property: string]: any;
+};
+type Owner$3 = {
+  face: string;
+  mid: number;
+  name: string;
+  [property: string]: any;
+};
+type Page$1 = {
+  cid: number;
+  ctime: number;
+  dimension: Dimension$1;
+  duration: number;
+  first_frame: string;
+  from: string;
+  page: number;
+  part: string;
+  vid: string;
+  weblink: string;
+  [property: string]: any;
+};
+type Rights$2 = {
+  arc_pay: number;
+  autoplay: number;
+  bp: number;
+  clean_mode: number;
+  download: number;
+  elec: number;
+  free_watch: number;
+  hd5: number;
+  is_360: number;
+  is_cooperation: number;
+  is_stein_gate: number;
+  movie: number;
+  no_background: number;
+  no_reprint: number;
+  no_share: number;
+  pay: number;
+  ugc_pay: number;
+  ugc_pay_preview: number;
+  [property: string]: any;
+};
+type Stat$4 = {
+  aid: number;
+  coin: number;
+  danmaku: number;
+  dislike: number;
+  evaluation: string;
+  favorite: number;
+  his_rank: number;
+  like: number;
+  now_rank: number;
+  reply: number;
+  share: number;
+  view: number;
+  vt: number;
+  [property: string]: any;
+};
+type Subtitle$1 = {
+  allow_submit: boolean;
+  list: unknown[];
+  [property: string]: any;
+};
+type UgcSeason = {
+  attribute: number;
+  cover: string;
+  enable_vt: number;
+  ep_count: number;
+  id: number;
+  intro: string;
+  is_pay_season: boolean;
+  mid: number;
+  season_type: number;
+  sections: Section$1[];
+  sign_state: number;
+  stat: Stat3;
+  title: string;
+  [property: string]: any;
+};
+type Section$1 = {
+  episodes: Episode[];
+  id: number;
+  season_id: number;
+  title: string;
+  type: number;
+  [property: string]: any;
+};
+type Episode = {
+  aid: number;
+  arc: Arc;
+  attribute: number;
+  bvid: string;
+  cid: number;
+  id: number;
+  page: Page2;
+  pages: Page2[];
+  season_id: number;
+  section_id: number;
+  title: string;
+  [property: string]: any;
+};
+type Arc = {
+  aid: number;
+  author: Owner$3;
+  copyright: number;
+  ctime: number;
+  desc: string;
+  desc_v2: null;
+  dimension: Dimension$1;
+  duration: number;
+  dynamic: string;
+  enable_vt: number;
+  is_blooper: boolean;
+  is_chargeable_season: boolean;
+  is_lesson_video: number;
+  pic: string;
+  pubdate: number;
+  rights: Rights2;
+  stat: Stat2;
+  state: number;
+  title: string;
+  type_id: number;
+  type_id_v2: number;
+  type_name: string;
+  type_name_v2: string;
+  videos: number;
+  vt_display: string;
+  [property: string]: any;
+};
+type Rights2 = {
+  arc_pay: number;
+  autoplay: number;
+  bp: number;
+  download: number;
+  elec: number;
+  free_watch: number;
+  hd5: number;
+  is_cooperation: number;
+  movie: number;
+  no_reprint: number;
+  pay: number;
+  ugc_pay: number;
+  ugc_pay_preview: number;
+  [property: string]: any;
+};
+type Stat2 = {
+  aid: number;
+  argue_msg: string;
+  coin: number;
+  danmaku: number;
+  dislike: number;
+  evaluation: string;
+  fav: number;
+  his_rank: number;
+  like: number;
+  now_rank: number;
+  reply: number;
+  share: number;
+  view: number;
+  vt: number;
+  vv: number;
+  [property: string]: any;
+};
+type Page2 = {
+  cid: number;
+  dimension: Dimension$1;
+  duration: number;
+  from: string;
+  page: number;
+  part: string;
+  vid: string;
+  weblink: string;
+  [property: string]: any;
+};
+type Stat3 = {
+  coin: number;
+  danmaku: number;
+  fav: number;
+  his_rank: number;
+  like: number;
+  now_rank: number;
+  reply: number;
+  season_id: number;
+  share: number;
+  view: number;
+  vt: number;
+  vv: number;
+  [property: string]: any;
+};
+type UserGarb$1 = {
+  url_image_ani_cut: string;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/bilibili/VideoInfo/index.d.ts
+type VideoInfoSuccess = VideoInfo_V0;
+type VideoInfoError = never;
+type VideoInfo = VideoInfoSuccess | VideoInfoError;
+//#endregion
+//#region ../response-types/dist/generated/bilibili/VideoStream/VideoStream_V0.d.ts
+type VideoStream_V0 = {
+  code: number;
+  data: Data$28;
+  message: string;
+  ttl: number;
+  [property: string]: any;
+};
+type Data$28 = {
+  accept_description: string[];
+  accept_format: string;
+  accept_quality: number[];
+  auto_qn_resp: AutoQnResp;
+  cur_language: string;
+  cur_production_type: number;
+  dash: Dash$2;
+  format: string;
+  from: string;
+  high_format: null;
+  last_play_cid: number;
+  last_play_time: number;
+  message: string;
+  play_conf: PlayConf;
+  quality: number;
+  result: string;
+  seek_param: string;
+  seek_type: string;
+  support_formats: SupportFormat$4[];
+  timelength: number;
+  video_codecid: number;
+  view_info: null;
+  [property: string]: any;
+};
+type AutoQnResp = {
+  dyeid: string;
+  [property: string]: any;
+};
+type Dash$2 = {
+  audio: Audio$9[];
+  dolby: Dolby$2;
+  duration: number;
+  flac: null;
+  minBufferTime: number;
+  min_buffer_time: number;
+  video: Audio$9[];
+  [property: string]: any;
+};
+type Audio$9 = {
+  SegmentBase: SegmentBase;
+  backupUrl: string[];
+  backup_url: string[];
+  bandwidth: number;
+  baseUrl: string;
+  base_url: string;
+  codecid: number;
+  codecs: string;
+  frameRate: string;
+  frame_rate: string;
+  height: number;
+  id: number;
+  mimeType: string;
+  mime_type: string;
+  sar: string;
+  segment_base: SegmentBase2;
+  startWithSap: number;
+  start_with_sap: number;
+  width: number;
+  [property: string]: any;
+};
+type SegmentBase = {
+  Initialization: string;
+  indexRange: string;
+  [property: string]: any;
+};
+type SegmentBase2 = {
+  index_range: string;
+  initialization: string;
+  [property: string]: any;
+};
+type Dolby$2 = {
+  audio: null;
+  type: number;
+  [property: string]: any;
+};
+type PlayConf = {
+  is_new_description: boolean;
+  [property: string]: any;
+};
+type SupportFormat$4 = {
+  can_watch_qn_reason: number;
+  codecs: string[];
+  display_desc: string;
+  format: string;
+  limit_watch_reason: number;
+  new_description: string;
+  quality: number;
+  report: {
+    [property: string]: any;
+  };
+  superscript: string;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/bilibili/VideoStream/index.d.ts
+type VideoStreamSuccess = VideoStream_V0;
+type VideoStreamError = never;
+type VideoStream = VideoStreamSuccess | VideoStreamError;
+//#endregion
+//#region ../response-types/dist/generated/douyin/CommentReplies/CommentReplies_V0.d.ts
+type CommentReplies_V0 = {
+  comments: Comment$12[];
+  cursor: number;
+  extra: Extra$23;
+  has_more: number;
+  log_pb: LogPb$37;
+  merge_cursor: string;
+  status_code: number;
+  total: number;
+  [property: string]: any;
+};
+type Comment$12 = {
+  aweme_id: string;
+  can_collect: boolean;
+  can_share: boolean;
+  cid: string;
+  comment_reply_total: number;
+  content_type: number;
+  create_time: number;
+  decorated_emoji_info: null;
+  digg_count: number;
+  image_list: null;
+  ip_label: string;
+  is_author_digged: boolean;
+  is_folded: boolean;
+  is_hot: boolean;
+  is_note_comment: number;
+  label_list: null;
+  label_text: string;
+  label_type: number;
+  level: number;
+  merge_comment_label: null;
+  reply_comment: null;
+  reply_id: string;
+  reply_to_reply_id: string;
+  root_comment_id: string;
+  status: number;
+  text: string;
+  text_extra: TextExtra$21[];
+  text_music_info: null;
+  user: User$18;
+  user_buried: boolean;
+  user_digged: number;
+  video_list: null;
+  [property: string]: any;
+};
+type TextExtra$21 = {
+  end: number;
+  hashtag_id?: string;
+  hashtag_name?: string;
+  search_extra?: string;
+  search_hide_words?: number;
+  search_query_id?: string;
+  search_rank?: number;
+  search_text?: string;
+  sec_uid?: string;
+  start: number;
+  type: number;
+  user_id?: string;
+  [property: string]: any;
+};
+type User$18 = {
+  ad_cover_url: null;
+  avatar_schema_list: null;
+  avatar_thumb: AvatarThumb$15;
+  aweme_control: AwemeControl$17;
+  ban_user_functions: unknown[] | null;
+  batch_unfollow_contain_tabs: null;
+  batch_unfollow_relation_desc: null;
+  can_set_geofencing: null;
+  card_entries: null;
+  card_entries_not_display: null;
+  card_sort_priority: null;
+  cf_list: null;
+  cha_list: null;
+  close_friend_type: number;
+  comment_setting: number;
+  commerce_user_level: number;
+  contrail_list: null;
+  cover_url: null;
+  creator_tag_list: null;
+  custom_verify: string;
+  data_label_list: null;
+  disable_image_comment_saved: number;
+  display_info: null;
+  endorsement_info_list: null;
+  enterprise_verify_reason: string;
+  familiar_visitor_user: null;
+  follow_status: number;
+  follower_list_secondary_information_struct: null;
+  follower_status: number;
+  geofencing: null;
+  homepage_bottom_toast: null;
+  identity_labels: null;
+  im_role_ids: null;
+  interest_tags: null;
+  is_ad_fake: boolean;
+  is_block: boolean;
+  is_blocked_v2: boolean;
+  is_blocking_v2: boolean;
+  is_star: boolean;
+  item_list: null;
+  link_item_list: null;
+  need_points: null;
+  new_story_cover: null;
+  nickname: string;
+  not_seen_item_id_list: null;
+  not_seen_item_id_list_v2: null;
+  offline_info_list: null;
+  personal_tag_list: null;
+  platform_sync_info: null;
+  private_relation_list: null;
+  profile_component_disabled: null;
+  profile_mob_params: null;
+  profile_signature_components: null;
+  region: string;
+  relative_users: null;
+  sec_uid: string;
+  secret: number;
+  short_id: string;
+  signature_extra: null;
+  special_people_labels: null;
+  status: number;
+  text_extra: null;
+  type_label: null;
+  uid: string;
+  unique_id: string;
+  user_canceled: boolean;
+  user_permissions: null;
+  user_tags: null;
+  verification_permission_ids: null;
+  webcast_preview_labels: null;
+  white_cover_url: null;
+  [property: string]: any;
+};
+type AvatarThumb$15 = {
+  height: number;
+  uri: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type AwemeControl$17 = {
+  can_comment: boolean;
+  can_forward: boolean;
+  can_share: boolean;
+  can_show_comment: boolean;
+  [property: string]: any;
+};
+type Extra$23 = {
+  fatal_item_ids: null;
+  now: number;
+  scenes: null;
+  [property: string]: any;
+};
+type LogPb$37 = {
+  impr_id: string;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/douyin/CommentReplies/index.d.ts
+type CommentRepliesSuccess = CommentReplies_V0;
+type CommentRepliesError = never;
+type CommentReplies = CommentRepliesSuccess | CommentRepliesError;
+//#endregion
+//#region ../response-types/dist/generated/douyin/Comments/Comments_V0.d.ts
+type Comments_V0$1 = {
+  comment_config: {
+    [property: string]: any;
+  };
+  comment_insert_bars: null;
+  comments: Comment$11[];
+  cursor: number;
+  extra: Extra$22;
+  fast_response_comment: FastResponseComment$1;
+  folded_comment_count: number;
+  general_comment_config: {
+    [property: string]: any;
+  };
+  has_more: number;
+  hotsoon_filtered_count: number;
+  log_pb: LogPb$36;
+  reply_style: number;
+  show_management_entry_point: number;
+  sort_tags_report_map: string;
+  status_code: number;
+  total: number;
+  user_commented: number;
+  [property: string]: any;
+};
+type Comment$11 = {
+  aweme_id: string;
+  can_collect: boolean;
+  can_create_item?: boolean;
+  can_share: boolean;
+  cid: string;
+  content_type: number;
+  create_time: number;
+  decorated_emoji_info: null;
+  digg_count: number;
+  ent_parachute_tip: number;
+  enter_from: string;
+  image_list: ImageList$5[] | null;
+  ip_label: string;
+  is_author_digged: boolean;
+  is_folded: boolean;
+  is_hot: boolean;
+  is_note_comment: number;
+  is_user_tend_to_reply: boolean;
+  item_comment_total: number;
+  label_list: LabelList$1[] | null;
+  label_text: string;
+  label_type: number;
+  level: number;
+  merge_comment_label: null;
+  reply_comment: ReplyComment$1[] | null;
+  reply_comment_total: number;
+  reply_id: string;
+  reply_to_reply_id: string;
+  sort_tags: string;
+  status: number;
+  stick_position: number;
+  sticker?: Sticker;
+  text: string;
+  text_extra: TextExtra$20[];
+  text_music_info: null;
+  user: User2;
+  user_buried: boolean;
+  user_digged: number;
+  video_list: null;
+  [property: string]: any;
+};
+type ImageList$5 = {
+  crop_url: CropUrl;
+  download_url: CropUrl;
+  medium_url: CropUrl;
+  origin_url: CropUrl;
+  thumb_url: CropUrl;
+  [property: string]: any;
+};
+type CropUrl = {
+  height: number;
+  uri: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type LabelList$1 = {
+  text: string;
+  type: number;
+  [property: string]: any;
+};
+type ReplyComment$1 = {
+  aweme_id: string;
+  can_collect: boolean;
+  can_create_item?: boolean;
+  can_share?: boolean;
+  cid: string;
+  content_type: number;
+  create_aweme_config: CreateAwemeConfig;
+  create_time: number;
+  decorated_emoji_info: null;
+  digg_count: number;
+  image_list: null;
+  ip_label: string;
+  is_author_digged: boolean;
+  is_folded: boolean;
+  is_hot: boolean;
+  is_note_comment: number;
+  label_list: null;
+  label_text: string;
+  label_type: number;
+  level: number;
+  merge_comment_label: null;
+  reply_comment: null;
+  reply_id: string;
+  reply_to_reply_id: string;
+  status: number;
+  text: string;
+  text_extra: unknown[];
+  text_music_info: null;
+  user: User$17;
+  user_buried: boolean;
+  user_digged: number;
+  video_list: null;
+  [property: string]: any;
+};
+type CreateAwemeConfig = {
+  text_extra: null;
+  [property: string]: any;
+};
+type User$17 = {
+  ad_cover_url: null;
+  avatar_schema_list: null;
+  avatar_thumb: CropUrl;
+  aweme_control: AwemeControl$16;
+  ban_user_functions: null;
+  batch_unfollow_contain_tabs: null;
+  batch_unfollow_relation_desc: null;
+  can_set_geofencing: null;
+  card_entries: null;
+  card_entries_not_display: null;
+  card_sort_priority: null;
+  cf_list: null;
+  cha_list: null;
+  close_friend_type: number;
+  comment_setting: number;
+  commerce_user_level: number;
+  contrail_list: null;
+  cover_url: null;
+  creator_tag_list: null;
+  custom_verify: string;
+  data_label_list: null;
+  disable_image_comment_saved: number;
+  display_info: null;
+  endorsement_info_list: null;
+  enterprise_verify_reason: string;
+  familiar_visitor_user: null;
+  follow_status: number;
+  follower_list_secondary_information_struct: null;
+  follower_status: number;
+  followers_detail: null;
+  geofencing: null;
+  homepage_bottom_toast: null;
+  identity_labels: null;
+  im_role_ids: null;
+  interest_tags: null;
+  is_ad_fake: boolean;
+  is_block: boolean;
+  is_blocked_v2: boolean;
+  is_blocking_v2: boolean;
+  is_star: boolean;
+  item_list: null;
+  link_item_list: null;
+  need_points: null;
+  new_story_cover: null;
+  nickname: string;
+  not_seen_item_id_list: null;
+  not_seen_item_id_list_v2: null;
+  offline_info_list: null;
+  personal_tag_list: null;
+  platform_sync_info: null;
+  private_relation_list: null;
+  profile_component_disabled: null;
+  profile_mob_params: null;
+  profile_signature_components: null;
+  region: string;
+  relative_users: null;
+  sec_uid: string;
+  secret: number;
+  short_id: string;
+  signature_extra: null;
+  special_people_labels: null;
+  status: number;
+  text_extra: null;
+  type_label: null;
+  uid: string;
+  unique_id: string;
+  user_canceled: boolean;
+  user_permissions: null;
+  user_tags: null;
+  verification_permission_ids: null;
+  webcast_preview_labels: null;
+  white_cover_url: null;
+  [property: string]: any;
+};
+type AwemeControl$16 = {
+  can_comment: boolean;
+  can_forward: boolean;
+  can_share: boolean;
+  can_show_comment: boolean;
+  [property: string]: any;
+};
+type Sticker = {
+  activity_desc: string;
+  activity_schema: string;
+  animate_url: CropUrl;
+  author_sec_uid: string;
+  height: number;
+  id: number;
+  id_str: string;
+  origin_package_id: number;
+  static_url: CropUrl;
+  sticker_type: number;
+  width: number;
+  [property: string]: any;
+};
+type TextExtra$20 = {
+  end: number;
+  hashtag_id?: string;
+  hashtag_name?: string;
+  search_extra?: string;
+  search_hide_words?: number;
+  search_query_id?: string;
+  search_rank?: number;
+  search_text?: string;
+  sec_uid?: string;
+  start: number;
+  type: number;
+  user_id?: string;
+  [property: string]: any;
+};
+type User2 = {
+  ad_cover_url: null;
+  avatar_schema_list: null;
+  avatar_thumb: CropUrl;
+  aweme_control: AwemeControl$16;
+  ban_user_functions: unknown[] | null;
+  batch_unfollow_contain_tabs: null;
+  batch_unfollow_relation_desc: null;
+  can_set_geofencing: null;
+  card_entries: null;
+  card_entries_not_display: null;
+  card_sort_priority: null;
+  cf_list: null;
+  cha_list: null;
+  close_friend_type: number;
+  comment_setting: number;
+  commerce_user_level: number;
+  contrail_list: null;
+  cover_url: null;
+  creator_tag_list: null;
+  custom_verify: string;
+  data_label_list: null;
+  disable_image_comment_saved: number;
+  display_info: null;
+  endorsement_info_list: null;
+  enterprise_verify_reason: string;
+  familiar_visitor_user: null;
+  follow_status: number;
+  follower_list_secondary_information_struct: null;
+  follower_status: number;
+  geofencing: null;
+  homepage_bottom_toast: null;
+  identity_labels: null;
+  im_role_ids: null;
+  interest_tags: null;
+  is_ad_fake: boolean;
+  is_block: boolean;
+  is_blocked_v2: boolean;
+  is_blocking_v2: boolean;
+  is_star: boolean;
+  item_list: null;
+  link_item_list: null;
+  need_points: null;
+  new_story_cover: null;
+  nickname: string;
+  not_seen_item_id_list: null;
+  not_seen_item_id_list_v2: null;
+  offline_info_list: null;
+  personal_tag_list: null;
+  platform_sync_info: null;
+  private_relation_list: null;
+  profile_component_disabled: null;
+  profile_mob_params: null;
+  profile_signature_components: null;
+  region: string;
+  relative_users: null;
+  sec_uid: string;
+  secret: number;
+  short_id: string;
+  signature_extra: null;
+  special_people_labels: null;
+  status: number;
+  text_extra: null;
+  type_label: null;
+  uid: string;
+  unique_id: string;
+  user_canceled: boolean;
+  user_permissions: null;
+  user_tags: null;
+  verification_permission_ids: null;
+  webcast_preview_labels: null;
+  white_cover_url: null;
+  [property: string]: any;
+};
+type Extra$22 = {
+  fatal_item_ids: null;
+  now: number;
+  scenes: null;
+  [property: string]: any;
+};
+type FastResponseComment$1 = {
+  constant_response_words: string[];
+  timed_response_words: string[];
+  [property: string]: any;
+};
+type LogPb$36 = {
+  impr_id: string;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/douyin/Comments/index.d.ts
+type CommentsSuccess$1 = Comments_V0$1;
+type CommentsError$1 = never;
+type Comments$1 = CommentsSuccess$1 | CommentsError$1;
+//#endregion
+//#region ../response-types/dist/generated/douyin/DanmakuList/DanmakuList_V0.d.ts
+type DanmakuList_V0$1 = {
+  danmaku_list: DanmakuList$3[];
+  end_time: number;
+  extra: Extra2$2;
+  log_pb: LogPb$35;
+  start_time: number;
+  status_code: number;
+  total: number;
+  [property: string]: any;
+};
+type DanmakuList$3 = {
+  danmaku_id: string;
+  danmaku_logos: null;
+  danmaku_type: number;
+  danmaku_type_bits: number;
+  digg_count: number;
+  digg_type: number;
+  dislike_type: number;
+  extra: Extra$21;
+  from_copy: boolean;
+  has_emoji: boolean;
+  is_ad: boolean;
+  item_id: string;
+  offset_time: number;
+  score: number;
+  show_copy: boolean;
+  show_digg: boolean;
+  status: number;
+  text: string;
+  text_extra: null;
+  user_id: string;
+  [property: string]: any;
+};
+type Extra$21 = {
+  big_thumb: null;
+  decorated_emoji_info: null;
+  style_list: null;
+  [property: string]: any;
+};
+type Extra2$2 = {
+  fatal_item_ids: unknown[];
+  logid: string;
+  now: number;
+  [property: string]: any;
+};
+type LogPb$35 = {
+  impr_id: string;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/douyin/DanmakuList/index.d.ts
+type DanmakuListSuccess$1 = DanmakuList_V0$1;
+type DanmakuListError$1 = never;
+type DanmakuList$2 = DanmakuListSuccess$1 | DanmakuListError$1;
+//#endregion
+//#region ../response-types/dist/generated/douyin/DynamicEmojiList/DynamicEmojiList_V0.d.ts
+type DynamicEmojiList_V0 = {
+  decision_trees: DecisionTrees$1;
+  diverter_tags: DiverterTags$1;
+  do_not_retry: boolean;
+  extra: Extra$20;
+  flame_achieve_dashboard: FlameAchieveDashboard$1;
+  interactive_resource_config: InteractiveResourceConfig$1;
+  log_pb: LogPb$34;
+  report_toggles: ReportToggles$1;
+  status_code: number;
+  status_msg: string;
+  [property: string]: any;
+};
+type DecisionTrees$1 = {
+  flame_achieve: FlameAchieve$1;
+  interactive_resources: InteractiveResources$1;
+  [property: string]: any;
+};
+type FlameAchieve$1 = {
+  default_config_name: string;
+  root: Root;
+  [property: string]: any;
+};
+type Root = {
+  node_attribute: string;
+  node_operation: string;
+  node_type: string;
+  node_value: string;
+  sub_node: SubNode[];
+  [property: string]: any;
+};
+type SubNode = {
+  config_name?: string;
+  node_attribute: string;
+  node_operation: string;
+  node_type: string;
+  node_value: string;
+  sub_node?: SubNode2[];
+  [property: string]: any;
+};
+type SubNode2 = {
+  config_name: string;
+  node_attribute: string;
+  node_operation: string;
+  node_type: string;
+  node_value: string;
+  [property: string]: any;
+};
+type InteractiveResources$1 = {
+  default_config_name: string;
+  root: SubNode2;
+  [property: string]: any;
+};
+type DiverterTags$1 = {
+  actionbar_diff: string;
+  flame_achieve: string;
+  interactive_resources: string;
+  interactive_resources_v2: string;
+  plus_panel_diff: string;
+  [property: string]: any;
+};
+type Extra$20 = {
+  fatal_item_ids: unknown[];
+  logid: string;
+  now: number;
+  [property: string]: any;
+};
+type FlameAchieveDashboard$1 = {
+  '火花成就-小火人加日常题材加下线密友': Anonymous;
+  '火花成就日常': Anonymous2;
+  '火花成就日常-群聊': Anonymous2;
+  '火花成就日常V2': V2;
+  '火花成就日常V2-群聊': V2;
+  '火花成就测试': Anonymous2;
+  '火花成就节日测试-群聊': Anonymous2;
+  [property: string]: any;
+};
+type Anonymous = {
+  detail: Detail[];
+  pet_elf_detail: PetElfDetail[];
+  [property: string]: any;
+};
+type Detail = {
+  detail_subtitle_lock?: string[];
+  detail_subtitle_unflame: string[];
+  flame_info: FlameInfo[];
+  flame_to_achieve_url: string;
+  keys: string[];
+  subscript: string;
+  subtitle: string;
+  subtitle_lock?: string;
+  title: string;
+  [property: string]: any;
+};
+type FlameInfo = {
+  detail_subtitle: string[];
+  flame_achieve_url: string;
+  key: string;
+  subscript_color: string;
+  subtitle: string;
+  title: string;
+  [property: string]: any;
+};
+type PetElfDetail = {
+  detail_subtitle_unflame: string[];
+  flame_info: FlameInfo[];
+  flame_to_achieve_url: string;
+  keys: string[];
+  subscript: string;
+  subtitle: string;
+  title: string;
+  [property: string]: any;
+};
+type Anonymous2 = {
+  detail: PetElfDetail[];
+  [property: string]: any;
+};
+type V2 = {
+  detail: Detail[];
+  [property: string]: any;
+};
+type InteractiveResourceConfig$1 = {
+  '互动表情-26常规（新-0902）': T260902;
+  [property: string]: any;
+};
+type T260902 = {
+  animate_icon: {
+    [property: string]: any;
+  };
+  icon_url: string;
+  interactive_resources: InteractiveResource[];
+  special_resources: SpecialResource[];
+  [property: string]: any;
+};
+type InteractiveResource = {
+  animate_type: string;
+  animate_url: string;
+  biz_type: number;
+  display_name: string;
+  extra?: Extra2$1;
+  height: number;
+  resource_type?: number;
+  resource_variant_list?: ResourceVariantList[];
+  static_type: string;
+  static_url: string;
+  static_url_list?: StaticUrlList[];
+  sticker_info_source: string;
+  version: number;
+  visible_end_time?: number;
+  visible_start_time?: number;
+  width: number;
+  [property: string]: any;
+};
+type Extra2$1 = {
+  activity_desc?: string;
+  activity_schema?: string;
+  light_interaction?: string;
+  [property: string]: any;
+};
+type ResourceVariantList = {
+  animate_type: string;
+  animate_url: string;
+  display_name: string;
+  extra: Extra3$1;
+  random_weight: number;
+  static_type: string;
+  static_url: string;
+  sticker_quick_reply: StickerQuickReply[];
+  [property: string]: any;
+};
+type Extra3$1 = {
+  light_interaction: string;
+  [property: string]: any;
+};
+type StickerQuickReply = {
+  display_name: string;
+  show_name?: string;
+  sticker_type: number;
+  [property: string]: any;
+};
+type StaticUrlList = {
+  static_type: string;
+  static_url: string;
+  [property: string]: any;
+};
+type SpecialResource = {
+  config?: Config$2;
+  in_advance?: boolean;
+  name: string;
+  relation_name: string[];
+  special_resource: string;
+  special_type: number;
+  trigger_type?: string;
+  version: number;
+  [property: string]: any;
+};
+type Config$2 = {
+  continuous_show?: string;
+  custom_action?: string;
+  no_same_sender?: string;
+  random_show?: string;
+  receiver_show?: string;
+  sender_show?: string;
+  [property: string]: any;
+};
+type LogPb$34 = {
+  impr_id: string;
+  [property: string]: any;
+};
+type ReportToggles$1 = {
+  actionbar_diff: number;
+  flame_achieve: number;
+  interactive_resources: number;
+  interactive_resources_v2: number;
+  plus_panel_diff: number;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/douyin/DynamicEmojiList/index.d.ts
+type DynamicEmojiListSuccess = DynamicEmojiList_V0;
+type DynamicEmojiListError = never;
+type DynamicEmojiList = DynamicEmojiListSuccess | DynamicEmojiListError;
+//#endregion
+//#region ../response-types/dist/generated/douyin/EmojiList/EmojiList_V0.d.ts
+type EmojiList_V0$2 = {
+  emoji_list: EmojiList$3[];
+  status_code: number;
+  version: number;
+  [property: string]: any;
+};
+type EmojiList$3 = {
+  display_name: string;
+  emoji_url: EmojiUrl;
+  hide: number;
+  origin_uri: string;
+  [property: string]: any;
+};
+type EmojiUrl = {
+  uri: string;
+  url_list: string[];
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/douyin/EmojiList/index.d.ts
+type EmojiListSuccess$2 = EmojiList_V0$2;
+type EmojiListError$2 = never;
+type EmojiList$2 = EmojiListSuccess$2 | EmojiListError$2;
+//#endregion
+//#region ../response-types/dist/generated/douyin/EmojiResourceMeta/EmojiResourceMeta_V0.d.ts
+type EmojiResourceMeta_V0 = {
+  android_emoji_resource: AndroidEmojiResource;
+  android_emoji_status: number;
+  extra: Extra$19;
+  ios_emoji_resource: {
+    [property: string]: any;
+  };
+  ios_emoji_status: number;
+  log_pb: LogPb$33;
+  status_code: number;
+  status_msg: string;
+  [property: string]: any;
+};
+type AndroidEmojiResource = {
+  create_time: number;
+  id: number;
+  md5: string;
+  resource_url: string;
+  update_time: number;
+  [property: string]: any;
+};
+type Extra$19 = {
+  fatal_item_ids: unknown[];
+  logid: string;
+  now: number;
+  [property: string]: any;
+};
+type LogPb$33 = {
+  impr_id: string;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/douyin/EmojiResourceMeta/index.d.ts
+type EmojiResourceMetaSuccess = EmojiResourceMeta_V0;
+type EmojiResourceMetaError = never;
+type EmojiResourceMeta = EmojiResourceMetaSuccess | EmojiResourceMetaError;
+//#endregion
+//#region ../response-types/dist/generated/douyin/GuestMusicAwemeList/GuestMusicAwemeList_V0.d.ts
+type GuestMusicAwemeList_V0 = {
+  aweme_list: AwemeList$6[];
+  cursor: number;
+  extra: Extra$18;
+  has_more: boolean;
+  status_code: number;
+  [property: string]: any;
+};
+type AwemeList$6 = {
+  aweme_id: string;
+  aweme_type: number;
+  cha_list: null;
+  chapter_bar_color: null;
+  chapter_list: null;
+  comment_list: null;
+  common_labels: null;
+  desc: string;
+  geofencing: null;
+  image_infos: null;
+  images: null;
+  img_bitrate: null;
+  interaction_stickers: null;
+  label_top_text: null;
+  long_video: null;
+  promotions: null;
+  statistics: Statistics$21;
+  text_extra: null;
+  video: Video$23;
+  video_labels: null;
+  video_text: null;
+  [property: string]: any;
+};
+type Statistics$21 = {
+  aweme_id: string;
+  comment_count: number;
+  digg_count: number;
+  forward_count: number;
+  play_count: number;
+  share_count: number;
+  [property: string]: any;
+};
+type Video$23 = {
+  big_thumbs: null;
+  bit_rate: null;
+  cover: Cover$12;
+  duration: number;
+  height: number;
+  play_addr: Cover$12;
+  width: number;
+  [property: string]: any;
+};
+type Cover$12 = {
+  height: number;
+  uri: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type Extra$18 = {
+  logid: string;
+  now: number;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/douyin/GuestMusicAwemeList/index.d.ts
+type GuestMusicAwemeListSuccess = GuestMusicAwemeList_V0;
+type GuestMusicAwemeListError = never;
+type GuestMusicAwemeList = GuestMusicAwemeListSuccess | GuestMusicAwemeListError;
+//#endregion
+//#region ../response-types/dist/generated/douyin/GuestMusicInfo/GuestMusicInfo_V0.d.ts
+type GuestMusicInfo_V0 = {
+  extra: Extra$17;
+  music_info: MusicInfo$3;
+  status_code: number;
+  [property: string]: any;
+};
+type Extra$17 = {
+  logid: string;
+  now: number;
+  [property: string]: any;
+};
+type MusicInfo$3 = {
+  author: string;
+  cover_hd: CoverHd;
+  cover_large: CoverHd;
+  cover_medium: CoverHd;
+  cover_thumb: CoverHd;
+  duration: number;
+  extra: string;
+  mid: string;
+  position: null;
+  sec_uid: string;
+  status: number;
+  title: string;
+  [property: string]: any;
+};
+type CoverHd = {
+  uri: string;
+  url_list: string[];
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/douyin/GuestMusicInfo/index.d.ts
+type GuestMusicInfoSuccess = GuestMusicInfo_V0;
+type GuestMusicInfoError = never;
+type GuestMusicInfo$1 = GuestMusicInfoSuccess | GuestMusicInfoError;
+//#endregion
+//#region ../response-types/dist/generated/douyin/GuestUserInfo/GuestUserInfo_V0.d.ts
+type GuestUserInfo_V0 = {
+  extra: Extra$16;
+  is_oversea: number;
+  status_code: number;
+  user_info: UserInfo$4;
+  [property: string]: any;
+};
+type Extra$16 = {
+  logid: string;
+  now: number;
+  [property: string]: any;
+};
+type UserInfo$4 = {
+  account_cert_info: string;
+  avatar_medium: AvatarMedium$7;
+  avatar_thumb: AvatarMedium$7;
+  aweme_count: number;
+  card_entries: CardEntry$2[];
+  custom_verify: string;
+  enterprise_verify_reason: string;
+  favoriting_count: number;
+  follow_status: number;
+  followers_detail: null;
+  following_count: number;
+  geofencing: null;
+  mix_info: unknown[];
+  mplatform_followers_count: number;
+  nickname: string;
+  original_musician: OriginalMusician$2;
+  platform_sync_info: null;
+  policy_version: null;
+  sec_uid: string;
+  short_id: string;
+  show_favorite_list: boolean;
+  signature: string;
+  total_favorited: string;
+  type_label: null;
+  unique_id: string;
+  verification_type: number;
+  [property: string]: any;
+};
+type AvatarMedium$7 = {
+  uri: string;
+  url_list: string[];
+  [property: string]: any;
+};
+type CardEntry$2 = {
+  card_data: string;
+  goto_url: string;
+  icon_dark: IconDark$2;
+  icon_light: IconDark$2;
+  sub_title: string;
+  title: string;
+  type: number;
+  [property: string]: any;
+};
+type IconDark$2 = {
+  url_list: string[];
+  [property: string]: any;
+};
+type OriginalMusician$2 = {
+  digg_count: number;
+  music_count: number;
+  music_used_count: number;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/douyin/GuestUserInfo/index.d.ts
+type GuestUserInfoSuccess = GuestUserInfo_V0;
+type GuestUserInfoError = never;
+type GuestUserInfo$1 = GuestUserInfoSuccess | GuestUserInfoError;
+//#endregion
+//#region ../response-types/dist/generated/douyin/ImageAlbumWork/ImageAlbumWork_Error_V0.d.ts
+type ImageAlbumWork_Error_V0 = {
+  aweme_detail: null;
+  filter_detail: FilterDetail$4;
+  log_pb: LogPb$32;
+  status_code: number;
+  [property: string]: any;
+};
+type FilterDetail$4 = {
+  aweme_id: string;
+  detail_msg: string;
+  filter_reason: string;
+  icon: string;
+  notice: string;
+  [property: string]: any;
+};
+type LogPb$32 = {
+  impr_id: string;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/douyin/ImageAlbumWork/ImageAlbumWork_V0.d.ts
+type ImageAlbumWork_V0 = {
+  aweme_detail: AwemeDetail$9;
+  log_pb: LogPb$31;
+  status_code: number;
+  [property: string]: any;
+};
+type AwemeDetail$9 = {
+  activity_video_type: number;
+  anchors: null;
+  authentication_token: string;
+  author: Author$21;
+  author_mask_tag: number;
+  author_user_id: number;
+  aweme_acl?: AwemeAcl$6;
+  aweme_control: AwemeControl$15;
+  aweme_id: string;
+  aweme_listen_struct: AwemeListenStruct$15;
+  aweme_type: number;
+  aweme_type_tags: string;
+  boost_status: number;
+  can_be_oc_cover: boolean;
+  can_cache_to_local: boolean;
+  caption: string;
+  cf_assets_type: number;
+  cf_recheck_ts: number;
+  challenge_position: null;
+  chapter_list: null;
+  clip_paging?: ClipPaging$7;
+  collect_stat: number;
+  collection_corner_mark: number;
+  comment_gid: number;
+  comment_list: null;
+  comment_permission_info: CommentPermissionInfo$15;
+  commerce_config_data: null;
+  component_control: ComponentControl$15;
+  component_info_v2: string;
+  cover_labels: null;
+  create_scale_type?: string[];
+  create_time: number;
+  desc: string;
+  disable_relation_bar: number;
+  dislike_dimension_list: null;
+  dislike_dimension_list_v2: null;
+  distribute_circle: DistributeCircle$15;
+  diversion_bar_info: unknown[];
+  douplus_user_type: number;
+  douyin_pc_video_extra_seo: string;
+  duet_aggregate_in_music_tab: boolean;
+  duration: number;
+  ecom_comment_atmosphere_type: number;
+  enable_comment_sticker_rec: boolean;
+  enable_decorated_emoji: boolean;
+  ent_log_extra: EntLogExtra$10;
+  entertainment_product_info: EntertainmentProductInfo$20;
+  entertainment_recommend_info: string;
+  entertainment_video_paid_way: EntertainmentVideoPaidWay$11;
+  entertainment_video_type: number;
+  f_s_grouth_property: FSGrouthProperty$8;
+  fall_card_struct: FallCardStruct$11;
+  feed_comment_config: FeedCommentConfig$15;
+  flash_mob_trends: number;
+  follow_shoot_clip_info: FollowShootClipInfo$11;
+  follow_shoot_property: FollowShootProperty$7;
+  friend_recommend_info: FriendRecommendInfo$11;
+  game_tag_info: GameTagInfo$16;
+  geofencing: unknown[];
+  geofencing_regions: null;
+  group_id: string;
+  guide_scene_info: {
+    [property: string]: any;
+  };
+  hybrid_label: null;
+  image_album_music_info: ImageAlbumMusicInfo$15;
+  image_comment: ImageComment$8;
+  image_crop_ctrl: number;
+  image_infos: null;
+  image_item_quality_level: number;
+  image_list: null;
+  images: Image$12[];
+  img_bitrate: unknown[] | null;
+  impression_data: ImpressionData$20;
+  incentive_item_type: number;
+  interaction_stickers: null;
+  is_24_story: number;
+  is_25_story: number;
+  is_ads: boolean;
+  is_aigc_media: boolean;
+  is_collects_selected: number;
+  is_duet_sing: boolean;
+  is_from_ad_auth: boolean;
+  is_image_beat: boolean;
+  is_life_item: boolean;
+  is_live_photo?: number;
+  is_moment_history: number;
+  is_moment_story: number;
+  is_multi_content: number;
+  is_new_text_mode: number;
+  is_share_post: boolean;
+  is_story: number;
+  is_subtitled?: number;
+  is_top: number;
+  is_use_music: boolean;
+  item_aigc_follow_shot: number;
+  item_title: string;
+  item_warn_notification: ItemWarnNotification$15;
+  label_top_text: null;
+  libfinsert_task_id: string;
+  long_video: null;
+  mark_largely_following: boolean;
+  media_type: number;
+  music: Music$20;
+  nickname_position: null;
+  origin_comment_ids: null;
+  origin_duet_resource_uri: string;
+  origin_text_extra: unknown[];
+  original: number;
+  original_images: null;
+  pack_usage_scene_by_req_path: string;
+  packed_clips: null;
+  pc_need_login: boolean;
+  personal_page_botton_diagnose_style: number;
+  photo_search_entrance: PhotoSearchEntrance$15;
+  play_progress: PlayProgress$15;
+  position: null;
+  preview_title: string;
+  preview_video_status: number;
+  product_genre_info: ProductGenreInfo$10;
+  promotions: unknown[];
+  publish_plus_alienation: PublishPlusAlienation$15;
+  rate: number;
+  region: string;
+  related_music_anchor: RelatedMusicAnchor$7;
+  relation_labels: null;
+  risk_infos: RiskInfos$18;
+  sec_item_id: string;
+  select_anchor_expanded_content: number;
+  seo_info: {
+    [property: string]: any;
+  };
+  series_basic_info: {
+    [property: string]: any;
+  };
+  series_paid_info: SeriesPaidInfo$15;
+  share_info: ShareInfo2$10;
+  share_rec_extra: string;
+  share_url: string;
+  shoot_way: string;
+  should_open_ad_report: boolean;
+  show_follow_button: {
+    [property: string]: any;
+  };
+  social_tag_list: null;
+  statistics: Statistics$20;
+  status: Status$17;
+  suggest_words?: SuggestWords$18;
+  text_extra: TextExtra$19[];
+  trends_event_track: string;
+  uniqid_position: null;
+  user_digged: number;
+  user_recommend_status: number;
+  video: Video2$6;
+  video_control: VideoControl$20;
+  video_game_data_channel_config: {
+    [property: string]: any;
+  };
+  video_labels: null;
+  video_share_edit_status: number;
+  video_tag: VideoTag$15[];
+  video_text: unknown[];
+  visual_search_info: VisualSearchInfo$15;
+  vtag_search: VtagSearch$8;
+  xigua_base_info: XiguaBaseInfo$15;
+  [property: string]: any;
+};
+type Author$21 = {
+  account_cert_info?: string;
+  avatar_thumb: AvatarThumb$14;
+  awemehts_greet_info: string;
+  cf_list: null;
+  close_friend_type: number;
+  contacts_status: number;
+  contrail_list: null;
+  cover_url: AvatarThumb$14[];
+  create_time: number;
+  custom_verify: string;
+  data_label_list: null;
+  endorsement_info_list: null;
+  enterprise_verify_reason: string;
+  favoriting_count: number;
+  follow_status: number;
+  follower_count: number;
+  follower_list_secondary_information_struct: null;
+  follower_status: number;
+  following_count: number;
+  hide_others_recommend_interest: number;
+  hide_self_recommend_interest: number;
+  im_role_ids: null;
+  is_ad_fake: boolean;
+  is_blocked_v2: boolean;
+  is_blocking_v2: boolean;
+  is_cf: number;
+  live_high_value: number;
+  mate_add_permission: number;
+  max_follower_count: number;
+  nickname: string;
+  offline_info_list: null;
+  personal_tag_list: null;
+  prevent_download: boolean;
+  risk_notice_text: string;
+  sec_uid: string;
+  secret: number;
+  share_info: ShareInfo$18;
+  short_id: string;
+  signature: string;
+  signature_extra: null;
+  special_follow_status: number;
+  special_people_labels: null;
+  status: number;
+  story25_comment: number;
+  story_interactive: number;
+  story_ttl: number;
+  text_extra: null;
+  total_favorited: number;
+  uid: string;
+  unique_id: string;
+  user_age: number;
+  user_canceled: boolean;
+  user_permissions: null;
+  verification_type: number;
+  [property: string]: any;
+};
+type AvatarThumb$14 = {
+  height: number;
+  uri: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type ShareInfo$18 = {
+  share_desc: string;
+  share_desc_info: string;
+  share_qrcode_url: AvatarThumb$14;
+  share_title: string;
+  share_title_myself: string;
+  share_title_other: string;
+  share_url: string;
+  share_weibo_desc: string;
+  [property: string]: any;
+};
+type AwemeAcl$6 = {
+  download_mask_panel: DownloadMaskPanel$9;
+  [property: string]: any;
+};
+type DownloadMaskPanel$9 = {
+  code: number;
+  show_type: number;
+  [property: string]: any;
+};
+type AwemeControl$15 = {
+  can_comment: boolean;
+  can_forward: boolean;
+  can_share: boolean;
+  can_show_comment: boolean;
+  [property: string]: any;
+};
+type AwemeListenStruct$15 = {
+  trace_info: string;
+  [property: string]: any;
+};
+type ClipPaging$7 = {
+  direct: number;
+  has_more: boolean;
+  source: string;
+  [property: string]: any;
+};
+type CommentPermissionInfo$15 = {
+  can_comment: boolean;
+  comment_permission_status: number;
+  item_detail_entry: boolean;
+  press_entry: boolean;
+  toast_guide: boolean;
+  [property: string]: any;
+};
+type ComponentControl$15 = {
+  data_source_url: string;
+  [property: string]: any;
+};
+type DistributeCircle$15 = {
+  campus_block_interaction: boolean;
+  distribute_type: number;
+  is_campus: boolean;
+  [property: string]: any;
+};
+type EntLogExtra$10 = {
+  log_extra: string;
+  [property: string]: any;
+};
+type EntertainmentProductInfo$20 = {
+  market_info: MarketInfo$20;
+  [property: string]: any;
+};
+type MarketInfo$20 = {
+  limit_free: LimitFree$20;
+  [property: string]: any;
+};
+type LimitFree$20 = {
+  in_free: boolean;
+  [property: string]: any;
+};
+type EntertainmentVideoPaidWay$11 = {
+  enable_use_new_ent_data: boolean;
+  paid_type: number;
+  paid_ways: unknown[];
+  [property: string]: any;
+};
+type FSGrouthProperty$8 = {
+  is_client_pack: boolean;
+  is_natural_traffic: boolean;
+  is_related_path: boolean;
+  [property: string]: any;
+};
+type FallCardStruct$11 = {
+  recommend_reason?: string;
+  recommend_reason_v2: string;
+  [property: string]: any;
+};
+type FeedCommentConfig$15 = {
+  audio_comment_permission: number;
+  author_audit_status: number;
+  common_comment_permission: number;
+  common_flags: string;
+  double_publish_limit: number;
+  input_config_text: string;
+  input_config_text_type: string;
+  [property: string]: any;
+};
+type FollowShootClipInfo$11 = {
+  clip_from_platform?: number;
+  clip_video_all?: number;
+  origin_clip_id?: number;
+  [property: string]: any;
+};
+type FollowShootProperty$7 = {
+  recommended_camera_mode: string;
+  [property: string]: any;
+};
+type FriendRecommendInfo$11 = {
+  disable_friend_recommend_guide_label: boolean;
+  friend_recommend_source: number;
+  primary_label_user?: PrimaryLabelUser$3;
+  [property: string]: any;
+};
+type PrimaryLabelUser$3 = {
+  recommend_app_id: number;
+  recommend_time: number;
+  [property: string]: any;
+};
+type GameTagInfo$16 = {
+  is_game: boolean;
+  [property: string]: any;
+};
+type ImageAlbumMusicInfo$15 = {
+  begin_time: number;
+  end_time: number;
+  volume: number;
+  [property: string]: any;
+};
+type ImageComment$8 = {
+  comment_highlight_text: string;
+  [property: string]: any;
+};
+type Image$12 = {
+  clip_type?: number;
+  download_url_list: string[];
+  height: number;
+  is_new_text_mode?: number;
+  live_photo_type?: number;
+  resolution_log_param: {
+    [property: string]: any;
+  };
+  uri: string;
+  url_list: string[];
+  video?: Video$22;
+  width: number;
+  [property: string]: any;
+};
+type Video$22 = {
+  big_thumbs: unknown[];
+  bit_rate: BitRate$15[];
+  bit_rate_audio: null;
+  cdn_url_expired: number;
+  cover: AvatarThumb$14;
+  download_addr: AvatarThumb$14;
+  download_suffix_logo_addr: AvatarThumb$14;
+  duration: number;
+  has_download_suffix_logo_addr: boolean;
+  has_watermark: boolean;
+  height: number;
+  is_bytevc1: number;
+  is_callback: boolean;
+  is_h265: number;
+  is_source_HDR: number;
+  meta: string;
+  need_set_token: boolean;
+  origin_cover: OriginCover$9;
+  play_addr: PlayAddr$12;
+  play_addr_h264: PlayAddr$12;
+  play_addr_lowbr: PlayAddr$12;
+  ratio: string;
+  tags: null;
+  width: number;
+  [property: string]: any;
+};
+type BitRate$15 = {
+  FPS: number;
+  HDR_bit: string;
+  HDR_type: string;
+  bit_rate: number;
+  format: string;
+  gear_name: string;
+  is_bytevc1: number;
+  is_h265: number;
+  play_addr: PlayAddr$12;
+  quality_type: number;
+  video_extra: string;
+  [property: string]: any;
+};
+type PlayAddr$12 = {
+  data_size: number;
+  file_cs: string;
+  file_hash: string;
+  height: number;
+  uri: string;
+  url_key: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type OriginCover$9 = {
+  height: number;
+  uri: string;
+  url_list: unknown[];
+  width: number;
+  [property: string]: any;
+};
+type ImpressionData$20 = {
+  group_id_list_a: unknown[];
+  group_id_list_b: unknown[];
+  group_id_list_c: unknown[];
+  group_id_list_d: unknown[];
+  similar_id_list_a: null;
+  similar_id_list_b: null;
+  [property: string]: any;
+};
+type ItemWarnNotification$15 = {
+  content: string;
+  show: boolean;
+  type: number;
+  [property: string]: any;
+};
+type Music$20 = {
+  album: string;
+  artist_user_infos: null;
+  artists: unknown[];
+  audition_duration: number;
+  author: string;
+  author_deleted: boolean;
+  author_position: null;
+  author_status?: number;
+  avatar_large?: AvatarThumb$14;
+  avatar_medium?: AvatarThumb$14;
+  avatar_thumb?: AvatarThumb$14;
+  binded_challenge_id: number;
+  can_background_play: boolean;
+  collect_stat: number;
+  cover_color_hsv?: CoverColorHsv$8;
+  cover_hd: AvatarThumb$14;
+  cover_large: AvatarThumb$14;
+  cover_medium: AvatarThumb$14;
+  cover_thumb: AvatarThumb$14;
+  dmv_auto_show: boolean;
+  dsp_status: number;
+  duration: number;
+  end_time: number;
+  external_song_info: unknown[];
+  extra: string;
+  id: number;
+  id_str: string;
+  is_audio_url_with_cookie: boolean;
+  is_commerce_music: boolean;
+  is_del_video: boolean;
+  is_matched_metadata: boolean;
+  is_original: boolean;
+  is_original_sound: boolean;
+  is_pgc: boolean;
+  is_restricted: boolean;
+  is_video_self_see: boolean;
+  lyric_short_position: null;
+  mid: string;
+  music_chart_ranks: null;
+  music_collect_count: number;
+  music_cover_atmosphere_color_value: string;
+  music_status: number;
+  musician_user_infos: null;
+  mute_share: boolean;
+  offline_desc: string;
+  owner_handle: string;
+  owner_id?: string;
+  owner_nickname: string;
+  pgc_music_type: number;
+  play_url: PlayUrl$4;
+  position: null;
+  prevent_download: boolean;
+  prevent_item_download_status: number;
+  preview_end_time: number;
+  preview_start_time: number;
+  reason_type: number;
+  redirect: boolean;
+  schema_url: string;
+  search_impr: SearchImpr$19;
+  sec_uid?: string;
+  shoot_duration: number;
+  show_origin_clip: boolean;
+  song?: Song$17;
+  source_platform: number;
+  start_time: number;
+  status: number;
+  strong_beat_url: AvatarThumb$14;
+  tag_list: null;
+  title: string;
+  unshelve_countries: null;
+  user_count: number;
+  video_duration: number;
+  [property: string]: any;
+};
+type CoverColorHsv$8 = {
+  h: number;
+  s: number;
+  v: number;
+  [property: string]: any;
+};
+type PlayUrl$4 = {
+  height: number;
+  uri: string;
+  url_key: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type SearchImpr$19 = {
+  entity_id: string;
+  [property: string]: any;
+};
+type Song$17 = {
+  artists: null;
+  chorus: Chorus$8;
+  id: number;
+  id_str: string;
+  title: string;
+  [property: string]: any;
+};
+type Chorus$8 = {
+  duration_ms: number;
+  start_ms: number;
+  [property: string]: any;
+};
+type PhotoSearchEntrance$15 = {
+  ecom_type: number;
+  [property: string]: any;
+};
+type PlayProgress$15 = {
+  last_modified_time: number;
+  play_progress: number;
+  [property: string]: any;
+};
+type ProductGenreInfo$10 = {
+  material_genre_sub_type_set: number[];
+  product_genre_type: number;
+  special_info: SpecialInfo$10;
+  [property: string]: any;
+};
+type SpecialInfo$10 = {
+  recommend_group_name: number;
+  [property: string]: any;
+};
+type PublishPlusAlienation$15 = {
+  alienation_type: number;
+  [property: string]: any;
+};
+type RelatedMusicAnchor$7 = {
+  extra: string;
+  image_url: ImageUrl$4;
+  priority: number;
+  schema_url: string;
+  type: string;
+  [property: string]: any;
+};
+type ImageUrl$4 = {
+  uri: string;
+  url_list: string[];
+  [property: string]: any;
+};
+type RiskInfos$18 = {
+  content: string;
+  risk_sink: boolean;
+  type: number;
+  vote: boolean;
+  warn: boolean;
+  [property: string]: any;
+};
+type SeriesPaidInfo$15 = {
+  item_price: number;
+  series_paid_status: number;
+  [property: string]: any;
+};
+type ShareInfo2$10 = {
+  share_desc: string;
+  share_desc_info: string;
+  share_link_desc: string;
+  share_url: string;
+  [property: string]: any;
+};
+type Statistics$20 = {
+  admire_count: number;
+  aweme_id: string;
+  collect_count: number;
+  comment_count: number;
+  digg_count: number;
+  play_count: number;
+  recommend_count: number;
+  share_count: number;
+  [property: string]: any;
+};
+type Status$17 = {
+  allow_friend_recommend: boolean;
+  allow_friend_recommend_guide: boolean;
+  allow_self_recommend_to_friend: boolean;
+  allow_share: boolean;
+  aweme_id: string;
+  enable_soft_delete: number;
+  in_reviewing: boolean;
+  is_delete: boolean;
+  is_prohibited: boolean;
+  listen_video_status: number;
+  not_allow_soft_del_reason: string;
+  part_see: number;
+  private_status: number;
+  review_result: ReviewResult$20;
+  [property: string]: any;
+};
+type ReviewResult$20 = {
+  review_status: number;
+  [property: string]: any;
+};
+type SuggestWords$18 = {
+  suggest_words: SuggestWord$17[];
+  [property: string]: any;
+};
+type SuggestWord$17 = {
+  extra_info: string;
+  hint_text: string;
+  icon_url: string;
+  scene: string;
+  words: Word$19[];
+  [property: string]: any;
+};
+type Word$19 = {
+  info: string;
+  word: string;
+  word_id: string;
+  [property: string]: any;
+};
+type TextExtra$19 = {
+  caption_end: number;
+  caption_start: number;
+  end: number;
+  hashtag_id?: string;
+  hashtag_name?: string;
+  is_commerce?: boolean;
+  start: number;
+  type: number;
+  [property: string]: any;
+};
+type Video2$6 = {
+  audio: {
+    [property: string]: any;
+  };
+  big_thumbs: BigThumb$14[] | null;
+  bit_rate_audio: null;
+  cover: AvatarThumb$14;
+  duration: number;
+  has_watermark: boolean;
+  height: number;
+  is_h265: number;
+  meta: string;
+  origin_cover: AvatarThumb$14;
+  play_addr: PlayUrl$4;
+  ratio: string;
+  width: number;
+  [property: string]: any;
+};
+type BigThumb$14 = {
+  duration: number;
+  fext: string;
+  img_num: number;
+  img_url: string;
+  img_urls: unknown[];
+  img_x_len: number;
+  img_x_size: number;
+  img_y_len: number;
+  img_y_size: number;
+  interval: number;
+  uri: string;
+  uris: unknown[];
+  [property: string]: any;
+};
+type VideoControl$20 = {
+  allow_douplus: boolean;
+  allow_download: boolean;
+  allow_duet: boolean;
+  allow_dynamic_wallpaper: boolean;
+  allow_music: boolean;
+  allow_react: boolean;
+  allow_record: boolean;
+  allow_share: boolean;
+  allow_stitch: boolean;
+  disable_record_reason: string;
+  download_ignore_visibility: boolean;
+  download_info: DownloadInfo$20;
+  draft_progress_bar: number;
+  duet_ignore_visibility: boolean;
+  duet_info: DuetInfo$20;
+  prevent_download_type: number;
+  share_grayed: boolean;
+  share_ignore_visibility: boolean;
+  share_type: number;
+  show_ai_corner: boolean;
+  show_progress_bar: number;
+  show_watermark: boolean;
+  text_copy_type: number;
+  timer_info: {
+    [property: string]: any;
+  };
+  timer_status: number;
+  [property: string]: any;
+};
+type DownloadInfo$20 = {
+  fail_info?: FailInfo$12;
+  level: number;
+  [property: string]: any;
+};
+type FailInfo$12 = {
+  code: number;
+  msg: string;
+  reason: string;
+  [property: string]: any;
+};
+type DuetInfo$20 = {
+  fail_info: FailInfo2$9;
+  level: number;
+  [property: string]: any;
+};
+type FailInfo2$9 = {
+  code: number;
+  reason: string;
+  [property: string]: any;
+};
+type VideoTag$15 = {
+  level: number;
+  tag_id: number;
+  tag_name: string;
+  [property: string]: any;
+};
+type VisualSearchInfo$15 = {
+  is_ecom_img: boolean;
+  is_high_accuracy_ecom: boolean;
+  is_high_recall_ecom: boolean;
+  is_show_img_entrance: boolean;
+  visual_search_longpress: number;
+  [property: string]: any;
+};
+type VtagSearch$8 = {
+  vtag_delay_ts: number;
+  vtag_enable: boolean;
+  [property: string]: any;
+};
+type XiguaBaseInfo$15 = {
+  item_id: number;
+  star_altar_order_id: number;
+  star_altar_type: number;
+  status: number;
+  [property: string]: any;
+};
+type LogPb$31 = {
+  impr_id: string;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/douyin/ImageAlbumWork/index.d.ts
+type ImageAlbumWorkSuccess = ImageAlbumWork_V0;
+type ImageAlbumWorkError = ImageAlbumWork_Error_V0;
+type ImageAlbumWork = ImageAlbumWorkSuccess | ImageAlbumWorkError;
+//#endregion
+//#region ../response-types/dist/generated/douyin/LiveRoomInfo/LiveRoomInfo_V0.d.ts
+type LiveRoomInfo_V0 = {
+  data: Data$27;
+  extra: Extra3;
+  status_code: number;
+  [property: string]: any;
+};
+type Data$27 = {
+  auth_cert_info: string;
+  data: Data2$2[];
+  enter_mode: number;
+  enter_room_id: string;
+  partition_road_map: PartitionRoadMap$1;
+  qrcode_url: string;
+  room_status: number;
+  shark_decision_conf: string;
+  similar_rooms: SimilarRoom$1[];
+  user: User$16;
+  [property: string]: any;
+};
+type Data2$2 = {
+  AnchorABMap: {
+    [property: string]: any;
+  };
+  admin_user_ids: unknown[];
+  admin_user_ids_str: unknown[];
+  admin_user_open_ids: unknown[];
+  admin_user_open_ids_str: unknown[];
+  fansclub_msg_style: number;
+  follow_msg_style: number;
+  gift_msg_style: number;
+  has_commerce_goods: boolean;
+  id_str: string;
+  like_count: number;
+  linker_map: {
+    [property: string]: any;
+  };
+  live_room_mode: number;
+  mosaic_status: number;
+  mosaic_status_str: string;
+  owner_open_id_str: string;
+  owner_user_id_str: string;
+  share_msg_style: number;
+  status: number;
+  status_str: string;
+  title: string;
+  user_count_str: string;
+  [property: string]: any;
+};
+type PartitionRoadMap$1 = {
+  partition: Partition;
+  sub_partition: SubPartition$1;
+  [property: string]: any;
+};
+type Partition = {
+  id_str: string;
+  title: string;
+  type: number;
+  [property: string]: any;
+};
+type SubPartition$1 = {
+  partition: Partition;
+  [property: string]: any;
+};
+type SimilarRoom$1 = {
+  cover_type: number;
+  is_recommend: number;
+  room: Room$1;
+  tag_name: string;
+  title_type: number;
+  uniq_id: string;
+  web_rid: string;
+  [property: string]: any;
+};
+type Room$1 = {
+  AnchorABMap: AnchorABMap$1;
+  admin_user_ids: unknown[];
+  admin_user_ids_str: unknown[];
+  admin_user_open_ids: unknown[];
+  admin_user_open_ids_str: unknown[];
+  cover: Cover$11;
+  ecom_data: EcomData;
+  fansclub_msg_style: number;
+  follow_msg_style: number;
+  game_data: GameData;
+  gift_msg_style: number;
+  has_commerce_goods: boolean;
+  id_str: string;
+  like_count: number;
+  linker_detail: LinkerDetail$1;
+  linker_map: {
+    [property: string]: any;
+  };
+  live_room_mode: number;
+  mosaic_status: number;
+  mosaic_status_str: string;
+  others: Others;
+  owner: Owner$2;
+  owner_open_id_str: string;
+  owner_user_id_str: string;
+  paid_live_data: PaidLiveData;
+  preview_expose: PreviewExpose;
+  room_view_stats: RoomViewStats;
+  share_msg_style: number;
+  stats: Stats$6;
+  status: number;
+  status_str: string;
+  stream_url: StreamUrl;
+  title: string;
+  user_count_str: string;
+  [property: string]: any;
+};
+type AnchorABMap$1 = {
+  ab_admin_comment_on_wall: string;
+  ab_friend_chat: string;
+  admin_optimize_third: string;
+  admin_privilege_refine: string;
+  allow_shared_to_fans: string;
+  anchor_battle_enable_remote_pk: string;
+  anchor_battle_frame_bar_anime: string;
+  anchor_battle_frame_doublepk_bar: string;
+  anchor_battle_frame_notice_bar_layout: string;
+  audience_linkmic_continue: string;
+  audio_1v8_stage_enlarge: string;
+  audio_double_enlarge_enable: string;
+  audio_goal_challenge: string;
+  audio_honor_rank: string;
+  audio_radio_v2: string;
+  audio_room_subtitle_opt: string;
+  battle_match_rebuild_anchor: string;
+  big_party_enable_open_camera: string;
+  chat_intercommunicate_multi_anchor: string;
+  chat_intercommunicate_pk: string;
+  cross_default_enlarge: string;
+  cross_link_support_enlarge_guest: string;
+  cross_room_battle_pop_mode: string;
+  double_enlarge_enable: string;
+  ecom_room_disable_gift: string;
+  enable_enter_by_sharing: string;
+  enable_link_guest_enter: string;
+  enable_multi_pk_change_sofa_position: string;
+  enter_message_tip_relation: string;
+  enter_source_mark: string;
+  faction_clash: string;
+  frequently_chat_ab_value: string;
+  friend_room_audio_tuning: string;
+  friend_room_support_ns_mode: string;
+  friend_share_video_feature_type: string;
+  game_link_entrance: string;
+  gift_comment: string;
+  gift_comment_v2: string;
+  gift_hide_tip: string;
+  guest_battle_crown_upgrade: string;
+  guest_battle_expand: string;
+  guest_battle_score_expand: string;
+  guest_battle_upgrade: string;
+  interact_acting_ab: string;
+  interact_anchor_guide: string;
+  ktv_anchor_enable_add_all: string;
+  ktv_auto_mute_self: string;
+  ktv_challenge_minus_gift: string;
+  ktv_component_new_midi: string;
+  ktv_enable_avatar: string;
+  ktv_enable_open_camera: string;
+  ktv_fragment_song: string;
+  ktv_grab_guide_song: string;
+  ktv_guide_song_switch: string;
+  ktv_kick_when_linker_full: string;
+  ktv_mc_host_show_tag: string;
+  ktv_new_challenge: string;
+  ktv_room_atmosphere: string;
+  ktv_singing_hot_rank: string;
+  ktv_video_stream_optimize: string;
+  ktv_want_listen_enable: string;
+  linkmic_audience_anchor_hide: string;
+  linkmic_chorus: string;
+  linkmic_cross_room_battle_double_score: string;
+  linkmic_multi_chorus: string;
+  linkmic_order_sing_search_fingerprint: string;
+  linkmic_order_sing_upgrade: string;
+  linkmic_position_name_hide: string;
+  linkmic_starwish: string;
+  linkmic_team_battle_double_score: string;
+  linkmic_video_equal_layout_frame_opt: string;
+  live_anchor_enable_chorus: string;
+  live_anchor_enable_custom_position: string;
+  live_anchor_hit_new_audience_linkmic: string;
+  live_anchor_hit_position_opt: string;
+  live_anchor_hit_video_bid_paid: string;
+  live_anchor_hit_video_teamfight: string;
+  live_answer_on_wall: string;
+  live_audience_linkmic_pre_apply_v2: string;
+  live_audio_announce_menu_opt: string;
+  live_audio_enable_c_position: string;
+  live_backup_sei_enable: string;
+  live_dou_plus_enter: string;
+  live_flymic_interact_switch: string;
+  live_ktv_enable_beat: string;
+  live_ktv_group: string;
+  live_ktv_show_singer_icon: string;
+  live_ktv_singing_challenge: string;
+  live_linkmic_battle_optimize: string;
+  live_linkmic_ktv_anchor_lyric_mode: string;
+  live_linkmic_order_sing_micro_opt: string;
+  live_linkmic_order_sing_v3: string;
+  live_pc_helper_new_layout: string;
+  live_room_manage_style: string;
+  live_team_fight_flexible: string;
+  live_video_enable_c_position: string;
+  live_video_enable_self_discipline: string;
+  live_video_host_identity_enable: string;
+  live_video_share: string;
+  lonely_room_enter_msg_unfold: string;
+  mark_user: string;
+  merge_ktv_mode_enable: string;
+  merge_ktv_optimize_enable: string;
+  mic_avatar_tool: string;
+  multi_link_biz_access_backup_sei_config: string;
+  opt_audience_linkmic: string;
+  opt_paid_link_feature_switch: string;
+  optran_paid_linkmic: string;
+  order_sing_enable_gift_chorus: string;
+  order_sing_gold_mic_offline: string;
+  order_sing_mv: string;
+  play_mode_opt_24: string;
+  ps_use_new_panel: string;
+  radio_prepare_apply: string;
+  radio_subtitle: string;
+  room_battle_mode_switch: string;
+  room_battle_mode_switch_audio: string;
+  room_battle_video_audio_interconnection: string;
+  room_double_like: string;
+  room_secret_chat: string;
+  self_discipline_v2: string;
+  self_discipline_v3: string;
+  social_share_video_adjust_volume: string;
+  support_multiple_add_price: string;
+  themed_competition_v2: string;
+  traffic_strategy: string;
+  use_lynx_flymic_gift: string;
+  video_equal_1v8fix_switch: string;
+  video_ktv_challenge: string;
+  video_talk_enable_avatar: string;
+  [property: string]: any;
+};
+type Cover$11 = {
+  url_list: string[];
+  [property: string]: any;
+};
+type EcomData = {
+  float_window_type: number;
+  instant_type: number;
+  intro_type: number;
+  reds_show_infos: unknown[];
+  room_cart_v2: RoomCartV2$1;
+  route_rule: string;
+  shop_author_header: string;
+  [property: string]: any;
+};
+type RoomCartV2$1 = {
+  show_cart: number;
+  [property: string]: any;
+};
+type GameData = {
+  game_tag_info: GameTagInfo$15;
+  [property: string]: any;
+};
+type GameTagInfo$15 = {
+  game_tag_id: number;
+  game_tag_name: string;
+  is_game: number;
+  [property: string]: any;
+};
+type LinkerDetail$1 = {
+  accept_audience_pre_apply: boolean;
+  big_party_layout_config_version: number;
+  client_ui_info: string;
+  enable_audience_linkmic: number;
+  enlarge_guest_turn_on_source: number;
+  feature_list: unknown[];
+  forbid_apply_from_other: boolean;
+  function_type: string;
+  init_source: string;
+  ktv_exhibit_mode: number;
+  ktv_lyric_mode: string;
+  linker_map_str: {
+    [property: string]: any;
+  };
+  linker_play_modes: unknown[];
+  linker_ui_layout: number;
+  manual_open_ui: number;
+  playmode_detail: {
+    [property: string]: any;
+  };
+  [property: string]: any;
+};
+type Others = {
+  anonymous_ratio_display_affected: boolean;
+  labels: Labels;
+  lvideo_item_id: number;
+  metric_tracker_data_list: unknown[];
+  mosaic_version: number;
+  panel_guidance: string;
+  participant_activity: string;
+  redirect_from: number;
+  room_chat_guide_locale_city: string;
+  web_data: WebData$1;
+  web_enter_benefit_point_data?: WebEnterBenefitPointData;
+  web_live_port_optimization: WebLivePortOptimization;
+  [property: string]: any;
+};
+type Labels = {
+  bandwidth_level: BandwidthLevel;
+  bandwidth_level_double: BandwidthLevel;
+  brightness: BandwidthLevel;
+  contrast: BandwidthLevel;
+  live_room_acu_after_10m: BandwidthLevel;
+  live_room_acu_after_30m: BandwidthLevel;
+  live_room_acu_after_5m: BandwidthLevel;
+  live_room_acu_after_60m: BandwidthLevel;
+  live_room_duration_after_10m: BandwidthLevel;
+  live_room_duration_after_30m: BandwidthLevel;
+  live_room_duration_after_5m: BandwidthLevel;
+  live_room_duration_after_60m: BandwidthLevel;
+  live_room_pcu_after_10m: BandwidthLevel;
+  live_room_pcu_after_30m: BandwidthLevel;
+  live_room_pcu_after_5m: BandwidthLevel;
+  live_room_pcu_after_60m: BandwidthLevel;
+  resolution: BandwidthLevel;
+  saturation: BandwidthLevel;
+  sharpness: BandwidthLevel;
+  [property: string]: any;
+};
+type BandwidthLevel = {
+  ttl: number;
+  value: string;
+  value_type: number;
+  [property: string]: any;
+};
+type WebData$1 = {
+  additional_stream_url: AdditionalStreamUrl;
+  [property: string]: any;
+};
+type AdditionalStreamUrl = {
+  candidate_resolution: string[];
+  complete_push_urls: unknown[];
+  default_resolution: string;
+  extra: Extra$15;
+  flv_pull_url: FlvPullUrl;
+  flv_pull_url_params: FlvPullUrlParams;
+  hls_pull_url: string;
+  hls_pull_url_map: FlvPullUrl;
+  hls_pull_url_params: string;
+  id: number;
+  id_str: string;
+  live_core_sdk_data: LiveCoreSdkData;
+  multi_stream_scene: number;
+  play: Play$1;
+  provider: number;
+  pull_datas: {
+    [property: string]: any;
+  };
+  push_datas: {
+    [property: string]: any;
+  };
+  push_stream_type: number;
+  push_urls: unknown[];
+  resolution_name: ResolutionName$1;
+  resolution_select_panel_resident: number;
+  rtmp_pull_url: string;
+  rtmp_pull_url_params: string;
+  rtmp_push_url: string;
+  rtmp_push_url_params: string;
+  rtmps_push_url: string;
+  stream_control_type: number;
+  stream_orientation: number;
+  vr_type: number;
+  [property: string]: any;
+};
+type Extra$15 = {
+  anchor_interact_profile: number;
+  audience_interact_profile: number;
+  bframe_enable: boolean;
+  bitrate_adapt_strategy: number;
+  business_name: string;
+  bytevc1_enable: boolean;
+  default_bitrate: number;
+  fps: number;
+  gop_sec: number;
+  h265_enable: boolean;
+  hardware_encode: boolean;
+  height: number;
+  max_bitrate: number;
+  min_bitrate: number;
+  roi: boolean;
+  sw_roi: boolean;
+  video_profile: number;
+  width: number;
+  [property: string]: any;
+};
+type FlvPullUrl = {
+  FULL_HD1: string;
+  HD1?: string;
+  SD1: string;
+  SD2: string;
+  [property: string]: any;
+};
+type FlvPullUrlParams = {
+  FULL_HD1?: string;
+  HD1?: string;
+  SD1: string;
+  SD2: string;
+  [property: string]: any;
+};
+type LiveCoreSdkData = {
+  pull_data: PullData;
+  push_data: PushData$1;
+  size: string;
+  [property: string]: any;
+};
+type PullData = {
+  Flv: Flv[];
+  Hls: Flv[];
+  codec: string;
+  compensatory_data: string;
+  hls_data_unencrypted: {
+    [property: string]: any;
+  };
+  kind: number;
+  options: Options$1;
+  stream_data: string;
+  version: number;
+  [property: string]: any;
+};
+type Flv = {
+  params: string;
+  quality_name: string;
+  url: string;
+  [property: string]: any;
+};
+type Options$1 = {
+  default_quality: DefaultQuality;
+  qualities: DefaultQuality[];
+  quality_strategy: string;
+  vpass_default: boolean;
+  [property: string]: any;
+};
+type DefaultQuality = {
+  additional_content: string;
+  disable: number;
+  fps: number;
+  level: number;
+  name: string;
+  resolution: string;
+  sdk_key: string;
+  v_bit_rate: number;
+  v_codec: string;
+  [property: string]: any;
+};
+type PushData$1 = {
+  kind: number;
+  pre_schedule: boolean;
+  push_params: string;
+  push_stream_level: number;
+  resolution_params: {
+    [property: string]: any;
+  };
+  rtmp_push_url: string;
+  rtmps_push_url: string;
+  stream_id: number;
+  stream_id_str: string;
+  [property: string]: any;
+};
+type Play$1 = {
+  horizontal: string;
+  vertical: string;
+  [property: string]: any;
+};
+type ResolutionName$1 = {
+  FULL_HD1: string;
+  HD1: string;
+  ORIGION: string;
+  SD1: string;
+  SD2: string;
+  [property: string]: any;
+};
+type WebEnterBenefitPointData = {
+  has_ongoing_lottery: boolean;
+  has_ongoing_lucky_money: boolean;
+  [property: string]: any;
+};
+type WebLivePortOptimization = {
+  strategy_config: StrategyConfig;
+  strategy_extra: string;
+  [property: string]: any;
+};
+type StrategyConfig = {
+  background: Background;
+  detail: Background;
+  tab: Background;
+  [property: string]: any;
+};
+type Background = {
+  pause_monitor_duration: string;
+  strategy_type: number;
+  use_config_duration: boolean;
+  [property: string]: any;
+};
+type Owner$2 = {
+  avatar_thumb: Cover$11;
+  follow_info: FollowInfo;
+  foreign_user: number;
+  id_str: string;
+  nickname: string;
+  open_id_str: string;
+  sec_uid: string;
+  subscribe: Subscribe;
+  [property: string]: any;
+};
+type FollowInfo = {
+  follow_status: number;
+  follow_status_str: string;
+  [property: string]: any;
+};
+type Subscribe = {
+  buy_type: number;
+  identity_type: number;
+  is_member: boolean;
+  level: number;
+  open: number;
+  [property: string]: any;
+};
+type PaidLiveData = {
+  anchor_right: number;
+  delivery: number;
+  duration: number;
+  max_preview_duration: number;
+  need_delivery_notice: boolean;
+  paid_type: number;
+  pay_ab_type: number;
+  privilege_info: {
+    [property: string]: any;
+  };
+  privilege_info_map: {
+    [property: string]: any;
+  };
+  view_right: number;
+  [property: string]: any;
+};
+type PreviewExpose = {
+  alive_checker: number;
+  chat_group_extend_data: unknown[];
+  chat_msgs: unknown[];
+  et_data: unknown[];
+  feed_enter_extra: string;
+  feed_extra: string;
+  force_insertion: unknown[];
+  is_aweme_video_feed: boolean;
+  is_preview_use_websocket: number;
+  message_scroll_after_ms: number;
+  message_scroll_interval_ms: number;
+  metas: unknown[];
+  need_preload: number;
+  need_realtime: boolean;
+  preview_enter_extra: string;
+  preview_exit_guide_list: unknown[];
+  preview_high_light: PreviewHighLight;
+  preview_intro: string;
+  relation_info: string;
+  scroll_after_ms: number;
+  show_name_abbreviation: number;
+  show_preview_cards: boolean;
+  show_similar_feed_button: boolean;
+  show_uv_pv: number;
+  style: number;
+  [property: string]: any;
+};
+type PreviewHighLight = {
+  duration: string;
+  enable: boolean;
+  guide_text: string;
+  highlight_id: number;
+  highlight_id_str: string;
+  highlight_type: string;
+  m3u8_url: string;
+  reason: string;
+  show_duration: number;
+  video_id: string;
+  video_url: string;
+  [property: string]: any;
+};
+type RoomViewStats = {
+  display_long: string;
+  display_long_anchor: string;
+  display_middle: string;
+  display_middle_anchor: string;
+  display_short: string;
+  display_short_anchor: string;
+  display_type: number;
+  display_value: number;
+  display_version: number;
+  incremental: boolean;
+  is_hidden: boolean;
+  [property: string]: any;
+};
+type Stats$6 = {
+  like_count: number;
+  total_user_desp: string;
+  total_user_str: string;
+  user_count_str: string;
+  [property: string]: any;
+};
+type StreamUrl = {
+  default_resolution: string;
+  extra: Extra2;
+  flv_pull_url: FlvPullUrl;
+  hls_pull_url: string;
+  hls_pull_url_map: FlvPullUrl;
+  live_core_sdk_data: LiveCoreSdkData2;
+  pull_datas: {
+    [property: string]: any;
+  };
+  stream_orientation: number;
+  [property: string]: any;
+};
+type Extra2 = {
+  anchor_interact_profile: number;
+  audience_interact_profile: number;
+  bframe_enable: boolean;
+  bitrate_adapt_strategy: number;
+  bytevc1_enable: boolean;
+  default_bitrate: number;
+  fps: number;
+  gop_sec: number;
+  h265_enable: boolean;
+  hardware_encode: boolean;
+  height: number;
+  max_bitrate: number;
+  min_bitrate: number;
+  roi: boolean;
+  sw_roi: boolean;
+  video_profile: number;
+  width: number;
+  [property: string]: any;
+};
+type LiveCoreSdkData2 = {
+  pull_data: PullData2;
+  [property: string]: any;
+};
+type PullData2 = {
+  options: Options2;
+  stream_data: string;
+  [property: string]: any;
+};
+type Options2 = {
+  default_quality: DefaultQuality;
+  qualities: unknown[];
+  [property: string]: any;
+};
+type User$16 = {
+  avatar_thumb: Cover$11;
+  follow_info: FollowInfo;
+  foreign_user: number;
+  id_str: string;
+  nickname: string;
+  open_id_str: string;
+  sec_uid: string;
+  [property: string]: any;
+};
+type Extra3 = {
+  now: number;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/douyin/LiveRoomInfo/index.d.ts
+type LiveRoomInfoSuccess = LiveRoomInfo_V0;
+type LiveRoomInfoError = never;
+type LiveRoomInfo = LiveRoomInfoSuccess | LiveRoomInfoError;
+//#endregion
+//#region ../response-types/dist/generated/douyin/MusicInfo/MusicInfo_V0.d.ts
+type MusicInfo_V0 = {
+  detail_page_labels: null;
+  disable_music_activity_setting: boolean;
+  extra: Extra$14;
+  feature_data: {
+    [property: string]: any;
+  };
+  follow_shoot_buttons: null;
+  high_upload_ratio: number;
+  log_pb: LogPb$30;
+  lora_model_ids: null;
+  msg: string;
+  music_activity_resource_infos: null;
+  music_info: MusicInfo$2 | null;
+  rec_list: unknown[];
+  related_effects: null;
+  related_musics: null;
+  small_banner: unknown[];
+  status_code: number;
+  trends_infos: null;
+  [property: string]: any;
+};
+type Extra$14 = {
+  fatal_item_ids: unknown[];
+  logid: string;
+  now: number;
+  [property: string]: any;
+};
+type LogPb$30 = {
+  impr_id: string;
+  [property: string]: any;
+};
+type MusicInfo$2 = {
+  album: string;
+  artist_user_infos: null;
+  artists: unknown[];
+  audition_duration: number;
+  author: string;
+  author_deleted: boolean;
+  author_position: null;
+  author_status: number;
+  avatar_large: AvatarLarge$8;
+  avatar_medium: AvatarLarge$8;
+  avatar_thumb: AvatarLarge$8;
+  binded_challenge_id: number;
+  can_background_play: boolean;
+  collect_stat: number;
+  cover_hd: AvatarLarge$8;
+  cover_large: AvatarLarge$8;
+  cover_medium: AvatarLarge$8;
+  cover_thumb: AvatarLarge$8;
+  dmv_auto_show: boolean;
+  dsp_status: number;
+  duration: number;
+  end_time: number;
+  external_song_info: unknown[];
+  extra: string;
+  id: number;
+  id_str: string;
+  is_audio_url_with_cookie: boolean;
+  is_commerce_music: boolean;
+  is_del_video: boolean;
+  is_matched_metadata: boolean;
+  is_original: boolean;
+  is_original_sound: boolean;
+  is_pgc: boolean;
+  is_restricted: boolean;
+  is_video_self_see: boolean;
+  luna_info: LunaInfo$4;
+  lyric_short_position: null;
+  material_use_count: number;
+  mid: string;
+  music_caption_url?: string;
+  music_chart_ranks: null;
+  music_collect_count: number;
+  music_cover_atmosphere_color_value: string;
+  music_status: number;
+  musician_user_infos: null;
+  mute_share: boolean;
+  offline_desc: string;
+  original_musician_display_name: string;
+  owner_handle: string;
+  owner_id: string;
+  owner_nickname: string;
+  pgc_music_type: number;
+  play_url: PlayUrl$3;
+  position: null;
+  prevent_download: boolean;
+  prevent_item_download_status: number;
+  preview_end_time: number;
+  preview_start_time: number;
+  reason_type: number;
+  redirect: boolean;
+  schema_url: string;
+  search_impr: SearchImpr$18;
+  sec_uid: string;
+  share_info: ShareInfo$17;
+  shoot_duration: number;
+  show_origin_clip: boolean;
+  source_platform: number;
+  start_time: number;
+  status: number;
+  tag_list: null;
+  talent_hashtag_name_list: null;
+  title: string;
+  trend_music_start_time: number;
+  unshelve_countries: null;
+  user_count: number;
+  video_duration: number;
+  [property: string]: any;
+};
+type AvatarLarge$8 = {
+  height: number;
+  uri: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type LunaInfo$4 = {
+  is_luna_user: boolean;
+  [property: string]: any;
+};
+type PlayUrl$3 = {
+  height: number;
+  uri: string;
+  url_key: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type SearchImpr$18 = {
+  entity_id: string;
+  [property: string]: any;
+};
+type ShareInfo$17 = {
+  bool_persist: number;
+  share_desc: string;
+  share_desc_info: string;
+  share_quote: string;
+  share_signature_desc: string;
+  share_signature_url: string;
+  share_title: string;
+  share_title_myself: string;
+  share_title_other: string;
+  share_url: string;
+  share_weibo_desc: string;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/douyin/MusicInfo/index.d.ts
+type MusicInfoSuccess = MusicInfo_V0;
+type MusicInfoError = never;
+type MusicInfo$1 = MusicInfoSuccess | MusicInfoError;
+//#endregion
+//#region ../response-types/dist/generated/douyin/ParseWork/ParseWork_Error_V0.d.ts
+type ParseWork_Error_V0 = {
+  aweme_detail: null;
+  filter_detail: FilterDetail$3;
+  log_pb: LogPb$29;
+  status_code: number;
+  [property: string]: any;
+};
+type FilterDetail$3 = {
+  aweme_id: string;
+  detail_msg: string;
+  filter_reason: string;
+  icon: string;
+  notice: string;
+  [property: string]: any;
+};
+type LogPb$29 = {
+  impr_id: string;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/douyin/ParseWork/ParseWork_V0.d.ts
+type ParseWork_V0 = {
+  aweme_detail: AwemeDetail$8 | null;
+  filter_detail?: FilterDetail$2;
+  log_pb: LogPb$28;
+  status_code: number;
+  [property: string]: any;
+};
+type AwemeDetail$8 = {
+  activity_video_type: number;
+  anchor_info?: AnchorInfo$10;
+  anchors: null;
+  article_info?: ArticleInfo$2;
+  authentication_token: string;
+  author: Author$20;
+  author_mask_tag: number;
+  author_user_id: number;
+  aweme_acl?: AwemeAcl$5;
+  aweme_control: AwemeControl$14;
+  aweme_id: string;
+  aweme_listen_struct: AwemeListenStruct$14;
+  aweme_type: number;
+  aweme_type_tags: string;
+  boost_status: number;
+  can_be_oc_cover?: boolean;
+  can_cache_to_local: boolean;
+  caption: string;
+  cf_assets_type: number;
+  cf_recheck_ts: number;
+  challenge_position: null;
+  chapter_abstract?: string;
+  chapter_data?: ChapterData$3;
+  chapter_list: ChapterList$3[] | null;
+  chapter_review_status?: number;
+  clip_paging?: ClipPaging$6;
+  collect_stat: number;
+  collection_corner_mark: number;
+  comment_gid: number;
+  comment_list: null;
+  comment_permission_info: CommentPermissionInfo$14;
+  commerce_config_data: null;
+  component_control: ComponentControl$14;
+  component_info_v2: string;
+  cover_labels: null;
+  create_scale_type?: string[];
+  create_time: number;
+  danmaku_control?: DanmakuControl$13;
+  desc: string;
+  disable_relation_bar: number;
+  dislike_dimension_list: null;
+  dislike_dimension_list_v2: null;
+  distribute_circle: DistributeCircle$14;
+  diversion_bar_info: unknown[];
+  douplus_user_type: number;
+  douyin_pc_video_extra_seo: string;
+  duet_aggregate_in_music_tab: boolean;
+  duration: number;
+  ecom_comment_atmosphere_type: number;
+  enable_comment_sticker_rec: boolean;
+  enable_decorated_emoji: boolean;
+  ent_log_extra: EntLogExtra$9;
+  entertainment_product_info: EntertainmentProductInfo$19;
+  entertainment_recommend_info: string;
+  entertainment_video_paid_way: EntertainmentVideoPaidWay$10;
+  entertainment_video_type: number;
+  f_s_grouth_property: FSGrouthProperty$7;
+  fall_card_struct: FallCardStruct$10;
+  feed_comment_config: FeedCommentConfig$14;
+  feed_component_decision_reasons?: string;
+  flash_mob_trends: number;
+  follow_shoot_clip_info?: FollowShootClipInfo$10;
+  follow_shoot_property?: FollowShootProperty$6;
+  friend_recommend_info: FriendRecommendInfo$10;
+  galileo_pad_textcrop?: GalileoPadTextcrop$6;
+  game_tag_info: GameTagInfo$14;
+  geofencing: unknown[];
+  geofencing_regions: null;
+  group_id: string;
+  guide_scene_info: {
+    [property: string]: any;
+  };
+  history_progress_rate?: string;
+  horizontal_type?: number;
+  hybrid_label: null;
+  image_album_music_info: ImageAlbumMusicInfo$14;
+  image_comment: ImageComment$7;
+  image_crop_ctrl: number;
+  image_infos: null;
+  image_item_quality_level?: number;
+  image_list: null;
+  images: Image$11[] | null;
+  img_bitrate: unknown[] | null;
+  impression_data: ImpressionData$19;
+  incentive_item_type: number;
+  interaction_stickers: null;
+  is_24_story: number;
+  is_25_story: number;
+  is_ads: boolean;
+  is_aigc_media: boolean;
+  is_collects_selected: number;
+  is_duet_sing: boolean;
+  is_from_ad_auth: boolean;
+  is_image_beat: boolean;
+  is_life_item: boolean;
+  is_moment_history: number;
+  is_moment_story: number;
+  is_multi_content?: number;
+  is_new_text_mode: number;
+  is_share_post: boolean;
+  is_slides?: boolean;
+  is_slides_beat?: number;
+  is_story: number;
+  is_subtitled?: number;
+  is_top: number;
+  is_use_music: boolean;
+  item_aigc_follow_shot: number;
+  item_title: string;
+  item_warn_notification: ItemWarnNotification$14;
+  jump_tab_info_list?: unknown[];
+  label_top_text: null;
+  libfinsert_task_id: string;
+  long_video: null;
+  main_arch_common?: string;
+  mark_largely_following: boolean;
+  media_type: number;
+  music?: Music$19;
+  nickname_position: null;
+  origin_comment_ids: null;
+  origin_duet_resource_uri: string;
+  origin_text_extra: unknown[];
+  original: number;
+  original_anchor_type?: number;
+  original_images: null;
+  pack_usage_scene_by_req_path: string;
+  packed_clips: null;
+  pc_need_login: boolean;
+  personal_page_botton_diagnose_style: number;
+  photo_search_entrance: PhotoSearchEntrance$14;
+  play_progress: PlayProgress$14;
+  position: null;
+  preview_title: string;
+  preview_video_status: number;
+  product_genre_info: ProductGenreInfo$9;
+  promotions: unknown[];
+  publish_plus_alienation: PublishPlusAlienation$14;
+  rate: number;
+  recommend_chapter_apply_status?: number;
+  region: string;
+  related_music_anchor?: RelatedMusicAnchor$6;
+  relation_labels: null;
+  risk_infos: RiskInfos$17;
+  sec_item_id: string;
+  select_anchor_expanded_content: number;
+  seo_info: {
+    [property: string]: any;
+  };
+  series_basic_info: {
+    [property: string]: any;
+  };
+  series_paid_info: SeriesPaidInfo$14;
+  share_info: ShareInfo2$9;
+  share_rec_extra: string;
+  share_url: string;
+  shoot_way: string;
+  should_open_ad_report: boolean;
+  show_follow_button: {
+    [property: string]: any;
+  };
+  social_tag_list: null;
+  statistics: Statistics$19;
+  status: Status$16;
+  suggest_words?: SuggestWords$17;
+  text_extra: TextExtra$18[];
+  trends_event_track: string;
+  uniqid_position: null;
+  user_digged: number;
+  user_recommend_status: number;
+  video: Video2$5;
+  video_control: VideoControl$19;
+  video_game_data_channel_config: {
+    [property: string]: any;
+  };
+  video_labels: null;
+  video_share_edit_status: number;
+  video_tag: VideoTag$14[];
+  video_text: unknown[];
+  visual_search_info: VisualSearchInfo$14;
+  vtag_search?: VtagSearch$7;
+  xigua_base_info: XiguaBaseInfo$14;
+  [property: string]: any;
+};
+type AnchorInfo$10 = {
+  content: string;
+  extra: string;
+  icon: Icon$11;
+  id: string;
+  log_extra: string;
+  mp_url: string;
+  open_url: string;
+  style_info: StyleInfo$10;
+  title: string;
+  title_tag: string;
+  type: number;
+  web_url: string;
+  [property: string]: any;
+};
+type Icon$11 = {
+  height: number;
+  uri: string;
+  url_key: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type StyleInfo$10 = {
+  default_icon: string;
+  extra: string;
+  scene_icon: string;
+  [property: string]: any;
+};
+type ArticleInfo$2 = {
+  article_content: string;
+  article_id: string;
+  article_title: string;
+  article_type: number;
+  container_lynx_url: string;
+  detail_lynx_url: string;
+  fe_data: string;
+  has_more: boolean;
+  is_cartoon: number;
+  read_time: number;
+  [property: string]: any;
+};
+type Author$20 = {
+  account_cert_info: string;
+  avatar_thumb: AvatarThumb$13;
+  awemehts_greet_info: string;
+  cf_list: null;
+  close_friend_type: number;
+  contacts_status: number;
+  contrail_list: null;
+  cover_url: AvatarThumb$13[];
+  create_time: number;
+  custom_verify: string;
+  data_label_list: null;
+  endorsement_info_list: null;
+  enterprise_verify_reason: string;
+  favoriting_count: number;
+  follow_status: number;
+  follower_count: number;
+  follower_list_secondary_information_struct: null;
+  follower_status: number;
+  following_count: number;
+  hide_others_recommend_interest: number;
+  hide_self_recommend_interest: number;
+  im_role_ids: null;
+  is_ad_fake: boolean;
+  is_blocked_v2: boolean;
+  is_blocking_v2: boolean;
+  is_cf: number;
+  live_high_value: number;
+  mate_add_permission: number;
+  max_follower_count: number;
+  nickname: string;
+  offline_info_list: null;
+  personal_tag_list: null;
+  prevent_download: boolean;
+  risk_notice_text: string;
+  sec_uid: string;
+  secret: number;
+  share_info: ShareInfo$16;
+  short_id: string;
+  signature: string;
+  signature_extra: null;
+  special_follow_status: number;
+  special_people_labels: null;
+  status: number;
+  story25_comment: number;
+  story_interactive: number;
+  story_ttl: number;
+  text_extra: null;
+  total_favorited: number;
+  uid: string;
+  unique_id: string;
+  user_age: number;
+  user_canceled: boolean;
+  user_permissions: null;
+  verification_type: number;
+  [property: string]: any;
+};
+type AvatarThumb$13 = {
+  height: number;
+  uri: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type ShareInfo$16 = {
+  share_desc: string;
+  share_desc_info: string;
+  share_qrcode_url: AvatarThumb$13;
+  share_title: string;
+  share_title_myself: string;
+  share_title_other: string;
+  share_url: string;
+  share_weibo_desc: string;
+  [property: string]: any;
+};
+type AwemeAcl$5 = {
+  download_mask_panel: DownloadMaskPanel$8;
+  [property: string]: any;
+};
+type DownloadMaskPanel$8 = {
+  code: number;
+  show_type: number;
+  [property: string]: any;
+};
+type AwemeControl$14 = {
+  can_comment: boolean;
+  can_forward: boolean;
+  can_share: boolean;
+  can_show_comment: boolean;
+  [property: string]: any;
+};
+type AwemeListenStruct$14 = {
+  trace_info: string;
+  [property: string]: any;
+};
+type ChapterData$3 = {
+  recommend_type: string;
+  [property: string]: any;
+};
+type ChapterList$3 = {
+  desc: string;
+  detail: string;
+  timestamp: number;
+  url: string;
+  [property: string]: any;
+};
+type ClipPaging$6 = {
+  direct: number;
+  has_more: boolean;
+  source: string;
+  [property: string]: any;
+};
+type CommentPermissionInfo$14 = {
+  can_comment: boolean;
+  comment_permission_status: number;
+  item_detail_entry: boolean;
+  press_entry: boolean;
+  toast_guide: boolean;
+  [property: string]: any;
+};
+type ComponentControl$14 = {
+  data_source_url: string;
+  [property: string]: any;
+};
+type DanmakuControl$13 = {
+  activities: Activity$12[];
+  danmaku_cnt: number;
+  enable_danmaku: boolean;
+  first_danmaku_offset?: number;
+  is_post_denied: boolean;
+  last_danmaku_offset?: number;
+  pass_through_params: string;
+  post_denied_reason: string;
+  post_privilege_level: number;
+  skip_danmaku: boolean;
+  smart_mode_decision: number;
+  [property: string]: any;
+};
+type Activity$12 = {
+  id: number;
+  type: number;
+  [property: string]: any;
+};
+type DistributeCircle$14 = {
+  campus_block_interaction: boolean;
+  distribute_type: number;
+  is_campus: boolean;
+  [property: string]: any;
+};
+type EntLogExtra$9 = {
+  log_extra: string;
+  [property: string]: any;
+};
+type EntertainmentProductInfo$19 = {
+  market_info: MarketInfo$19;
+  [property: string]: any;
+};
+type MarketInfo$19 = {
+  limit_free: LimitFree$19;
+  [property: string]: any;
+};
+type LimitFree$19 = {
+  in_free: boolean;
+  [property: string]: any;
+};
+type EntertainmentVideoPaidWay$10 = {
+  enable_use_new_ent_data: boolean;
+  paid_type: number;
+  paid_ways: unknown[];
+  [property: string]: any;
+};
+type FSGrouthProperty$7 = {
+  is_client_pack: boolean;
+  is_natural_traffic: boolean;
+  is_related_path: boolean;
+  [property: string]: any;
+};
+type FallCardStruct$10 = {
+  recommend_reason?: string;
+  recommend_reason_v2: string;
+  [property: string]: any;
+};
+type FeedCommentConfig$14 = {
+  audio_comment_permission: number;
+  author_audit_status: number;
+  common_comment_permission: number;
+  common_flags: string;
+  double_publish?: number;
+  double_publish_limit: number;
+  input_config_text: string;
+  input_config_text_type: string;
+  [property: string]: any;
+};
+type FollowShootClipInfo$10 = {
+  clip_from_platform?: number;
+  clip_from_user?: number;
+  clip_video_all?: number;
+  origin_clip_id?: number;
+  [property: string]: any;
+};
+type FollowShootProperty$6 = {
+  recommended_camera_mode: string;
+  [property: string]: any;
+};
+type FriendRecommendInfo$10 = {
+  disable_friend_recommend_guide_label: boolean;
+  friend_recommend_source: number;
+  primary_label_user?: PrimaryLabelUser$2;
+  [property: string]: any;
+};
+type PrimaryLabelUser$2 = {
+  recommend_app_id: number;
+  recommend_time: number;
+  [property: string]: any;
+};
+type GalileoPadTextcrop$6 = {
+  android_d_h_cut_ratio: number[];
+  android_d_v_cut_ratio: number[];
+  ipad_d_h_cut_ratio: number[];
+  ipad_d_v_cut_ratio: number[];
+  version: number;
+  [property: string]: any;
+};
+type GameTagInfo$14 = {
+  content_type_tag?: ContentTypeTag$6;
+  game_name_tag?: GameNameTag$6;
+  is_game: boolean;
+  [property: string]: any;
+};
+type ContentTypeTag$6 = {
+  tag_id: number;
+  tag_name: string;
+  [property: string]: any;
+};
+type GameNameTag$6 = {
+  game_id_list: string[];
+  tag_id: number;
+  tag_name: string;
+  [property: string]: any;
+};
+type ImageAlbumMusicInfo$14 = {
+  begin_time: number;
+  end_time: number;
+  volume: number;
+  [property: string]: any;
+};
+type ImageComment$7 = {
+  comment_highlight_text: string;
+  [property: string]: any;
+};
+type Image$11 = {
+  clip_type?: number;
+  download_url_list: string[];
+  height: number;
+  live_photo_type?: number;
+  resolution_log_param: {
+    [property: string]: any;
+  };
+  uri: string;
+  url_list: string[];
+  video?: Video$21;
+  width: number;
+  [property: string]: any;
+};
+type Video$21 = {
+  big_thumbs: unknown[];
+  bit_rate: BitRate$14[];
+  bit_rate_audio: null;
+  cdn_url_expired: number;
+  cover: AvatarThumb$13;
+  download_addr: AvatarThumb$13;
+  download_suffix_logo_addr: AvatarThumb$13;
+  duration: number;
+  has_download_suffix_logo_addr: boolean;
+  has_watermark: boolean;
+  height: number;
+  is_bytevc1: number;
+  is_callback: boolean;
+  is_h265: number;
+  is_source_HDR: number;
+  meta: string;
+  need_set_token: boolean;
+  origin_cover: OriginCover$8;
+  play_addr: PlayAddr$11;
+  play_addr_h264: PlayAddr$11;
+  play_addr_lowbr: PlayAddr$11;
+  ratio: string;
+  tags: null;
+  width: number;
+  [property: string]: any;
+};
+type BitRate$14 = {
+  FPS: number;
+  HDR_bit: string;
+  HDR_type: string;
+  bit_rate: number;
+  format: string;
+  gear_name: string;
+  is_bytevc1: number;
+  is_h265: number;
+  play_addr: PlayAddr$11;
+  quality_type: number;
+  video_extra: string;
+  [property: string]: any;
+};
+type PlayAddr$11 = {
+  data_size: number;
+  file_cs: string;
+  file_hash: string;
+  height: number;
+  uri: string;
+  url_key: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type OriginCover$8 = {
+  height: number;
+  uri: string;
+  url_list: unknown[];
+  width: number;
+  [property: string]: any;
+};
+type ImpressionData$19 = {
+  group_id_list_a: unknown[];
+  group_id_list_b: unknown[];
+  group_id_list_c: unknown[];
+  group_id_list_d: unknown[];
+  similar_id_list_a: null;
+  similar_id_list_b: null;
+  [property: string]: any;
+};
+type ItemWarnNotification$14 = {
+  content: string;
+  show: boolean;
+  type: number;
+  [property: string]: any;
+};
+type Music$19 = {
+  album: string;
+  artist_user_infos: null;
+  artists: unknown[];
+  audition_duration: number;
+  author: string;
+  author_deleted: boolean;
+  author_position: null;
+  author_status: number;
+  avatar_large: AvatarThumb$13;
+  avatar_medium: AvatarThumb$13;
+  avatar_thumb: AvatarThumb$13;
+  binded_challenge_id: number;
+  can_background_play: boolean;
+  collect_stat: number;
+  cover_hd: AvatarThumb$13;
+  cover_large: AvatarThumb$13;
+  cover_medium: AvatarThumb$13;
+  cover_thumb: AvatarThumb$13;
+  dmv_auto_show: boolean;
+  dsp_status: number;
+  duration: number;
+  end_time: number;
+  external_song_info: unknown[];
+  extra: string;
+  id: number;
+  id_str: string;
+  is_audio_url_with_cookie: boolean;
+  is_commerce_music: boolean;
+  is_del_video: boolean;
+  is_matched_metadata: boolean;
+  is_original: boolean;
+  is_original_sound: boolean;
+  is_pgc: boolean;
+  is_restricted: boolean;
+  is_video_self_see: boolean;
+  lyric_short_position: null;
+  matched_pgc_sound?: MatchedPgcSound$14;
+  mid: string;
+  music_chart_ranks: null;
+  music_collect_count: number;
+  music_cover_atmosphere_color_value: string;
+  music_status: number;
+  musician_user_infos: null;
+  mute_share: boolean;
+  offline_desc: string;
+  owner_handle: string;
+  owner_id: string;
+  owner_nickname: string;
+  pgc_music_type: number;
+  play_url: Icon$11;
+  position: null;
+  prevent_download: boolean;
+  prevent_item_download_status: number;
+  preview_end_time: number;
+  preview_start_time: number;
+  reason_type: number;
+  redirect: boolean;
+  schema_url: string;
+  search_impr: SearchImpr$17;
+  sec_uid: string;
+  shoot_duration: number;
+  show_origin_clip: boolean;
+  song?: Song$16;
+  source_platform: number;
+  start_time: number;
+  status: number;
+  strong_beat_url?: AvatarThumb$13;
+  tag_list: null;
+  title: string;
+  unshelve_countries: null;
+  user_count: number;
+  video_duration: number;
+  [property: string]: any;
+};
+type MatchedPgcSound$14 = {
+  author: string;
+  cover_medium: AvatarThumb$13;
+  mixed_author: string;
+  mixed_title: string;
+  title: string;
+  [property: string]: any;
+};
+type SearchImpr$17 = {
+  entity_id: string;
+  [property: string]: any;
+};
+type Song$16 = {
+  artists: null;
+  id: number;
+  id_str: string;
+  [property: string]: any;
+};
+type PhotoSearchEntrance$14 = {
+  ecom_type: number;
+  [property: string]: any;
+};
+type PlayProgress$14 = {
+  last_modified_time: number;
+  play_progress: number;
+  [property: string]: any;
+};
+type ProductGenreInfo$9 = {
+  material_genre_sub_type_set?: number[];
+  product_genre_type: number;
+  special_info: SpecialInfo$9;
+  [property: string]: any;
+};
+type SpecialInfo$9 = {
+  recommend_group_name: number;
+  [property: string]: any;
+};
+type PublishPlusAlienation$14 = {
+  alienation_type: number;
+  [property: string]: any;
+};
+type RelatedMusicAnchor$6 = {
+  extra: string;
+  image_url: ImageUrl$3;
+  priority: number;
+  schema_url: string;
+  type: string;
+  [property: string]: any;
+};
+type ImageUrl$3 = {
+  uri: string;
+  url_list: string[];
+  [property: string]: any;
+};
+type RiskInfos$17 = {
+  content: string;
+  risk_sink: boolean;
+  type: number;
+  vote: boolean;
+  warn: boolean;
+  [property: string]: any;
+};
+type SeriesPaidInfo$14 = {
+  item_price: number;
+  series_paid_status: number;
+  [property: string]: any;
+};
+type ShareInfo2$9 = {
+  share_desc: string;
+  share_desc_info: string;
+  share_link_desc: string;
+  share_url: string;
+  [property: string]: any;
+};
+type Statistics$19 = {
+  admire_count: number;
+  aweme_id: string;
+  collect_count: number;
+  comment_count: number;
+  digg_count: number;
+  play_count: number;
+  recommend_count: number;
+  share_count: number;
+  [property: string]: any;
+};
+type Status$16 = {
+  allow_friend_recommend: boolean;
+  allow_friend_recommend_guide: boolean;
+  allow_self_recommend_to_friend: boolean;
+  allow_share: boolean;
+  aweme_id: string;
+  enable_soft_delete: number;
+  in_reviewing: boolean;
+  is_delete: boolean;
+  is_prohibited: boolean;
+  listen_video_status: number;
+  not_allow_soft_del_reason: string;
+  part_see: number;
+  private_status: number;
+  review_result: ReviewResult$19;
+  [property: string]: any;
+};
+type ReviewResult$19 = {
+  review_status: number;
+  [property: string]: any;
+};
+type SuggestWords$17 = {
+  suggest_words: SuggestWord$16[];
+  [property: string]: any;
+};
+type SuggestWord$16 = {
+  extra_info: string;
+  hint_text: string;
+  icon_url: string;
+  scene: string;
+  words: Word$18[];
+  [property: string]: any;
+};
+type Word$18 = {
+  info: string;
+  word: string;
+  word_id: string;
+  [property: string]: any;
+};
+type TextExtra$18 = {
+  caption_end: number;
+  caption_start: number;
+  end: number;
+  hashtag_id?: string;
+  hashtag_name?: string;
+  is_commerce?: boolean;
+  start: number;
+  type: number;
+  [property: string]: any;
+};
+type Video2$5 = {
+  audio: {
+    [property: string]: any;
+  };
+  big_thumbs: BigThumb$13[] | null;
+  bit_rate?: BitRate2$3[];
+  bit_rate_audio: BitRateAudio$10[] | null;
+  cdn_url_expired?: number;
+  cover: AvatarThumb$13;
+  cover_original_scale?: AvatarThumb$13;
+  download_addr?: DownloadAddr$12;
+  download_suffix_logo_addr?: DownloadAddr$12;
+  duration: number;
+  dynamic_cover?: AvatarThumb$13;
+  format?: string;
+  gaussian_cover?: AvatarThumb$13;
+  has_download_suffix_logo_addr?: boolean;
+  has_watermark: boolean;
+  height: number;
+  horizontal_type?: number;
+  is_h265: number;
+  is_long_video?: number;
+  is_source_HDR?: number;
+  meta: string;
+  origin_cover: AvatarThumb$13;
+  play_addr: PlayAddr3$1;
+  play_addr_265?: PlayAddr$11;
+  play_addr_h264?: PlayAddr$11;
+  ratio: string;
+  video_model?: string;
+  width: number;
+  [property: string]: any;
+};
+type BigThumb$13 = {
+  duration: number;
+  fext: string;
+  img_num: number;
+  img_url: string;
+  img_urls: string[];
+  img_x_len: number;
+  img_x_size: number;
+  img_y_len: number;
+  img_y_size: number;
+  interval: number;
+  uri: string;
+  uris: string[];
+  [property: string]: any;
+};
+type BitRate2$3 = {
+  FPS: number;
+  HDR_bit: string;
+  HDR_type: string;
+  bit_rate: number;
+  format: string;
+  gear_name: string;
+  is_bytevc1: number;
+  is_h265: number;
+  play_addr: PlayAddr2$7;
+  quality_type: number;
+  video_extra: string;
+  [property: string]: any;
+};
+type PlayAddr2$7 = {
+  data_size: number;
+  file_cs?: string;
+  file_hash: string;
+  height: number;
+  uri: string;
+  url_key: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type BitRateAudio$10 = {
+  audio_extra: string;
+  audio_meta: AudioMeta$10;
+  audio_quality: number;
+  [property: string]: any;
+};
+type AudioMeta$10 = {
+  bitrate: number;
+  codec_type: string;
+  encoded_type: string;
+  file_hash: string;
+  file_id: string;
+  format: string;
+  fps: number;
+  logo_type: string;
+  media_type: string;
+  quality: string;
+  quality_desc: string;
+  size: number;
+  sub_info: string;
+  url_list: UrlList$10;
+  [property: string]: any;
+};
+type UrlList$10 = {
+  backup_url: string;
+  fallback_url: string;
+  main_url: string;
+  [property: string]: any;
+};
+type DownloadAddr$12 = {
+  data_size: number;
+  file_cs: string;
+  height: number;
+  uri: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type PlayAddr3$1 = {
+  data_size?: number;
+  file_cs?: string;
+  file_hash?: string;
+  height: number;
+  uri: string;
+  url_key?: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type VideoControl$19 = {
+  allow_douplus: boolean;
+  allow_download: boolean;
+  allow_duet: boolean;
+  allow_dynamic_wallpaper: boolean;
+  allow_music: boolean;
+  allow_react: boolean;
+  allow_record: boolean;
+  allow_share: boolean;
+  allow_stitch: boolean;
+  disable_record_reason: string;
+  download_ignore_visibility: boolean;
+  download_info: DownloadInfo$19;
+  draft_progress_bar: number;
+  duet_ignore_visibility: boolean;
+  duet_info: DuetInfo$19;
+  prevent_download_type: number;
+  share_grayed: boolean;
+  share_ignore_visibility: boolean;
+  share_type: number;
+  show_ai_corner: boolean;
+  show_progress_bar: number;
+  show_watermark: boolean;
+  text_copy_type?: number;
+  timer_info: {
+    [property: string]: any;
+  };
+  timer_status: number;
+  [property: string]: any;
+};
+type DownloadInfo$19 = {
+  fail_info?: FailInfo$11;
+  level: number;
+  [property: string]: any;
+};
+type FailInfo$11 = {
+  code: number;
+  msg: string;
+  reason: string;
+  [property: string]: any;
+};
+type DuetInfo$19 = {
+  fail_info?: FailInfo2$8;
+  level: number;
+  [property: string]: any;
+};
+type FailInfo2$8 = {
+  code: number;
+  reason: string;
+  [property: string]: any;
+};
+type VideoTag$14 = {
+  level: number;
+  tag_id: number;
+  tag_name: string;
+  [property: string]: any;
+};
+type VisualSearchInfo$14 = {
+  is_ecom_img: boolean;
+  is_high_accuracy_ecom: boolean;
+  is_high_recall_ecom: boolean;
+  is_show_img_entrance: boolean;
+  visual_search_longpress?: number;
+  [property: string]: any;
+};
+type VtagSearch$7 = {
+  vtag_delay_ts: number;
+  vtag_enable: boolean;
+  [property: string]: any;
+};
+type XiguaBaseInfo$14 = {
+  item_id: number;
+  star_altar_order_id: number;
+  star_altar_type: number;
+  status: number;
+  [property: string]: any;
+};
+type FilterDetail$2 = {
+  aweme_id: string;
+  detail_msg: string;
+  filter_reason: string;
+  icon: string;
+  notice: string;
+  [property: string]: any;
+};
+type LogPb$28 = {
+  impr_id: string;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/douyin/ParseWork/index.d.ts
+type ParseWorkSuccess = ParseWork_V0;
+type ParseWorkError = ParseWork_Error_V0;
+type ParseWork = ParseWorkSuccess | ParseWorkError;
+//#endregion
+//#region ../response-types/dist/generated/douyin/Search/general/general_V0.d.ts
+type General_V0 = {
+  __search_type: 'general';
+  ad_info?: {
+    [property: string]: any;
+  };
+  cursor: number;
+  data: Data$26[];
+  douyin_ai_search_info: DouyinAiSearchInfo$1;
+  extra: Extra$13;
+  global_doodle_config: GlobalDoodleConfig$6;
+  guide_search_words: GuideSearchWord$2[] | null;
+  has_more: number;
+  log_pb: LogPb$27;
+  multi_columns_info?: MultiColumnsInfo$2;
+  ops: null;
+  polling_time: number;
+  qc: string;
+  result_status: number;
+  search_nil_info?: SearchNilInfo$2;
+  status_code: number;
+  time_cost?: TimeCost$3;
+  [property: string]: any;
+};
+type Data$26 = {
+  aweme_info?: AwemeInfo$4;
+  aweme_list: null;
+  card_id?: string;
+  card_info?: CardInfo$2;
+  card_style_type?: number;
+  card_type?: number;
+  card_type_id?: CardTypeId$1;
+  card_unique_name: string;
+  data?: Data2$1;
+  debug_data?: DebugData$2;
+  debug_diff_info: {
+    [property: string]: any;
+  };
+  doc_type: number;
+  ecom_goods_list: null;
+  fp?: string;
+  log_data?: LogData$2;
+  lynx_info?: LynxInfo$2;
+  music_info_list: null;
+  ops: null;
+  provider_doc_id: number;
+  provider_doc_id_str: string;
+  qishui_music_list: null;
+  related_word_list?: RelatedWordList$2[];
+  send_back?: string;
+  shoot_position_list: null;
+  show_tab: null;
+  sub_card_list: unknown[] | null;
+  tab: null;
+  type: number;
+  user_list?: UserList2$1[];
+  words_query_record?: WordsQueryRecord$2;
+  [property: string]: any;
+};
+type AwemeInfo$4 = {
+  ai_follow_images: null;
+  anchor_info?: AnchorInfo$9;
+  anchors: null;
+  author: Author$19;
+  author_user_id: number;
+  aweme_id: string;
+  aweme_type: number;
+  cha_list: null;
+  challenge_position: null;
+  chapter_bar_color: null;
+  chapter_list: null;
+  collect_stat: number;
+  comment_list: null;
+  commerce_config_data: null;
+  common_left_top_labels: null;
+  cover_labels: null;
+  create_scale_type: null;
+  create_time: number;
+  danmaku_control?: DanmakuControl$12;
+  desc: string;
+  dislike_dimension_list: null;
+  dislike_dimension_list_v2: null;
+  diversion_bar_info: null;
+  douyin_p_c_video_extra?: string;
+  effect_inflow_effects: null;
+  encrypt_interest_point_list: null;
+  encrypt_key_phrase_list: null;
+  entertainment_product_info: EntertainmentProductInfo$18;
+  fake_horizontal_info?: FakeHorizontalInfo$1;
+  follow_shot_assets: null;
+  geofencing: null;
+  geofencing_regions: null;
+  group_id: string;
+  hybrid_label: null;
+  image_follow_shot_assets: null;
+  image_infos: null;
+  image_list: null;
+  images: Image$10[] | null;
+  img_bitrate: null;
+  impression_data: ImpressionData$18;
+  interaction_stickers: null;
+  interest_points: null;
+  is_top: number;
+  jump_tab_info_list: null;
+  label_top_text: null;
+  long_video: null;
+  media_type: number;
+  mix_info?: MixInfo$8;
+  music: Music$18;
+  mv_info: null;
+  nearby_hot_comment: null;
+  nickname_position: null;
+  origin_comment_ids: null;
+  origin_text_extra: null;
+  original_images: null;
+  packed_clips: null;
+  position: null;
+  prevent_download: boolean;
+  promotions: null;
+  rawdata: string;
+  ref_tts_id_list: null;
+  ref_voice_modify_id_list: null;
+  relation_label?: RelationLabel$5;
+  relation_labels: null;
+  reply_smart_emojis: null;
+  risk_infos: RiskInfos$16;
+  series_info?: SeriesInfo$4;
+  share_info: ShareInfo3$4;
+  slides_music_beats: null;
+  social_tag_list: null;
+  standard_bar_info_list: null;
+  statistics: Statistics$18;
+  status: Status3$3;
+  suggest_words: SuggestWords$16;
+  text_extra: TextExtra$17[];
+  trends_infos: null;
+  tts_id_list: null;
+  uniqid_position: null;
+  user_digged: number;
+  video: Video$20;
+  video_control: VideoControl$18;
+  video_labels: null;
+  video_tag: null;
+  video_text: null;
+  voice_modify_id_list: null;
+  yumme_recreason: null;
+  [property: string]: any;
+};
+type AnchorInfo$9 = {
+  content: string;
+  extra: string;
+  icon: Icon$10;
+  id: string;
+  log_extra: string;
+  mp_url?: string;
+  open_url?: string;
+  style_info: StyleInfo$9;
+  title: string;
+  title_tag: string;
+  type: number;
+  web_url?: string;
+  [property: string]: any;
+};
+type Icon$10 = {
+  height: number;
+  uri: string;
+  url_key: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type StyleInfo$9 = {
+  default_icon: string;
+  extra: string;
+  scene_icon: string;
+  [property: string]: any;
+};
+type Author$19 = {
+  account_cert_info?: string;
+  ad_cover_url: null;
+  avatar_168x168: Avatar168x168$3;
+  avatar_300x300: Avatar168x168$3;
+  avatar_larger: Avatar168x168$3;
+  avatar_medium: Avatar168x168$3;
+  avatar_schema_list: null;
+  avatar_thumb: Avatar168x168$3;
+  aweme_count: number;
+  ban_user_functions: null;
+  batch_unfollow_contain_tabs: null;
+  batch_unfollow_relation_desc: null;
+  can_set_geofencing: null;
+  card_entries: null;
+  card_entries_not_display: null;
+  card_sort_priority: null;
+  cf_list: null;
+  cha_list: null;
+  contrail_list: null;
+  cover_url: null;
+  creator_tag_list: null;
+  custom_verify: string;
+  data_label_list: null;
+  display_info: null;
+  endorsement_info_list: null;
+  enterprise_verify_reason: string;
+  familiar_visitor_user: null;
+  favoriting_count: number;
+  follow_status: number;
+  follower_count: number;
+  follower_list_secondary_information_struct: null;
+  follower_status: number;
+  followers_detail: null;
+  following_count: number;
+  geofencing: null;
+  homepage_bottom_toast: null;
+  identity_labels: null;
+  im_role_ids: null;
+  interest_tags: null;
+  is_block: boolean;
+  is_verified: boolean;
+  item_list: null;
+  link_item_list: null;
+  need_points: null;
+  new_story_cover: null;
+  nickname: string;
+  not_seen_item_id_list: null;
+  not_seen_item_id_list_v2: null;
+  offline_info_list: null;
+  personal_tag_list: null;
+  platform_sync_info: null;
+  private_relation_list: null;
+  profile_component_disabled: null;
+  profile_mob_params: null;
+  profile_signature_components: null;
+  relative_users: null;
+  room_data: string;
+  room_id: number;
+  room_id_str: string;
+  sec_uid: string;
+  secret: number;
+  share_info: ShareInfo$15;
+  short_id: string;
+  signature: string;
+  signature_extra: null;
+  special_people_labels: null;
+  text_extra: null;
+  total_favorited: number;
+  type_label: null;
+  uid: string;
+  unique_id: string;
+  user_canceled: boolean;
+  user_permissions: null;
+  user_tags: null;
+  verification_permission_ids: null;
+  verification_type: number;
+  webcast_preview_labels: null;
+  weibo_verify: string;
+  white_cover_url: null;
+  [property: string]: any;
+};
+type Avatar168x168$3 = {
+  height: number;
+  uri: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type ShareInfo$15 = {
+  share_desc: string;
+  share_desc_info: string;
+  share_qrcode_url: Avatar168x168$3;
+  share_title: string;
+  share_title_myself: string;
+  share_title_other: string;
+  share_url: string;
+  share_weibo_desc: string;
+  [property: string]: any;
+};
+type DanmakuControl$12 = {
+  activities: Activity$11[];
+  danmaku_cnt: number;
+  enable_danmaku: boolean;
+  first_danmaku_offset: number;
+  is_post_denied: boolean;
+  last_danmaku_offset: number;
+  pass_through_params: string;
+  post_denied_reason: string;
+  post_privilege_level: number;
+  skip_danmaku: boolean;
+  [property: string]: any;
+};
+type Activity$11 = {
+  id: number;
+  type: number;
+  [property: string]: any;
+};
+type EntertainmentProductInfo$18 = {
+  biz: number;
+  market_info: MarketInfo$18;
+  sub_title: null;
+  [property: string]: any;
+};
+type MarketInfo$18 = {
+  limit_free: LimitFree$18;
+  marketing_tag: null;
+  [property: string]: any;
+};
+type LimitFree$18 = {
+  in_free: boolean;
+  [property: string]: any;
+};
+type FakeHorizontalInfo$1 = {
+  bottom: number;
+  left: number;
+  right: number;
+  top: number;
+  [property: string]: any;
+};
+type Image$10 = {
+  download_url_list: string[];
+  height: number;
+  interaction_stickers: null;
+  is_new_text_mode: number;
+  mask_url_list: null;
+  resolution_log_param: ResolutionLogParam$3;
+  uri: string;
+  url_list: string[];
+  watermark_free_download_url_list: null;
+  width: number;
+  [property: string]: any;
+};
+type ResolutionLogParam$3 = {
+  image_publish_height: number;
+  image_publish_width: number;
+  image_source_height: number;
+  image_source_width: number;
+  video_publish_height: number;
+  video_publish_width: number;
+  video_source_height: number;
+  video_source_width: number;
+  [property: string]: any;
+};
+type ImpressionData$18 = {
+  group_id_list_a: number[];
+  group_id_list_b: number[];
+  group_id_list_c: number[];
+  group_id_list_d: null;
+  similar_id_list_a: number[] | null;
+  similar_id_list_b: number[] | null;
+  [property: string]: any;
+};
+type MixInfo$8 = {
+  cover_url: Avatar168x168$3;
+  create_time: number;
+  dark_icon_url?: Avatar168x168$3;
+  desc: string;
+  disable_display: number;
+  disable_display_inner: number;
+  extra: string;
+  ids: null;
+  is_iaa: number;
+  is_serial_mix: number;
+  light_icon_url?: Avatar168x168$3;
+  mix_id: string;
+  mix_name: string;
+  mix_pic_type?: number;
+  mix_type: number;
+  paid_episodes: null;
+  series_new_mix_info?: SeriesNewMixInfo$3;
+  share_info: ShareInfo2$8;
+  statis: Statis$8;
+  status: Status$15;
+  update_time: number;
+  watched_item: string;
+  [property: string]: any;
+};
+type SeriesNewMixInfo$3 = {
+  content_sub_type: number;
+  [property: string]: any;
+};
+type ShareInfo2$8 = {
+  share_desc: string;
+  share_desc_info: string;
+  share_title: string;
+  share_title_myself: string;
+  share_title_other: string;
+  share_url: string;
+  share_weibo_desc: string;
+  [property: string]: any;
+};
+type Statis$8 = {
+  collect_vv: number;
+  current_episode: number;
+  play_vv: number;
+  updated_to_episode: number;
+  [property: string]: any;
+};
+type Status$15 = {
+  is_collected: number;
+  status: number;
+  [property: string]: any;
+};
+type Music$18 = {
+  album: string;
+  artist_user_infos: null;
+  artists: unknown[];
+  audition_duration: number;
+  author: string;
+  author_deleted: boolean;
+  author_position: null;
+  author_status?: number;
+  avatar_large?: Avatar168x168$3;
+  avatar_medium?: Avatar168x168$3;
+  avatar_thumb?: Avatar168x168$3;
+  binded_challenge_id: number;
+  can_background_play: boolean;
+  collect_stat: number;
+  cover_color_hsv?: CoverColorHsv$7;
+  cover_hd: Avatar168x168$3;
+  cover_large: Avatar168x168$3;
+  cover_medium: Avatar168x168$3;
+  cover_thumb: Avatar168x168$3;
+  dmv_auto_show: boolean;
+  dsp_status: number;
+  duration: number;
+  end_time: number;
+  external_song_info: unknown[];
+  extra: string;
+  id: number;
+  id_str: string;
+  is_audio_url_with_cookie: boolean;
+  is_commerce_music: boolean;
+  is_del_video: boolean;
+  is_matched_metadata: boolean;
+  is_original: boolean;
+  is_original_sound: boolean;
+  is_pgc: boolean;
+  is_restricted: boolean;
+  is_video_self_see: boolean;
+  luna_info: LunaInfo$3;
+  lyric_short_position: null;
+  matched_pgc_sound?: MatchedPgcSound$13;
+  mid: string;
+  music_chart_ranks: null;
+  music_collect_count: number;
+  music_cover_atmosphere_color_value: string;
+  music_status: number;
+  musician_user_infos: null;
+  mute_share: boolean;
+  offline_desc: string;
+  owner_handle: string;
+  owner_id?: string;
+  owner_nickname: string;
+  pgc_music_type: number;
+  play_url: Icon$10;
+  position: null;
+  prevent_download: boolean;
+  prevent_item_download_status: number;
+  preview_end_time: number;
+  preview_start_time: number;
+  reason_type: number;
+  redirect: boolean;
+  schema_url: string;
+  search_impr: SearchImpr$16;
+  sec_uid?: string;
+  shoot_duration: number;
+  show_origin_clip: boolean;
+  song?: Song$15;
+  source_platform: number;
+  start_time: number;
+  status: number;
+  strong_beat_url?: Avatar168x168$3;
+  tag_list: null;
+  talent_hashtag_name_list: null;
+  title: string;
+  unshelve_countries: null;
+  user_count: number;
+  video_duration: number;
+  [property: string]: any;
+};
+type CoverColorHsv$7 = {
+  h: number;
+  s: number;
+  v: number;
+  [property: string]: any;
+};
+type LunaInfo$3 = {
+  has_copyright?: boolean;
+  is_luna_user: boolean;
+  [property: string]: any;
+};
+type MatchedPgcSound$13 = {
+  author: string;
+  cover_medium: Avatar168x168$3;
+  mixed_author: string;
+  mixed_title: string;
+  title: string;
+  [property: string]: any;
+};
+type SearchImpr$16 = {
+  entity_id: string;
+  [property: string]: any;
+};
+type Song$15 = {
+  artists: null;
+  chorus?: Chorus$7;
+  chorus_v3_infos: null;
+  id: number;
+  id_str: string;
+  title?: string;
+  [property: string]: any;
+};
+type Chorus$7 = {
+  duration_ms: number;
+  start_ms: number;
+  [property: string]: any;
+};
+type RelationLabel$5 = {
+  count: number;
+  extra: string;
+  type: number;
+  user_list: UserList$4[];
+  [property: string]: any;
+};
+type UserList$4 = {
+  avatar: Avatar168x168$3;
+  avatar_thumb: Avatar168x168$3;
+  follow_status: number;
+  nickname: string;
+  sec_uid: string;
+  uid: number;
+  [property: string]: any;
+};
+type RiskInfos$16 = {
+  content: string;
+  icon_url?: string;
+  risk_sink: boolean;
+  type: number;
+  vote: boolean;
+  warn: boolean;
+  warn_level?: number;
+  [property: string]: any;
+};
+type SeriesInfo$4 = {
+  actors: unknown[];
+  content_sub_type: number;
+  cover_url: Avatar168x168$3;
+  create_time: number;
+  dark_icon_url: Avatar168x168$3;
+  desc: string;
+  directors: unknown[];
+  disable_display_bar: number;
+  disable_display_bar_inner: number;
+  dog_card_info: {
+    [property: string]: any;
+  };
+  enable_use_new_ent_data: boolean;
+  entertainment_suggest_info: string;
+  extra: string;
+  horizontal_cover_url: Avatar168x168$3;
+  ids: unknown[];
+  is_charge_series: number;
+  is_exclusive: boolean;
+  is_iaa: number;
+  light_icon_url: Avatar168x168$3;
+  paid_episodes: null;
+  real_name: string;
+  recommend_color: null;
+  rights_info: RightsInfo$3;
+  series_content_types: SeriesContentType$3[];
+  series_content_types_new: null;
+  series_form_type: number;
+  series_id: string;
+  series_interactive: SeriesInteractive$3;
+  series_name: string;
+  series_new_mix_info: SeriesNewMixInfo2$1;
+  series_paid_type_list: null;
+  series_rank_info: {
+    [property: string]: any;
+  };
+  series_type: number;
+  series_ui_config: SeriesUiConfig$3;
+  share_info: ShareInfo2$8;
+  stats: Stats$5;
+  status: Status2$5;
+  update_time: number;
+  watched_item: string;
+  [property: string]: any;
+};
+type RightsInfo$3 = {
+  has_paid: boolean;
+  [property: string]: any;
+};
+type SeriesContentType$3 = {
+  name: string;
+  series_content_type: number;
+  [property: string]: any;
+};
+type SeriesInteractive$3 = {
+  enable_config: boolean;
+  interactive_config: InteractiveConfig$3;
+  [property: string]: any;
+};
+type InteractiveConfig$3 = {
+  collection_button_copy: string;
+  display_detail_edit_button: boolean;
+  hide_desk_guide: boolean;
+  hide_find_top_tab: boolean;
+  hide_intro_card: boolean;
+  hide_intro_card_details_module: boolean;
+  hide_intro_card_tags: boolean;
+  hide_more_series_bottom_btn: boolean;
+  hide_more_series_module: boolean;
+  hide_recommendation_module: boolean;
+  more_series_module_copy: string;
+  recommendation_module_title_copy: string;
+  unlock_button_copy: string;
+  [property: string]: any;
+};
+type SeriesNewMixInfo2$1 = {
+  cash_ability: number;
+  content_sub_type: number;
+  [property: string]: any;
+};
+type SeriesUiConfig$3 = {
+  collection_button: CollectionButton$3;
+  general_position_tag_infos: null;
+  paid_series_vip_entrance_config: PaidSeriesVipEntranceConfig$1;
+  series_ad_page_entrance_config: {
+    [property: string]: any;
+  };
+  series_bar_button_infos: SeriesBarButtonInfo$3[];
+  [property: string]: any;
+};
+type CollectionButton$3 = {
+  text: string;
+  [property: string]: any;
+};
+type PaidSeriesVipEntranceConfig$1 = {
+  block_ad_buttons: unknown[];
+  unblock_ad_buttons: unknown[];
+  upper_right_buttons: unknown[];
+  [property: string]: any;
+};
+type SeriesBarButtonInfo$3 = {
+  button_text: string;
+  click_type: number;
+  condition_material_types: number[];
+  [property: string]: any;
+};
+type Stats$5 = {
+  collect_vv: number;
+  current_episode: number;
+  last_added_item_time: number;
+  play_vv: number;
+  total_episode: number;
+  updated_to_episode: number;
+  [property: string]: any;
+};
+type Status2$5 = {
+  is_collected: number;
+  status: number;
+  status_desc: string;
+  [property: string]: any;
+};
+type ShareInfo3$4 = {
+  bool_persist: number;
+  share_desc: string;
+  share_desc_info: string;
+  share_link_desc: string;
+  share_quote: string;
+  share_signature_desc: string;
+  share_signature_url: string;
+  share_title: string;
+  share_title_myself: string;
+  share_title_other: string;
+  share_url: string;
+  share_weibo_desc: string;
+  [property: string]: any;
+};
+type Statistics$18 = {
+  aweme_id: string;
+  collect_count: number;
+  comment_count: number;
+  digest: string;
+  digg_count: number;
+  download_count: number;
+  exposure_count: number;
+  forward_count: number;
+  live_watch_count: number;
+  lose_comment_count: number;
+  lose_count: number;
+  play_count: number;
+  recommend_count: number;
+  share_count: number;
+  whatsapp_share_count: number;
+  [property: string]: any;
+};
+type Status3$3 = {
+  allow_comment: boolean;
+  allow_friend_recommend: boolean;
+  allow_friend_recommend_guide: boolean;
+  allow_self_recommend_to_friend: boolean;
+  allow_share: boolean;
+  aweme_edit_info: AwemeEditInfo$4;
+  aweme_id: string;
+  dont_share_status: number;
+  download_status: number;
+  in_reviewing: boolean;
+  is_delete: boolean;
+  is_private: boolean;
+  is_prohibited: boolean;
+  listen_video_status: number;
+  part_see: number;
+  private_status: number;
+  review_result: ReviewResult$18;
+  reviewed: number;
+  self_see: boolean;
+  video_hide_search: number;
+  with_fusion_goods: boolean;
+  with_goods: boolean;
+  [property: string]: any;
+};
+type AwemeEditInfo$4 = {
+  button_status: number;
+  button_toast: string;
+  [property: string]: any;
+};
+type ReviewResult$18 = {
+  review_status: number;
+  [property: string]: any;
+};
+type SuggestWords$16 = {
+  disable_display_bar_inner: number;
+  suggest_words: SuggestWord$15[];
+  [property: string]: any;
+};
+type SuggestWord$15 = {
+  extra_info: string;
+  hint_text: string;
+  icon_url: string;
+  scene: string;
+  words: Word$17[];
+  [property: string]: any;
+};
+type Word$17 = {
+  info: string;
+  word: string;
+  word_id: string;
+  [property: string]: any;
+};
+type TextExtra$17 = {
+  caption_end: number;
+  caption_start: number;
+  end: number;
+  hashtag_id?: string;
+  hashtag_name?: string;
+  is_commerce?: boolean;
+  sec_uid?: string;
+  start: number;
+  type: number;
+  user_id?: string;
+  [property: string]: any;
+};
+type Video$20 = {
+  CoverTsp?: number;
+  animated_cover?: AnimatedCover$5;
+  audio: Audio$8;
+  big_thumbs: BigThumb$12[] | null;
+  bit_rate: BitRate$13[];
+  bit_rate_audio: BitRateAudio$9[] | null;
+  cdn_url_expired?: number;
+  cover: Avatar168x168$3;
+  download_addr?: DownloadAddr$11;
+  download_suffix_logo_addr?: DownloadAddr$11;
+  duration: number;
+  dynamic_cover?: Avatar168x168$3;
+  format?: string;
+  fuse_video_labels_v2?: FuseVideoLabelsV2$2;
+  gaussian_cover?: Avatar168x168$3;
+  has_download_suffix_logo_addr?: boolean;
+  has_watermark: boolean;
+  height: number;
+  horizontal_type?: number;
+  is_bytevc1: number;
+  is_callback?: boolean;
+  is_h265: number;
+  is_long_video?: number;
+  is_source_HDR?: number;
+  meta: string;
+  misc_download_addrs?: string;
+  need_set_token?: boolean;
+  optimized_cover?: Avatar168x168$3;
+  origin_cover: Avatar168x168$3;
+  play_addr: PlayAddr2$6;
+  play_addr_265?: PlayAddr265$8;
+  play_addr_h264?: PlayAddrH264$5;
+  play_addr_lowbr?: PlayAddrH264$5;
+  ratio: string;
+  raw_cover?: Avatar168x168$3;
+  search_format_ai_cover?: SearchFormatAiCover$1;
+  tag?: Tag$3;
+  tags: null;
+  use_static_cover?: boolean;
+  video_model?: string;
+  width: number;
+  [property: string]: any;
+};
+type AnimatedCover$5 = {
+  uri: string;
+  url_list: string[];
+  [property: string]: any;
+};
+type Audio$8 = {
+  original_sound_infos: null;
+  [property: string]: any;
+};
+type BigThumb$12 = {
+  duration: number;
+  fext: string;
+  img_num: number;
+  img_url: string;
+  img_urls: string[];
+  img_x_len: number;
+  img_x_size: number;
+  img_y_len: number;
+  img_y_size: number;
+  interval: number;
+  uri: string;
+  uris: string[];
+  [property: string]: any;
+};
+type BitRate$13 = {
+  FPS: number;
+  HDR_bit: string;
+  HDR_type: string;
+  bit_rate: number;
+  format: string;
+  gear_name: string;
+  is_bytevc1: number;
+  is_h265: number;
+  play_addr: PlayAddr$10;
+  quality_type: number;
+  video_extra: string;
+  [property: string]: any;
+};
+type PlayAddr$10 = {
+  data_size?: number;
+  file_cs?: string;
+  file_hash: string;
+  height: number;
+  uri: string;
+  url_key: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type BitRateAudio$9 = {
+  audio_extra: string;
+  audio_meta: AudioMeta$9;
+  audio_quality: number;
+  [property: string]: any;
+};
+type AudioMeta$9 = {
+  bitrate: number;
+  codec_type: string;
+  encoded_type: string;
+  file_hash: string;
+  file_id: string;
+  format: string;
+  fps: number;
+  logo_type: string;
+  media_type: string;
+  quality: string;
+  quality_desc: string;
+  size: number;
+  sub_info: string;
+  url_list: UrlList$9;
+  [property: string]: any;
+};
+type UrlList$9 = {
+  backup_url: string;
+  fallback_url: string;
+  main_url: string;
+  [property: string]: any;
+};
+type DownloadAddr$11 = {
+  data_size?: number;
+  file_cs: string;
+  height: number;
+  uri: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type FuseVideoLabelsV2$2 = {
+  Top1: Top1$2[];
+  [property: string]: any;
+};
+type Top1$2 = {
+  Level1: Level1$2;
+  Level2: Level1$2;
+  Level3: Level1$2;
+  Level4?: Level1$2;
+  [property: string]: any;
+};
+type Level1$2 = {
+  TagId: number;
+  [property: string]: any;
+};
+type PlayAddr2$6 = {
+  data_size?: number;
+  file_cs?: string;
+  file_hash?: string;
+  height: number;
+  uri: string;
+  url_key: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type PlayAddr265$8 = {
+  data_size: number;
+  file_cs: string;
+  file_hash: string;
+  height: number;
+  uri: string;
+  url_key: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type PlayAddrH264$5 = {
+  data_size?: number;
+  file_cs: string;
+  file_hash: string;
+  height: number;
+  uri: string;
+  url_key: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type SearchFormatAiCover$1 = {
+  height: number;
+  uri: string;
+  url_list: unknown[];
+  width: number;
+  [property: string]: any;
+};
+type Tag$3 = {
+  background_color: string;
+  font_color: string;
+  title: string;
+  [property: string]: any;
+};
+type VideoControl$18 = {
+  allow_douplus: boolean;
+  allow_download: boolean;
+  allow_duet: boolean;
+  allow_dynamic_wallpaper: boolean;
+  allow_music: boolean;
+  allow_react: boolean;
+  allow_record: boolean;
+  allow_share: boolean;
+  allow_stitch: boolean;
+  disable_record_reason: string;
+  download_ignore_visibility: boolean;
+  download_info: DownloadInfo$18;
+  draft_progress_bar: number;
+  duet_ignore_visibility: boolean;
+  duet_info: DuetInfo$18;
+  prevent_download_type: number;
+  share_grayed: boolean;
+  share_ignore_visibility: boolean;
+  share_type: number;
+  show_ai_corner: boolean;
+  show_progress_bar: number;
+  show_watermark: boolean;
+  text_copy_type?: number;
+  timer_info: TimerInfo$5;
+  timer_status: number;
+  [property: string]: any;
+};
+type DownloadInfo$18 = {
+  fail_info?: FailInfo$10;
+  level: number;
+  [property: string]: any;
+};
+type FailInfo$10 = {
+  code: number;
+  msg: string;
+  reason: string;
+  [property: string]: any;
+};
+type DuetInfo$18 = {
+  fail_info?: FailInfo2$7;
+  level: number;
+  [property: string]: any;
+};
+type FailInfo2$7 = {
+  code: number;
+  reason: string;
+  [property: string]: any;
+};
+type TimerInfo$5 = {
+  timer_status: number;
+  [property: string]: any;
+};
+type CardInfo$2 = {
+  fingerprint: string;
+  first_pos: number;
+  index: number;
+  pos: number;
+  [property: string]: any;
+};
+type CardTypeId$1 = {
+  card_name: string;
+  doc_type?: number;
+  performance_infos?: PerformanceInfos$2;
+  [property: string]: any;
+};
+type PerformanceInfos$2 = {
+  '108': number;
+  double_column: number;
+  is_native: number;
+  search_card_count: number;
+  [property: string]: any;
+};
+type Data2$1 = {
+  card_tags: null;
+  common_tab_config: null;
+  hotspot_tab_config: null;
+  rs_extra_info: RsExtraInfo$2;
+  [property: string]: any;
+};
+type RsExtraInfo$2 = {
+  hide_related_words: null;
+  hide_related_words_id: null;
+  impr_extra: string;
+  query_id: string;
+  [property: string]: any;
+};
+type DebugData$2 = {
+  filter_debug_info_list: null;
+  [property: string]: any;
+};
+type LogData$2 = {
+  dcm: string;
+  search_result_id: string;
+  [property: string]: any;
+};
+type LynxInfo$2 = {
+  is_subcard: boolean;
+  [property: string]: any;
+};
+type RelatedWordList$2 = {
+  extra_info: ExtraInfo$6;
+  rand_num: number;
+  related_img: string;
+  related_word: string;
+  word_record: WordRecord$2;
+  [property: string]: any;
+};
+type ExtraInfo$6 = {
+  words_type: string;
+  [property: string]: any;
+};
+type WordRecord$2 = {
+  force_update_rank: boolean;
+  group_id: string;
+  product_id: string;
+  words_content: string;
+  words_image: WordsImage$2;
+  words_position: number;
+  words_source: string;
+  [property: string]: any;
+};
+type WordsImage$2 = {
+  url_list: string[];
+  [property: string]: any;
+};
+type UserList2$1 = {
+  baikes: null;
+  challenges: null;
+  ecom_info: EcomInfo$1;
+  effects: null;
+  fandoms: null;
+  is_red_uniqueid: boolean;
+  items: Item$21[];
+  mix_list: null;
+  musics: null;
+  position: null;
+  prefer_profile_tab_type: number;
+  product_info: null;
+  product_list: null;
+  shop_product_info: null;
+  sub_card_id: SubCardId$1;
+  uniqid_position: null;
+  userSubLightApp: null;
+  user_info: UserInfo$3;
+  user_service_info: unknown[];
+  [property: string]: any;
+};
+type EcomInfo$1 = {
+  ecom_scene_id: string;
+  items: null;
+  material_product_list: null;
+  recommend_info_v2: null;
+  rights: null;
+  shop_service_info: null;
+  shop_service_info_list: null;
+  shop_tags: null;
+  tags: null;
+  [property: string]: any;
+};
+type Item$21 = {
+  ai_follow_images: null;
+  anchor_info?: AnchorInfo2$1;
+  anchors: null;
+  author: Author2$2;
+  author_user_id: number;
+  aweme_id: string;
+  aweme_type: number;
+  cha_list: null;
+  challenge_position: null;
+  chapter_bar_color: null;
+  chapter_list: null;
+  collect_stat: number;
+  comment_list: null;
+  commerce_config_data: null;
+  common_left_top_labels: null;
+  cover_labels: null;
+  create_scale_type: null;
+  create_time: number;
+  danmaku_control: DanmakuControl$12;
+  desc: string;
+  dislike_dimension_list: null;
+  dislike_dimension_list_v2: null;
+  diversion_bar_info: null;
+  effect_inflow_effects: null;
+  encrypt_interest_point_list: null;
+  encrypt_key_phrase_list: null;
+  entertainment_product_info: EntertainmentProductInfo$18;
+  follow_shot_assets: null;
+  geofencing: null;
+  geofencing_regions: null;
+  group_id: string;
+  hot_list?: HotList$5;
+  hybrid_label: null;
+  image_follow_shot_assets: null;
+  image_infos: null;
+  image_list: null;
+  images: null;
+  img_bitrate: null;
+  impression_data: ImpressionData2$1;
+  interaction_stickers: null;
+  interest_points: null;
+  is_top: number;
+  jump_tab_info_list: null;
+  label_top_text: null;
+  long_video: null;
+  media_type: number;
+  music: Music2$1;
+  mv_info: null;
+  nearby_hot_comment: null;
+  nickname_position: null;
+  origin_comment_ids: null;
+  origin_text_extra: null;
+  original_images: null;
+  packed_clips: null;
+  position: null;
+  prevent_download: boolean;
+  promotions: null;
+  rawdata: string;
+  ref_tts_id_list: null;
+  ref_voice_modify_id_list: null;
+  relation_label?: RelationLabel$5;
+  relation_labels: null;
+  reply_smart_emojis: null;
+  risk_infos: RiskInfos2$1;
+  share_info: ShareInfo3$4;
+  slides_music_beats: null;
+  social_tag_list: null;
+  standard_bar_info_list: null;
+  statistics: Statistics2$1;
+  status: Status3$3;
+  suggest_words: SuggestWords2$1;
+  text_extra: TextExtra2$1[];
+  trends_infos: null;
+  tts_id_list: null;
+  uniqid_position: null;
+  user_digged: number;
+  video: Video2$4;
+  video_control: VideoControl2$1;
+  video_labels: null;
+  video_tag: null;
+  video_text: null;
+  voice_modify_id_list: null;
+  yumme_recreason: null;
+  [property: string]: any;
+};
+type AnchorInfo2$1 = {
+  content: string;
+  extra: string;
+  icon: Icon$10;
+  id: string;
+  log_extra: string;
+  mp_url: string;
+  open_url: string;
+  style_info: StyleInfo$9;
+  title: string;
+  title_tag: string;
+  type: number;
+  web_url: string;
+  [property: string]: any;
+};
+type Author2$2 = {
+  account_cert_info: string;
+  ad_cover_url: null;
+  avatar_168x168: Avatar168x168$3;
+  avatar_300x300: Avatar168x168$3;
+  avatar_larger: Avatar168x168$3;
+  avatar_medium: Avatar168x168$3;
+  avatar_schema_list: null;
+  avatar_thumb: Avatar168x168$3;
+  aweme_count: number;
+  ban_user_functions: null;
+  batch_unfollow_contain_tabs: null;
+  batch_unfollow_relation_desc: null;
+  can_set_geofencing: null;
+  card_entries: null;
+  card_entries_not_display: null;
+  card_sort_priority: null;
+  cf_list: null;
+  cha_list: null;
+  contrail_list: null;
+  cover_url: null;
+  creator_tag_list: null;
+  custom_verify: string;
+  data_label_list: null;
+  display_info: null;
+  endorsement_info_list: null;
+  enterprise_verify_reason: string;
+  familiar_visitor_user: null;
+  favoriting_count: number;
+  follow_status: number;
+  follower_count: number;
+  follower_list_secondary_information_struct: null;
+  follower_status: number;
+  followers_detail: null;
+  following_count: number;
+  geofencing: null;
+  homepage_bottom_toast: null;
+  identity_labels: null;
+  im_role_ids: null;
+  interest_tags: null;
+  is_block: boolean;
+  is_verified: boolean;
+  item_list: null;
+  link_item_list: null;
+  need_points: null;
+  new_story_cover: null;
+  nickname: string;
+  not_seen_item_id_list: null;
+  not_seen_item_id_list_v2: null;
+  offline_info_list: null;
+  personal_tag_list: null;
+  platform_sync_info: null;
+  private_relation_list: null;
+  profile_component_disabled: null;
+  profile_mob_params: null;
+  profile_signature_components: null;
+  relative_users: null;
+  room_data: string;
+  room_id: number;
+  room_id_str: string;
+  sec_uid: string;
+  secret: number;
+  share_info: ShareInfo$15;
+  short_id: string;
+  signature: string;
+  signature_extra: null;
+  special_people_labels: null;
+  text_extra: null;
+  total_favorited: number;
+  type_label: null;
+  uid: string;
+  unique_id: string;
+  user_canceled: boolean;
+  user_permissions: null;
+  user_tags: null;
+  verification_permission_ids: null;
+  verification_type: number;
+  webcast_preview_labels: null;
+  weibo_verify: string;
+  white_cover_url: null;
+  [property: string]: any;
+};
+type HotList$5 = {
+  extra: string;
+  footer: string;
+  group_id: string;
+  header: string;
+  hot_score: number;
+  i18n_title: string;
+  image_url: string;
+  label?: number;
+  pattern_type?: number;
+  rank: number;
+  schema: string;
+  sentence: string;
+  sentence_id: number;
+  title: string;
+  type: number;
+  view_count: number;
+  [property: string]: any;
+};
+type ImpressionData2$1 = {
+  group_id_list_a: number[];
+  group_id_list_b: unknown[];
+  group_id_list_c: unknown[];
+  group_id_list_d: null;
+  similar_id_list_a: null;
+  similar_id_list_b: null;
+  [property: string]: any;
+};
+type Music2$1 = {
+  album: string;
+  artist_user_infos: null;
+  artists: unknown[];
+  audition_duration: number;
+  author: string;
+  author_deleted: boolean;
+  author_position: null;
+  author_status: number;
+  avatar_large: Avatar168x168$3;
+  avatar_medium: Avatar168x168$3;
+  avatar_thumb: Avatar168x168$3;
+  binded_challenge_id: number;
+  can_background_play: boolean;
+  collect_stat: number;
+  cover_hd: Avatar168x168$3;
+  cover_large: Avatar168x168$3;
+  cover_medium: Avatar168x168$3;
+  cover_thumb: Avatar168x168$3;
+  dmv_auto_show: boolean;
+  dsp_status: number;
+  duration: number;
+  end_time: number;
+  external_song_info: unknown[];
+  extra: string;
+  id: number;
+  id_str: string;
+  is_audio_url_with_cookie: boolean;
+  is_commerce_music: boolean;
+  is_del_video: boolean;
+  is_matched_metadata: boolean;
+  is_original: boolean;
+  is_original_sound: boolean;
+  is_pgc: boolean;
+  is_restricted: boolean;
+  is_video_self_see: boolean;
+  luna_info: LunaInfo$3;
+  lyric_short_position: null;
+  matched_pgc_sound?: MatchedPgcSound$13;
+  mid: string;
+  music_chart_ranks: null;
+  music_collect_count: number;
+  music_cover_atmosphere_color_value: string;
+  music_status: number;
+  musician_user_infos: null;
+  mute_share: boolean;
+  offline_desc: string;
+  owner_handle: string;
+  owner_id: string;
+  owner_nickname: string;
+  pgc_music_type: number;
+  play_url: Icon$10;
+  position: null;
+  prevent_download: boolean;
+  prevent_item_download_status: number;
+  preview_end_time: number;
+  preview_start_time: number;
+  reason_type: number;
+  redirect: boolean;
+  schema_url: string;
+  search_impr: SearchImpr$16;
+  sec_uid: string;
+  shoot_duration: number;
+  show_origin_clip: boolean;
+  song?: Song2$1;
+  source_platform: number;
+  start_time: number;
+  status: number;
+  strong_beat_url?: Avatar168x168$3;
+  tag_list: null;
+  talent_hashtag_name_list: null;
+  title: string;
+  unshelve_countries: null;
+  user_count: number;
+  video_duration: number;
+  [property: string]: any;
+};
+type Song2$1 = {
+  artists: null;
+  chorus_v3_infos: null;
+  id: number;
+  id_str: string;
+  [property: string]: any;
+};
+type RiskInfos2$1 = {
+  content: string;
+  risk_sink: boolean;
+  type: number;
+  vote: boolean;
+  warn: boolean;
+  [property: string]: any;
+};
+type Statistics2$1 = {
+  admire_count: number;
+  aweme_id: string;
+  collect_count: number;
+  comment_count: number;
+  digest: string;
+  digg_count: number;
+  download_count: number;
+  exposure_count: number;
+  forward_count: number;
+  live_watch_count: number;
+  lose_comment_count: number;
+  lose_count: number;
+  play_count: number;
+  recommend_count: number;
+  share_count: number;
+  whatsapp_share_count: number;
+  [property: string]: any;
+};
+type SuggestWords2$1 = {
+  suggest_words: SuggestWord$15[];
+  [property: string]: any;
+};
+type TextExtra2$1 = {
+  caption_end: number;
+  caption_start: number;
+  end: number;
+  hashtag_id?: string;
+  hashtag_name?: string;
+  is_commerce?: boolean;
+  search_query_id?: string;
+  search_text?: string;
+  sec_uid?: string;
+  start: number;
+  type: number;
+  user_id?: string;
+  [property: string]: any;
+};
+type Video2$4 = {
+  animated_cover: AnimatedCover$5;
+  audio: Audio$8;
+  big_thumbs: BigThumb$12[] | null;
+  bit_rate: BitRate2$2[];
+  bit_rate_audio: null;
+  cdn_url_expired: number;
+  cover: Avatar168x168$3;
+  download_addr: DownloadAddr2$1;
+  download_suffix_logo_addr: DownloadAddr2$1;
+  duration: number;
+  dynamic_cover: Avatar168x168$3;
+  format: string;
+  fuse_video_labels_v2: FuseVideoLabelsV2$2;
+  gaussian_cover: Avatar168x168$3;
+  has_download_suffix_logo_addr: boolean;
+  has_watermark: boolean;
+  height: number;
+  horizontal_type?: number;
+  is_bytevc1: number;
+  is_callback: boolean;
+  is_h265: number;
+  is_source_HDR: number;
+  meta: string;
+  misc_download_addrs?: string;
+  need_set_token: boolean;
+  origin_cover: Avatar168x168$3;
+  play_addr: PlayAddr265$8;
+  play_addr_265: PlayAddr265$8;
+  play_addr_h264: PlayAddr265$8;
+  play_addr_lowbr: PlayAddr265$8;
+  ratio: string;
+  raw_cover: Avatar168x168$3;
+  tags: null;
+  use_static_cover?: boolean;
+  video_model: string;
+  width: number;
+  [property: string]: any;
+};
+type BitRate2$2 = {
+  FPS: number;
+  HDR_bit: string;
+  HDR_type: string;
+  bit_rate: number;
+  format: string;
+  gear_name: string;
+  is_bytevc1: number;
+  is_h265: number;
+  play_addr: PlayAddr265$8;
+  quality_type: number;
+  video_extra: string;
+  [property: string]: any;
+};
+type DownloadAddr2$1 = {
+  data_size: number;
+  file_cs: string;
+  height: number;
+  uri: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type VideoControl2$1 = {
+  allow_douplus: boolean;
+  allow_download: boolean;
+  allow_duet: boolean;
+  allow_dynamic_wallpaper: boolean;
+  allow_music: boolean;
+  allow_react: boolean;
+  allow_record: boolean;
+  allow_share: boolean;
+  allow_stitch: boolean;
+  disable_record_reason: string;
+  download_ignore_visibility: boolean;
+  download_info: DownloadInfo2$1;
+  draft_progress_bar: number;
+  duet_ignore_visibility: boolean;
+  duet_info: DownloadInfo2$1;
+  prevent_download_type: number;
+  share_grayed: boolean;
+  share_ignore_visibility: boolean;
+  share_type: number;
+  show_ai_corner: boolean;
+  show_progress_bar: number;
+  show_watermark: boolean;
+  timer_info: TimerInfo2$1;
+  timer_status: number;
+  [property: string]: any;
+};
+type DownloadInfo2$1 = {
+  level: number;
+  [property: string]: any;
+};
+type TimerInfo2$1 = {
+  public_time?: number;
+  timer_status: number;
+  [property: string]: any;
+};
+type SubCardId$1 = {
+  items: string;
+  [property: string]: any;
+};
+type UserInfo$3 = {
+  account_cert_info: string;
+  ad_cover_url: null;
+  avatar_168x168: Avatar168x168$3;
+  avatar_300x300: Avatar168x168$3;
+  avatar_larger: Avatar168x168$3;
+  avatar_medium: Avatar168x168$3;
+  avatar_schema_list: null;
+  avatar_thumb: Avatar168x168$3;
+  aweme_count: number;
+  ban_user_functions: null;
+  batch_unfollow_contain_tabs: null;
+  batch_unfollow_relation_desc: null;
+  can_set_geofencing: null;
+  card_entries: null;
+  card_entries_not_display: null;
+  card_sort_priority: null;
+  cf_list: null;
+  cha_list: null;
+  contrail_list: null;
+  cover_url: null;
+  creator_tag_list: null;
+  custom_verify: string;
+  data_label_list: null;
+  display_info: null;
+  endorsement_info_list: null;
+  enterprise_verify_reason: string;
+  familiar_visitor_user: null;
+  favoriting_count: number;
+  follow_status: number;
+  follower_count: number;
+  follower_count_str: string;
+  follower_list_secondary_information_struct: null;
+  follower_status: number;
+  followers_detail: null;
+  following_count: number;
+  geofencing: null;
+  homepage_bottom_toast: null;
+  identity_labels: null;
+  im_role_ids: null;
+  interest_tags: null;
+  is_block: boolean;
+  is_verified: boolean;
+  item_list: null;
+  link_item_list: null;
+  need_points: null;
+  new_story_cover: null;
+  nickname: string;
+  not_seen_item_id_list: null;
+  not_seen_item_id_list_v2: null;
+  offline_info_list: null;
+  personal_tag_list: null;
+  platform_sync_info: null;
+  private_relation_list: null;
+  profile_component_disabled: null;
+  profile_mob_params: null;
+  profile_signature_components: null;
+  relative_users: null;
+  room_data: string;
+  room_id: number;
+  room_id_str: string;
+  sec_uid: string;
+  secret: number;
+  share_info: ShareInfo$15;
+  short_id: string;
+  signature: string;
+  signature_extra: null;
+  special_people_labels: null;
+  text_extra: null;
+  total_favorited: number;
+  type_label: null;
+  uid: string;
+  unique_id: string;
+  user_canceled: boolean;
+  user_permissions: null;
+  user_tags: unknown[];
+  verification_permission_ids: null;
+  verification_type: number;
+  webcast_preview_labels: null;
+  weibo_verify: string;
+  white_cover_url: null;
+  [property: string]: any;
+};
+type WordsQueryRecord$2 = {
+  info: string;
+  query_id: string;
+  words_source: string;
+  [property: string]: any;
+};
+type DouyinAiSearchInfo$1 = {
+  ai_search_req_patch: {
+    [property: string]: any;
+  };
+  is_hit_high_risk: boolean;
+  is_simple_qa_intent: boolean;
+  [property: string]: any;
+};
+type Extra$13 = {
+  fatal_item_ids: unknown[];
+  logid: string;
+  now: number;
+  scenes: null;
+  search_request_id: string;
+  [property: string]: any;
+};
+type GlobalDoodleConfig$6 = {
+  filter_settings: FilterSetting$6[];
+  keyword: string;
+  [property: string]: any;
+};
+type FilterSetting$6 = {
+  android_version: number;
+  btm: string;
+  default_index: number;
+  enable_huo_shan: boolean;
+  enable_lite: boolean;
+  filter_style?: number;
+  harmony_version: number;
+  huoshan_android_version: number;
+  huoshan_ios_version: number;
+  ios_version: number;
+  items: Item2$1[];
+  lite_android_version: number;
+  lite_harmony_version: number;
+  lite_ios_version: number;
+  log_name: string;
+  name: string;
+  search_less_text?: SearchLessText$4;
+  search_nil_text?: SearchLessText$4;
+  title: string;
+  [property: string]: any;
+};
+type Item2$1 = {
+  log_value: string;
+  show_dot?: number;
+  title: string;
+  value: string;
+  [property: string]: any;
+};
+type SearchLessText$4 = {
+  info: string;
+  jump_text: string;
+  [property: string]: any;
+};
+type GuideSearchWord$2 = {
+  attached_text: null;
+  id: string;
+  query_id: string;
+  type: string;
+  word: string;
+  [property: string]: any;
+};
+type LogPb$27 = {
+  impr_id: string;
+  [property: string]: any;
+};
+type MultiColumnsInfo$2 = {
+  group_tag: string;
+  is_multi_columns: boolean;
+  [property: string]: any;
+};
+type SearchNilInfo$2 = {
+  is_load_more: string;
+  search_nil_item: string;
+  search_nil_type: string;
+  text_type: number;
+  [property: string]: any;
+};
+type TimeCost$3 = {
+  '1st_screen_state': string;
+  FEDERATION_federation_latency: number;
+  ack_status: string;
+  can_ack: string;
+  complete_time: number;
+  disable_forecast_cut: number;
+  disable_optimize_2023: string;
+  double_column: boolean;
+  douyin_disease_aggr_video_query_tag: string;
+  enable_ab_refactor: string;
+  engine_intent_cat: string;
+  fed_cache_status: string;
+  fed_recall_cost: number;
+  fed_recall_end: number;
+  first_no_ad: string;
+  first_screen_card_businesses: string;
+  first_screen_card_cnt: number;
+  first_screen_card_names: string;
+  first_screen_real_lynx_num: number;
+  first_screen_real_lynx_type: string;
+  first_screen_sub_card_real_lynx_num: number;
+  first_screen_sub_card_real_lynx_type: string;
+  forecast: string;
+  forecast_ack_reason: string;
+  forecast_fs_all_hit: string;
+  forecast_produce_end: number;
+  forecast_provider_end: number;
+  goods_card_has_ad: string;
+  has_ad: string;
+  hit_user_history_cache: string;
+  idc: string;
+  is_cpt_ad: string;
+  is_go_forecast: string;
+  is_nil_search: string;
+  keypoint: string;
+  loader_time_cost_slowest_loader: string;
+  loader_time_cost_slowest_loader_latency: number;
+  log_id: string;
+  merge_fs_status: string;
+  merged_fs_all_hit: string;
+  mf2_append_doc_len: number;
+  multi_chunk: string;
+  new_chunk_state: string;
+  pd: string;
+  predict_n: number;
+  preload_miss_count: number;
+  query: string;
+  query_tags: string;
+  quick_ack_failed_detail: string;
+  reason: string;
+  search_source_api: string;
+  server_key_path: string;
+  skip_provider_ack_reason: string;
+  stream: string;
+  stream_inner: number;
+  target_query_tags: string;
+  tp_end_forecast_produce: number;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/douyin/Search/general/index.d.ts
+type General$1 = General_V0;
+//#endregion
+//#region ../response-types/dist/generated/douyin/Search/user/user_V0.d.ts
+type User_V0 = {
+  __search_type: 'user';
+  challenge_list: null;
+  cursor: number;
+  extra: Extra$12;
+  global_doodle_config: GlobalDoodleConfig$5;
+  has_more: number;
+  input_keyword: string;
+  log_pb: LogPb$26;
+  mock_recall_path: string;
+  music_list: null;
+  myself_user_id: string;
+  path: string;
+  qc: string;
+  rid: string;
+  search_nil_info?: SearchNilInfo$1;
+  status_code: number;
+  type: number;
+  user_list: UserList$3[];
+  [property: string]: any;
+};
+type Extra$12 = {
+  fatal_item_ids: unknown[];
+  logid: string;
+  now: number;
+  scenes: null;
+  search_request_id: string;
+  [property: string]: any;
+};
+type GlobalDoodleConfig$5 = {
+  filter_settings: FilterSetting$5[];
+  filter_show_dot: number;
+  keyword: string;
+  [property: string]: any;
+};
+type FilterSetting$5 = {
+  default_index: number;
+  items: Item$20[];
+  log_name: string;
+  name: string;
+  title: string;
+  [property: string]: any;
+};
+type Item$20 = {
+  log_value: string;
+  title: string;
+  value: string;
+  [property: string]: any;
+};
+type LogPb$26 = {
+  impr_id: string;
+  [property: string]: any;
+};
+type SearchNilInfo$1 = {
+  is_load_more: string;
+  search_nil_item: string;
+  search_nil_type: string;
+  text_type: number;
+  [property: string]: any;
+};
+type UserList$3 = {
+  baikes: null;
+  challenges: null;
+  effects: null;
+  fandoms: null;
+  is_red_uniqueid: boolean;
+  items: null;
+  mix_list: null;
+  musics: null;
+  position: null;
+  product_info: null;
+  product_list: null;
+  shop_product_info: null;
+  uniqid_position: null;
+  userSubLightApp: null;
+  user_info: UserInfo$2;
+  user_service_info: null;
+  [property: string]: any;
+};
+type UserInfo$2 = {
+  account_cert_info?: string;
+  ad_cover_url: null;
+  avatar_schema_list: null;
+  avatar_thumb: AvatarThumb$12;
+  ban_user_functions: null;
+  batch_unfollow_contain_tabs: null;
+  batch_unfollow_relation_desc: null;
+  can_set_geofencing: null;
+  card_entries: null;
+  card_entries_not_display: null;
+  card_sort_priority: null;
+  cf_list: null;
+  cha_list: null;
+  contrail_list: null;
+  cover_url: null;
+  creator_tag_list: null;
+  custom_verify: string;
+  data_label_list: null;
+  display_info: null;
+  endorsement_info_list: null;
+  enterprise_verify_reason: string;
+  familiar_visitor_user: null;
+  follow_status: number;
+  follower_count: number;
+  follower_count_str: string;
+  follower_list_secondary_information_struct: null;
+  follower_status: number;
+  followers_detail: null;
+  geofencing: null;
+  homepage_bottom_toast: null;
+  identity_labels: null;
+  im_role_ids: null;
+  interest_tags: null;
+  item_list: null;
+  link_item_list: null;
+  need_points: null;
+  new_story_cover: null;
+  nickname: string;
+  not_seen_item_id_list: null;
+  not_seen_item_id_list_v2: null;
+  offline_info_list: null;
+  personal_tag_list: null;
+  platform_sync_info: null;
+  private_relation_list: null;
+  profile_component_disabled: null;
+  profile_mob_params: null;
+  profile_signature_components: null;
+  relative_users: null;
+  room_data: string;
+  room_id?: number;
+  room_id_str?: string;
+  sec_uid: string;
+  secret: number;
+  short_id: string;
+  signature: string;
+  signature_extra: null;
+  special_people_labels: null;
+  text_extra: null;
+  total_favorited: number;
+  type_label: null;
+  uid: string;
+  unique_id: string;
+  user_permissions: null;
+  user_tags: UserTag$2[];
+  verification_permission_ids: null;
+  versatile_display: string;
+  webcast_preview_labels: null;
+  white_cover_url: null;
+  [property: string]: any;
+};
+type AvatarThumb$12 = {
+  height: number;
+  uri: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type UserTag$2 = {
+  description: string;
+  icon_url: string;
+  type: string;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/douyin/Search/user/index.d.ts
+type User$15 = User_V0;
+//#endregion
+//#region ../response-types/dist/generated/douyin/Search/video/video_V0.d.ts
+type Video_V0 = {
+  __search_type: 'video';
+  aweme_list: null;
+  backtrace: string;
+  cursor: number;
+  data: Data$25[];
+  extra: Extra$11;
+  global_doodle_config: GlobalDoodleConfig$4;
+  guide_search_words: GuideSearchWord$1[];
+  has_more: number;
+  log_pb: LogPb$25;
+  mock_recall_path: string;
+  path: string;
+  status_code: number;
+  [property: string]: any;
+};
+type Data$25 = {
+  aweme_info: AwemeInfo$3;
+  aweme_list: null;
+  ecom_goods_list: null;
+  music_info_list: null;
+  ops: null;
+  qishui_music_list: null;
+  shoot_position_list: null;
+  show_tab: null;
+  sub_card_list: null;
+  tab: null;
+  type: number;
+  [property: string]: any;
+};
+type AwemeInfo$3 = {
+  ai_follow_images: null;
+  anchor_info?: AnchorInfo$8;
+  anchors: null;
+  author: Author$18;
+  author_user_id: number;
+  aweme_id: string;
+  aweme_type: number;
+  cha_list: null;
+  challenge_position: null;
+  chapter_bar_color: null;
+  chapter_list: null;
+  collect_stat: number;
+  comment_list: null;
+  commerce_config_data: null;
+  common_left_top_labels: null;
+  cover_labels: null;
+  create_scale_type: null;
+  create_time: number;
+  danmaku_control: DanmakuControl$11;
+  desc: string;
+  dislike_dimension_list: null;
+  dislike_dimension_list_v2: null;
+  diversion_bar_info: null;
+  douyin_p_c_video_extra?: string;
+  effect_inflow_effects: null;
+  encrypt_interest_point_list: null;
+  encrypt_key_phrase_list: null;
+  entertainment_product_info: EntertainmentProductInfo$17;
+  follow_shot_assets: null;
+  geofencing: null;
+  geofencing_regions: null;
+  group_id: string;
+  hybrid_label: null;
+  image_follow_shot_assets: null;
+  image_infos: null;
+  image_list: null;
+  images: null;
+  img_bitrate: null;
+  impression_data: ImpressionData$17;
+  interaction_stickers: null;
+  interest_points: null;
+  is_top: number;
+  jump_tab_info_list: null;
+  label_top_text: null;
+  long_video: null;
+  media_type: number;
+  mix_info?: MixInfo$7;
+  music: Music$17;
+  mv_info: null;
+  nearby_hot_comment: null;
+  nickname_position: null;
+  origin_comment_ids: null;
+  origin_text_extra: null;
+  original_images: null;
+  packed_clips: null;
+  position: null;
+  prevent_download: boolean;
+  promotions: null;
+  rawdata: string;
+  ref_tts_id_list: null;
+  ref_voice_modify_id_list: null;
+  relation_labels: null;
+  reply_smart_emojis: null;
+  risk_infos: RiskInfos$15;
+  series_info?: SeriesInfo$3;
+  share_info: ShareInfo$14;
+  slides_music_beats: null;
+  social_tag_list: null;
+  standard_bar_info_list: null;
+  statistics: Statistics$17;
+  status: Status2$4;
+  suggest_words: SuggestWords$15;
+  text_extra: TextExtra$16[];
+  trends_infos: null;
+  tts_id_list: null;
+  uniqid_position: null;
+  user_digged: number;
+  video: Video$19;
+  video_control: VideoControl$17;
+  video_labels: null;
+  video_tag: null;
+  video_text: null;
+  voice_modify_id_list: null;
+  yumme_recreason: null;
+  [property: string]: any;
+};
+type AnchorInfo$8 = {
+  content: string;
+  extra: string;
+  icon: Icon$9;
+  id: string;
+  log_extra: string;
+  open_url: string;
+  style_info: StyleInfo$8;
+  title: string;
+  title_tag: string;
+  type: number;
+  [property: string]: any;
+};
+type Icon$9 = {
+  height: number;
+  uri: string;
+  url_key: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type StyleInfo$8 = {
+  default_icon: string;
+  extra: string;
+  scene_icon: string;
+  [property: string]: any;
+};
+type Author$18 = {
+  account_cert_info?: string;
+  ad_cover_url: null;
+  avatar_schema_list: null;
+  avatar_thumb: AvatarThumb$11;
+  ban_user_functions: null;
+  batch_unfollow_contain_tabs: null;
+  batch_unfollow_relation_desc: null;
+  can_set_geofencing: null;
+  card_entries: null;
+  card_entries_not_display: null;
+  card_sort_priority: null;
+  cf_list: null;
+  cha_list: null;
+  contrail_list: null;
+  cover_url: null;
+  creator_tag_list: null;
+  custom_verify: string;
+  data_label_list: null;
+  display_info: null;
+  endorsement_info_list: null;
+  enterprise_verify_reason: string;
+  familiar_visitor_user: null;
+  follow_status: number;
+  follower_count: number;
+  follower_list_secondary_information_struct: null;
+  follower_status: number;
+  followers_detail: null;
+  geofencing: null;
+  homepage_bottom_toast: null;
+  identity_labels: null;
+  im_role_ids: null;
+  interest_tags: null;
+  item_list: null;
+  link_item_list: null;
+  need_points: null;
+  new_story_cover: null;
+  nickname: string;
+  not_seen_item_id_list: null;
+  not_seen_item_id_list_v2: null;
+  offline_info_list: null;
+  personal_tag_list: null;
+  platform_sync_info: null;
+  private_relation_list: null;
+  profile_component_disabled: null;
+  profile_mob_params: null;
+  profile_signature_components: null;
+  relative_users: null;
+  room_data: string;
+  room_id: number;
+  room_id_str: string;
+  sec_uid: string;
+  secret: number;
+  signature_extra: null;
+  special_people_labels: null;
+  text_extra: null;
+  total_favorited: number;
+  type_label: null;
+  uid: string;
+  user_permissions: null;
+  user_tags: null;
+  verification_permission_ids: null;
+  webcast_preview_labels: null;
+  white_cover_url: null;
+  [property: string]: any;
+};
+type AvatarThumb$11 = {
+  height: number;
+  uri: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type DanmakuControl$11 = {
+  activities: null;
+  enable_danmaku: boolean;
+  is_post_denied: boolean;
+  post_denied_reason: string;
+  post_privilege_level: number;
+  [property: string]: any;
+};
+type EntertainmentProductInfo$17 = {
+  biz: number;
+  market_info: MarketInfo$17;
+  sub_title: null;
+  [property: string]: any;
+};
+type MarketInfo$17 = {
+  limit_free: LimitFree$17;
+  marketing_tag: null;
+  [property: string]: any;
+};
+type LimitFree$17 = {
+  in_free: boolean;
+  [property: string]: any;
+};
+type ImpressionData$17 = {
+  group_id_list_a: number[] | null;
+  group_id_list_b: null;
+  group_id_list_c: null;
+  group_id_list_d: null;
+  similar_id_list_a: null;
+  similar_id_list_b: null;
+  [property: string]: any;
+};
+type MixInfo$7 = {
+  cover_url: AvatarThumb$11;
+  extra: string;
+  ids: null;
+  mix_id: string;
+  mix_name: string;
+  mix_type: number;
+  paid_episodes: null;
+  statis: Statis$7;
+  status: Status$14;
+  watched_item: string;
+  [property: string]: any;
+};
+type Statis$7 = {
+  collect_vv: number;
+  current_episode: number;
+  play_vv: number;
+  updated_to_episode: number;
+  [property: string]: any;
+};
+type Status$14 = {
+  is_collected: number;
+  status: number;
+  [property: string]: any;
+};
+type Music$17 = {
+  album: string;
+  artist_user_infos: null;
+  artists: null;
+  author: string;
+  author_position: null;
+  avatar_thumb: AvatarThumb$11;
+  binded_challenge_id: number;
+  collect_stat: number;
+  cover_medium: AvatarThumb$11;
+  cover_thumb: AvatarThumb$11;
+  duration: number;
+  external_song_info: null;
+  extra: string;
+  id: number;
+  id_str: string;
+  is_original: boolean;
+  lyric_short_position: null;
+  mid: string;
+  music_chart_ranks: null;
+  musician_user_infos: null;
+  owner_id: string;
+  owner_nickname: string;
+  play_url: Icon$9;
+  position: null;
+  sec_uid: string;
+  status: number;
+  tag_list: null;
+  talent_hashtag_name_list: null;
+  title: string;
+  unshelve_countries: null;
+  user_count: number;
+  [property: string]: any;
+};
+type RiskInfos$15 = {
+  content: string;
+  icon_url?: string;
+  risk_sink: boolean;
+  type: number;
+  vote: boolean;
+  warn: boolean;
+  warn_level?: number;
+  [property: string]: any;
+};
+type SeriesInfo$3 = {
+  actors: null;
+  cover_url: AvatarThumb$11;
+  directors: null;
+  extra: string;
+  ids: null;
+  paid_episodes: null;
+  recommend_color: null;
+  series_content_types: null;
+  series_content_types_new: null;
+  series_id: string;
+  series_name: string;
+  series_paid_type_list: null;
+  stats: Statis$7;
+  status: Status$14;
+  watched_item: string;
+  [property: string]: any;
+};
+type ShareInfo$14 = {
+  share_desc: string;
+  share_desc_info: string;
+  share_link_desc: string;
+  share_quote: string;
+  share_title: string;
+  share_url: string;
+  [property: string]: any;
+};
+type Statistics$17 = {
+  collect_count: number;
+  comment_count: number;
+  digg_count: number;
+  download_count: number;
+  forward_count: number;
+  live_watch_count: number;
+  play_count: number;
+  share_count: number;
+  [property: string]: any;
+};
+type Status2$4 = {
+  allow_share: boolean;
+  in_reviewing: boolean;
+  is_delete: boolean;
+  is_private: boolean;
+  is_prohibited: boolean;
+  part_see: number;
+  private_status: number;
+  review_result: ReviewResult$17;
+  [property: string]: any;
+};
+type ReviewResult$17 = {
+  review_status: number;
+  [property: string]: any;
+};
+type SuggestWords$15 = {
+  suggest_words: SuggestWord$14[];
+  [property: string]: any;
+};
+type SuggestWord$14 = {
+  extra_info: string;
+  hint_text: string;
+  icon_url: string;
+  scene: string;
+  words: Word$16[] | null;
+  [property: string]: any;
+};
+type Word$16 = {
+  info: string;
+  word: string;
+  word_id: string;
+  [property: string]: any;
+};
+type TextExtra$16 = {
+  end: number;
+  hashtag_id?: string;
+  hashtag_name?: string;
+  is_commerce?: boolean;
+  search_query_id?: string;
+  search_text?: string;
+  sec_uid?: string;
+  start: number;
+  type: number;
+  user_id?: string;
+  [property: string]: any;
+};
+type Video$19 = {
+  big_thumbs: BigThumb$11[] | null;
+  bit_rate: BitRate$12[];
+  bit_rate_audio: BitRateAudio$8[] | null;
+  cover: AvatarThumb$11;
+  download_addr: DownloadAddr$10;
+  download_suffix_logo_addr?: DownloadAddr$10;
+  duration: number;
+  dynamic_cover: AvatarThumb$11;
+  gaussian_cover: AvatarThumb$11;
+  has_download_suffix_logo_addr?: boolean;
+  height: number;
+  meta: string;
+  misc_download_addrs?: string;
+  origin_cover: AvatarThumb$11;
+  play_addr: PlayAddr2$5;
+  play_addr_265: PlayAddr2$5;
+  play_addr_lowbr: PlayAddr2$5;
+  ratio: string;
+  raw_cover: AvatarThumb$11;
+  tags: null;
+  video_model: string;
+  width: number;
+  [property: string]: any;
+};
+type BigThumb$11 = {
+  duration: number;
+  fext: string;
+  img_num: number;
+  img_url: string;
+  img_urls: string[];
+  img_x_len: number;
+  img_x_size: number;
+  img_y_len: number;
+  img_y_size: number;
+  interval: number;
+  uri: string;
+  uris: string[];
+  [property: string]: any;
+};
+type BitRate$12 = {
+  FPS: number;
+  HDR_bit: string;
+  HDR_type: string;
+  bit_rate: number;
+  format: string;
+  gear_name: string;
+  is_bytevc1: number;
+  is_h265: number;
+  play_addr: PlayAddr$9;
+  quality_type: number;
+  video_extra: string;
+  [property: string]: any;
+};
+type PlayAddr$9 = {
+  data_size: number;
+  file_cs?: string;
+  file_hash: string;
+  height: number;
+  uri: string;
+  url_key: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type BitRateAudio$8 = {
+  audio_extra: string;
+  audio_meta: AudioMeta$8;
+  audio_quality: number;
+  [property: string]: any;
+};
+type AudioMeta$8 = {
+  bitrate: number;
+  codec_type: string;
+  encoded_type: string;
+  file_hash: string;
+  file_id: string;
+  format: string;
+  fps: number;
+  logo_type: string;
+  media_type: string;
+  quality: string;
+  quality_desc: string;
+  size: number;
+  sub_info: string;
+  url_list: UrlList$8;
+  [property: string]: any;
+};
+type UrlList$8 = {
+  backup_url: string;
+  fallback_url: string;
+  main_url: string;
+  [property: string]: any;
+};
+type DownloadAddr$10 = {
+  data_size?: number;
+  file_cs: string;
+  height: number;
+  uri: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type PlayAddr2$5 = {
+  data_size: number;
+  file_cs: string;
+  file_hash: string;
+  height: number;
+  uri: string;
+  url_key: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type VideoControl$17 = {
+  allow_douplus: boolean;
+  allow_download: boolean;
+  allow_duet: boolean;
+  allow_dynamic_wallpaper: boolean;
+  allow_music: boolean;
+  allow_react: boolean;
+  allow_record: boolean;
+  allow_share: boolean;
+  allow_stitch: boolean;
+  disable_record_reason: string;
+  download_ignore_visibility: boolean;
+  download_info: DownloadInfo$17;
+  draft_progress_bar: number;
+  duet_ignore_visibility: boolean;
+  duet_info: DuetInfo$17;
+  prevent_download_type: number;
+  share_grayed: boolean;
+  share_ignore_visibility: boolean;
+  share_type: number;
+  show_ai_corner: boolean;
+  show_progress_bar: number;
+  show_watermark: boolean;
+  timer_info: TimerInfo$4;
+  timer_status: number;
+  [property: string]: any;
+};
+type DownloadInfo$17 = {
+  fail_info?: FailInfo$9;
+  level: number;
+  [property: string]: any;
+};
+type FailInfo$9 = {
+  code: number;
+  msg: string;
+  reason: string;
+  [property: string]: any;
+};
+type DuetInfo$17 = {
+  fail_info?: FailInfo2$6;
+  level: number;
+  [property: string]: any;
+};
+type FailInfo2$6 = {
+  code: number;
+  reason: string;
+  [property: string]: any;
+};
+type TimerInfo$4 = {
+  timer_status: number;
+  [property: string]: any;
+};
+type Extra$11 = {
+  fatal_item_ids: unknown[];
+  logid: string;
+  now: number;
+  scenes: null;
+  search_request_id: string;
+  [property: string]: any;
+};
+type GlobalDoodleConfig$4 = {
+  filter_settings: FilterSetting$4[];
+  keyword: string;
+  [property: string]: any;
+};
+type FilterSetting$4 = {
+  android_version: number;
+  btm: string;
+  default_index: number;
+  enable_huo_shan: boolean;
+  enable_lite: boolean;
+  harmony_version: number;
+  huoshan_android_version: number;
+  huoshan_ios_version: number;
+  ios_version: number;
+  items: Item$19[];
+  lite_android_version: number;
+  lite_harmony_version: number;
+  lite_ios_version: number;
+  log_name: string;
+  name: string;
+  search_less_text?: SearchLessText$3;
+  search_nil_text?: SearchLessText$3;
+  title: string;
+  [property: string]: any;
+};
+type Item$19 = {
+  log_value: string;
+  show_dot?: number;
+  title: string;
+  value: string;
+  [property: string]: any;
+};
+type SearchLessText$3 = {
+  info: string;
+  jump_text: string;
+  [property: string]: any;
+};
+type GuideSearchWord$1 = {
+  attached_text: null;
+  id: string;
+  query_id: string;
+  type: string;
+  word: string;
+  [property: string]: any;
+};
+type LogPb$25 = {
+  impr_id: string;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/douyin/Search/video/index.d.ts
+type Video$18 = Video_V0;
+//#endregion
+//#region ../response-types/dist/generated/douyin/Search/Unknown.d.ts
+type SearchUnknown = {
+  __search_type?: never;
+  ad_info?: {
+    [property: string]: any;
+  };
+  aweme_list?: null;
+  backtrace?: string;
+  challenge_list?: null;
+  cursor: number;
+  data?: Data$24[];
+  douyin_ai_search_info?: DouyinAiSearchInfo;
+  extra: Extra$10;
+  global_doodle_config: GlobalDoodleConfig$3;
+  guide_search_words?: GuideSearchWord[] | null;
+  has_more: number;
+  input_keyword?: string;
+  log_pb: LogPb$24;
+  mock_recall_path?: string;
+  multi_columns_info?: MultiColumnsInfo$1;
+  music_list?: null;
+  myself_user_id?: string;
+  ops?: null;
+  path?: string;
+  polling_time?: number;
+  qc?: string;
+  result_status?: number;
+  rid?: string;
+  search_nil_info?: SearchNilInfo;
+  status_code: number;
+  time_cost?: TimeCost$2;
+  type?: number;
+  user_list?: UserList3[];
+  [property: string]: any;
+};
+type Data$24 = {
+  aweme_info?: AwemeInfo$2;
+  aweme_list: null;
+  card_id?: string;
+  card_info?: CardInfo$1;
+  card_style_type?: number;
+  card_type?: number;
+  card_type_id?: CardTypeId;
+  card_unique_name?: string;
+  data?: Data2;
+  debug_data?: DebugData$1;
+  debug_diff_info?: {
+    [property: string]: any;
+  };
+  doc_type?: number;
+  ecom_goods_list: null;
+  fp?: string;
+  log_data?: LogData$1;
+  lynx_info?: LynxInfo$1;
+  music_info_list: null;
+  ops: null;
+  provider_doc_id?: number;
+  provider_doc_id_str?: string;
+  qishui_music_list: null;
+  related_word_list?: RelatedWordList$1[];
+  send_back?: string;
+  shoot_position_list: null;
+  show_tab: null;
+  sub_card_list: unknown[] | null;
+  tab: null;
+  type: number;
+  user_list?: UserList2[];
+  words_query_record?: WordsQueryRecord$1;
+  [property: string]: any;
+};
+type AwemeInfo$2 = {
+  ai_follow_images: null;
+  anchor_info?: AnchorInfo$7;
+  anchors: null;
+  author: Author$17;
+  author_user_id: number;
+  aweme_id: string;
+  aweme_type: number;
+  cha_list: null;
+  challenge_position: null;
+  chapter_bar_color: null;
+  chapter_list: null;
+  collect_stat: number;
+  comment_list: null;
+  commerce_config_data: null;
+  common_left_top_labels: null;
+  cover_labels: null;
+  create_scale_type: null;
+  create_time: number;
+  danmaku_control?: DanmakuControl$10;
+  desc: string;
+  dislike_dimension_list: null;
+  dislike_dimension_list_v2: null;
+  diversion_bar_info: null;
+  douyin_p_c_video_extra?: string;
+  effect_inflow_effects: null;
+  encrypt_interest_point_list: null;
+  encrypt_key_phrase_list: null;
+  entertainment_product_info: EntertainmentProductInfo$16;
+  fake_horizontal_info?: FakeHorizontalInfo;
+  follow_shot_assets: null;
+  geofencing: null;
+  geofencing_regions: null;
+  group_id: string;
+  hybrid_label: null;
+  image_follow_shot_assets: null;
+  image_infos: null;
+  image_list: null;
+  images: Image$9[] | null;
+  img_bitrate: null;
+  impression_data: ImpressionData$16;
+  interaction_stickers: null;
+  interest_points: null;
+  is_top: number;
+  jump_tab_info_list: null;
+  label_top_text: null;
+  long_video: null;
+  media_type: number;
+  mix_info?: MixInfo$6;
+  music: Music$16;
+  mv_info: null;
+  nearby_hot_comment: null;
+  nickname_position: null;
+  origin_comment_ids: null;
+  origin_text_extra: null;
+  original_images: null;
+  packed_clips: null;
+  position: null;
+  prevent_download: boolean;
+  promotions: null;
+  rawdata: string;
+  ref_tts_id_list: null;
+  ref_voice_modify_id_list: null;
+  relation_label?: RelationLabel$4;
+  relation_labels: null;
+  reply_smart_emojis: null;
+  risk_infos: RiskInfos$14;
+  series_info?: SeriesInfo$2;
+  share_info: ShareInfo3$3;
+  slides_music_beats: null;
+  social_tag_list: null;
+  standard_bar_info_list: null;
+  statistics: Statistics$16;
+  status: Status3$2;
+  suggest_words: SuggestWords$14;
+  text_extra: TextExtra$15[];
+  trends_infos: null;
+  tts_id_list: null;
+  uniqid_position: null;
+  user_digged: number;
+  video: Video$17;
+  video_control: VideoControl$16;
+  video_labels: null;
+  video_tag: null;
+  video_text: null;
+  voice_modify_id_list: null;
+  yumme_recreason: null;
+  [property: string]: any;
+};
+type AnchorInfo$7 = {
+  content: string;
+  extra: string;
+  icon: Icon$8;
+  id: string;
+  log_extra: string;
+  mp_url?: string;
+  open_url?: string;
+  style_info: StyleInfo$7;
+  title: string;
+  title_tag: string;
+  type: number;
+  web_url?: string;
+  [property: string]: any;
+};
+type Icon$8 = {
+  height: number;
+  uri: string;
+  url_key: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type StyleInfo$7 = {
+  default_icon: string;
+  extra: string;
+  scene_icon: string;
+  [property: string]: any;
+};
+type Author$17 = {
+  account_cert_info?: string;
+  ad_cover_url: null;
+  avatar_168x168?: Avatar168x168$2;
+  avatar_300x300?: Avatar168x168$2;
+  avatar_larger?: Avatar168x168$2;
+  avatar_medium?: Avatar168x168$2;
+  avatar_schema_list: null;
+  avatar_thumb: Avatar168x168$2;
+  aweme_count?: number;
+  ban_user_functions: null;
+  batch_unfollow_contain_tabs: null;
+  batch_unfollow_relation_desc: null;
+  can_set_geofencing: null;
+  card_entries: null;
+  card_entries_not_display: null;
+  card_sort_priority: null;
+  cf_list: null;
+  cha_list: null;
+  contrail_list: null;
+  cover_url: null;
+  creator_tag_list: null;
+  custom_verify: string;
+  data_label_list: null;
+  display_info: null;
+  endorsement_info_list: null;
+  enterprise_verify_reason: string;
+  familiar_visitor_user: null;
+  favoriting_count?: number;
+  follow_status: number;
+  follower_count: number;
+  follower_list_secondary_information_struct: null;
+  follower_status: number;
+  followers_detail: null;
+  following_count?: number;
+  geofencing: null;
+  homepage_bottom_toast: null;
+  identity_labels: null;
+  im_role_ids: null;
+  interest_tags: null;
+  is_block?: boolean;
+  is_verified?: boolean;
+  item_list: null;
+  link_item_list: null;
+  need_points: null;
+  new_story_cover: null;
+  nickname: string;
+  not_seen_item_id_list: null;
+  not_seen_item_id_list_v2: null;
+  offline_info_list: null;
+  personal_tag_list: null;
+  platform_sync_info: null;
+  private_relation_list: null;
+  profile_component_disabled: null;
+  profile_mob_params: null;
+  profile_signature_components: null;
+  relative_users: null;
+  room_data: string;
+  room_id: number;
+  room_id_str: string;
+  sec_uid: string;
+  secret: number;
+  share_info?: ShareInfo$13;
+  short_id?: string;
+  signature?: string;
+  signature_extra: null;
+  special_people_labels: null;
+  text_extra: null;
+  total_favorited: number;
+  type_label: null;
+  uid: string;
+  unique_id?: string;
+  user_canceled?: boolean;
+  user_permissions: null;
+  user_tags: null;
+  verification_permission_ids: null;
+  verification_type?: number;
+  webcast_preview_labels: null;
+  weibo_verify?: string;
+  white_cover_url: null;
+  [property: string]: any;
+};
+type Avatar168x168$2 = {
+  height: number;
+  uri: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type ShareInfo$13 = {
+  share_desc: string;
+  share_desc_info: string;
+  share_qrcode_url: Avatar168x168$2;
+  share_title: string;
+  share_title_myself: string;
+  share_title_other: string;
+  share_url: string;
+  share_weibo_desc: string;
+  [property: string]: any;
+};
+type DanmakuControl$10 = {
+  activities: Activity$10[] | null;
+  danmaku_cnt?: number;
+  enable_danmaku: boolean;
+  first_danmaku_offset?: number;
+  is_post_denied: boolean;
+  last_danmaku_offset?: number;
+  pass_through_params?: string;
+  post_denied_reason: string;
+  post_privilege_level: number;
+  skip_danmaku?: boolean;
+  [property: string]: any;
+};
+type Activity$10 = {
+  id: number;
+  type: number;
+  [property: string]: any;
+};
+type EntertainmentProductInfo$16 = {
+  biz: number;
+  market_info: MarketInfo$16;
+  sub_title: null;
+  [property: string]: any;
+};
+type MarketInfo$16 = {
+  limit_free: LimitFree$16;
+  marketing_tag: null;
+  [property: string]: any;
+};
+type LimitFree$16 = {
+  in_free: boolean;
+  [property: string]: any;
+};
+type FakeHorizontalInfo = {
+  bottom: number;
+  left: number;
+  right: number;
+  top: number;
+  [property: string]: any;
+};
+type Image$9 = {
+  download_url_list: string[];
+  height: number;
+  interaction_stickers: null;
+  is_new_text_mode: number;
+  mask_url_list: null;
+  resolution_log_param: ResolutionLogParam$2;
+  uri: string;
+  url_list: string[];
+  watermark_free_download_url_list: null;
+  width: number;
+  [property: string]: any;
+};
+type ResolutionLogParam$2 = {
+  image_publish_height: number;
+  image_publish_width: number;
+  image_source_height: number;
+  image_source_width: number;
+  video_publish_height: number;
+  video_publish_width: number;
+  video_source_height: number;
+  video_source_width: number;
+  [property: string]: any;
+};
+type ImpressionData$16 = {
+  group_id_list_a: number[] | null;
+  group_id_list_b: number[] | null;
+  group_id_list_c: number[] | null;
+  group_id_list_d: null;
+  similar_id_list_a: number[] | null;
+  similar_id_list_b: number[] | null;
+  [property: string]: any;
+};
+type MixInfo$6 = {
+  cover_url: Avatar168x168$2;
+  create_time?: number;
+  dark_icon_url?: Avatar168x168$2;
+  desc?: string;
+  disable_display?: number;
+  disable_display_inner?: number;
+  extra: string;
+  ids: null;
+  is_iaa?: number;
+  is_serial_mix?: number;
+  light_icon_url?: Avatar168x168$2;
+  mix_id: string;
+  mix_name: string;
+  mix_pic_type?: number;
+  mix_type: number;
+  paid_episodes: null;
+  series_new_mix_info?: SeriesNewMixInfo$2;
+  share_info?: ShareInfo2$7;
+  statis: Statis$6;
+  status: Status$13;
+  update_time?: number;
+  watched_item: string;
+  [property: string]: any;
+};
+type SeriesNewMixInfo$2 = {
+  content_sub_type: number;
+  [property: string]: any;
+};
+type ShareInfo2$7 = {
+  share_desc: string;
+  share_desc_info: string;
+  share_title: string;
+  share_title_myself: string;
+  share_title_other: string;
+  share_url: string;
+  share_weibo_desc: string;
+  [property: string]: any;
+};
+type Statis$6 = {
+  collect_vv: number;
+  current_episode: number;
+  play_vv: number;
+  updated_to_episode: number;
+  [property: string]: any;
+};
+type Status$13 = {
+  is_collected: number;
+  status: number;
+  [property: string]: any;
+};
+type Music$16 = {
+  album: string;
+  artist_user_infos: null;
+  artists: unknown[] | null;
+  audition_duration?: number;
+  author: string;
+  author_deleted?: boolean;
+  author_position: null;
+  author_status?: number;
+  avatar_large?: Avatar168x168$2;
+  avatar_medium?: Avatar168x168$2;
+  avatar_thumb?: Avatar168x168$2;
+  binded_challenge_id: number;
+  can_background_play?: boolean;
+  collect_stat: number;
+  cover_color_hsv?: CoverColorHsv$6;
+  cover_hd?: Avatar168x168$2;
+  cover_large?: Avatar168x168$2;
+  cover_medium: Avatar168x168$2;
+  cover_thumb: Avatar168x168$2;
+  dmv_auto_show?: boolean;
+  dsp_status?: number;
+  duration: number;
+  end_time?: number;
+  external_song_info: unknown[] | null;
+  extra: string;
+  id: number;
+  id_str: string;
+  is_audio_url_with_cookie?: boolean;
+  is_commerce_music?: boolean;
+  is_del_video?: boolean;
+  is_matched_metadata?: boolean;
+  is_original: boolean;
+  is_original_sound?: boolean;
+  is_pgc?: boolean;
+  is_restricted?: boolean;
+  is_video_self_see?: boolean;
+  luna_info?: LunaInfo$2;
+  lyric_short_position: null;
+  matched_pgc_sound?: MatchedPgcSound$12;
+  mid: string;
+  music_chart_ranks: null;
+  music_collect_count?: number;
+  music_cover_atmosphere_color_value?: string;
+  music_status?: number;
+  musician_user_infos: null;
+  mute_share?: boolean;
+  offline_desc?: string;
+  owner_handle?: string;
+  owner_id?: string;
+  owner_nickname: string;
+  pgc_music_type?: number;
+  play_url: Icon$8;
+  position: null;
+  prevent_download?: boolean;
+  prevent_item_download_status?: number;
+  preview_end_time?: number;
+  preview_start_time?: number;
+  reason_type?: number;
+  redirect?: boolean;
+  schema_url?: string;
+  search_impr?: SearchImpr$15;
+  sec_uid?: string;
+  shoot_duration?: number;
+  show_origin_clip?: boolean;
+  song?: Song$14;
+  source_platform?: number;
+  start_time?: number;
+  status: number;
+  strong_beat_url?: Avatar168x168$2;
+  tag_list: null;
+  talent_hashtag_name_list: null;
+  title: string;
+  unshelve_countries: null;
+  user_count: number;
+  video_duration?: number;
+  [property: string]: any;
+};
+type CoverColorHsv$6 = {
+  h: number;
+  s: number;
+  v: number;
+  [property: string]: any;
+};
+type LunaInfo$2 = {
+  has_copyright?: boolean;
+  is_luna_user: boolean;
+  [property: string]: any;
+};
+type MatchedPgcSound$12 = {
+  author: string;
+  cover_medium: Avatar168x168$2;
+  mixed_author: string;
+  mixed_title: string;
+  title: string;
+  [property: string]: any;
+};
+type SearchImpr$15 = {
+  entity_id: string;
+  [property: string]: any;
+};
+type Song$14 = {
+  artists: null;
+  chorus?: Chorus$6;
+  chorus_v3_infos: null;
+  id: number;
+  id_str: string;
+  title?: string;
+  [property: string]: any;
+};
+type Chorus$6 = {
+  duration_ms: number;
+  start_ms: number;
+  [property: string]: any;
+};
+type RelationLabel$4 = {
+  count: number;
+  extra: string;
+  type: number;
+  user_list: UserList$2[];
+  [property: string]: any;
+};
+type UserList$2 = {
+  avatar: Avatar168x168$2;
+  avatar_thumb: Avatar168x168$2;
+  follow_status: number;
+  nickname: string;
+  sec_uid: string;
+  uid: number;
+  [property: string]: any;
+};
+type RiskInfos$14 = {
+  content: string;
+  icon_url?: string;
+  risk_sink: boolean;
+  type: number;
+  vote: boolean;
+  warn: boolean;
+  warn_level?: number;
+  [property: string]: any;
+};
+type SeriesInfo$2 = {
+  actors: unknown[] | null;
+  content_sub_type?: number;
+  cover_url: Avatar168x168$2;
+  create_time?: number;
+  dark_icon_url?: Avatar168x168$2;
+  desc?: string;
+  directors: unknown[] | null;
+  disable_display_bar?: number;
+  disable_display_bar_inner?: number;
+  dog_card_info?: {
+    [property: string]: any;
+  };
+  enable_use_new_ent_data?: boolean;
+  entertainment_suggest_info?: string;
+  extra: string;
+  horizontal_cover_url?: Avatar168x168$2;
+  ids: unknown[] | null;
+  is_charge_series?: number;
+  is_exclusive?: boolean;
+  is_iaa?: number;
+  light_icon_url?: Avatar168x168$2;
+  paid_episodes: null;
+  real_name?: string;
+  recommend_color: null;
+  rights_info?: RightsInfo$2;
+  series_content_types: SeriesContentType$2[] | null;
+  series_content_types_new: null;
+  series_form_type?: number;
+  series_id: string;
+  series_interactive?: SeriesInteractive$2;
+  series_name: string;
+  series_new_mix_info?: SeriesNewMixInfo2;
+  series_paid_type_list: null;
+  series_rank_info?: {
+    [property: string]: any;
+  };
+  series_type?: number;
+  series_ui_config?: SeriesUiConfig$2;
+  share_info?: ShareInfo2$7;
+  stats: Stats$4;
+  status: Status2$3;
+  update_time?: number;
+  watched_item: string;
+  [property: string]: any;
+};
+type RightsInfo$2 = {
+  has_paid: boolean;
+  [property: string]: any;
+};
+type SeriesContentType$2 = {
+  name: string;
+  series_content_type: number;
+  [property: string]: any;
+};
+type SeriesInteractive$2 = {
+  enable_config: boolean;
+  interactive_config: InteractiveConfig$2;
+  [property: string]: any;
+};
+type InteractiveConfig$2 = {
+  collection_button_copy: string;
+  display_detail_edit_button: boolean;
+  hide_desk_guide: boolean;
+  hide_find_top_tab: boolean;
+  hide_intro_card: boolean;
+  hide_intro_card_details_module: boolean;
+  hide_intro_card_tags: boolean;
+  hide_more_series_bottom_btn: boolean;
+  hide_more_series_module: boolean;
+  hide_recommendation_module: boolean;
+  more_series_module_copy: string;
+  recommendation_module_title_copy: string;
+  unlock_button_copy: string;
+  [property: string]: any;
+};
+type SeriesNewMixInfo2 = {
+  cash_ability: number;
+  content_sub_type: number;
+  [property: string]: any;
+};
+type SeriesUiConfig$2 = {
+  collection_button: CollectionButton$2;
+  general_position_tag_infos: null;
+  paid_series_vip_entrance_config: PaidSeriesVipEntranceConfig;
+  series_ad_page_entrance_config: {
+    [property: string]: any;
+  };
+  series_bar_button_infos: SeriesBarButtonInfo$2[];
+  [property: string]: any;
+};
+type CollectionButton$2 = {
+  text: string;
+  [property: string]: any;
+};
+type PaidSeriesVipEntranceConfig = {
+  block_ad_buttons: unknown[];
+  unblock_ad_buttons: unknown[];
+  upper_right_buttons: unknown[];
+  [property: string]: any;
+};
+type SeriesBarButtonInfo$2 = {
+  button_text: string;
+  click_type: number;
+  condition_material_types: number[];
+  [property: string]: any;
+};
+type Stats$4 = {
+  collect_vv: number;
+  current_episode: number;
+  last_added_item_time?: number;
+  play_vv: number;
+  total_episode?: number;
+  updated_to_episode: number;
+  [property: string]: any;
+};
+type Status2$3 = {
+  is_collected: number;
+  status: number;
+  status_desc?: string;
+  [property: string]: any;
+};
+type ShareInfo3$3 = {
+  bool_persist?: number;
+  share_desc: string;
+  share_desc_info: string;
+  share_link_desc: string;
+  share_quote: string;
+  share_signature_desc?: string;
+  share_signature_url?: string;
+  share_title: string;
+  share_title_myself?: string;
+  share_title_other?: string;
+  share_url: string;
+  share_weibo_desc?: string;
+  [property: string]: any;
+};
+type Statistics$16 = {
+  aweme_id?: string;
+  collect_count: number;
+  comment_count: number;
+  digest?: string;
+  digg_count: number;
+  download_count: number;
+  exposure_count?: number;
+  forward_count: number;
+  live_watch_count: number;
+  lose_comment_count?: number;
+  lose_count?: number;
+  play_count: number;
+  recommend_count?: number;
+  share_count: number;
+  whatsapp_share_count?: number;
+  [property: string]: any;
+};
+type Status3$2 = {
+  allow_comment?: boolean;
+  allow_friend_recommend?: boolean;
+  allow_friend_recommend_guide?: boolean;
+  allow_self_recommend_to_friend?: boolean;
+  allow_share: boolean;
+  aweme_edit_info?: AwemeEditInfo$3;
+  aweme_id?: string;
+  dont_share_status?: number;
+  download_status?: number;
+  in_reviewing: boolean;
+  is_delete: boolean;
+  is_private: boolean;
+  is_prohibited: boolean;
+  listen_video_status?: number;
+  part_see: number;
+  private_status: number;
+  review_result: ReviewResult$16;
+  reviewed?: number;
+  self_see?: boolean;
+  video_hide_search?: number;
+  with_fusion_goods?: boolean;
+  with_goods?: boolean;
+  [property: string]: any;
+};
+type AwemeEditInfo$3 = {
+  button_status: number;
+  button_toast: string;
+  [property: string]: any;
+};
+type ReviewResult$16 = {
+  review_status: number;
+  [property: string]: any;
+};
+type SuggestWords$14 = {
+  disable_display_bar_inner?: number;
+  suggest_words: SuggestWord$13[];
+  [property: string]: any;
+};
+type SuggestWord$13 = {
+  extra_info: string;
+  hint_text: string;
+  icon_url: string;
+  scene: string;
+  words: Word$15[] | null;
+  [property: string]: any;
+};
+type Word$15 = {
+  info: string;
+  word: string;
+  word_id: string;
+  [property: string]: any;
+};
+type TextExtra$15 = {
+  caption_end?: number;
+  caption_start?: number;
+  end: number;
+  hashtag_id?: string;
+  hashtag_name?: string;
+  is_commerce?: boolean;
+  search_query_id?: string;
+  search_text?: string;
+  sec_uid?: string;
+  start: number;
+  type: number;
+  user_id?: string;
+  [property: string]: any;
+};
+type Video$17 = {
+  CoverTsp?: number;
+  animated_cover?: AnimatedCover$4;
+  audio?: Audio$7;
+  big_thumbs: BigThumb$10[] | null;
+  bit_rate: BitRate$11[];
+  bit_rate_audio: BitRateAudio$7[] | null;
+  cdn_url_expired?: number;
+  cover: Avatar168x168$2;
+  download_addr?: DownloadAddr$9;
+  download_suffix_logo_addr?: DownloadAddr$9;
+  duration: number;
+  dynamic_cover?: Avatar168x168$2;
+  format?: string;
+  fuse_video_labels_v2?: FuseVideoLabelsV2$1;
+  gaussian_cover?: Avatar168x168$2;
+  has_download_suffix_logo_addr?: boolean;
+  has_watermark?: boolean;
+  height: number;
+  horizontal_type?: number;
+  is_bytevc1?: number;
+  is_callback?: boolean;
+  is_h265?: number;
+  is_long_video?: number;
+  is_source_HDR?: number;
+  meta: string;
+  misc_download_addrs?: string;
+  need_set_token?: boolean;
+  optimized_cover?: Avatar168x168$2;
+  origin_cover: Avatar168x168$2;
+  play_addr: PlayAddr2$4;
+  play_addr_265?: PlayAddr265$7;
+  play_addr_h264?: PlayAddrH264$4;
+  play_addr_lowbr?: PlayAddrH264$4;
+  ratio: string;
+  raw_cover?: Avatar168x168$2;
+  search_format_ai_cover?: SearchFormatAiCover;
+  tag?: Tag$2;
+  tags: null;
+  use_static_cover?: boolean;
+  video_model?: string;
+  width: number;
+  [property: string]: any;
+};
+type AnimatedCover$4 = {
+  uri: string;
+  url_list: string[];
+  [property: string]: any;
+};
+type Audio$7 = {
+  original_sound_infos: null;
+  [property: string]: any;
+};
+type BigThumb$10 = {
+  duration: number;
+  fext: string;
+  img_num: number;
+  img_url: string;
+  img_urls: string[];
+  img_x_len: number;
+  img_x_size: number;
+  img_y_len: number;
+  img_y_size: number;
+  interval: number;
+  uri: string;
+  uris: string[];
+  [property: string]: any;
+};
+type BitRate$11 = {
+  FPS: number;
+  HDR_bit: string;
+  HDR_type: string;
+  bit_rate: number;
+  format: string;
+  gear_name: string;
+  is_bytevc1: number;
+  is_h265: number;
+  play_addr: PlayAddr$8;
+  quality_type: number;
+  video_extra: string;
+  [property: string]: any;
+};
+type PlayAddr$8 = {
+  data_size?: number;
+  file_cs?: string;
+  file_hash: string;
+  height: number;
+  uri: string;
+  url_key: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type BitRateAudio$7 = {
+  audio_extra: string;
+  audio_meta: AudioMeta$7;
+  audio_quality: number;
+  [property: string]: any;
+};
+type AudioMeta$7 = {
+  bitrate: number;
+  codec_type: string;
+  encoded_type: string;
+  file_hash: string;
+  file_id: string;
+  format: string;
+  fps: number;
+  logo_type: string;
+  media_type: string;
+  quality: string;
+  quality_desc: string;
+  size: number;
+  sub_info: string;
+  url_list: UrlList$7;
+  [property: string]: any;
+};
+type UrlList$7 = {
+  backup_url: string;
+  fallback_url: string;
+  main_url: string;
+  [property: string]: any;
+};
+type DownloadAddr$9 = {
+  data_size?: number;
+  file_cs: string;
+  height: number;
+  uri: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type FuseVideoLabelsV2$1 = {
+  Top1: Top1$1[];
+  [property: string]: any;
+};
+type Top1$1 = {
+  Level1: Level1$1;
+  Level2: Level1$1;
+  Level3: Level1$1;
+  Level4?: Level1$1;
+  [property: string]: any;
+};
+type Level1$1 = {
+  TagId: number;
+  [property: string]: any;
+};
+type PlayAddr2$4 = {
+  data_size?: number;
+  file_cs?: string;
+  file_hash?: string;
+  height: number;
+  uri: string;
+  url_key: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type PlayAddr265$7 = {
+  data_size: number;
+  file_cs: string;
+  file_hash: string;
+  height: number;
+  uri: string;
+  url_key: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type PlayAddrH264$4 = {
+  data_size?: number;
+  file_cs: string;
+  file_hash: string;
+  height: number;
+  uri: string;
+  url_key: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type SearchFormatAiCover = {
+  height: number;
+  uri: string;
+  url_list: unknown[];
+  width: number;
+  [property: string]: any;
+};
+type Tag$2 = {
+  background_color: string;
+  font_color: string;
+  title: string;
+  [property: string]: any;
+};
+type VideoControl$16 = {
+  allow_douplus: boolean;
+  allow_download: boolean;
+  allow_duet: boolean;
+  allow_dynamic_wallpaper: boolean;
+  allow_music: boolean;
+  allow_react: boolean;
+  allow_record: boolean;
+  allow_share: boolean;
+  allow_stitch: boolean;
+  disable_record_reason: string;
+  download_ignore_visibility: boolean;
+  download_info: DownloadInfo$16;
+  draft_progress_bar: number;
+  duet_ignore_visibility: boolean;
+  duet_info: DuetInfo$16;
+  prevent_download_type: number;
+  share_grayed: boolean;
+  share_ignore_visibility: boolean;
+  share_type: number;
+  show_ai_corner: boolean;
+  show_progress_bar: number;
+  show_watermark: boolean;
+  text_copy_type?: number;
+  timer_info: TimerInfo$3;
+  timer_status: number;
+  [property: string]: any;
+};
+type DownloadInfo$16 = {
+  fail_info?: FailInfo$8;
+  level: number;
+  [property: string]: any;
+};
+type FailInfo$8 = {
+  code: number;
+  msg: string;
+  reason: string;
+  [property: string]: any;
+};
+type DuetInfo$16 = {
+  fail_info?: FailInfo2$5;
+  level: number;
+  [property: string]: any;
+};
+type FailInfo2$5 = {
+  code: number;
+  reason: string;
+  [property: string]: any;
+};
+type TimerInfo$3 = {
+  timer_status: number;
+  [property: string]: any;
+};
+type CardInfo$1 = {
+  fingerprint: string;
+  first_pos: number;
+  index: number;
+  pos: number;
+  [property: string]: any;
+};
+type CardTypeId = {
+  card_name: string;
+  doc_type?: number;
+  performance_infos?: PerformanceInfos$1;
+  [property: string]: any;
+};
+type PerformanceInfos$1 = {
+  '108': number;
+  double_column: number;
+  is_native: number;
+  search_card_count: number;
+  [property: string]: any;
+};
+type Data2 = {
+  card_tags: null;
+  common_tab_config: null;
+  hotspot_tab_config: null;
+  rs_extra_info: RsExtraInfo$1;
+  [property: string]: any;
+};
+type RsExtraInfo$1 = {
+  hide_related_words: null;
+  hide_related_words_id: null;
+  impr_extra: string;
+  query_id: string;
+  [property: string]: any;
+};
+type DebugData$1 = {
+  filter_debug_info_list: null;
+  [property: string]: any;
+};
+type LogData$1 = {
+  dcm: string;
+  search_result_id: string;
+  [property: string]: any;
+};
+type LynxInfo$1 = {
+  is_subcard: boolean;
+  [property: string]: any;
+};
+type RelatedWordList$1 = {
+  extra_info: ExtraInfo$5;
+  rand_num: number;
+  related_img: string;
+  related_word: string;
+  word_record: WordRecord$1;
+  [property: string]: any;
+};
+type ExtraInfo$5 = {
+  words_type: string;
+  [property: string]: any;
+};
+type WordRecord$1 = {
+  force_update_rank: boolean;
+  group_id: string;
+  product_id: string;
+  words_content: string;
+  words_image: WordsImage$1;
+  words_position: number;
+  words_source: string;
+  [property: string]: any;
+};
+type WordsImage$1 = {
+  url_list: string[];
+  [property: string]: any;
+};
+type UserList2 = {
+  baikes: null;
+  challenges: null;
+  ecom_info: EcomInfo;
+  effects: null;
+  fandoms: null;
+  is_red_uniqueid: boolean;
+  items: Item$18[];
+  mix_list: null;
+  musics: null;
+  position: null;
+  prefer_profile_tab_type: number;
+  product_info: null;
+  product_list: null;
+  shop_product_info: null;
+  sub_card_id: SubCardId;
+  uniqid_position: null;
+  userSubLightApp: null;
+  user_info: UserInfo$1;
+  user_service_info: unknown[];
+  [property: string]: any;
+};
+type EcomInfo = {
+  ecom_scene_id: string;
+  items: null;
+  material_product_list: null;
+  recommend_info_v2: null;
+  rights: null;
+  shop_service_info: null;
+  shop_service_info_list: null;
+  shop_tags: null;
+  tags: null;
+  [property: string]: any;
+};
+type Item$18 = {
+  ai_follow_images: null;
+  anchor_info?: AnchorInfo2;
+  anchors: null;
+  author: Author2$1;
+  author_user_id: number;
+  aweme_id: string;
+  aweme_type: number;
+  cha_list: null;
+  challenge_position: null;
+  chapter_bar_color: null;
+  chapter_list: null;
+  collect_stat: number;
+  comment_list: null;
+  commerce_config_data: null;
+  common_left_top_labels: null;
+  cover_labels: null;
+  create_scale_type: null;
+  create_time: number;
+  danmaku_control: DanmakuControl2;
+  desc: string;
+  dislike_dimension_list: null;
+  dislike_dimension_list_v2: null;
+  diversion_bar_info: null;
+  effect_inflow_effects: null;
+  encrypt_interest_point_list: null;
+  encrypt_key_phrase_list: null;
+  entertainment_product_info: EntertainmentProductInfo$16;
+  follow_shot_assets: null;
+  geofencing: null;
+  geofencing_regions: null;
+  group_id: string;
+  hot_list?: HotList$4;
+  hybrid_label: null;
+  image_follow_shot_assets: null;
+  image_infos: null;
+  image_list: null;
+  images: null;
+  img_bitrate: null;
+  impression_data: ImpressionData2;
+  interaction_stickers: null;
+  interest_points: null;
+  is_top: number;
+  jump_tab_info_list: null;
+  label_top_text: null;
+  long_video: null;
+  media_type: number;
+  music: Music2;
+  mv_info: null;
+  nearby_hot_comment: null;
+  nickname_position: null;
+  origin_comment_ids: null;
+  origin_text_extra: null;
+  original_images: null;
+  packed_clips: null;
+  position: null;
+  prevent_download: boolean;
+  promotions: null;
+  rawdata: string;
+  ref_tts_id_list: null;
+  ref_voice_modify_id_list: null;
+  relation_label?: RelationLabel$4;
+  relation_labels: null;
+  reply_smart_emojis: null;
+  risk_infos: RiskInfos2;
+  share_info: ShareInfo4$1;
+  slides_music_beats: null;
+  social_tag_list: null;
+  standard_bar_info_list: null;
+  statistics: Statistics2;
+  status: Status4;
+  suggest_words: SuggestWords2;
+  text_extra: TextExtra2[];
+  trends_infos: null;
+  tts_id_list: null;
+  uniqid_position: null;
+  user_digged: number;
+  video: Video2$3;
+  video_control: VideoControl2;
+  video_labels: null;
+  video_tag: null;
+  video_text: null;
+  voice_modify_id_list: null;
+  yumme_recreason: null;
+  [property: string]: any;
+};
+type AnchorInfo2 = {
+  content: string;
+  extra: string;
+  icon: Icon$8;
+  id: string;
+  log_extra: string;
+  mp_url: string;
+  open_url: string;
+  style_info: StyleInfo$7;
+  title: string;
+  title_tag: string;
+  type: number;
+  web_url: string;
+  [property: string]: any;
+};
+type Author2$1 = {
+  account_cert_info: string;
+  ad_cover_url: null;
+  avatar_168x168: Avatar168x168$2;
+  avatar_300x300: Avatar168x168$2;
+  avatar_larger: Avatar168x168$2;
+  avatar_medium: Avatar168x168$2;
+  avatar_schema_list: null;
+  avatar_thumb: Avatar168x168$2;
+  aweme_count: number;
+  ban_user_functions: null;
+  batch_unfollow_contain_tabs: null;
+  batch_unfollow_relation_desc: null;
+  can_set_geofencing: null;
+  card_entries: null;
+  card_entries_not_display: null;
+  card_sort_priority: null;
+  cf_list: null;
+  cha_list: null;
+  contrail_list: null;
+  cover_url: null;
+  creator_tag_list: null;
+  custom_verify: string;
+  data_label_list: null;
+  display_info: null;
+  endorsement_info_list: null;
+  enterprise_verify_reason: string;
+  familiar_visitor_user: null;
+  favoriting_count: number;
+  follow_status: number;
+  follower_count: number;
+  follower_list_secondary_information_struct: null;
+  follower_status: number;
+  followers_detail: null;
+  following_count: number;
+  geofencing: null;
+  homepage_bottom_toast: null;
+  identity_labels: null;
+  im_role_ids: null;
+  interest_tags: null;
+  is_block: boolean;
+  is_verified: boolean;
+  item_list: null;
+  link_item_list: null;
+  need_points: null;
+  new_story_cover: null;
+  nickname: string;
+  not_seen_item_id_list: null;
+  not_seen_item_id_list_v2: null;
+  offline_info_list: null;
+  personal_tag_list: null;
+  platform_sync_info: null;
+  private_relation_list: null;
+  profile_component_disabled: null;
+  profile_mob_params: null;
+  profile_signature_components: null;
+  relative_users: null;
+  room_data: string;
+  room_id: number;
+  room_id_str: string;
+  sec_uid: string;
+  secret: number;
+  share_info: ShareInfo$13;
+  short_id: string;
+  signature: string;
+  signature_extra: null;
+  special_people_labels: null;
+  text_extra: null;
+  total_favorited: number;
+  type_label: null;
+  uid: string;
+  unique_id: string;
+  user_canceled: boolean;
+  user_permissions: null;
+  user_tags: null;
+  verification_permission_ids: null;
+  verification_type: number;
+  webcast_preview_labels: null;
+  weibo_verify: string;
+  white_cover_url: null;
+  [property: string]: any;
+};
+type DanmakuControl2 = {
+  activities: Activity$10[];
+  danmaku_cnt: number;
+  enable_danmaku: boolean;
+  first_danmaku_offset: number;
+  is_post_denied: boolean;
+  last_danmaku_offset: number;
+  pass_through_params: string;
+  post_denied_reason: string;
+  post_privilege_level: number;
+  skip_danmaku: boolean;
+  [property: string]: any;
+};
+type HotList$4 = {
+  extra: string;
+  footer: string;
+  group_id: string;
+  header: string;
+  hot_score: number;
+  i18n_title: string;
+  image_url: string;
+  label?: number;
+  pattern_type?: number;
+  rank: number;
+  schema: string;
+  sentence: string;
+  sentence_id: number;
+  title: string;
+  type: number;
+  view_count: number;
+  [property: string]: any;
+};
+type ImpressionData2 = {
+  group_id_list_a: number[];
+  group_id_list_b: unknown[];
+  group_id_list_c: unknown[];
+  group_id_list_d: null;
+  similar_id_list_a: null;
+  similar_id_list_b: null;
+  [property: string]: any;
+};
+type Music2 = {
+  album: string;
+  artist_user_infos: null;
+  artists: unknown[];
+  audition_duration: number;
+  author: string;
+  author_deleted: boolean;
+  author_position: null;
+  author_status: number;
+  avatar_large: Avatar168x168$2;
+  avatar_medium: Avatar168x168$2;
+  avatar_thumb: Avatar168x168$2;
+  binded_challenge_id: number;
+  can_background_play: boolean;
+  collect_stat: number;
+  cover_hd: Avatar168x168$2;
+  cover_large: Avatar168x168$2;
+  cover_medium: Avatar168x168$2;
+  cover_thumb: Avatar168x168$2;
+  dmv_auto_show: boolean;
+  dsp_status: number;
+  duration: number;
+  end_time: number;
+  external_song_info: unknown[];
+  extra: string;
+  id: number;
+  id_str: string;
+  is_audio_url_with_cookie: boolean;
+  is_commerce_music: boolean;
+  is_del_video: boolean;
+  is_matched_metadata: boolean;
+  is_original: boolean;
+  is_original_sound: boolean;
+  is_pgc: boolean;
+  is_restricted: boolean;
+  is_video_self_see: boolean;
+  luna_info: LunaInfo$2;
+  lyric_short_position: null;
+  matched_pgc_sound?: MatchedPgcSound$12;
+  mid: string;
+  music_chart_ranks: null;
+  music_collect_count: number;
+  music_cover_atmosphere_color_value: string;
+  music_status: number;
+  musician_user_infos: null;
+  mute_share: boolean;
+  offline_desc: string;
+  owner_handle: string;
+  owner_id: string;
+  owner_nickname: string;
+  pgc_music_type: number;
+  play_url: Icon$8;
+  position: null;
+  prevent_download: boolean;
+  prevent_item_download_status: number;
+  preview_end_time: number;
+  preview_start_time: number;
+  reason_type: number;
+  redirect: boolean;
+  schema_url: string;
+  search_impr: SearchImpr$15;
+  sec_uid: string;
+  shoot_duration: number;
+  show_origin_clip: boolean;
+  song?: Song2;
+  source_platform: number;
+  start_time: number;
+  status: number;
+  strong_beat_url?: Avatar168x168$2;
+  tag_list: null;
+  talent_hashtag_name_list: null;
+  title: string;
+  unshelve_countries: null;
+  user_count: number;
+  video_duration: number;
+  [property: string]: any;
+};
+type Song2 = {
+  artists: null;
+  chorus_v3_infos: null;
+  id: number;
+  id_str: string;
+  [property: string]: any;
+};
+type RiskInfos2 = {
+  content: string;
+  risk_sink: boolean;
+  type: number;
+  vote: boolean;
+  warn: boolean;
+  [property: string]: any;
+};
+type ShareInfo4$1 = {
+  bool_persist: number;
+  share_desc: string;
+  share_desc_info: string;
+  share_link_desc: string;
+  share_quote: string;
+  share_signature_desc: string;
+  share_signature_url: string;
+  share_title: string;
+  share_title_myself: string;
+  share_title_other: string;
+  share_url: string;
+  share_weibo_desc: string;
+  [property: string]: any;
+};
+type Statistics2 = {
+  admire_count: number;
+  aweme_id: string;
+  collect_count: number;
+  comment_count: number;
+  digest: string;
+  digg_count: number;
+  download_count: number;
+  exposure_count: number;
+  forward_count: number;
+  live_watch_count: number;
+  lose_comment_count: number;
+  lose_count: number;
+  play_count: number;
+  recommend_count: number;
+  share_count: number;
+  whatsapp_share_count: number;
+  [property: string]: any;
+};
+type Status4 = {
+  allow_comment: boolean;
+  allow_friend_recommend: boolean;
+  allow_friend_recommend_guide: boolean;
+  allow_self_recommend_to_friend: boolean;
+  allow_share: boolean;
+  aweme_edit_info: AwemeEditInfo$3;
+  aweme_id: string;
+  dont_share_status: number;
+  download_status: number;
+  in_reviewing: boolean;
+  is_delete: boolean;
+  is_private: boolean;
+  is_prohibited: boolean;
+  listen_video_status: number;
+  part_see: number;
+  private_status: number;
+  review_result: ReviewResult$16;
+  reviewed: number;
+  self_see: boolean;
+  video_hide_search: number;
+  with_fusion_goods: boolean;
+  with_goods: boolean;
+  [property: string]: any;
+};
+type SuggestWords2 = {
+  suggest_words: SuggestWord2[];
+  [property: string]: any;
+};
+type SuggestWord2 = {
+  extra_info: string;
+  hint_text: string;
+  icon_url: string;
+  scene: string;
+  words: Word$15[];
+  [property: string]: any;
+};
+type TextExtra2 = {
+  caption_end: number;
+  caption_start: number;
+  end: number;
+  hashtag_id?: string;
+  hashtag_name?: string;
+  is_commerce?: boolean;
+  search_query_id?: string;
+  search_text?: string;
+  sec_uid?: string;
+  start: number;
+  type: number;
+  user_id?: string;
+  [property: string]: any;
+};
+type Video2$3 = {
+  animated_cover: AnimatedCover$4;
+  audio: Audio$7;
+  big_thumbs: BigThumb$10[] | null;
+  bit_rate: BitRate2$1[];
+  bit_rate_audio: null;
+  cdn_url_expired: number;
+  cover: Avatar168x168$2;
+  download_addr: DownloadAddr2;
+  download_suffix_logo_addr: DownloadAddr2;
+  duration: number;
+  dynamic_cover: Avatar168x168$2;
+  format: string;
+  fuse_video_labels_v2: FuseVideoLabelsV2$1;
+  gaussian_cover: Avatar168x168$2;
+  has_download_suffix_logo_addr: boolean;
+  has_watermark: boolean;
+  height: number;
+  horizontal_type?: number;
+  is_bytevc1: number;
+  is_callback: boolean;
+  is_h265: number;
+  is_source_HDR: number;
+  meta: string;
+  misc_download_addrs?: string;
+  need_set_token: boolean;
+  origin_cover: Avatar168x168$2;
+  play_addr: PlayAddr265$7;
+  play_addr_265: PlayAddr265$7;
+  play_addr_h264: PlayAddr265$7;
+  play_addr_lowbr: PlayAddr265$7;
+  ratio: string;
+  raw_cover: Avatar168x168$2;
+  tags: null;
+  use_static_cover?: boolean;
+  video_model: string;
+  width: number;
+  [property: string]: any;
+};
+type BitRate2$1 = {
+  FPS: number;
+  HDR_bit: string;
+  HDR_type: string;
+  bit_rate: number;
+  format: string;
+  gear_name: string;
+  is_bytevc1: number;
+  is_h265: number;
+  play_addr: PlayAddr265$7;
+  quality_type: number;
+  video_extra: string;
+  [property: string]: any;
+};
+type DownloadAddr2 = {
+  data_size: number;
+  file_cs: string;
+  height: number;
+  uri: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type VideoControl2 = {
+  allow_douplus: boolean;
+  allow_download: boolean;
+  allow_duet: boolean;
+  allow_dynamic_wallpaper: boolean;
+  allow_music: boolean;
+  allow_react: boolean;
+  allow_record: boolean;
+  allow_share: boolean;
+  allow_stitch: boolean;
+  disable_record_reason: string;
+  download_ignore_visibility: boolean;
+  download_info: DownloadInfo2;
+  draft_progress_bar: number;
+  duet_ignore_visibility: boolean;
+  duet_info: DownloadInfo2;
+  prevent_download_type: number;
+  share_grayed: boolean;
+  share_ignore_visibility: boolean;
+  share_type: number;
+  show_ai_corner: boolean;
+  show_progress_bar: number;
+  show_watermark: boolean;
+  timer_info: TimerInfo2;
+  timer_status: number;
+  [property: string]: any;
+};
+type DownloadInfo2 = {
+  level: number;
+  [property: string]: any;
+};
+type TimerInfo2 = {
+  public_time?: number;
+  timer_status: number;
+  [property: string]: any;
+};
+type SubCardId = {
+  items: string;
+  [property: string]: any;
+};
+type UserInfo$1 = {
+  account_cert_info: string;
+  ad_cover_url: null;
+  avatar_168x168: Avatar168x168$2;
+  avatar_300x300: Avatar168x168$2;
+  avatar_larger: Avatar168x168$2;
+  avatar_medium: Avatar168x168$2;
+  avatar_schema_list: null;
+  avatar_thumb: Avatar168x168$2;
+  aweme_count: number;
+  ban_user_functions: null;
+  batch_unfollow_contain_tabs: null;
+  batch_unfollow_relation_desc: null;
+  can_set_geofencing: null;
+  card_entries: null;
+  card_entries_not_display: null;
+  card_sort_priority: null;
+  cf_list: null;
+  cha_list: null;
+  contrail_list: null;
+  cover_url: null;
+  creator_tag_list: null;
+  custom_verify: string;
+  data_label_list: null;
+  display_info: null;
+  endorsement_info_list: null;
+  enterprise_verify_reason: string;
+  familiar_visitor_user: null;
+  favoriting_count: number;
+  follow_status: number;
+  follower_count: number;
+  follower_count_str: string;
+  follower_list_secondary_information_struct: null;
+  follower_status: number;
+  followers_detail: null;
+  following_count: number;
+  geofencing: null;
+  homepage_bottom_toast: null;
+  identity_labels: null;
+  im_role_ids: null;
+  interest_tags: null;
+  is_block: boolean;
+  is_verified: boolean;
+  item_list: null;
+  link_item_list: null;
+  need_points: null;
+  new_story_cover: null;
+  nickname: string;
+  not_seen_item_id_list: null;
+  not_seen_item_id_list_v2: null;
+  offline_info_list: null;
+  personal_tag_list: null;
+  platform_sync_info: null;
+  private_relation_list: null;
+  profile_component_disabled: null;
+  profile_mob_params: null;
+  profile_signature_components: null;
+  relative_users: null;
+  room_data: string;
+  room_id: number;
+  room_id_str: string;
+  sec_uid: string;
+  secret: number;
+  share_info: ShareInfo$13;
+  short_id: string;
+  signature: string;
+  signature_extra: null;
+  special_people_labels: null;
+  text_extra: null;
+  total_favorited: number;
+  type_label: null;
+  uid: string;
+  unique_id: string;
+  user_canceled: boolean;
+  user_permissions: null;
+  user_tags: unknown[];
+  verification_permission_ids: null;
+  verification_type: number;
+  webcast_preview_labels: null;
+  weibo_verify: string;
+  white_cover_url: null;
+  [property: string]: any;
+};
+type WordsQueryRecord$1 = {
+  info: string;
+  query_id: string;
+  words_source: string;
+  [property: string]: any;
+};
+type DouyinAiSearchInfo = {
+  ai_search_req_patch: {
+    [property: string]: any;
+  };
+  is_hit_high_risk: boolean;
+  is_simple_qa_intent: boolean;
+  [property: string]: any;
+};
+type Extra$10 = {
+  fatal_item_ids: unknown[];
+  logid: string;
+  now: number;
+  scenes: null;
+  search_request_id: string;
+  [property: string]: any;
+};
+type GlobalDoodleConfig$3 = {
+  filter_settings: FilterSetting$3[];
+  filter_show_dot?: number;
+  keyword: string;
+  [property: string]: any;
+};
+type FilterSetting$3 = {
+  android_version?: number;
+  btm?: string;
+  default_index: number;
+  enable_huo_shan?: boolean;
+  enable_lite?: boolean;
+  filter_style?: number;
+  harmony_version?: number;
+  huoshan_android_version?: number;
+  huoshan_ios_version?: number;
+  ios_version?: number;
+  items: Item2[];
+  lite_android_version?: number;
+  lite_harmony_version?: number;
+  lite_ios_version?: number;
+  log_name: string;
+  name: string;
+  search_less_text?: SearchLessText$2;
+  search_nil_text?: SearchLessText$2;
+  title: string;
+  [property: string]: any;
+};
+type Item2 = {
+  log_value: string;
+  show_dot?: number;
+  title: string;
+  value: string;
+  [property: string]: any;
+};
+type SearchLessText$2 = {
+  info: string;
+  jump_text: string;
+  [property: string]: any;
+};
+type GuideSearchWord = {
+  attached_text: null;
+  id: string;
+  query_id: string;
+  type: string;
+  word: string;
+  [property: string]: any;
+};
+type LogPb$24 = {
+  impr_id: string;
+  [property: string]: any;
+};
+type MultiColumnsInfo$1 = {
+  group_tag: string;
+  is_multi_columns: boolean;
+  [property: string]: any;
+};
+type SearchNilInfo = {
+  is_load_more: string;
+  search_nil_item: string;
+  search_nil_type: string;
+  text_type: number;
+  [property: string]: any;
+};
+type TimeCost$2 = {
+  '1st_screen_state': string;
+  FEDERATION_federation_latency: number;
+  ack_status: string;
+  can_ack: string;
+  complete_time: number;
+  disable_forecast_cut: number;
+  disable_optimize_2023: string;
+  double_column: boolean;
+  douyin_disease_aggr_video_query_tag: string;
+  enable_ab_refactor: string;
+  engine_intent_cat: string;
+  fed_cache_status: string;
+  fed_recall_cost: number;
+  fed_recall_end: number;
+  first_no_ad: string;
+  first_screen_card_businesses: string;
+  first_screen_card_cnt: number;
+  first_screen_card_names: string;
+  first_screen_real_lynx_num: number;
+  first_screen_real_lynx_type: string;
+  first_screen_sub_card_real_lynx_num: number;
+  first_screen_sub_card_real_lynx_type: string;
+  forecast: string;
+  forecast_ack_reason: string;
+  forecast_fs_all_hit: string;
+  forecast_produce_end: number;
+  forecast_provider_end: number;
+  goods_card_has_ad: string;
+  has_ad: string;
+  hit_user_history_cache: string;
+  idc: string;
+  is_cpt_ad: string;
+  is_go_forecast: string;
+  is_nil_search: string;
+  keypoint: string;
+  loader_time_cost_slowest_loader: string;
+  loader_time_cost_slowest_loader_latency: number;
+  log_id: string;
+  merge_fs_status: string;
+  merged_fs_all_hit: string;
+  mf2_append_doc_len: number;
+  multi_chunk: string;
+  new_chunk_state: string;
+  pd: string;
+  predict_n: number;
+  preload_miss_count: number;
+  query: string;
+  query_tags: string;
+  quick_ack_failed_detail: string;
+  reason: string;
+  search_source_api: string;
+  server_key_path: string;
+  skip_provider_ack_reason: string;
+  stream: string;
+  stream_inner: number;
+  target_query_tags: string;
+  tp_end_forecast_produce: number;
+  [property: string]: any;
+};
+type UserList3 = {
+  baikes: null;
+  challenges: null;
+  effects: null;
+  fandoms: null;
+  is_red_uniqueid: boolean;
+  items: null;
+  mix_list: null;
+  musics: null;
+  position: null;
+  product_info: null;
+  product_list: null;
+  shop_product_info: null;
+  uniqid_position: null;
+  userSubLightApp: null;
+  user_info: UserInfo2;
+  user_service_info: null;
+  [property: string]: any;
+};
+type UserInfo2 = {
+  account_cert_info?: string;
+  ad_cover_url: null;
+  avatar_schema_list: null;
+  avatar_thumb: Avatar168x168$2;
+  ban_user_functions: null;
+  batch_unfollow_contain_tabs: null;
+  batch_unfollow_relation_desc: null;
+  can_set_geofencing: null;
+  card_entries: null;
+  card_entries_not_display: null;
+  card_sort_priority: null;
+  cf_list: null;
+  cha_list: null;
+  contrail_list: null;
+  cover_url: null;
+  creator_tag_list: null;
+  custom_verify: string;
+  data_label_list: null;
+  display_info: null;
+  endorsement_info_list: null;
+  enterprise_verify_reason: string;
+  familiar_visitor_user: null;
+  follow_status: number;
+  follower_count: number;
+  follower_count_str: string;
+  follower_list_secondary_information_struct: null;
+  follower_status: number;
+  followers_detail: null;
+  geofencing: null;
+  homepage_bottom_toast: null;
+  identity_labels: null;
+  im_role_ids: null;
+  interest_tags: null;
+  item_list: null;
+  link_item_list: null;
+  need_points: null;
+  new_story_cover: null;
+  nickname: string;
+  not_seen_item_id_list: null;
+  not_seen_item_id_list_v2: null;
+  offline_info_list: null;
+  personal_tag_list: null;
+  platform_sync_info: null;
+  private_relation_list: null;
+  profile_component_disabled: null;
+  profile_mob_params: null;
+  profile_signature_components: null;
+  relative_users: null;
+  room_data: string;
+  room_id?: number;
+  room_id_str?: string;
+  sec_uid: string;
+  secret: number;
+  short_id: string;
+  signature: string;
+  signature_extra: null;
+  special_people_labels: null;
+  text_extra: null;
+  total_favorited: number;
+  type_label: null;
+  uid: string;
+  unique_id: string;
+  user_permissions: null;
+  user_tags: UserTag$1[];
+  verification_permission_ids: null;
+  versatile_display: string;
+  webcast_preview_labels: null;
+  white_cover_url: null;
+  [property: string]: any;
+};
+type UserTag$1 = {
+  description: string;
+  icon_url: string;
+  type: string;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/douyin/Search/guards.d.ts
+/**
+ * 判别联合（PRD 5.1）。判别式在 `__search_type`，成员是按判别式取值分组、各自合并出来的。
+ *
+ * 每一层都带 `[property: string]: any`（硬约束 1：`response-types.test-d.ts` 用它承诺
+ * 「平台加字段不算 breaking」）。所以判别字段**是字面量**时，裸
+ * `if (resp.__search_type === '…')` / `switch` 就能收窄（收窄的是判别字段所在的那个对象，
+ * 不是整个信封）—— 下面的 `is*` 守卫是给「要收窄整个信封」的场景的加成，不是必需品。
+ *
+ * 末尾那支是**兜底支**：判别式取到样本里没见过的值时落到它，字段全走索引签名，
+ * 所以平台加新类型不会让下游编译红。它的判别字段是 `?: never`（见 emitFallback）。
+ */
+type SearchUnion = General$1 | User$15 | Video$18 | SearchUnknown;
+//#endregion
+//#region ../response-types/dist/generated/douyin/Search/index.d.ts
+type SearchSuccess = SearchUnion;
+type SearchError = never;
+type Search = SearchSuccess | SearchError;
+//#endregion
+//#region ../response-types/dist/generated/douyin/SlidesWork/SlidesWork_Error_V0.d.ts
+type SlidesWork_Error_V0 = {
+  aweme_detail: null;
+  filter_detail: FilterDetail$1;
+  log_pb: LogPb$23;
+  status_code: number;
+  [property: string]: any;
+};
+type FilterDetail$1 = {
+  aweme_id: string;
+  detail_msg: string;
+  filter_reason: string;
+  icon: string;
+  notice: string;
+  [property: string]: any;
+};
+type LogPb$23 = {
+  impr_id: string;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/douyin/SlidesWork/SlidesWork_V0.d.ts
+type SlidesWork_V0 = {
+  aweme_detail: AwemeDetail$7;
+  log_pb: LogPb$22;
+  status_code: number;
+  [property: string]: any;
+};
+type AwemeDetail$7 = {
+  activity_video_type: number;
+  anchors: null;
+  authentication_token: string;
+  author: Author$16;
+  author_mask_tag: number;
+  author_user_id: number;
+  aweme_control: AwemeControl$13;
+  aweme_id: string;
+  aweme_listen_struct: AwemeListenStruct$13;
+  aweme_type: number;
+  aweme_type_tags: string;
+  boost_status: number;
+  can_cache_to_local: boolean;
+  caption: string;
+  cf_assets_type: number;
+  cf_recheck_ts: number;
+  challenge_position: null;
+  chapter_list: null;
+  clip_paging: ClipPaging$5;
+  collect_stat: number;
+  collection_corner_mark: number;
+  comment_gid: number;
+  comment_list: null;
+  comment_permission_info: CommentPermissionInfo$13;
+  commerce_config_data: null;
+  component_control: ComponentControl$13;
+  component_info_v2: string;
+  cover_labels: null;
+  create_scale_type: string[];
+  create_time: number;
+  desc: string;
+  disable_relation_bar: number;
+  dislike_dimension_list: null;
+  dislike_dimension_list_v2: null;
+  distribute_circle: DistributeCircle$13;
+  diversion_bar_info: unknown[];
+  douplus_user_type: number;
+  douyin_pc_video_extra_seo: string;
+  duet_aggregate_in_music_tab: boolean;
+  duration: number;
+  ecom_comment_atmosphere_type: number;
+  enable_comment_sticker_rec: boolean;
+  enable_decorated_emoji: boolean;
+  ent_log_extra: EntLogExtra$8;
+  entertainment_product_info: EntertainmentProductInfo$15;
+  entertainment_recommend_info: string;
+  entertainment_video_paid_way: EntertainmentVideoPaidWay$9;
+  entertainment_video_type: number;
+  f_s_grouth_property: FSGrouthProperty$6;
+  fall_card_struct: FallCardStruct$9;
+  feed_comment_config: FeedCommentConfig$13;
+  flash_mob_trends: number;
+  follow_shoot_clip_info: FollowShootClipInfo$9;
+  follow_shoot_property: FollowShootProperty$5;
+  friend_recommend_info: FriendRecommendInfo$9;
+  game_tag_info: GameTagInfo$13;
+  geofencing: unknown[];
+  geofencing_regions: null;
+  group_id: string;
+  guide_scene_info: {
+    [property: string]: any;
+  };
+  hybrid_label: null;
+  image_album_music_info: ImageAlbumMusicInfo$13;
+  image_comment: ImageComment$6;
+  image_crop_ctrl: number;
+  image_infos: null;
+  image_list: null;
+  images: Image$8[];
+  img_bitrate: null;
+  impression_data: ImpressionData$15;
+  incentive_item_type: number;
+  interaction_stickers: null;
+  is_24_story: number;
+  is_25_story: number;
+  is_ads: boolean;
+  is_aigc_media: boolean;
+  is_collects_selected: number;
+  is_duet_sing: boolean;
+  is_from_ad_auth: boolean;
+  is_image_beat: boolean;
+  is_life_item: boolean;
+  is_moment_history: number;
+  is_moment_story: number;
+  is_multi_content: number;
+  is_new_text_mode: number;
+  is_share_post: boolean;
+  is_slides: boolean;
+  is_slides_beat: number;
+  is_story: number;
+  is_subtitled: number;
+  is_top: number;
+  is_use_music: boolean;
+  item_aigc_follow_shot: number;
+  item_title: string;
+  item_warn_notification: ItemWarnNotification$13;
+  label_top_text: null;
+  libfinsert_task_id: string;
+  long_video: null;
+  mark_largely_following: boolean;
+  media_type: number;
+  music: Music$15;
+  nickname_position: null;
+  origin_comment_ids: null;
+  origin_duet_resource_uri: string;
+  origin_text_extra: unknown[];
+  original: number;
+  original_images: null;
+  pack_usage_scene_by_req_path: string;
+  packed_clips: null;
+  pc_need_login: boolean;
+  personal_page_botton_diagnose_style: number;
+  photo_search_entrance: PhotoSearchEntrance$13;
+  play_progress: PlayProgress$13;
+  position: null;
+  preview_title: string;
+  preview_video_status: number;
+  product_genre_info: ProductGenreInfo$8;
+  promotions: unknown[];
+  publish_plus_alienation: PublishPlusAlienation$13;
+  rate: number;
+  region: string;
+  related_music_anchor: RelatedMusicAnchor$5;
+  relation_labels: null;
+  risk_infos: RiskInfos$13;
+  sec_item_id: string;
+  select_anchor_expanded_content: number;
+  seo_info: {
+    [property: string]: any;
+  };
+  series_basic_info: {
+    [property: string]: any;
+  };
+  series_paid_info: SeriesPaidInfo$13;
+  share_info: ShareInfo2$6;
+  share_rec_extra: string;
+  share_url: string;
+  shoot_way: string;
+  should_open_ad_report: boolean;
+  show_follow_button: {
+    [property: string]: any;
+  };
+  social_tag_list: null;
+  statistics: Statistics$15;
+  status: Status$12;
+  suggest_words: SuggestWords$13;
+  text_extra: TextExtra$14[];
+  trends_event_track: string;
+  uniqid_position: null;
+  user_digged: number;
+  user_recommend_status: number;
+  video: Video2$2;
+  video_control: VideoControl$15;
+  video_game_data_channel_config: {
+    [property: string]: any;
+  };
+  video_labels: null;
+  video_share_edit_status: number;
+  video_tag: VideoTag$13[];
+  video_text: unknown[];
+  visual_search_info: VisualSearchInfo$13;
+  xigua_base_info: XiguaBaseInfo$13;
+  [property: string]: any;
+};
+type Author$16 = {
+  account_cert_info: string;
+  avatar_thumb: AvatarThumb$10;
+  awemehts_greet_info: string;
+  cf_list: null;
+  close_friend_type: number;
+  contacts_status: number;
+  contrail_list: null;
+  cover_url: AvatarThumb$10[];
+  create_time: number;
+  custom_verify: string;
+  data_label_list: null;
+  endorsement_info_list: null;
+  enterprise_verify_reason: string;
+  favoriting_count: number;
+  follow_status: number;
+  follower_count: number;
+  follower_list_secondary_information_struct: null;
+  follower_status: number;
+  following_count: number;
+  hide_others_recommend_interest: number;
+  hide_self_recommend_interest: number;
+  im_role_ids: null;
+  is_ad_fake: boolean;
+  is_blocked_v2: boolean;
+  is_blocking_v2: boolean;
+  is_cf: number;
+  live_high_value: number;
+  mate_add_permission: number;
+  max_follower_count: number;
+  nickname: string;
+  offline_info_list: null;
+  personal_tag_list: null;
+  prevent_download: boolean;
+  risk_notice_text: string;
+  sec_uid: string;
+  secret: number;
+  share_info: ShareInfo$12;
+  short_id: string;
+  signature: string;
+  signature_extra: null;
+  special_follow_status: number;
+  special_people_labels: null;
+  status: number;
+  story25_comment: number;
+  story_interactive: number;
+  story_ttl: number;
+  text_extra: null;
+  total_favorited: number;
+  uid: string;
+  unique_id: string;
+  user_age: number;
+  user_canceled: boolean;
+  user_permissions: null;
+  verification_type: number;
+  [property: string]: any;
+};
+type AvatarThumb$10 = {
+  height: number;
+  uri: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type ShareInfo$12 = {
+  share_desc: string;
+  share_desc_info: string;
+  share_qrcode_url: AvatarThumb$10;
+  share_title: string;
+  share_title_myself: string;
+  share_title_other: string;
+  share_url: string;
+  share_weibo_desc: string;
+  [property: string]: any;
+};
+type AwemeControl$13 = {
+  can_comment: boolean;
+  can_forward: boolean;
+  can_share: boolean;
+  can_show_comment: boolean;
+  [property: string]: any;
+};
+type AwemeListenStruct$13 = {
+  trace_info: string;
+  [property: string]: any;
+};
+type ClipPaging$5 = {
+  direct: number;
+  has_more: boolean;
+  source: string;
+  [property: string]: any;
+};
+type CommentPermissionInfo$13 = {
+  can_comment: boolean;
+  comment_permission_status: number;
+  item_detail_entry: boolean;
+  press_entry: boolean;
+  toast_guide: boolean;
+  [property: string]: any;
+};
+type ComponentControl$13 = {
+  data_source_url: string;
+  [property: string]: any;
+};
+type DistributeCircle$13 = {
+  campus_block_interaction: boolean;
+  distribute_type: number;
+  is_campus: boolean;
+  [property: string]: any;
+};
+type EntLogExtra$8 = {
+  log_extra: string;
+  [property: string]: any;
+};
+type EntertainmentProductInfo$15 = {
+  market_info: MarketInfo$15;
+  [property: string]: any;
+};
+type MarketInfo$15 = {
+  limit_free: LimitFree$15;
+  [property: string]: any;
+};
+type LimitFree$15 = {
+  in_free: boolean;
+  [property: string]: any;
+};
+type EntertainmentVideoPaidWay$9 = {
+  enable_use_new_ent_data: boolean;
+  paid_type: number;
+  paid_ways: unknown[];
+  [property: string]: any;
+};
+type FSGrouthProperty$6 = {
+  is_client_pack: boolean;
+  is_natural_traffic: boolean;
+  is_related_path: boolean;
+  [property: string]: any;
+};
+type FallCardStruct$9 = {
+  recommend_reason_v2: string;
+  [property: string]: any;
+};
+type FeedCommentConfig$13 = {
+  audio_comment_permission: number;
+  author_audit_status: number;
+  common_comment_permission: number;
+  common_flags: string;
+  double_publish_limit: number;
+  input_config_text: string;
+  input_config_text_type: string;
+  [property: string]: any;
+};
+type FollowShootClipInfo$9 = {
+  origin_clip_id: number;
+  [property: string]: any;
+};
+type FollowShootProperty$5 = {
+  recommended_camera_mode: string;
+  [property: string]: any;
+};
+type FriendRecommendInfo$9 = {
+  disable_friend_recommend_guide_label: boolean;
+  friend_recommend_source: number;
+  primary_label_user: PrimaryLabelUser$1;
+  [property: string]: any;
+};
+type PrimaryLabelUser$1 = {
+  recommend_app_id: number;
+  recommend_time: number;
+  [property: string]: any;
+};
+type GameTagInfo$13 = {
+  is_game: boolean;
+  [property: string]: any;
+};
+type ImageAlbumMusicInfo$13 = {
+  begin_time: number;
+  end_time: number;
+  volume: number;
+  [property: string]: any;
+};
+type ImageComment$6 = {
+  comment_highlight_text: string;
+  [property: string]: any;
+};
+type Image$8 = {
+  clip_type: number;
+  download_url_list: string[];
+  height: number;
+  live_photo_type?: number;
+  resolution_log_param: {
+    [property: string]: any;
+  };
+  uri: string;
+  url_list: string[];
+  video?: Video$16;
+  width: number;
+  [property: string]: any;
+};
+type Video$16 = {
+  big_thumbs: unknown[];
+  bit_rate: BitRate$10[];
+  bit_rate_audio: null;
+  cdn_url_expired: number;
+  cover: AvatarThumb$10;
+  download_addr: AvatarThumb$10;
+  download_suffix_logo_addr: AvatarThumb$10;
+  duration: number;
+  has_download_suffix_logo_addr: boolean;
+  has_watermark: boolean;
+  height: number;
+  is_bytevc1: number;
+  is_callback: boolean;
+  is_h265: number;
+  is_source_HDR: number;
+  meta: string;
+  need_set_token: boolean;
+  origin_cover: OriginCover$7;
+  play_addr: PlayAddr$7;
+  play_addr_h264: PlayAddr$7;
+  play_addr_lowbr: PlayAddr$7;
+  ratio: string;
+  tags: null;
+  width: number;
+  [property: string]: any;
+};
+type BitRate$10 = {
+  FPS: number;
+  HDR_bit: string;
+  HDR_type: string;
+  bit_rate: number;
+  format: string;
+  gear_name: string;
+  is_bytevc1: number;
+  is_h265: number;
+  play_addr: PlayAddr$7;
+  quality_type: number;
+  video_extra: string;
+  [property: string]: any;
+};
+type PlayAddr$7 = {
+  data_size: number;
+  file_cs: string;
+  file_hash: string;
+  height: number;
+  uri: string;
+  url_key: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type OriginCover$7 = {
+  height: number;
+  uri: string;
+  url_list: unknown[];
+  width: number;
+  [property: string]: any;
+};
+type ImpressionData$15 = {
+  group_id_list_a: unknown[];
+  group_id_list_b: unknown[];
+  group_id_list_c: unknown[];
+  group_id_list_d: unknown[];
+  similar_id_list_a: null;
+  similar_id_list_b: null;
+  [property: string]: any;
+};
+type ItemWarnNotification$13 = {
+  content: string;
+  show: boolean;
+  type: number;
+  [property: string]: any;
+};
+type Music$15 = {
+  album: string;
+  artist_user_infos: null;
+  artists: unknown[];
+  audition_duration: number;
+  author: string;
+  author_deleted: boolean;
+  author_position: null;
+  author_status: number;
+  avatar_large: AvatarThumb$10;
+  avatar_medium: AvatarThumb$10;
+  avatar_thumb: AvatarThumb$10;
+  binded_challenge_id: number;
+  can_background_play: boolean;
+  collect_stat: number;
+  cover_hd: AvatarThumb$10;
+  cover_large: AvatarThumb$10;
+  cover_medium: AvatarThumb$10;
+  cover_thumb: AvatarThumb$10;
+  dmv_auto_show: boolean;
+  dsp_status: number;
+  duration: number;
+  end_time: number;
+  external_song_info: unknown[];
+  extra: string;
+  id: number;
+  id_str: string;
+  is_audio_url_with_cookie: boolean;
+  is_commerce_music: boolean;
+  is_del_video: boolean;
+  is_matched_metadata: boolean;
+  is_original: boolean;
+  is_original_sound: boolean;
+  is_pgc: boolean;
+  is_restricted: boolean;
+  is_video_self_see: boolean;
+  lyric_short_position: null;
+  matched_pgc_sound: MatchedPgcSound$11;
+  mid: string;
+  music_chart_ranks: null;
+  music_collect_count: number;
+  music_cover_atmosphere_color_value: string;
+  music_status: number;
+  musician_user_infos: null;
+  mute_share: boolean;
+  offline_desc: string;
+  owner_handle: string;
+  owner_id: string;
+  owner_nickname: string;
+  pgc_music_type: number;
+  play_url: PlayUrl$2;
+  position: null;
+  prevent_download: boolean;
+  prevent_item_download_status: number;
+  preview_end_time: number;
+  preview_start_time: number;
+  reason_type: number;
+  redirect: boolean;
+  schema_url: string;
+  search_impr: SearchImpr$14;
+  sec_uid: string;
+  shoot_duration: number;
+  show_origin_clip: boolean;
+  song: Song$13;
+  source_platform: number;
+  start_time: number;
+  status: number;
+  strong_beat_url: AvatarThumb$10;
+  tag_list: null;
+  title: string;
+  unshelve_countries: null;
+  user_count: number;
+  video_duration: number;
+  [property: string]: any;
+};
+type MatchedPgcSound$11 = {
+  author: string;
+  cover_medium: AvatarThumb$10;
+  mixed_author: string;
+  mixed_title: string;
+  title: string;
+  [property: string]: any;
+};
+type PlayUrl$2 = {
+  height: number;
+  uri: string;
+  url_key: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type SearchImpr$14 = {
+  entity_id: string;
+  [property: string]: any;
+};
+type Song$13 = {
+  artists: null;
+  id: number;
+  id_str: string;
+  [property: string]: any;
+};
+type PhotoSearchEntrance$13 = {
+  ecom_type: number;
+  [property: string]: any;
+};
+type PlayProgress$13 = {
+  last_modified_time: number;
+  play_progress: number;
+  [property: string]: any;
+};
+type ProductGenreInfo$8 = {
+  material_genre_sub_type_set: number[];
+  product_genre_type: number;
+  special_info: SpecialInfo$8;
+  [property: string]: any;
+};
+type SpecialInfo$8 = {
+  recommend_group_name: number;
+  [property: string]: any;
+};
+type PublishPlusAlienation$13 = {
+  alienation_type: number;
+  [property: string]: any;
+};
+type RelatedMusicAnchor$5 = {
+  extra: string;
+  image_url: ImageUrl$2;
+  priority: number;
+  schema_url: string;
+  type: string;
+  [property: string]: any;
+};
+type ImageUrl$2 = {
+  uri: string;
+  url_list: string[];
+  [property: string]: any;
+};
+type RiskInfos$13 = {
+  content: string;
+  risk_sink: boolean;
+  type: number;
+  vote: boolean;
+  warn: boolean;
+  [property: string]: any;
+};
+type SeriesPaidInfo$13 = {
+  item_price: number;
+  series_paid_status: number;
+  [property: string]: any;
+};
+type ShareInfo2$6 = {
+  share_desc: string;
+  share_desc_info: string;
+  share_link_desc: string;
+  share_url: string;
+  [property: string]: any;
+};
+type Statistics$15 = {
+  admire_count: number;
+  aweme_id: string;
+  collect_count: number;
+  comment_count: number;
+  digg_count: number;
+  play_count: number;
+  recommend_count: number;
+  share_count: number;
+  [property: string]: any;
+};
+type Status$12 = {
+  allow_friend_recommend: boolean;
+  allow_friend_recommend_guide: boolean;
+  allow_self_recommend_to_friend: boolean;
+  allow_share: boolean;
+  aweme_id: string;
+  enable_soft_delete: number;
+  in_reviewing: boolean;
+  is_delete: boolean;
+  is_prohibited: boolean;
+  listen_video_status: number;
+  not_allow_soft_del_reason: string;
+  part_see: number;
+  private_status: number;
+  review_result: ReviewResult$15;
+  [property: string]: any;
+};
+type ReviewResult$15 = {
+  review_status: number;
+  [property: string]: any;
+};
+type SuggestWords$13 = {
+  suggest_words: SuggestWord$12[];
+  [property: string]: any;
+};
+type SuggestWord$12 = {
+  extra_info: string;
+  hint_text: string;
+  icon_url: string;
+  scene: string;
+  words: Word$14[];
+  [property: string]: any;
+};
+type Word$14 = {
+  info: string;
+  word: string;
+  word_id: string;
+  [property: string]: any;
+};
+type TextExtra$14 = {
+  caption_end: number;
+  caption_start: number;
+  end: number;
+  hashtag_id: string;
+  hashtag_name: string;
+  is_commerce: boolean;
+  start: number;
+  type: number;
+  [property: string]: any;
+};
+type Video2$2 = {
+  audio: {
+    [property: string]: any;
+  };
+  big_thumbs: null;
+  bit_rate_audio: null;
+  cover: AvatarThumb$10;
+  duration: number;
+  has_watermark: boolean;
+  height: number;
+  is_h265: number;
+  meta: string;
+  origin_cover: AvatarThumb$10;
+  play_addr: PlayUrl$2;
+  ratio: string;
+  width: number;
+  [property: string]: any;
+};
+type VideoControl$15 = {
+  allow_douplus: boolean;
+  allow_download: boolean;
+  allow_duet: boolean;
+  allow_dynamic_wallpaper: boolean;
+  allow_music: boolean;
+  allow_react: boolean;
+  allow_record: boolean;
+  allow_share: boolean;
+  allow_stitch: boolean;
+  disable_record_reason: string;
+  download_ignore_visibility: boolean;
+  download_info: DownloadInfo$15;
+  draft_progress_bar: number;
+  duet_ignore_visibility: boolean;
+  duet_info: DuetInfo$15;
+  prevent_download_type: number;
+  share_grayed: boolean;
+  share_ignore_visibility: boolean;
+  share_type: number;
+  show_ai_corner: boolean;
+  show_progress_bar: number;
+  show_watermark: boolean;
+  text_copy_type: number;
+  timer_info: {
+    [property: string]: any;
+  };
+  timer_status: number;
+  [property: string]: any;
+};
+type DownloadInfo$15 = {
+  level: number;
+  [property: string]: any;
+};
+type DuetInfo$15 = {
+  fail_info: FailInfo$7;
+  level: number;
+  [property: string]: any;
+};
+type FailInfo$7 = {
+  code: number;
+  reason: string;
+  [property: string]: any;
+};
+type VideoTag$13 = {
+  level: number;
+  tag_id: number;
+  tag_name: string;
+  [property: string]: any;
+};
+type VisualSearchInfo$13 = {
+  is_ecom_img: boolean;
+  is_high_accuracy_ecom: boolean;
+  is_high_recall_ecom: boolean;
+  is_show_img_entrance: boolean;
+  [property: string]: any;
+};
+type XiguaBaseInfo$13 = {
+  item_id: number;
+  star_altar_order_id: number;
+  star_altar_type: number;
+  status: number;
+  [property: string]: any;
+};
+type LogPb$22 = {
+  impr_id: string;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/douyin/SlidesWork/SlidesWork_V1.d.ts
+type SlidesWork_V1 = {
+  aweme_detail: AwemeDetail$6;
+  log_pb: LogPb$21;
+  status_code: number;
+  [property: string]: any;
+};
+type AwemeDetail$6 = {
+  activity_video_type: number;
+  anchors: null;
+  authentication_token: string;
+  author: Author$15;
+  author_mask_tag: number;
+  author_user_id: number;
+  aweme_acl: AwemeAcl$4;
+  aweme_control: AwemeControl$12;
+  aweme_id: string;
+  aweme_listen_struct: AwemeListenStruct$12;
+  aweme_type: number;
+  aweme_type_tags: string;
+  boost_status: number;
+  can_cache_to_local: boolean;
+  caption: string;
+  cf_assets_type: number;
+  cf_recheck_ts: number;
+  challenge_position: null;
+  chapter_list: null;
+  clip_paging: ClipPaging$4;
+  collect_stat: number;
+  collection_corner_mark: number;
+  comment_gid: number;
+  comment_list: null;
+  comment_permission_info: CommentPermissionInfo$12;
+  commerce_config_data: null;
+  component_control: ComponentControl$12;
+  component_info_v2: string;
+  cover_labels: null;
+  create_scale_type: string[];
+  create_time: number;
+  desc: string;
+  disable_relation_bar: number;
+  dislike_dimension_list: null;
+  dislike_dimension_list_v2: null;
+  distribute_circle: DistributeCircle$12;
+  diversion_bar_info: unknown[];
+  douplus_user_type: number;
+  douyin_pc_video_extra_seo: string;
+  duet_aggregate_in_music_tab: boolean;
+  duration: number;
+  ecom_comment_atmosphere_type: number;
+  enable_comment_sticker_rec: boolean;
+  enable_decorated_emoji: boolean;
+  ent_log_extra: EntLogExtra$7;
+  entertainment_product_info: EntertainmentProductInfo$14;
+  entertainment_recommend_info: string;
+  entertainment_video_paid_way: EntertainmentVideoPaidWay$8;
+  entertainment_video_type: number;
+  f_s_grouth_property: FSGrouthProperty$5;
+  fall_card_struct: FallCardStruct$8;
+  feed_comment_config: FeedCommentConfig$12;
+  flash_mob_trends: number;
+  follow_shoot_clip_info: FollowShootClipInfo$8;
+  follow_shoot_property: FollowShootProperty$4;
+  friend_recommend_info: FriendRecommendInfo$8;
+  game_tag_info: GameTagInfo$12;
+  geofencing: unknown[];
+  geofencing_regions: null;
+  group_id: string;
+  guide_scene_info: {
+    [property: string]: any;
+  };
+  hybrid_label: null;
+  image_album_music_info: ImageAlbumMusicInfo$12;
+  image_comment: ImageComment$5;
+  image_crop_ctrl: number;
+  image_infos: null;
+  image_list: null;
+  images: Image$7[];
+  img_bitrate: null;
+  impression_data: ImpressionData$14;
+  incentive_item_type: number;
+  interaction_stickers: null;
+  is_24_story: number;
+  is_25_story: number;
+  is_ads: boolean;
+  is_aigc_media: boolean;
+  is_collects_selected: number;
+  is_duet_sing: boolean;
+  is_from_ad_auth: boolean;
+  is_image_beat: boolean;
+  is_life_item: boolean;
+  is_moment_history: number;
+  is_moment_story: number;
+  is_multi_content: number;
+  is_new_text_mode: number;
+  is_share_post: boolean;
+  is_slides: boolean;
+  is_slides_beat: number;
+  is_story: number;
+  is_subtitled: number;
+  is_top: number;
+  is_use_music: boolean;
+  item_aigc_follow_shot: number;
+  item_title: string;
+  item_warn_notification: ItemWarnNotification$12;
+  label_top_text: null;
+  libfinsert_task_id: string;
+  long_video: null;
+  mark_largely_following: boolean;
+  media_type: number;
+  music: Music$14;
+  nickname_position: null;
+  origin_comment_ids: null;
+  origin_duet_resource_uri: string;
+  origin_text_extra: unknown[];
+  original: number;
+  original_images: null;
+  pack_usage_scene_by_req_path: string;
+  packed_clips: null;
+  pc_need_login: boolean;
+  personal_page_botton_diagnose_style: number;
+  photo_search_entrance: PhotoSearchEntrance$12;
+  play_progress: PlayProgress$12;
+  position: null;
+  preview_title: string;
+  preview_video_status: number;
+  product_genre_info: ProductGenreInfo$7;
+  promotions: unknown[];
+  publish_plus_alienation: PublishPlusAlienation$12;
+  rate: number;
+  region: string;
+  related_music_anchor: RelatedMusicAnchor$4;
+  relation_labels: null;
+  risk_infos: RiskInfos$12;
+  sec_item_id: string;
+  select_anchor_expanded_content: number;
+  seo_info: {
+    [property: string]: any;
+  };
+  series_basic_info: {
+    [property: string]: any;
+  };
+  series_paid_info: SeriesPaidInfo$12;
+  share_info: ShareInfo2$5;
+  share_rec_extra: string;
+  share_url: string;
+  shoot_way: string;
+  should_open_ad_report: boolean;
+  show_follow_button: {
+    [property: string]: any;
+  };
+  social_tag_list: null;
+  statistics: Statistics$14;
+  status: Status$11;
+  text_extra: TextExtra$13[];
+  trends_event_track: string;
+  uniqid_position: null;
+  user_digged: number;
+  user_recommend_status: number;
+  video: Video2$1;
+  video_control: VideoControl$14;
+  video_game_data_channel_config: {
+    [property: string]: any;
+  };
+  video_labels: null;
+  video_share_edit_status: number;
+  video_tag: VideoTag$12[];
+  video_text: unknown[];
+  visual_search_info: VisualSearchInfo$12;
+  xigua_base_info: XiguaBaseInfo$12;
+  [property: string]: any;
+};
+type Author$15 = {
+  avatar_thumb: AvatarThumb$9;
+  awemehts_greet_info: string;
+  cf_list: null;
+  close_friend_type: number;
+  contacts_status: number;
+  contrail_list: null;
+  cover_url: AvatarThumb$9[];
+  create_time: number;
+  custom_verify: string;
+  data_label_list: null;
+  endorsement_info_list: null;
+  enterprise_verify_reason: string;
+  favoriting_count: number;
+  follow_status: number;
+  follower_count: number;
+  follower_list_secondary_information_struct: null;
+  follower_status: number;
+  following_count: number;
+  hide_others_recommend_interest: number;
+  hide_self_recommend_interest: number;
+  im_role_ids: null;
+  is_ad_fake: boolean;
+  is_blocked_v2: boolean;
+  is_blocking_v2: boolean;
+  is_cf: number;
+  live_high_value: number;
+  mate_add_permission: number;
+  max_follower_count: number;
+  nickname: string;
+  offline_info_list: null;
+  personal_tag_list: null;
+  prevent_download: boolean;
+  risk_notice_text: string;
+  sec_uid: string;
+  secret: number;
+  share_info: ShareInfo$11;
+  short_id: string;
+  signature: string;
+  signature_extra: null;
+  special_follow_status: number;
+  special_people_labels: null;
+  status: number;
+  story25_comment: number;
+  story_interactive: number;
+  story_ttl: number;
+  text_extra: null;
+  total_favorited: number;
+  uid: string;
+  unique_id: string;
+  user_age: number;
+  user_canceled: boolean;
+  user_permissions: null;
+  verification_type: number;
+  [property: string]: any;
+};
+type AvatarThumb$9 = {
+  height: number;
+  uri: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type ShareInfo$11 = {
+  share_desc: string;
+  share_desc_info: string;
+  share_qrcode_url: ShareQrcodeUrl$2;
+  share_title: string;
+  share_title_myself: string;
+  share_title_other: string;
+  share_url: string;
+  share_weibo_desc: string;
+  [property: string]: any;
+};
+type ShareQrcodeUrl$2 = {
+  height: number;
+  uri: string;
+  url_list: unknown[];
+  width: number;
+  [property: string]: any;
+};
+type AwemeAcl$4 = {
+  download_mask_panel: DownloadMaskPanel$7;
+  [property: string]: any;
+};
+type DownloadMaskPanel$7 = {
+  code: number;
+  show_type: number;
+  [property: string]: any;
+};
+type AwemeControl$12 = {
+  can_comment: boolean;
+  can_forward: boolean;
+  can_share: boolean;
+  can_show_comment: boolean;
+  [property: string]: any;
+};
+type AwemeListenStruct$12 = {
+  trace_info: string;
+  [property: string]: any;
+};
+type ClipPaging$4 = {
+  direct: number;
+  has_more: boolean;
+  source: string;
+  [property: string]: any;
+};
+type CommentPermissionInfo$12 = {
+  can_comment: boolean;
+  comment_permission_status: number;
+  item_detail_entry: boolean;
+  press_entry: boolean;
+  toast_guide: boolean;
+  [property: string]: any;
+};
+type ComponentControl$12 = {
+  data_source_url: string;
+  [property: string]: any;
+};
+type DistributeCircle$12 = {
+  campus_block_interaction: boolean;
+  distribute_type: number;
+  is_campus: boolean;
+  [property: string]: any;
+};
+type EntLogExtra$7 = {
+  log_extra: string;
+  [property: string]: any;
+};
+type EntertainmentProductInfo$14 = {
+  market_info: MarketInfo$14;
+  [property: string]: any;
+};
+type MarketInfo$14 = {
+  limit_free: LimitFree$14;
+  [property: string]: any;
+};
+type LimitFree$14 = {
+  in_free: boolean;
+  [property: string]: any;
+};
+type EntertainmentVideoPaidWay$8 = {
+  enable_use_new_ent_data: boolean;
+  paid_type: number;
+  paid_ways: unknown[];
+  [property: string]: any;
+};
+type FSGrouthProperty$5 = {
+  is_client_pack: boolean;
+  is_natural_traffic: boolean;
+  is_related_path: boolean;
+  [property: string]: any;
+};
+type FallCardStruct$8 = {
+  recommend_reason_v2: string;
+  [property: string]: any;
+};
+type FeedCommentConfig$12 = {
+  audio_comment_permission: number;
+  author_audit_status: number;
+  common_comment_permission: number;
+  common_flags: string;
+  double_publish_limit: number;
+  input_config_text: string;
+  input_config_text_type: string;
+  [property: string]: any;
+};
+type FollowShootClipInfo$8 = {
+  clip_from_user: number;
+  clip_video_all: number;
+  [property: string]: any;
+};
+type FollowShootProperty$4 = {
+  recommended_camera_mode: string;
+  [property: string]: any;
+};
+type FriendRecommendInfo$8 = {
+  disable_friend_recommend_guide_label: boolean;
+  friend_recommend_source: number;
+  [property: string]: any;
+};
+type GameTagInfo$12 = {
+  content_type_tag: ContentTypeTag$5;
+  game_name_tag: GameNameTag$5;
+  is_game: boolean;
+  [property: string]: any;
+};
+type ContentTypeTag$5 = {
+  tag_id: number;
+  tag_name: string;
+  [property: string]: any;
+};
+type GameNameTag$5 = {
+  game_id_list: unknown[];
+  tag_id: number;
+  tag_name: string;
+  [property: string]: any;
+};
+type ImageAlbumMusicInfo$12 = {
+  begin_time: number;
+  end_time: number;
+  volume: number;
+  [property: string]: any;
+};
+type ImageComment$5 = {
+  comment_highlight_text: string;
+  [property: string]: any;
+};
+type Image$7 = {
+  clip_type: number;
+  download_url_list: string[];
+  height: number;
+  resolution_log_param: {
+    [property: string]: any;
+  };
+  uri: string;
+  url_list: string[];
+  video: Video$15;
+  width: number;
+  [property: string]: any;
+};
+type Video$15 = {
+  big_thumbs: unknown[];
+  bit_rate: BitRate$9[];
+  bit_rate_audio: null;
+  cdn_url_expired: number;
+  cover: AvatarThumb$9;
+  download_addr: DownloadAddr$8;
+  download_suffix_logo_addr: DownloadAddr$8;
+  duration: number;
+  has_download_suffix_logo_addr: boolean;
+  has_watermark: boolean;
+  height: number;
+  is_bytevc1: number;
+  is_callback: boolean;
+  is_h265: number;
+  is_source_HDR: number;
+  meta: string;
+  need_set_token: boolean;
+  origin_cover: ShareQrcodeUrl$2;
+  play_addr: PlayAddr$6;
+  play_addr_h264: PlayAddr$6;
+  play_addr_lowbr: PlayAddr$6;
+  ratio: string;
+  tags: null;
+  width: number;
+  [property: string]: any;
+};
+type BitRate$9 = {
+  FPS: number;
+  HDR_bit: string;
+  HDR_type: string;
+  bit_rate: number;
+  format: string;
+  gear_name: string;
+  is_bytevc1: number;
+  is_h265: number;
+  play_addr: PlayAddr$6;
+  quality_type: number;
+  video_extra: string;
+  [property: string]: any;
+};
+type PlayAddr$6 = {
+  data_size: number;
+  file_cs: string;
+  file_hash: string;
+  height: number;
+  uri: string;
+  url_key: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type DownloadAddr$8 = {
+  data_size?: number;
+  height: number;
+  uri: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type ImpressionData$14 = {
+  group_id_list_a: unknown[];
+  group_id_list_b: unknown[];
+  group_id_list_c: unknown[];
+  group_id_list_d: unknown[];
+  similar_id_list_a: null;
+  similar_id_list_b: null;
+  [property: string]: any;
+};
+type ItemWarnNotification$12 = {
+  content: string;
+  show: boolean;
+  type: number;
+  [property: string]: any;
+};
+type Music$14 = {
+  album: string;
+  artist_user_infos: null;
+  artists: unknown[];
+  audition_duration: number;
+  author: string;
+  author_deleted: boolean;
+  author_position: null;
+  author_status: number;
+  avatar_large: AvatarThumb$9;
+  avatar_medium: AvatarThumb$9;
+  avatar_thumb: AvatarThumb$9;
+  binded_challenge_id: number;
+  can_background_play: boolean;
+  collect_stat: number;
+  cover_hd: AvatarThumb$9;
+  cover_large: AvatarThumb$9;
+  cover_medium: AvatarThumb$9;
+  cover_thumb: AvatarThumb$9;
+  dmv_auto_show: boolean;
+  dsp_status: number;
+  duration: number;
+  end_time: number;
+  external_song_info: unknown[];
+  extra: string;
+  id: number;
+  id_str: string;
+  is_audio_url_with_cookie: boolean;
+  is_commerce_music: boolean;
+  is_del_video: boolean;
+  is_matched_metadata: boolean;
+  is_original: boolean;
+  is_original_sound: boolean;
+  is_pgc: boolean;
+  is_restricted: boolean;
+  is_video_self_see: boolean;
+  lyric_short_position: null;
+  matched_pgc_sound: MatchedPgcSound$10;
+  mid: string;
+  music_chart_ranks: null;
+  music_collect_count: number;
+  music_cover_atmosphere_color_value: string;
+  music_status: number;
+  musician_user_infos: null;
+  mute_share: boolean;
+  offline_desc: string;
+  owner_handle: string;
+  owner_id: string;
+  owner_nickname: string;
+  pgc_music_type: number;
+  play_url: PlayUrl$1;
+  position: null;
+  prevent_download: boolean;
+  prevent_item_download_status: number;
+  preview_end_time: number;
+  preview_start_time: number;
+  reason_type: number;
+  redirect: boolean;
+  schema_url: string;
+  search_impr: SearchImpr$13;
+  sec_uid: string;
+  shoot_duration: number;
+  show_origin_clip: boolean;
+  song: Song$12;
+  source_platform: number;
+  start_time: number;
+  status: number;
+  tag_list: null;
+  title: string;
+  unshelve_countries: null;
+  user_count: number;
+  video_duration: number;
+  [property: string]: any;
+};
+type MatchedPgcSound$10 = {
+  author: string;
+  cover_medium: AvatarThumb$9;
+  mixed_author: string;
+  mixed_title: string;
+  title: string;
+  [property: string]: any;
+};
+type PlayUrl$1 = {
+  height: number;
+  uri: string;
+  url_key: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type SearchImpr$13 = {
+  entity_id: string;
+  [property: string]: any;
+};
+type Song$12 = {
+  artists: null;
+  id: number;
+  id_str: string;
+  [property: string]: any;
+};
+type PhotoSearchEntrance$12 = {
+  ecom_type: number;
+  [property: string]: any;
+};
+type PlayProgress$12 = {
+  last_modified_time: number;
+  play_progress: number;
+  [property: string]: any;
+};
+type ProductGenreInfo$7 = {
+  material_genre_sub_type_set: number[];
+  product_genre_type: number;
+  special_info: SpecialInfo$7;
+  [property: string]: any;
+};
+type SpecialInfo$7 = {
+  recommend_group_name: number;
+  [property: string]: any;
+};
+type PublishPlusAlienation$12 = {
+  alienation_type: number;
+  [property: string]: any;
+};
+type RelatedMusicAnchor$4 = {
+  extra: string;
+  image_url: ImageUrl$1;
+  priority: number;
+  schema_url: string;
+  type: string;
+  [property: string]: any;
+};
+type ImageUrl$1 = {
+  uri: string;
+  url_list: string[];
+  [property: string]: any;
+};
+type RiskInfos$12 = {
+  content: string;
+  risk_sink: boolean;
+  type: number;
+  vote: boolean;
+  warn: boolean;
+  [property: string]: any;
+};
+type SeriesPaidInfo$12 = {
+  item_price: number;
+  series_paid_status: number;
+  [property: string]: any;
+};
+type ShareInfo2$5 = {
+  share_desc: string;
+  share_desc_info: string;
+  share_link_desc: string;
+  share_url: string;
+  [property: string]: any;
+};
+type Statistics$14 = {
+  admire_count: number;
+  aweme_id: string;
+  collect_count: number;
+  comment_count: number;
+  digg_count: number;
+  play_count: number;
+  recommend_count: number;
+  share_count: number;
+  [property: string]: any;
+};
+type Status$11 = {
+  allow_friend_recommend: boolean;
+  allow_friend_recommend_guide: boolean;
+  allow_self_recommend_to_friend: boolean;
+  allow_share: boolean;
+  aweme_id: string;
+  enable_soft_delete: number;
+  in_reviewing: boolean;
+  is_delete: boolean;
+  is_prohibited: boolean;
+  listen_video_status: number;
+  not_allow_soft_del_reason: string;
+  part_see: number;
+  private_status: number;
+  review_result: ReviewResult$14;
+  [property: string]: any;
+};
+type ReviewResult$14 = {
+  review_status: number;
+  [property: string]: any;
+};
+type TextExtra$13 = {
+  caption_end: number;
+  caption_start: number;
+  end: number;
+  hashtag_id: string;
+  hashtag_name: string;
+  is_commerce: boolean;
+  start: number;
+  type: number;
+  [property: string]: any;
+};
+type Video2$1 = {
+  audio: {
+    [property: string]: any;
+  };
+  big_thumbs: null;
+  bit_rate_audio: null;
+  cover: AvatarThumb$9;
+  duration: number;
+  has_watermark: boolean;
+  height: number;
+  is_h265: number;
+  meta: string;
+  origin_cover: AvatarThumb$9;
+  play_addr: AvatarThumb$9;
+  ratio: string;
+  width: number;
+  [property: string]: any;
+};
+type VideoControl$14 = {
+  allow_douplus: boolean;
+  allow_download: boolean;
+  allow_duet: boolean;
+  allow_dynamic_wallpaper: boolean;
+  allow_music: boolean;
+  allow_react: boolean;
+  allow_record: boolean;
+  allow_share: boolean;
+  allow_stitch: boolean;
+  disable_record_reason: string;
+  download_ignore_visibility: boolean;
+  download_info: DownloadInfo$14;
+  draft_progress_bar: number;
+  duet_ignore_visibility: boolean;
+  duet_info: DuetInfo$14;
+  prevent_download_type: number;
+  share_grayed: boolean;
+  share_ignore_visibility: boolean;
+  share_type: number;
+  show_ai_corner: boolean;
+  show_progress_bar: number;
+  show_watermark: boolean;
+  text_copy_type: number;
+  timer_info: {
+    [property: string]: any;
+  };
+  timer_status: number;
+  [property: string]: any;
+};
+type DownloadInfo$14 = {
+  fail_info: FailInfo$6;
+  level: number;
+  [property: string]: any;
+};
+type FailInfo$6 = {
+  code: number;
+  msg: string;
+  reason: string;
+  [property: string]: any;
+};
+type DuetInfo$14 = {
+  fail_info: FailInfo2$4;
+  level: number;
+  [property: string]: any;
+};
+type FailInfo2$4 = {
+  code: number;
+  reason: string;
+  [property: string]: any;
+};
+type VideoTag$12 = {
+  level: number;
+  tag_id: number;
+  tag_name: string;
+  [property: string]: any;
+};
+type VisualSearchInfo$12 = {
+  is_ecom_img: boolean;
+  is_high_accuracy_ecom: boolean;
+  is_high_recall_ecom: boolean;
+  is_show_img_entrance: boolean;
+  [property: string]: any;
+};
+type XiguaBaseInfo$12 = {
+  item_id: number;
+  star_altar_order_id: number;
+  star_altar_type: number;
+  status: number;
+  [property: string]: any;
+};
+type LogPb$21 = {
+  impr_id: string;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/douyin/SlidesWork/index.d.ts
+type SlidesWorkSuccess = SlidesWork_V0 | SlidesWork_V1;
+type SlidesWorkError = SlidesWork_Error_V0;
+type SlidesWork = SlidesWorkSuccess | SlidesWorkError;
+//#endregion
+//#region ../response-types/dist/generated/douyin/SuggestWords/SuggestWords_V0.d.ts
+type SuggestWords_V0 = {
+  StabilityStatistics: StabilityStatistics$1;
+  data: Data$23[];
+  errno: string;
+  extra: Extra$9;
+  log_id: string;
+  msg: string;
+  real_log_id: string;
+  [property: string]: any;
+};
+type StabilityStatistics$1 = {
+  '1': string;
+  [property: string]: any;
+};
+type Data$23 = {
+  params: Params$4;
+  source: string;
+  type: string;
+  words: unknown[];
+  [property: string]: any;
+};
+type Params$4 = {
+  channel_id: number;
+  extra_info: ExtraInfo$4;
+  from_gid: string;
+  impr_id: string;
+  query_id: string;
+  [property: string]: any;
+};
+type ExtraInfo$4 = {
+  empty_reason: string;
+  msg: string;
+  qrec_channel: string;
+  qrec_channel_is_aweme: string;
+  src_comment_id: string;
+  src_group_id: string;
+  [property: string]: any;
+};
+type Extra$9 = {
+  RespFrom: string;
+  call_per_refresh: string;
+  qrec_extra: string;
+  time_cost: TimeCost$1;
+  [property: string]: any;
+};
+type TimeCost$1 = {
+  call_extra_time: string;
+  call_rpc_time: string;
+  init_time: string;
+  networkServerEngineRequestTime: string;
+  networkServerEngineResponseTime: string;
+  networkServerRequestTime: string;
+  networkServerResponseTime: string;
+  server_engine_cost: string;
+  stream_inner: string;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/douyin/SuggestWords/index.d.ts
+type SuggestWordsSuccess = SuggestWords_V0;
+type SuggestWordsError = never;
+type SuggestWords$12 = SuggestWordsSuccess | SuggestWordsError;
+//#endregion
+//#region ../response-types/dist/generated/douyin/TextWork/TextWork_V0.d.ts
+type TextWork_V0 = {
+  aweme_detail: AwemeDetail$5;
+  log_pb: LogPb$20;
+  status_code: number;
+  [property: string]: any;
+};
+type AwemeDetail$5 = {
+  activity_video_type: number;
+  anchors: null;
+  article_info: ArticleInfo$1;
+  authentication_token: string;
+  author: Author$14;
+  author_mask_tag: number;
+  author_user_id: number;
+  aweme_acl: AwemeAcl$3;
+  aweme_control: AwemeControl$11;
+  aweme_id: string;
+  aweme_listen_struct: AwemeListenStruct$11;
+  aweme_type: number;
+  aweme_type_tags: string;
+  boost_status: number;
+  can_cache_to_local: boolean;
+  caption: string;
+  cf_assets_type: number;
+  cf_recheck_ts: number;
+  challenge_position: null;
+  chapter_list: null;
+  collect_stat: number;
+  collection_corner_mark: number;
+  comment_gid: number;
+  comment_list: null;
+  comment_permission_info: CommentPermissionInfo$11;
+  commerce_config_data: null;
+  component_control: ComponentControl$11;
+  component_info_v2: string;
+  cover_labels: null;
+  create_time: number;
+  desc: string;
+  disable_relation_bar: number;
+  dislike_dimension_list: null;
+  dislike_dimension_list_v2: null;
+  distribute_circle: DistributeCircle$11;
+  diversion_bar_info: unknown[];
+  douplus_user_type: number;
+  douyin_pc_video_extra_seo: string;
+  duet_aggregate_in_music_tab: boolean;
+  duration: number;
+  ecom_comment_atmosphere_type: number;
+  enable_comment_sticker_rec: boolean;
+  enable_decorated_emoji: boolean;
+  ent_log_extra: EntLogExtra$6;
+  entertainment_product_info: EntertainmentProductInfo$13;
+  entertainment_recommend_info: string;
+  entertainment_video_paid_way: EntertainmentVideoPaidWay$7;
+  entertainment_video_type: number;
+  f_s_grouth_property: FSGrouthProperty$4;
+  fall_card_struct: FallCardStruct$7;
+  feed_comment_config: FeedCommentConfig$11;
+  flash_mob_trends: number;
+  follow_shoot_clip_info: FollowShootClipInfo$7;
+  friend_recommend_info: FriendRecommendInfo$7;
+  game_tag_info: GameTagInfo$11;
+  geofencing: unknown[];
+  geofencing_regions: null;
+  group_id: string;
+  guide_scene_info: {
+    [property: string]: any;
+  };
+  hybrid_label: null;
+  image_album_music_info: ImageAlbumMusicInfo$11;
+  image_comment: ImageComment$4;
+  image_crop_ctrl: number;
+  image_infos: null;
+  image_list: null;
+  images: null;
+  img_bitrate: null;
+  impression_data: ImpressionData$13;
+  incentive_item_type: number;
+  interaction_stickers: null;
+  is_24_story: number;
+  is_25_story: number;
+  is_ads: boolean;
+  is_aigc_media: boolean;
+  is_collects_selected: number;
+  is_duet_sing: boolean;
+  is_from_ad_auth: boolean;
+  is_image_beat: boolean;
+  is_life_item: boolean;
+  is_moment_history: number;
+  is_moment_story: number;
+  is_new_text_mode: number;
+  is_share_post: boolean;
+  is_story: number;
+  is_top: number;
+  is_use_music: boolean;
+  item_aigc_follow_shot: number;
+  item_title: string;
+  item_warn_notification: ItemWarnNotification$11;
+  jump_tab_info_list: unknown[];
+  label_top_text: null;
+  libfinsert_task_id: string;
+  long_video: null;
+  main_arch_common: string;
+  mark_largely_following: boolean;
+  media_type: number;
+  music: Music$13;
+  nickname_position: null;
+  origin_comment_ids: null;
+  origin_duet_resource_uri: string;
+  origin_text_extra: unknown[];
+  original: number;
+  original_images: null;
+  pack_usage_scene_by_req_path: string;
+  packed_clips: null;
+  pc_need_login: boolean;
+  personal_page_botton_diagnose_style: number;
+  photo_search_entrance: PhotoSearchEntrance$11;
+  play_progress: PlayProgress$11;
+  position: null;
+  preview_title: string;
+  preview_video_status: number;
+  product_genre_info: ProductGenreInfo$6;
+  promotions: unknown[];
+  publish_plus_alienation: PublishPlusAlienation$11;
+  rate: number;
+  region: string;
+  relation_labels: null;
+  risk_infos: RiskInfos$11;
+  sec_item_id: string;
+  select_anchor_expanded_content: number;
+  seo_info: {
+    [property: string]: any;
+  };
+  series_basic_info: {
+    [property: string]: any;
+  };
+  series_paid_info: SeriesPaidInfo$11;
+  share_info: ShareInfo2$4;
+  share_rec_extra: string;
+  share_url: string;
+  shoot_way: string;
+  should_open_ad_report: boolean;
+  show_follow_button: {
+    [property: string]: any;
+  };
+  social_tag_list: null;
+  statistics: Statistics$13;
+  status: Status$10;
+  suggest_words: SuggestWords$11;
+  text_extra: TextExtra$12[];
+  trends_event_track: string;
+  uniqid_position: null;
+  user_digged: number;
+  user_recommend_status: number;
+  video: Video$14;
+  video_control: VideoControl$13;
+  video_game_data_channel_config: {
+    [property: string]: any;
+  };
+  video_labels: null;
+  video_share_edit_status: number;
+  video_tag: VideoTag$11[];
+  video_text: unknown[];
+  visual_search_info: VisualSearchInfo$11;
+  xigua_base_info: XiguaBaseInfo$11;
+  [property: string]: any;
+};
+type ArticleInfo$1 = {
+  article_content: string;
+  article_id: string;
+  article_title: string;
+  article_type: number;
+  container_lynx_url: string;
+  detail_lynx_url: string;
+  fe_data: string;
+  has_more: boolean;
+  is_cartoon: number;
+  read_time: number;
+  [property: string]: any;
+};
+type Author$14 = {
+  avatar_thumb: AvatarThumb$8;
+  awemehts_greet_info: string;
+  cf_list: null;
+  close_friend_type: number;
+  contacts_status: number;
+  contrail_list: null;
+  cover_url: AvatarThumb$8[];
+  create_time: number;
+  custom_verify: string;
+  data_label_list: null;
+  endorsement_info_list: null;
+  enterprise_verify_reason: string;
+  favoriting_count: number;
+  follow_status: number;
+  follower_count: number;
+  follower_list_secondary_information_struct: null;
+  follower_status: number;
+  following_count: number;
+  hide_others_recommend_interest: number;
+  hide_self_recommend_interest: number;
+  im_role_ids: null;
+  is_ad_fake: boolean;
+  is_blocked_v2: boolean;
+  is_blocking_v2: boolean;
+  is_cf: number;
+  live_high_value: number;
+  mate_add_permission: number;
+  max_follower_count: number;
+  nickname: string;
+  offline_info_list: null;
+  personal_tag_list: null;
+  prevent_download: boolean;
+  risk_notice_text: string;
+  sec_uid: string;
+  secret: number;
+  share_info: ShareInfo$10;
+  short_id: string;
+  signature: string;
+  signature_extra: null;
+  special_follow_status: number;
+  special_people_labels: null;
+  status: number;
+  story25_comment: number;
+  story_interactive: number;
+  story_ttl: number;
+  text_extra: null;
+  total_favorited: number;
+  uid: string;
+  unique_id: string;
+  user_age: number;
+  user_canceled: boolean;
+  user_permissions: null;
+  verification_type: number;
+  [property: string]: any;
+};
+type AvatarThumb$8 = {
+  height: number;
+  uri: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type ShareInfo$10 = {
+  share_desc: string;
+  share_desc_info: string;
+  share_qrcode_url: ShareQrcodeUrl$1;
+  share_title: string;
+  share_title_myself: string;
+  share_title_other: string;
+  share_url: string;
+  share_weibo_desc: string;
+  [property: string]: any;
+};
+type ShareQrcodeUrl$1 = {
+  height: number;
+  uri: string;
+  url_list: unknown[];
+  width: number;
+  [property: string]: any;
+};
+type AwemeAcl$3 = {
+  download_mask_panel: DownloadMaskPanel$6;
+  [property: string]: any;
+};
+type DownloadMaskPanel$6 = {
+  code: number;
+  show_type: number;
+  [property: string]: any;
+};
+type AwemeControl$11 = {
+  can_comment: boolean;
+  can_forward: boolean;
+  can_share: boolean;
+  can_show_comment: boolean;
+  [property: string]: any;
+};
+type AwemeListenStruct$11 = {
+  trace_info: string;
+  [property: string]: any;
+};
+type CommentPermissionInfo$11 = {
+  can_comment: boolean;
+  comment_permission_status: number;
+  item_detail_entry: boolean;
+  press_entry: boolean;
+  toast_guide: boolean;
+  [property: string]: any;
+};
+type ComponentControl$11 = {
+  data_source_url: string;
+  [property: string]: any;
+};
+type DistributeCircle$11 = {
+  campus_block_interaction: boolean;
+  distribute_type: number;
+  is_campus: boolean;
+  [property: string]: any;
+};
+type EntLogExtra$6 = {
+  log_extra: string;
+  [property: string]: any;
+};
+type EntertainmentProductInfo$13 = {
+  market_info: MarketInfo$13;
+  [property: string]: any;
+};
+type MarketInfo$13 = {
+  limit_free: LimitFree$13;
+  [property: string]: any;
+};
+type LimitFree$13 = {
+  in_free: boolean;
+  [property: string]: any;
+};
+type EntertainmentVideoPaidWay$7 = {
+  enable_use_new_ent_data: boolean;
+  paid_type: number;
+  paid_ways: unknown[];
+  [property: string]: any;
+};
+type FSGrouthProperty$4 = {
+  is_client_pack: boolean;
+  is_natural_traffic: boolean;
+  is_related_path: boolean;
+  [property: string]: any;
+};
+type FallCardStruct$7 = {
+  recommend_reason_v2: string;
+  [property: string]: any;
+};
+type FeedCommentConfig$11 = {
+  audio_comment_permission: number;
+  author_audit_status: number;
+  common_comment_permission: number;
+  common_flags: string;
+  double_publish_limit: number;
+  input_config_text: string;
+  input_config_text_type: string;
+  [property: string]: any;
+};
+type FollowShootClipInfo$7 = {
+  clip_from_platform: number;
+  clip_video_all: number;
+  origin_clip_id: number;
+  [property: string]: any;
+};
+type FriendRecommendInfo$7 = {
+  disable_friend_recommend_guide_label: boolean;
+  friend_recommend_source: number;
+  [property: string]: any;
+};
+type GameTagInfo$11 = {
+  is_game: boolean;
+  [property: string]: any;
+};
+type ImageAlbumMusicInfo$11 = {
+  begin_time: number;
+  end_time: number;
+  volume: number;
+  [property: string]: any;
+};
+type ImageComment$4 = {
+  comment_highlight_text: string;
+  [property: string]: any;
+};
+type ImpressionData$13 = {
+  group_id_list_a: unknown[];
+  group_id_list_b: unknown[];
+  group_id_list_c: unknown[];
+  group_id_list_d: unknown[];
+  similar_id_list_a: null;
+  similar_id_list_b: null;
+  [property: string]: any;
+};
+type ItemWarnNotification$11 = {
+  content: string;
+  show: boolean;
+  type: number;
+  [property: string]: any;
+};
+type Music$13 = {
+  album: string;
+  artist_user_infos: null;
+  artists: Artist$3[];
+  audition_duration: number;
+  author: string;
+  author_deleted: boolean;
+  author_position: null;
+  author_status: number;
+  avatar_large: AvatarThumb$8;
+  avatar_medium: AvatarThumb$8;
+  avatar_thumb: AvatarThumb$8;
+  binded_challenge_id: number;
+  can_background_play: boolean;
+  collect_stat: number;
+  cover_color_hsv: CoverColorHsv$5;
+  cover_hd: AvatarThumb$8;
+  cover_large: AvatarThumb$8;
+  cover_medium: AvatarThumb$8;
+  cover_thumb: AvatarThumb$8;
+  dmv_auto_show: boolean;
+  dsp_status: number;
+  duration: number;
+  end_time: number;
+  external_song_info: unknown[];
+  extra: string;
+  id: number;
+  id_str: string;
+  is_audio_url_with_cookie: boolean;
+  is_commerce_music: boolean;
+  is_del_video: boolean;
+  is_matched_metadata: boolean;
+  is_original: boolean;
+  is_original_sound: boolean;
+  is_pgc: boolean;
+  is_restricted: boolean;
+  is_video_self_see: boolean;
+  lyric_short_position: null;
+  mid: string;
+  music_chart_ranks: null;
+  music_collect_count: number;
+  music_cover_atmosphere_color_value: string;
+  music_status: number;
+  musician_user_infos: null;
+  mute_share: boolean;
+  offline_desc: string;
+  owner_handle: string;
+  owner_id: string;
+  owner_nickname: string;
+  pgc_music_type: number;
+  play_url: PlayUrl;
+  position: null;
+  prevent_download: boolean;
+  prevent_item_download_status: number;
+  preview_end_time: number;
+  preview_start_time: number;
+  reason_type: number;
+  redirect: boolean;
+  schema_url: string;
+  search_impr: SearchImpr$12;
+  sec_uid: string;
+  shoot_duration: number;
+  show_origin_clip: boolean;
+  song: Song$11;
+  source_platform: number;
+  start_time: number;
+  status: number;
+  strong_beat_url: AvatarThumb$8;
+  tag_list: null;
+  title: string;
+  unshelve_countries: null;
+  user_count: number;
+  video_duration: number;
+  [property: string]: any;
+};
+type Artist$3 = {
+  avatar: Avatar$7;
+  enter_type: number;
+  handle: string;
+  is_verified: boolean;
+  nick_name: string;
+  sec_uid: string;
+  uid: string;
+  [property: string]: any;
+};
+type Avatar$7 = {
+  uri: string;
+  url_list: string[];
+  [property: string]: any;
+};
+type CoverColorHsv$5 = {
+  h: number;
+  s: number;
+  v: number;
+  [property: string]: any;
+};
+type PlayUrl = {
+  height: number;
+  uri: string;
+  url_key: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type SearchImpr$12 = {
+  entity_id: string;
+  [property: string]: any;
+};
+type Song$11 = {
+  artists: null;
+  chorus: Chorus$5;
+  id: number;
+  id_str: string;
+  title: string;
+  [property: string]: any;
+};
+type Chorus$5 = {
+  duration_ms: number;
+  start_ms: number;
+  [property: string]: any;
+};
+type PhotoSearchEntrance$11 = {
+  ecom_type: number;
+  [property: string]: any;
+};
+type PlayProgress$11 = {
+  last_modified_time: number;
+  play_progress: number;
+  [property: string]: any;
+};
+type ProductGenreInfo$6 = {
+  product_genre_type: number;
+  special_info: SpecialInfo$6;
+  [property: string]: any;
+};
+type SpecialInfo$6 = {
+  recommend_group_name: number;
+  [property: string]: any;
+};
+type PublishPlusAlienation$11 = {
+  alienation_type: number;
+  [property: string]: any;
+};
+type RiskInfos$11 = {
+  content: string;
+  risk_sink: boolean;
+  type: number;
+  vote: boolean;
+  warn: boolean;
+  [property: string]: any;
+};
+type SeriesPaidInfo$11 = {
+  item_price: number;
+  series_paid_status: number;
+  [property: string]: any;
+};
+type ShareInfo2$4 = {
+  share_desc: string;
+  share_desc_info: string;
+  share_link_desc: string;
+  share_url: string;
+  [property: string]: any;
+};
+type Statistics$13 = {
+  admire_count: number;
+  aweme_id: string;
+  collect_count: number;
+  comment_count: number;
+  digg_count: number;
+  play_count: number;
+  recommend_count: number;
+  share_count: number;
+  [property: string]: any;
+};
+type Status$10 = {
+  allow_friend_recommend: boolean;
+  allow_friend_recommend_guide: boolean;
+  allow_self_recommend_to_friend: boolean;
+  allow_share: boolean;
+  aweme_id: string;
+  enable_soft_delete: number;
+  in_reviewing: boolean;
+  is_delete: boolean;
+  is_prohibited: boolean;
+  listen_video_status: number;
+  not_allow_soft_del_reason: string;
+  part_see: number;
+  private_status: number;
+  review_result: ReviewResult$13;
+  [property: string]: any;
+};
+type ReviewResult$13 = {
+  review_status: number;
+  [property: string]: any;
+};
+type SuggestWords$11 = {
+  suggest_words: SuggestWord$11[];
+  [property: string]: any;
+};
+type SuggestWord$11 = {
+  extra_info: string;
+  hint_text: string;
+  icon_url: string;
+  scene: string;
+  words: Word$13[];
+  [property: string]: any;
+};
+type Word$13 = {
+  info: string;
+  word: string;
+  word_id: string;
+  [property: string]: any;
+};
+type TextExtra$12 = {
+  caption_end: number;
+  caption_start: number;
+  end: number;
+  hashtag_id: string;
+  hashtag_name: string;
+  is_commerce: boolean;
+  start: number;
+  type: number;
+  [property: string]: any;
+};
+type Video$14 = {
+  audio: {
+    [property: string]: any;
+  };
+  big_thumbs: null;
+  bit_rate_audio: null;
+  cover: AvatarThumb$8;
+  duration: number;
+  has_watermark: boolean;
+  height: number;
+  is_h265: number;
+  meta: string;
+  origin_cover: AvatarThumb$8;
+  play_addr: PlayUrl;
+  ratio: string;
+  width: number;
+  [property: string]: any;
+};
+type VideoControl$13 = {
+  allow_douplus: boolean;
+  allow_download: boolean;
+  allow_duet: boolean;
+  allow_dynamic_wallpaper: boolean;
+  allow_music: boolean;
+  allow_react: boolean;
+  allow_record: boolean;
+  allow_share: boolean;
+  allow_stitch: boolean;
+  disable_record_reason: string;
+  download_ignore_visibility: boolean;
+  download_info: DownloadInfo$13;
+  draft_progress_bar: number;
+  duet_ignore_visibility: boolean;
+  duet_info: DuetInfo$13;
+  prevent_download_type: number;
+  share_grayed: boolean;
+  share_ignore_visibility: boolean;
+  share_type: number;
+  show_ai_corner: boolean;
+  show_progress_bar: number;
+  show_watermark: boolean;
+  timer_info: {
+    [property: string]: any;
+  };
+  timer_status: number;
+  [property: string]: any;
+};
+type DownloadInfo$13 = {
+  fail_info: FailInfo$5;
+  level: number;
+  [property: string]: any;
+};
+type FailInfo$5 = {
+  code: number;
+  msg: string;
+  reason: string;
+  [property: string]: any;
+};
+type DuetInfo$13 = {
+  fail_info: FailInfo2$3;
+  level: number;
+  [property: string]: any;
+};
+type FailInfo2$3 = {
+  code: number;
+  reason: string;
+  [property: string]: any;
+};
+type VideoTag$11 = {
+  level: number;
+  tag_id: number;
+  tag_name: string;
+  [property: string]: any;
+};
+type VisualSearchInfo$11 = {
+  is_ecom_img: boolean;
+  is_high_accuracy_ecom: boolean;
+  is_high_recall_ecom: boolean;
+  is_show_img_entrance: boolean;
+  [property: string]: any;
+};
+type XiguaBaseInfo$11 = {
+  item_id: number;
+  star_altar_order_id: number;
+  star_altar_type: number;
+  status: number;
+  [property: string]: any;
+};
+type LogPb$20 = {
+  impr_id: string;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/douyin/TextWork/index.d.ts
+type TextWorkSuccess = TextWork_V0;
+type TextWorkError = never;
+type TextWork = TextWorkSuccess | TextWorkError;
+//#endregion
+//#region ../response-types/dist/generated/douyin/UserFavoriteList/UserFavoriteList_V0.d.ts
+type UserFavoriteList_V0$1 = {
+  aweme_list: AwemeList$5[];
+  has_more: number;
+  log_pb: LogPb$19;
+  max_cursor: number;
+  sec_uid: string;
+  status_code: number;
+  uid: string;
+  [property: string]: any;
+};
+type AwemeList$5 = {
+  activity_video_type: number;
+  anchor_info?: AnchorInfo$6;
+  anchors: null;
+  authentication_token: string;
+  author: Author$13;
+  author_mask_tag: number;
+  author_user_id: number;
+  aweme_acl?: AwemeAcl$2;
+  aweme_control: AwemeControl$10;
+  aweme_id: string;
+  aweme_listen_struct: AwemeListenStruct$10;
+  aweme_type: number;
+  aweme_type_tags: string;
+  boost_status: number;
+  can_be_oc_cover?: boolean;
+  can_cache_to_local: boolean;
+  caption: string;
+  cf_assets_type: number;
+  challenge_position: null;
+  chapter_list: null;
+  clip_paging?: ClipPaging$3;
+  collect_stat: number;
+  collection_corner_mark: number;
+  comment_gid: number;
+  comment_list: null;
+  comment_permission_info: CommentPermissionInfo$10;
+  commerce_config_data: null;
+  component_control: ComponentControl$10;
+  component_info_v2: string;
+  cover_labels: null;
+  create_scale_type?: string[];
+  create_time: number;
+  danmaku_control?: DanmakuControl$9;
+  desc: string;
+  disable_relation_bar: number;
+  distribute_circle: DistributeCircle$10;
+  diversion_bar_info: unknown[];
+  douplus_user_type: number;
+  duet_aggregate_in_music_tab: boolean;
+  duration: number;
+  enable_comment_sticker_rec: boolean;
+  enable_decorated_emoji: boolean;
+  ent_log_extra: EntLogExtra$5;
+  entertainment_product_info: EntertainmentProductInfo$12;
+  entertainment_recommend_info: string;
+  entertainment_video_paid_way: EntertainmentVideoPaidWay$6;
+  entertainment_video_type: number;
+  f_s_grouth_property: FSGrouthProperty$3;
+  feed_comment_config: FeedCommentConfig$10;
+  feed_component_decision_reasons?: string;
+  flash_mob_trends: number;
+  follow_material_info?: string;
+  follow_shoot_clip_info: FollowShootClipInfo$6;
+  follow_shoot_property: FollowShootProperty$3;
+  friend_recommend_info: FriendRecommendInfo$6;
+  galileo_pad_textcrop?: GalileoPadTextcrop$5;
+  game_tag_info: GameTagInfo$10;
+  geofencing: unknown[];
+  geofencing_regions: null;
+  group_id: string;
+  horizontal_type?: number;
+  hybrid_label: null;
+  image_album_music_info: ImageAlbumMusicInfo$10;
+  image_comment: ImageComment$3;
+  image_crop_ctrl: number;
+  image_infos: null;
+  image_item_quality_level?: number;
+  image_list: null;
+  images: Image$6[] | null;
+  img_bitrate: unknown[] | null;
+  impression_data: ImpressionData$12;
+  interaction_stickers: null;
+  is_24_story: number;
+  is_25_story: number;
+  is_ads: boolean;
+  is_aigc_media: boolean;
+  is_collects_selected: number;
+  is_duet_sing: boolean;
+  is_from_ad_auth: boolean;
+  is_image_beat: boolean;
+  is_life_item: boolean;
+  is_live_photo?: number;
+  is_moment_history: number;
+  is_moment_story: number;
+  is_multi_content?: number;
+  is_new_text_mode: number;
+  is_share_post: boolean;
+  is_slides?: boolean;
+  is_slides_beat?: number;
+  is_story: number;
+  is_subtitled: number;
+  is_top: number;
+  is_use_music: boolean;
+  item_aigc_follow_shot: number;
+  item_title: string;
+  item_warn_notification: ItemWarnNotification$10;
+  label_top_text: null;
+  libfinsert_task_id: string;
+  life_anchor_show_extra?: LifeAnchorShowExtra;
+  life_video_favorite_info: string;
+  long_video: null;
+  mark_largely_following: boolean;
+  media_type: number;
+  mix_info?: MixInfo$5;
+  music: Music$12;
+  nickname_position: null;
+  origin_comment_ids: null;
+  origin_duet_resource_uri: string;
+  original: number;
+  original_anchor_type?: number;
+  original_images: null;
+  pack_usage_scene_by_req_path: string;
+  packed_clips: null;
+  personal_page_botton_diagnose_style: number;
+  photo_search_entrance: PhotoSearchEntrance$10;
+  play_progress: PlayProgress$10;
+  position: null;
+  prevent_download: boolean;
+  preview_title: string;
+  product_genre_info: ProductGenreInfo$5;
+  promotions: unknown[];
+  publish_plus_alienation: PublishPlusAlienation$10;
+  region: string;
+  related_music_anchor?: RelatedMusicAnchor$3;
+  relation_label?: RelationLabel$3;
+  risk_infos: RiskInfos$10;
+  sec_item_id: string;
+  select_anchor_expanded_content: number;
+  series_basic_info: {
+    [property: string]: any;
+  };
+  series_paid_info: SeriesPaidInfo$10;
+  share_info: ShareInfo3$2;
+  share_url: string;
+  shoot_way: string;
+  show_follow_button: {
+    [property: string]: any;
+  };
+  social_tag_list: null;
+  statistics: Statistics$12;
+  status: Status2$2;
+  suggest_words: SuggestWords$10;
+  text_extra: TextExtra$11[];
+  trends_event_track: string;
+  trends_infos?: TrendsInfo$3[];
+  uniqid_position: null;
+  user_digged: number;
+  user_recommend_status: number;
+  video: Video2;
+  video_control: VideoControl$12;
+  video_game_data_channel_config: {
+    [property: string]: any;
+  };
+  video_labels: null;
+  video_share_edit_status: number;
+  video_tag: VideoTag$10[];
+  video_text: null;
+  visual_search_info?: VisualSearchInfo$10;
+  vtag_search?: VtagSearch$6;
+  xigua_base_info: XiguaBaseInfo$10;
+  [property: string]: any;
+};
+type AnchorInfo$6 = {
+  content: string;
+  extra: string;
+  icon: Icon$7;
+  id: string;
+  log_extra: string;
+  mp_url: string;
+  open_url: string;
+  style_info: StyleInfo$6;
+  title: string;
+  title_tag: string;
+  type: number;
+  web_url: string;
+  [property: string]: any;
+};
+type Icon$7 = {
+  height: number;
+  uri: string;
+  url_key: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type StyleInfo$6 = {
+  default_icon: string;
+  extra: string;
+  scene_icon: string;
+  [property: string]: any;
+};
+type Author$13 = {
+  account_cert_info?: string;
+  avatar_thumb: AvatarThumb$7;
+  custom_verify: string;
+  enterprise_verify_reason: string;
+  follow_status: number;
+  follower_status: number;
+  hide_others_recommend_interest: number;
+  hide_self_recommend_interest: number;
+  is_ad_fake: boolean;
+  nickname: string;
+  prevent_download: boolean;
+  risk_notice_text: string;
+  sec_uid: string;
+  share_info: ShareInfo$9;
+  story25_comment: number;
+  story_interactive: number;
+  story_ttl: number;
+  uid: string;
+  [property: string]: any;
+};
+type AvatarThumb$7 = {
+  height: number;
+  uri: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type ShareInfo$9 = {
+  share_desc: string;
+  share_desc_info: string;
+  share_qrcode_url: AvatarThumb$7;
+  share_title: string;
+  share_title_myself: string;
+  share_title_other: string;
+  share_url: string;
+  share_weibo_desc: string;
+  [property: string]: any;
+};
+type AwemeAcl$2 = {
+  download_mask_panel: DownloadMaskPanel$5;
+  [property: string]: any;
+};
+type DownloadMaskPanel$5 = {
+  code: number;
+  show_type: number;
+  [property: string]: any;
+};
+type AwemeControl$10 = {
+  can_comment: boolean;
+  can_forward: boolean;
+  can_share: boolean;
+  can_show_comment: boolean;
+  [property: string]: any;
+};
+type AwemeListenStruct$10 = {
+  trace_info: string;
+  [property: string]: any;
+};
+type ClipPaging$3 = {
+  direct: number;
+  has_more: boolean;
+  source: string;
+  [property: string]: any;
+};
+type CommentPermissionInfo$10 = {
+  can_comment: boolean;
+  comment_permission_status: number;
+  item_detail_entry: boolean;
+  press_entry: boolean;
+  toast_guide: boolean;
+  [property: string]: any;
+};
+type ComponentControl$10 = {
+  data_source_url: string;
+  [property: string]: any;
+};
+type DanmakuControl$9 = {
+  activities: Activity$9[];
+  danmaku_cnt: number;
+  enable_danmaku: boolean;
+  first_danmaku_offset?: number;
+  is_post_denied: boolean;
+  last_danmaku_offset?: number;
+  pass_through_params: string;
+  post_denied_reason: string;
+  post_privilege_level: number;
+  skip_danmaku: boolean;
+  smart_mode_decision: number;
+  [property: string]: any;
+};
+type Activity$9 = {
+  id: number;
+  type: number;
+  [property: string]: any;
+};
+type DistributeCircle$10 = {
+  campus_block_interaction: boolean;
+  distribute_type: number;
+  is_campus: boolean;
+  [property: string]: any;
+};
+type EntLogExtra$5 = {
+  log_extra: string;
+  [property: string]: any;
+};
+type EntertainmentProductInfo$12 = {
+  market_info: MarketInfo$12;
+  [property: string]: any;
+};
+type MarketInfo$12 = {
+  limit_free: LimitFree$12;
+  [property: string]: any;
+};
+type LimitFree$12 = {
+  in_free: boolean;
+  [property: string]: any;
+};
+type EntertainmentVideoPaidWay$6 = {
+  enable_use_new_ent_data: boolean;
+  paid_type: number;
+  paid_ways: unknown[];
+  [property: string]: any;
+};
+type FSGrouthProperty$3 = {
+  is_client_pack: boolean;
+  is_natural_traffic: boolean;
+  is_related_path: boolean;
+  [property: string]: any;
+};
+type FeedCommentConfig$10 = {
+  audio_comment_permission: number;
+  author_audit_status: number;
+  common_comment_permission: number;
+  common_flags: string;
+  double_publish?: number;
+  double_publish_limit: number;
+  input_config_text: string;
+  input_config_text_type: string;
+  [property: string]: any;
+};
+type FollowShootClipInfo$6 = {
+  clip_from_platform?: number;
+  clip_from_user?: number;
+  clip_video_all?: number;
+  origin_clip_id?: number;
+  [property: string]: any;
+};
+type FollowShootProperty$3 = {
+  recommended_camera_mode: string;
+  [property: string]: any;
+};
+type FriendRecommendInfo$6 = {
+  disable_friend_recommend_guide_label: boolean;
+  friend_recommend_source: number;
+  is_friend_recommend?: string;
+  label_user_list?: LabelUserList$3[];
+  recommend_user_app_list?: string;
+  [property: string]: any;
+};
+type LabelUserList$3 = {
+  recommend_app_id: number;
+  recommend_time: number;
+  user: User$14;
+  [property: string]: any;
+};
+type User$14 = {
+  avatar: AvatarThumb$7;
+  avatar_thumb: AvatarThumb$7;
+  follow_status: number;
+  nickname: string;
+  sec_uid: string;
+  uid: number;
+  [property: string]: any;
+};
+type GalileoPadTextcrop$5 = {
+  android_d_h_cut_ratio: number[];
+  android_d_v_cut_ratio?: number[];
+  ipad_d_h_cut_ratio: number[];
+  ipad_d_v_cut_ratio: number[];
+  version: number;
+  [property: string]: any;
+};
+type GameTagInfo$10 = {
+  content_type_tag?: ContentTypeTag$4;
+  game_name_tag?: GameNameTag$4;
+  is_game: boolean;
+  [property: string]: any;
+};
+type ContentTypeTag$4 = {
+  tag_id: number;
+  tag_name: string;
+  [property: string]: any;
+};
+type GameNameTag$4 = {
+  game_id_list: string[];
+  tag_id: number;
+  tag_name: string;
+  [property: string]: any;
+};
+type ImageAlbumMusicInfo$10 = {
+  begin_time: number;
+  end_time: number;
+  volume: number;
+  [property: string]: any;
+};
+type ImageComment$3 = {
+  comment_highlight_text: string;
+  [property: string]: any;
+};
+type Image$6 = {
+  clip_type?: number;
+  download_url_list: string[];
+  height: number;
+  is_aigc_media?: boolean;
+  is_new_text_mode?: number;
+  live_photo_type?: number;
+  resolution_log_param: ResolutionLogParam$1;
+  uri: string;
+  url_list: string[];
+  video?: Video$13;
+  width: number;
+  [property: string]: any;
+};
+type ResolutionLogParam$1 = {
+  image_publish_height: number;
+  image_publish_width: number;
+  image_source_height: number;
+  image_source_width: number;
+  video_publish_height?: number;
+  video_publish_width?: number;
+  video_source_height?: number;
+  video_source_width?: number;
+  [property: string]: any;
+};
+type Video$13 = {
+  big_thumbs: unknown[];
+  bit_rate: BitRate$8[];
+  bit_rate_audio: null;
+  cdn_url_expired: number;
+  cover: AvatarThumb$7;
+  download_addr: DownloadAddr$7;
+  download_suffix_logo_addr: DownloadAddr$7;
+  duration: number;
+  has_download_suffix_logo_addr: boolean;
+  has_watermark: boolean;
+  height: number;
+  is_bytevc1: number;
+  is_callback: boolean;
+  is_h265: number;
+  is_source_HDR: number;
+  meta: string;
+  need_set_token: boolean;
+  origin_cover: OriginCover$6;
+  play_addr: PlayAddr$5;
+  play_addr_h264: PlayAddr$5;
+  play_addr_lowbr: PlayAddr$5;
+  ratio: string;
+  tags: null;
+  width: number;
+  [property: string]: any;
+};
+type BitRate$8 = {
+  FPS: number;
+  HDR_bit: string;
+  HDR_type: string;
+  bit_rate: number;
+  format: string;
+  gear_name: string;
+  is_bytevc1: number;
+  is_h265: number;
+  play_addr: PlayAddr$5;
+  quality_type: number;
+  video_extra: string;
+  [property: string]: any;
+};
+type PlayAddr$5 = {
+  data_size: number;
+  file_cs: string;
+  file_hash: string;
+  height: number;
+  uri: string;
+  url_key: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type DownloadAddr$7 = {
+  data_size?: number;
+  height: number;
+  uri: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type OriginCover$6 = {
+  height: number;
+  uri: string;
+  url_list: unknown[];
+  width: number;
+  [property: string]: any;
+};
+type ImpressionData$12 = {
+  group_id_list_a: number[];
+  group_id_list_b: number[];
+  group_id_list_c: unknown[];
+  group_id_list_d: number[];
+  similar_id_list_a: null;
+  similar_id_list_b: null;
+  [property: string]: any;
+};
+type ItemWarnNotification$10 = {
+  content: string;
+  show: boolean;
+  type: number;
+  [property: string]: any;
+};
+type LifeAnchorShowExtra = {
+  anchor_type: number;
+  extra: string;
+  has_anchor_info: boolean;
+  should_show: boolean;
+  [property: string]: any;
+};
+type MixInfo$5 = {
+  cover_url: AvatarThumb$7;
+  create_time: number;
+  desc: string;
+  enable_ad: number;
+  extra: string;
+  ids: null;
+  is_iaa: number;
+  is_serial_mix: number;
+  mix_id: string;
+  mix_name: string;
+  mix_pic_type: number;
+  mix_type: number;
+  share_info: ShareInfo2$3;
+  statis: Statis$5;
+  status: Status$9;
+  update_time: number;
+  watched_item: string;
+  [property: string]: any;
+};
+type ShareInfo2$3 = {
+  share_desc: string;
+  share_desc_info: string;
+  share_title: string;
+  share_title_myself: string;
+  share_title_other: string;
+  share_url: string;
+  share_weibo_desc: string;
+  [property: string]: any;
+};
+type Statis$5 = {
+  collect_vv: number;
+  current_episode: number;
+  play_vv: number;
+  updated_to_episode: number;
+  [property: string]: any;
+};
+type Status$9 = {
+  is_collected: number;
+  status: number;
+  [property: string]: any;
+};
+type Music$12 = {
+  album: string;
+  artist_user_infos: null;
+  artists: Artist$2[];
+  audition_duration: number;
+  author: string;
+  author_deleted: boolean;
+  author_position: null;
+  author_status?: number;
+  avatar_large?: AvatarThumb$7;
+  avatar_medium?: AvatarThumb$7;
+  avatar_thumb?: AvatarThumb$7;
+  binded_challenge_id: number;
+  can_background_play: boolean;
+  collect_stat: number;
+  cover_color_hsv?: CoverColorHsv$4;
+  cover_hd: AvatarThumb$7;
+  cover_large: AvatarThumb$7;
+  cover_medium: AvatarThumb$7;
+  cover_thumb: AvatarThumb$7;
+  dmv_auto_show: boolean;
+  dsp_status: number;
+  duration: number;
+  end_time: number;
+  external_song_info: unknown[];
+  extra: string;
+  id: number;
+  id_str: string;
+  is_audio_url_with_cookie: boolean;
+  is_commerce_music: boolean;
+  is_del_video: boolean;
+  is_matched_metadata: boolean;
+  is_original: boolean;
+  is_original_sound: boolean;
+  is_pgc: boolean;
+  is_restricted: boolean;
+  is_video_self_see: boolean;
+  lyric_short_position: null;
+  matched_pgc_sound?: MatchedPgcSound$9;
+  mid: string;
+  music_chart_ranks: null;
+  music_collect_count: number;
+  music_cover_atmosphere_color_value: string;
+  music_status: number;
+  musician_user_infos: null;
+  mute_share: boolean;
+  offline_desc: string;
+  owner_handle: string;
+  owner_id?: string;
+  owner_nickname: string;
+  pgc_music_type: number;
+  play_url: Icon$7;
+  position: null;
+  prevent_download: boolean;
+  prevent_item_download_status: number;
+  preview_end_time: number;
+  preview_start_time: number;
+  reason_type: number;
+  redirect: boolean;
+  schema_url: string;
+  search_impr: SearchImpr$11;
+  sec_uid?: string;
+  shoot_duration: number;
+  show_origin_clip: boolean;
+  song?: Song$10;
+  source_platform: number;
+  start_time: number;
+  status: number;
+  strong_beat_url?: AvatarThumb$7;
+  tag_list: null;
+  title: string;
+  unshelve_countries: null;
+  user_count: number;
+  video_duration: number;
+  [property: string]: any;
+};
+type Artist$2 = {
+  avatar: Avatar$6;
+  enter_type: number;
+  handle: string;
+  is_verified: boolean;
+  nick_name: string;
+  sec_uid: string;
+  uid: string;
+  [property: string]: any;
+};
+type Avatar$6 = {
+  uri: string;
+  url_list: string[];
+  [property: string]: any;
+};
+type CoverColorHsv$4 = {
+  h: number;
+  s: number;
+  v: number;
+  [property: string]: any;
+};
+type MatchedPgcSound$9 = {
+  author: string;
+  cover_medium: AvatarThumb$7;
+  mixed_author: string;
+  mixed_title: string;
+  title: string;
+  [property: string]: any;
+};
+type SearchImpr$11 = {
+  entity_id: string;
+  [property: string]: any;
+};
+type Song$10 = {
+  artists: null;
+  chorus?: Chorus$4;
+  id: number;
+  id_str: string;
+  title?: string;
+  [property: string]: any;
+};
+type Chorus$4 = {
+  duration_ms: number;
+  start_ms: number;
+  [property: string]: any;
+};
+type PhotoSearchEntrance$10 = {
+  ecom_type: number;
+  [property: string]: any;
+};
+type PlayProgress$10 = {
+  last_modified_time: number;
+  play_progress: number;
+  [property: string]: any;
+};
+type ProductGenreInfo$5 = {
+  material_genre_sub_type_set: number[];
+  product_genre_type: number;
+  special_info: SpecialInfo$5;
+  [property: string]: any;
+};
+type SpecialInfo$5 = {
+  recommend_group_name: number;
+  [property: string]: any;
+};
+type PublishPlusAlienation$10 = {
+  alienation_type: number;
+  [property: string]: any;
+};
+type RelatedMusicAnchor$3 = {
+  extra: string;
+  image_url: Avatar$6;
+  priority: number;
+  schema_url: string;
+  type: string;
+  [property: string]: any;
+};
+type RelationLabel$3 = {
+  count: number;
+  extra: string;
+  label_info: string;
+  type: number;
+  user_id: string;
+  user_list: User$14[];
+  [property: string]: any;
+};
+type RiskInfos$10 = {
+  content: string;
+  icon_url?: string;
+  risk_sink: boolean;
+  type: number;
+  vote: boolean;
+  warn: boolean;
+  warn_level?: number;
+  [property: string]: any;
+};
+type SeriesPaidInfo$10 = {
+  item_price: number;
+  series_paid_status: number;
+  [property: string]: any;
+};
+type ShareInfo3$2 = {
+  share_link_desc: string;
+  share_url: string;
+  [property: string]: any;
+};
+type Statistics$12 = {
+  collect_count: number;
+  comment_count: number;
+  digg_count: number;
+  play_count: number;
+  recommend_count: number;
+  share_count: number;
+  [property: string]: any;
+};
+type Status2$2 = {
+  allow_friend_recommend: boolean;
+  allow_friend_recommend_guide: boolean;
+  allow_self_recommend_to_friend: boolean;
+  allow_share: boolean;
+  enable_soft_delete: number;
+  in_reviewing: boolean;
+  is_delete: boolean;
+  is_prohibited: boolean;
+  listen_video_status: number;
+  not_allow_soft_del_reason: string;
+  part_see: number;
+  private_status: number;
+  review_result: ReviewResult$12;
+  [property: string]: any;
+};
+type ReviewResult$12 = {
+  review_status: number;
+  [property: string]: any;
+};
+type SuggestWords$10 = {
+  suggest_words: SuggestWord$10[];
+  [property: string]: any;
+};
+type SuggestWord$10 = {
+  extra_info: string;
+  hint_text: string;
+  icon_url: string;
+  scene: string;
+  words: Word$12[];
+  [property: string]: any;
+};
+type Word$12 = {
+  info: string;
+  word: string;
+  word_id: string;
+  [property: string]: any;
+};
+type TextExtra$11 = {
+  caption_end: number;
+  caption_start: number;
+  end: number;
+  hashtag_id?: string;
+  hashtag_name?: string;
+  is_commerce?: boolean;
+  sec_uid?: string;
+  start: number;
+  type: number;
+  user_id?: string;
+  [property: string]: any;
+};
+type TrendsInfo$3 = {
+  track_pass_through: string;
+  [property: string]: any;
+};
+type Video2 = {
+  audio: {
+    [property: string]: any;
+  };
+  big_thumbs: BigThumb$9[] | null;
+  bit_rate?: BitRate2[];
+  bit_rate_audio: BitRateAudio$6[] | null;
+  cover: AvatarThumb$7;
+  duration: number;
+  dynamic_cover?: AvatarThumb$7;
+  format?: string;
+  gaussian_cover?: AvatarThumb$7;
+  height: number;
+  horizontal_type?: number;
+  is_long_video?: number;
+  is_source_HDR?: number;
+  meta: string;
+  misc_download_addrs?: string;
+  origin_cover: AvatarThumb$7;
+  play_addr: PlayAddr3;
+  play_addr_265?: PlayAddr$5;
+  play_addr_h264?: PlayAddr$5;
+  ratio: string;
+  video_model?: string;
+  width: number;
+  [property: string]: any;
+};
+type BigThumb$9 = {
+  duration: number;
+  fext: string;
+  img_num: number;
+  img_url: string;
+  img_urls: string[];
+  img_x_len: number;
+  img_x_size: number;
+  img_y_len: number;
+  img_y_size: number;
+  interval: number;
+  uri: string;
+  uris: string[];
+  [property: string]: any;
+};
+type BitRate2 = {
+  FPS: number;
+  HDR_bit: string;
+  HDR_type: string;
+  bit_rate: number;
+  format: string;
+  gear_name: string;
+  is_bytevc1: number;
+  is_h265: number;
+  play_addr: PlayAddr2$3;
+  quality_type: number;
+  video_extra: string;
+  [property: string]: any;
+};
+type PlayAddr2$3 = {
+  data_size: number;
+  file_cs?: string;
+  file_hash: string;
+  height: number;
+  uri: string;
+  url_key: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type BitRateAudio$6 = {
+  audio_extra: string;
+  audio_meta: AudioMeta$6;
+  audio_quality: number;
+  [property: string]: any;
+};
+type AudioMeta$6 = {
+  bitrate: number;
+  codec_type: string;
+  encoded_type: string;
+  file_hash: string;
+  file_id: string;
+  format: string;
+  fps: number;
+  logo_type: string;
+  media_type: string;
+  quality: string;
+  quality_desc: string;
+  size: number;
+  sub_info: string;
+  url_list: UrlList$6;
+  [property: string]: any;
+};
+type UrlList$6 = {
+  backup_url: string;
+  fallback_url: string;
+  main_url: string;
+  [property: string]: any;
+};
+type PlayAddr3 = {
+  data_size?: number;
+  file_cs?: string;
+  file_hash?: string;
+  height: number;
+  uri: string;
+  url_key: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type VideoControl$12 = {
+  allow_douplus: boolean;
+  allow_download: boolean;
+  allow_duet: boolean;
+  allow_dynamic_wallpaper: boolean;
+  allow_music: boolean;
+  allow_react: boolean;
+  allow_record: boolean;
+  allow_share: boolean;
+  allow_stitch: boolean;
+  disable_record_reason: string;
+  download_ignore_visibility: boolean;
+  download_info: DownloadInfo$12;
+  draft_progress_bar: number;
+  duet_ignore_visibility: boolean;
+  duet_info: DuetInfo$12;
+  prevent_download_type: number;
+  share_grayed: boolean;
+  share_ignore_visibility: boolean;
+  share_type: number;
+  show_ai_corner: boolean;
+  show_progress_bar: number;
+  show_watermark: boolean;
+  text_copy_type?: number;
+  timer_info: {
+    [property: string]: any;
+  };
+  timer_status: number;
+  [property: string]: any;
+};
+type DownloadInfo$12 = {
+  fail_info?: FailInfo$4;
+  level: number;
+  [property: string]: any;
+};
+type FailInfo$4 = {
+  code: number;
+  msg?: string;
+  reason: string;
+  [property: string]: any;
+};
+type DuetInfo$12 = {
+  fail_info?: FailInfo2$2;
+  level: number;
+  [property: string]: any;
+};
+type FailInfo2$2 = {
+  code: number;
+  reason: string;
+  [property: string]: any;
+};
+type VideoTag$10 = {
+  level: number;
+  tag_id: number;
+  tag_name: string;
+  [property: string]: any;
+};
+type VisualSearchInfo$10 = {
+  is_ecom_img: boolean;
+  is_high_accuracy_ecom: boolean;
+  is_high_recall_ecom: boolean;
+  is_show_img_entrance: boolean;
+  visual_search_longpress?: number;
+  [property: string]: any;
+};
+type VtagSearch$6 = {
+  vtag_delay_ts: number;
+  vtag_enable: boolean;
+  [property: string]: any;
+};
+type XiguaBaseInfo$10 = {
+  item_id: number;
+  star_altar_order_id: number;
+  star_altar_type: number;
+  status: number;
+  [property: string]: any;
+};
+type LogPb$19 = {
+  impr_id: string;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/douyin/UserFavoriteList/index.d.ts
+type UserFavoriteListSuccess = UserFavoriteList_V0$1;
+type UserFavoriteListError = never;
+type UserFavoriteList = UserFavoriteListSuccess | UserFavoriteListError;
+//#endregion
+//#region ../response-types/dist/generated/douyin/UserProfile/UserProfile_V0.d.ts
+type UserProfile_V0$1 = {
+  extra: Extra$8;
+  log_pb: LogPb$18;
+  status_code: number;
+  status_msg: null;
+  user: User$13;
+  [property: string]: any;
+};
+type Extra$8 = {
+  fatal_item_ids: unknown[];
+  logid: string;
+  now: number;
+  [property: string]: any;
+};
+type LogPb$18 = {
+  impr_id: string;
+  [property: string]: any;
+};
+type User$13 = {
+  account_cert_info: string;
+  apple_account: number;
+  avatar_168x168: Avatar168x168$1;
+  avatar_300x300: Avatar168x168$1;
+  avatar_larger: Avatar168x168$1;
+  avatar_medium: Avatar168x168$1;
+  avatar_thumb: Avatar168x168$1;
+  aweme_count: number;
+  aweme_count_correction_threshold: number;
+  birthday_hide_level: number;
+  can_set_item_cover: boolean;
+  can_show_group_card: number;
+  card_entries?: CardEntry$1[];
+  city: string;
+  close_friend_type: number;
+  commerce_info?: CommerceInfo$3;
+  commerce_user_info: CommerceUserInfo$1;
+  commerce_user_level: number;
+  country: string;
+  cover_and_head_image_info: CoverAndHeadImageInfo$1;
+  cover_colour: string;
+  cover_url: IconDark$1[];
+  custom_verify: string;
+  disable_manual_refresh: number;
+  district: string | null;
+  dog_card_info?: DogCardInfo;
+  dongtai_count: number;
+  dynamic_cover: {
+    [property: string]: any;
+  };
+  elfemoji_status: number;
+  enable_ai_double: number;
+  enable_wish: boolean;
+  enterprise_user_info: string;
+  enterprise_verify_reason: string;
+  evaluation_count: number;
+  familiar_confidence: number;
+  favorite_permission: number;
+  favoriting_count: number;
+  follow_guide?: boolean;
+  follow_status: number;
+  follower_count: number;
+  follower_request_status: number;
+  follower_status: number;
+  following_count: number;
+  forward_count: number;
+  gender: number | null;
+  general_permission: GeneralPermission$1;
+  has_e_account_role: boolean;
+  has_subscription: boolean;
+  hide_request_update: number;
+  im_primary_role_id?: number;
+  im_role_ids?: number[];
+  image_send_exempt: boolean;
+  ins_id: string;
+  ip_location?: string;
+  is_activity_user: boolean;
+  is_ban: boolean;
+  is_block: boolean;
+  is_blocked: boolean;
+  is_effect_artist: boolean;
+  is_gov_media_vip: boolean;
+  is_im_oversea_user: number;
+  is_mix_user: boolean;
+  is_not_show: boolean;
+  is_series_user: boolean;
+  is_sharing_profile_user: number;
+  is_star: boolean;
+  is_top?: number;
+  iso_country_code?: string;
+  life_story_block: LifeStoryBlock$1;
+  live_commerce: boolean;
+  live_status: number;
+  mate_add_permission: number;
+  mate_relation: MateRelation$1;
+  max_follower_count: number;
+  message_chat_entry: boolean;
+  mix_count: number;
+  mplatform_followers_count: number;
+  new_friend_type: number;
+  nickname: string;
+  original_musician: OriginalMusician$1;
+  pigeon_daren_status: string;
+  pigeon_daren_warn_tag: string;
+  profile_component_disabled: string[];
+  profile_mob_params: ProfileMobParam[];
+  profile_show: ProfileShow$1;
+  profile_tab_info: ProfileTabInfo;
+  profile_tab_type: number;
+  province: string;
+  public_collects_count: number;
+  publish_landing_tab: number;
+  r_fans_group_info: {
+    [property: string]: any;
+  };
+  recommend_reason_relation: string;
+  recommend_user_reason_source: number;
+  risk_notice_text: string;
+  role_id?: string;
+  room_data?: string;
+  room_id: number;
+  room_id_str?: string;
+  school_name: string;
+  sec_uid: string;
+  secret: number;
+  series_count: number;
+  share_info: ShareInfo$8;
+  short_id: string;
+  show_favorite_list: boolean;
+  show_subscription: boolean;
+  signature: string;
+  signature_display_lines: number;
+  signature_extra?: SignatureExtra[];
+  signature_language: string;
+  social_real_relation_type: number;
+  special_follow_status: number;
+  special_state_info?: SpecialStateInfo;
+  store_region: string;
+  story_tab_empty: boolean;
+  sync_to_toutiao: number;
+  tab_settings: TabSettings$1;
+  total_favorited: number;
+  total_favorited_correction_threshold: number;
+  twitter_id: string;
+  twitter_name: string;
+  uid: string;
+  unique_id: string;
+  urge_detail: UrgeDetail$1;
+  use_diverse_digg_style: boolean;
+  user_age: number;
+  user_not_see: number;
+  user_not_show: number;
+  user_permissions?: UserPermission$1[];
+  verification_type: number;
+  video_cover: {
+    [property: string]: any;
+  };
+  video_icon: VideoIcon$2;
+  watch_status: boolean;
+  white_cover_url: IconDark$1[];
+  with_commerce_enterprise_tab_entry: boolean;
+  with_commerce_entry: boolean;
+  with_fusion_shop_entry: boolean;
+  with_new_goods: boolean;
+  youtube_channel_id: string;
+  youtube_channel_title: string;
+  [property: string]: any;
+};
+type Avatar168x168$1 = {
+  height: number;
+  uri: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type CardEntry$1 = {
+  card_data: string;
+  goto_url: string;
+  icon_dark: IconDark$1;
+  icon_light: IconDark$1;
+  sub_title: string;
+  title: string;
+  type: number;
+  [property: string]: any;
+};
+type IconDark$1 = {
+  uri: string;
+  url_list: string[];
+  [property: string]: any;
+};
+type CommerceInfo$3 = {
+  challenge_list: null;
+  head_image_list: null;
+  offline_info_list: unknown[];
+  smart_phone_list: null;
+  task_list: null;
+  [property: string]: any;
+};
+type CommerceUserInfo$1 = {
+  ad_revenue_rits: null;
+  has_ads_entry: boolean;
+  show_star_atlas_cooperation?: boolean;
+  star_atlas?: number;
+  [property: string]: any;
+};
+type CoverAndHeadImageInfo$1 = {
+  cover_list: null;
+  profile_cover_list: ProfileCoverList$1[];
+  [property: string]: any;
+};
+type ProfileCoverList$1 = {
+  cover_url: IconDark$1;
+  dark_cover_color: string;
+  light_cover_color: string;
+  [property: string]: any;
+};
+type DogCardInfo = {
+  dog_card_id: number;
+  dog_card_text: string;
+  rank: number;
+  rank_schema: string;
+  rank_type: string;
+  [property: string]: any;
+};
+type GeneralPermission$1 = {
+  fans_page_toast: number;
+  following_follower_list_toast: number;
+  is_hit_active_fans_grayed: boolean;
+  [property: string]: any;
+};
+type LifeStoryBlock$1 = {
+  life_story_block: boolean;
+  [property: string]: any;
+};
+type MateRelation$1 = {
+  mate_apply_forward: number;
+  mate_apply_reverse: number;
+  mate_status: number;
+  [property: string]: any;
+};
+type OriginalMusician$1 = {
+  digg_count: number;
+  music_count: number;
+  music_used_count: number;
+  [property: string]: any;
+};
+type ProfileMobParam = {
+  event_key: string;
+  mob_params: string;
+  [property: string]: any;
+};
+type ProfileShow$1 = {
+  identify_auth_infos: null;
+  [property: string]: any;
+};
+type ProfileTabInfo = {
+  profile_landing_tab: number;
+  profile_tab_list: unknown[];
+  profile_tab_list_v2: ProfileTabListV2[] | null;
+  [property: string]: any;
+};
+type ProfileTabListV2 = {
+  id: number;
+  name_en: string;
+  sub_tabs: null;
+  [property: string]: any;
+};
+type ShareInfo$8 = {
+  bool_persist: number;
+  life_share_ext: string;
+  share_desc: string;
+  share_image_url: IconDark$1;
+  share_qrcode_url: IconDark$1;
+  share_title: string;
+  share_url: string;
+  share_weibo_desc: string;
+  [property: string]: any;
+};
+type SignatureExtra = {
+  end: number;
+  hashtag_id: string;
+  hashtag_name: string;
+  is_commerce: boolean;
+  sec_uid: string;
+  start: number;
+  type: number;
+  user_id: string;
+  [property: string]: any;
+};
+type SpecialStateInfo = {
+  content: string;
+  special_state: number;
+  title: string;
+  [property: string]: any;
+};
+type TabSettings$1 = {
+  private_tab: PrivateTab$1;
+  [property: string]: any;
+};
+type PrivateTab$1 = {
+  private_tab_style: number;
+  show_private_tab: boolean;
+  [property: string]: any;
+};
+type UrgeDetail$1 = {
+  ctl_map: string;
+  user_urged: number;
+  [property: string]: any;
+};
+type UserPermission$1 = {
+  key: string;
+  value: string;
+  [property: string]: any;
+};
+type VideoIcon$2 = {
+  height: number;
+  uri: string;
+  url_list: unknown[];
+  width: number;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/douyin/UserProfile/index.d.ts
+type UserProfileSuccess$1 = UserProfile_V0$1;
+type UserProfileError$1 = never;
+type UserProfile$1 = UserProfileSuccess$1 | UserProfileError$1;
+//#endregion
+//#region ../response-types/dist/generated/douyin/UserRecommendList/UserRecommendList_V0.d.ts
+type UserRecommendList_V0$1 = {
+  aweme_date: AwemeDate$1;
+  aweme_list: AwemeList$4[];
+  has_more: boolean;
+  invalid_item_count: number;
+  invalid_item_id_list: number[];
+  max_cursor: number;
+  min_cursor: number;
+  status_code: number;
+  total: number;
+  [property: string]: any;
+};
+type AwemeDate$1 = {
+  date_map: DateMap$1;
+  [property: string]: any;
+};
+type DateMap$1 = {
+  '7664176775636253274': number;
+  '7679720070280531254': number;
+  '7680504811880496838': number;
+  '7680871145646752953': number;
+  '7680893629199650083': number;
+  '7681283742509403435': number;
+  '7681653370075073844': number;
+  '7681689436467301683': number;
+  '7681732453681636771': number;
+  '7681987155064786228': number;
+  '7682232533429374242': number;
+  [property: string]: any;
+};
+type AwemeList$4 = {
+  activity_video_type: number;
+  ad_charge_passive_unlock_config?: AdChargePassiveUnlockConfig$1;
+  ai_follow_images: null;
+  anchor_info?: AnchorInfo$5;
+  anchors: null;
+  authentication_token: string;
+  author: Author$12;
+  author_mask_tag: number;
+  author_user_id: number;
+  aweme_acl?: AwemeAcl$1;
+  aweme_control: AwemeControl$9;
+  aweme_id: string;
+  aweme_listen_struct: AwemeListenStruct$9;
+  aweme_type: number;
+  aweme_type_tags: string;
+  bodydance_score: number;
+  boost_status: number;
+  can_be_oc_cover: boolean;
+  can_cache_to_local: boolean;
+  caption: string;
+  cert_label_style?: number;
+  cf_assets_type: number;
+  cf_recheck_ts: number;
+  cha_list: ChaList$1[] | null;
+  challenge_position: null;
+  chapter_abstract?: string;
+  chapter_bar_color: null;
+  chapter_data?: ChapterData$2;
+  chapter_list: ChapterList$2[] | null;
+  chapter_review_status?: number;
+  city: string;
+  cmt_swt: boolean;
+  collect_stat: number;
+  collection_corner_mark: number;
+  comment_gid: number;
+  comment_list: null;
+  comment_permission_info: CommentPermissionInfo$9;
+  commerce_config_data: null;
+  commerce_info: CommerceInfo$2;
+  common_button?: CommonButton$1;
+  common_left_top_labels: null;
+  component_control: ComponentControl$9;
+  component_info_v2: string;
+  cover_labels: null;
+  create_scale_type: string[] | null;
+  create_time: number;
+  danmaku_control?: DanmakuControl$8;
+  desc: string;
+  desc_language: string;
+  descendants?: Descendants;
+  disable_relation_bar: number;
+  dislike_dimension_list: null;
+  dislike_dimension_list_v2: null;
+  distance: string;
+  distribute_circle: DistributeCircle$9;
+  distribute_type: number;
+  diversion_bar_info: unknown[];
+  douplus_user_type: number;
+  douyin_pc_video_extra_seo: string;
+  duet_aggregate_in_music_tab: boolean;
+  duration: number;
+  eco_system_survey_info?: EcoSystemSurveyInfo;
+  ecom_comment_atmosphere_type: number;
+  effect_inflow_effects: null;
+  enable_comment_sticker_rec: boolean;
+  enable_decorated_emoji: boolean;
+  encrypt_interest_point_list: null;
+  encrypt_key_phrase_list: null;
+  ent_log_extra: EntLogExtra$4;
+  entertainment_feature_info?: EntertainmentFeatureInfo$1;
+  entertainment_product_info: EntertainmentProductInfo$11;
+  entertainment_recommend_info: string;
+  entertainment_video_paid_way: EntertainmentVideoPaidWay$5;
+  entertainment_video_type: number;
+  f_s_grouth_property: FSGrouthProperty$2;
+  fall_card_struct: FallCardStruct$6;
+  feed_comment_config: FeedCommentConfig$9;
+  feed_component_decision_reasons?: string;
+  flash_mob_trends: number;
+  follow_shoot_clip_info: FollowShootClipInfo$5;
+  follow_shoot_property: FollowShootProperty$2;
+  follow_shot_assets: null;
+  friend_recommend_info: FriendRecommendInfo$5;
+  galileo_pad_textcrop?: GalileoPadTextcrop$4;
+  game_tag_info: GameTagInfo$9;
+  geofencing: unknown[];
+  geofencing_regions: null;
+  group_id: string;
+  guide_btn_type: number;
+  guide_scene_info: {
+    [property: string]: any;
+  };
+  has_vs_entry: boolean;
+  have_dashboard: boolean;
+  horizontal_type?: number;
+  hot_list?: HotList$3;
+  hybrid_label: null;
+  image_album_music_info: ImageAlbumMusicInfo$9;
+  image_comment: ImageComment$2;
+  image_crop_ctrl: number;
+  image_follow_shot_assets: null;
+  image_infos: null;
+  image_item_quality_level?: number;
+  image_list: null;
+  images: Image$5[] | null;
+  img_bitrate: unknown[] | null;
+  impression_data: ImpressionData$11;
+  incentive_item_type: number;
+  interaction_stickers: null;
+  interest_points: null;
+  is_24_story: number;
+  is_25_story: number;
+  is_ads: boolean;
+  is_aigc_media: boolean;
+  is_collects_selected: number;
+  is_duet_sing: boolean;
+  is_fantasy: boolean;
+  is_first_video: boolean;
+  is_from_ad_auth: boolean;
+  is_gov_media_feed_component_ctrl?: number;
+  is_hash_tag: number;
+  is_image_beat: boolean;
+  is_in_scope: boolean;
+  is_karaoke: boolean;
+  is_life_item: boolean;
+  is_moment_history: number;
+  is_moment_story: number;
+  is_multi_content?: number;
+  is_new_text_mode: number;
+  is_pgcshow: boolean;
+  is_preview: number;
+  is_relieve: boolean;
+  is_share_post: boolean;
+  is_story: number;
+  is_subtitled?: number;
+  is_top: number;
+  is_use_music: boolean;
+  is_vr: boolean;
+  item_aigc_follow_shot: number;
+  item_comment_settings: number;
+  item_duet: number;
+  item_react: number;
+  item_share: number;
+  item_stitch: number;
+  item_title: string;
+  item_warn_notification: ItemWarnNotification$9;
+  jump_tab_info_list: null;
+  label_top_text: null;
+  libfinsert_task_id: string;
+  long_video: null;
+  main_arch_common?: string;
+  mark_largely_following: boolean;
+  media_type: number;
+  misc_info: string;
+  mix_info?: MixInfo$4;
+  music: Music$11;
+  mv_info: null;
+  nearby_hot_comment: null;
+  nearby_level: number;
+  need_vs_entry: boolean;
+  nickname_position: null;
+  origin_comment_ids: null;
+  origin_duet_resource_uri: string;
+  origin_text_extra: unknown[];
+  original: number;
+  original_anchor_type?: number;
+  original_images: null;
+  pack_usage_scene_by_req_path: string;
+  packed_clips: null;
+  pc_need_login: boolean;
+  personal_page_botton_diagnose_style: number;
+  photo_search_entrance: PhotoSearchEntrance$9;
+  play_progress: PlayProgress$9;
+  poi_biz: {
+    [property: string]: any;
+  };
+  poi_patch_info: PoiPatchInfo$1;
+  position: null;
+  prevent_download: boolean;
+  preview_title: string;
+  preview_video_status: number;
+  product_genre_info: ProductGenreInfo$4;
+  promotions: unknown[];
+  publish_plus_alienation: PublishPlusAlienation$9;
+  rate: number;
+  recommend_chapter_apply_status?: number;
+  recommend_chapter_info?: RecommendChapterInfo;
+  ref_tts_id_list: null;
+  ref_voice_modify_id_list: null;
+  region: string;
+  related_music_anchor?: RelatedMusicAnchor$2;
+  relation_label: RelationLabel$2;
+  relation_labels: null;
+  reply_smart_emojis: null;
+  report_action: boolean;
+  risk_infos: RiskInfos$9;
+  sec_item_id: string;
+  select_anchor_expanded_content: number;
+  seo_info: {
+    [property: string]: any;
+  };
+  series_basic_info: SeriesBasicInfo$1;
+  series_info?: SeriesInfo$1;
+  series_material_info?: SeriesMaterialInfo$1;
+  series_paid_info: SeriesPaidInfo$9;
+  series_play_info?: SeriesPlayInfo$1;
+  share_info: ShareInfo4;
+  share_rec_extra: string;
+  share_url: string;
+  shoot_way: string;
+  should_open_ad_report: boolean;
+  show_follow_button: {
+    [property: string]: any;
+  };
+  slides_music_beats: null;
+  social_tag_list: null;
+  sort_label: string;
+  standard_bar_info_list: null;
+  star_atlas_info?: StarAtlasInfo$3;
+  statistics: Statistics$11;
+  status: Status3$1;
+  story_ttl: number;
+  text_extra: TextExtra$10[];
+  trends_event_track: string;
+  trends_infos: TrendsInfo$2[] | null;
+  tts_id_list: null;
+  uniqid_position: null;
+  user_digged: number;
+  user_recommend_status: number;
+  video: Video$12;
+  video_control: VideoControl$11;
+  video_game_data_channel_config: {
+    [property: string]: any;
+  };
+  video_labels: null;
+  video_share_edit_status: number;
+  video_tag: VideoTag$9[];
+  video_text: unknown[];
+  visual_search_info?: VisualSearchInfo$9;
+  voice_modify_id_list: null;
+  vr_type: number;
+  with_promotional_music: boolean;
+  without_watermark: boolean;
+  xigua_base_info: XiguaBaseInfo$9;
+  xigua_task: XiguaTask$1;
+  yumme_recreason: null;
+  [property: string]: any;
+};
+type AdChargePassiveUnlockConfig$1 = {
+  broadcast_btn_config: BroadcastBtnConfig$1;
+  trial_btn_config: BroadcastBtnConfig$1;
+  [property: string]: any;
+};
+type BroadcastBtnConfig$1 = {
+  btn_show_frequency: number;
+  btn_show_second: number;
+  btn_text: string;
+  show_second_type: number;
+  [property: string]: any;
+};
+type AnchorInfo$5 = {
+  content: string;
+  extra: string;
+  icon: Icon$6;
+  id: string;
+  log_extra: string;
+  mp_url: string;
+  open_url: string;
+  style_info: StyleInfo$5;
+  title: string;
+  title_tag: string;
+  type: number;
+  web_url: string;
+  [property: string]: any;
+};
+type Icon$6 = {
+  height: number;
+  uri: string;
+  url_key: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type StyleInfo$5 = {
+  default_icon: string;
+  extra: string;
+  scene_icon: string;
+  [property: string]: any;
+};
+type Author$12 = {
+  accept_private_policy: boolean;
+  account_cert_info?: string;
+  account_region: string;
+  ad_cover_url: null;
+  apple_account: number;
+  authority_status: number;
+  avatar_168x168: Avatar168x168;
+  avatar_300x300: Avatar168x168;
+  avatar_larger: Avatar168x168;
+  avatar_medium: Avatar168x168;
+  avatar_schema_list: null;
+  avatar_thumb: Avatar168x168;
+  avatar_uri: string;
+  aweme_control: AwemeControl$9;
+  aweme_count: number;
+  aweme_hotsoon_auth?: number;
+  aweme_hotsoon_auth_relation?: number;
+  awemehts_greet_info: string;
+  ban_user_functions: unknown[];
+  batch_unfollow_contain_tabs: null;
+  batch_unfollow_relation_desc: null;
+  bind_phone: string;
+  birthday: string;
+  can_set_geofencing: null;
+  card_entries: null;
+  card_entries_not_display: null;
+  card_sort_priority: null;
+  cf_list: null;
+  cha_list: null;
+  close_friend_type: number;
+  comment_filter_status: number;
+  comment_setting: number;
+  commerce_user_level: number;
+  constellation: number;
+  contacts_status: number;
+  contrail_list: null;
+  cover_url: Avatar168x168[];
+  create_time: number;
+  creator_tag_list: null;
+  custom_verify: string;
+  cv_level: string;
+  data_label_list: null;
+  display_info: null;
+  download_prompt_ts: number;
+  download_setting: number;
+  duet_setting: number;
+  enable_nearby_visible: boolean;
+  endorsement_info_list: null;
+  enterprise_verify_reason: string;
+  familiar_visitor_user: null;
+  favoriting_count: number;
+  fb_expire_time: number;
+  follow_status: number;
+  follower_count: number;
+  follower_list_secondary_information_struct: null;
+  follower_request_status: number;
+  follower_status: number;
+  followers_detail: null;
+  following_count: number;
+  gender: number;
+  geofencing: unknown[];
+  google_account: string;
+  has_email: boolean;
+  has_facebook_token: boolean;
+  has_insights: boolean;
+  has_orders: boolean;
+  has_twitter_token: boolean;
+  has_unread_story: boolean;
+  has_youtube_token: boolean;
+  hide_location: boolean;
+  hide_others_recommend_interest: number;
+  hide_search: boolean;
+  hide_self_recommend_interest: number;
+  homepage_bottom_toast: null;
+  identity_labels: null;
+  im_role_ids: null;
+  ins_id: string;
+  interest_tags: null;
+  is_ad_fake: boolean;
+  is_binded_weibo: boolean;
+  is_block: boolean;
+  is_blocked_v2: boolean;
+  is_blocking_v2: boolean;
+  is_cf: number;
+  is_discipline_member: boolean;
+  is_gov_media_vip: boolean;
+  is_mix_user: boolean;
+  is_not_show: boolean;
+  is_phone_binded: boolean;
+  is_star: boolean;
+  is_verified: boolean;
+  item_list: null;
+  ky_only_predict: number;
+  language: string;
+  link_item_list: null;
+  live_agreement: number;
+  live_agreement_time: number;
+  live_commerce: boolean;
+  live_high_value: number;
+  live_status: number;
+  live_verify: number;
+  location: string;
+  mate_add_permission: number;
+  max_follower_count: number;
+  need_points: null;
+  need_recommend: number;
+  neiguang_shield: number;
+  new_friend_type: number;
+  new_story_cover: null;
+  nickname: string;
+  not_seen_item_id_list: null;
+  not_seen_item_id_list_v2: null;
+  offline_info_list: null;
+  personal_tag_list: null;
+  platform_sync_info: null;
+  prevent_download: boolean;
+  private_relation_list: null;
+  profile_component_disabled: null;
+  profile_mob_params: null;
+  profile_signature_components: null;
+  react_setting: number;
+  reflow_page_gid: number;
+  reflow_page_uid: number;
+  region: string;
+  relative_users: null;
+  risk_notice_text: string;
+  room_id: number;
+  school_category: number;
+  school_id: string;
+  school_name: string;
+  school_poi_id: string;
+  school_type: number;
+  search_impr: SearchImpr$10;
+  sec_uid: string;
+  secret: number;
+  share_info: ShareInfo$7;
+  share_qrcode_uri: string;
+  shield_comment_notice: number;
+  shield_digg_notice: number;
+  shield_follow_notice: number;
+  short_id: string;
+  show_image_bubble: boolean;
+  show_nearby_active: boolean;
+  signature: string;
+  signature_display_lines: number;
+  signature_extra: null;
+  special_follow_status: number;
+  special_lock: number;
+  special_people_labels: null;
+  status: number;
+  stitch_setting: number;
+  story25_comment: number;
+  story_count: number;
+  story_interactive: number;
+  story_open: boolean;
+  story_ttl: number;
+  sync_to_toutiao: number;
+  text_extra: null;
+  total_favorited: number;
+  tw_expire_time: number;
+  twitter_id: string;
+  twitter_name: string;
+  type_label: null;
+  uid: string;
+  unique_id: string;
+  unique_id_modify_time: number;
+  user_age: number;
+  user_canceled: boolean;
+  user_mode: number;
+  user_not_see: number;
+  user_not_show: number;
+  user_period: number;
+  user_permissions: null;
+  user_rate: number;
+  user_tags: null;
+  verification_permission_ids: null;
+  verification_type: number;
+  verify_info: string;
+  video_icon: VideoIcon$1;
+  webcast_preview_labels: null;
+  weibo_name: string;
+  weibo_schema: string;
+  weibo_url: string;
+  weibo_verify: string;
+  white_cover_url: null;
+  with_commerce_entry: boolean;
+  with_dou_entry: boolean;
+  with_fusion_shop_entry: boolean;
+  with_shop_entry: boolean;
+  youtube_channel_id: string;
+  youtube_channel_title: string;
+  youtube_expire_time: number;
+  [property: string]: any;
+};
+type Avatar168x168 = {
+  height: number;
+  uri: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type AwemeControl$9 = {
+  can_comment: boolean;
+  can_forward: boolean;
+  can_share: boolean;
+  can_show_comment: boolean;
+  [property: string]: any;
+};
+type SearchImpr$10 = {
+  entity_id: string;
+  [property: string]: any;
+};
+type ShareInfo$7 = {
+  share_desc: string;
+  share_desc_info: string;
+  share_qrcode_url: Avatar168x168;
+  share_title: string;
+  share_title_myself: string;
+  share_title_other: string;
+  share_url: string;
+  share_weibo_desc: string;
+  [property: string]: any;
+};
+type VideoIcon$1 = {
+  height: number;
+  uri: string;
+  url_list: unknown[];
+  width: number;
+  [property: string]: any;
+};
+type AwemeAcl$1 = {
+  download_mask_panel: DownloadMaskPanel$4;
+  [property: string]: any;
+};
+type DownloadMaskPanel$4 = {
+  code: number;
+  show_type: number;
+  [property: string]: any;
+};
+type AwemeListenStruct$9 = {
+  trace_info: string;
+  [property: string]: any;
+};
+type ChaList$1 = {
+  author: Author2;
+  banner_list: null;
+  cha_attrs: null;
+  cha_name: string;
+  cid: string;
+  collect_stat: number;
+  connect_music: unknown[];
+  desc: string;
+  extra_attr: ExtraAttr$1;
+  hashtag_profile: string;
+  insert_template_category_list: null;
+  is_challenge: number;
+  is_commerce: boolean;
+  is_pgcshow: boolean;
+  schema: string;
+  search_impr: SearchImpr$10;
+  share_info: ShareInfo2$2;
+  show_items: null;
+  sub_type: number;
+  type: number;
+  user_count: number;
+  view_count: number;
+  [property: string]: any;
+};
+type Author2 = {
+  ad_cover_url: null;
+  avatar_168x168: VideoIcon$1;
+  avatar_300x300: VideoIcon$1;
+  avatar_larger: VideoIcon$1;
+  avatar_medium: VideoIcon$1;
+  avatar_schema_list: null;
+  avatar_thumb: VideoIcon$1;
+  avatar_uri: string;
+  aweme_control: {
+    [property: string]: any;
+  };
+  ban_user_functions: null;
+  batch_unfollow_contain_tabs: null;
+  batch_unfollow_relation_desc: null;
+  bind_phone: string;
+  birthday: string;
+  can_set_geofencing: null;
+  card_entries: null;
+  card_entries_not_display: null;
+  card_sort_priority: null;
+  cf_list: null;
+  cha_list: null;
+  constellation: number;
+  contrail_list: null;
+  cover_url: unknown[];
+  create_time: number;
+  creator_tag_list: null;
+  data_label_list: null;
+  display_info: null;
+  endorsement_info_list: null;
+  familiar_visitor_user: null;
+  follow_status: number;
+  follower_list_secondary_information_struct: null;
+  followers_detail: null;
+  gender: number;
+  geofencing: null;
+  has_email: boolean;
+  homepage_bottom_toast: null;
+  identity_labels: null;
+  im_role_ids: null;
+  interest_tags: null;
+  is_block: boolean;
+  is_phone_binded: boolean;
+  item_list: null;
+  language: string;
+  link_item_list: null;
+  need_points: null;
+  new_story_cover: null;
+  nickname: string;
+  not_seen_item_id_list: null;
+  not_seen_item_id_list_v2: null;
+  offline_info_list: null;
+  personal_tag_list: null;
+  platform_sync_info: null;
+  private_relation_list: null;
+  profile_component_disabled: null;
+  profile_mob_params: null;
+  profile_signature_components: null;
+  region: string;
+  relative_users: null;
+  search_impr: SearchImpr$10;
+  sec_uid: string;
+  short_id: string;
+  show_image_bubble: boolean;
+  signature: string;
+  signature_extra: null;
+  special_people_labels: null;
+  status: number;
+  text_extra: null;
+  type_label: null;
+  uid: string;
+  unique_id: string;
+  unique_id_modify_time: number;
+  user_permissions: null;
+  user_tags: null;
+  verification_permission_ids: null;
+  video_icon: VideoIcon$1;
+  webcast_preview_labels: null;
+  white_cover_url: null;
+  with_dou_entry: boolean;
+  [property: string]: any;
+};
+type ExtraAttr$1 = {
+  is_live: boolean;
+  [property: string]: any;
+};
+type ShareInfo2$2 = {
+  bool_persist: number;
+  share_desc: string;
+  share_desc_info: string;
+  share_quote: string;
+  share_signature_desc: string;
+  share_signature_url: string;
+  share_title: string;
+  share_title_myself: string;
+  share_title_other: string;
+  share_url: string;
+  share_weibo_desc: string;
+  [property: string]: any;
+};
+type ChapterData$2 = {
+  ad_chapter_auto_skip_index_list: null;
+  ad_chapter_index_list: number[];
+  disable_edit: boolean;
+  recommend_type: string;
+  [property: string]: any;
+};
+type ChapterList$2 = {
+  desc: string;
+  detail: string;
+  points: null;
+  timestamp: number;
+  url: string;
+  [property: string]: any;
+};
+type CommentPermissionInfo$9 = {
+  can_comment: boolean;
+  comment_permission_status: number;
+  item_detail_entry: boolean;
+  press_entry: boolean;
+  toast_guide: boolean;
+  [property: string]: any;
+};
+type CommerceInfo$2 = {
+  ad_type: number;
+  is_ad: boolean;
+  [property: string]: any;
+};
+type CommonButton$1 = {
+  button_list: ButtonList$1[];
+  [property: string]: any;
+};
+type ButtonList$1 = {
+  basic_info: BasicInfo$3;
+  priority: number;
+  [property: string]: any;
+};
+type BasicInfo$3 = {
+  btn_datas: null;
+  btn_name: string;
+  btn_type: string;
+  btn_ui_style: number;
+  buttons: Button$5[];
+  exemptions: number[];
+  [property: string]: any;
+};
+type Button$5 = {
+  btn_data_keys: null;
+  click_action: ClickAction$1;
+  content: Content$3;
+  [property: string]: any;
+};
+type ClickAction$1 = {
+  behavior_type: number;
+  btn_data_Keys: null;
+  click_action: number;
+  [property: string]: any;
+};
+type Content$3 = {
+  content: string;
+  [property: string]: any;
+};
+type ComponentControl$9 = {
+  data_source_url: string;
+  [property: string]: any;
+};
+type DanmakuControl$8 = {
+  activities: Activity$8[];
+  danmaku_cnt: number;
+  enable_danmaku: boolean;
+  first_danmaku_offset: number;
+  is_post_denied: boolean;
+  last_danmaku_offset: number;
+  pass_through_params: string;
+  post_denied_reason: string;
+  post_privilege_level: number;
+  skip_danmaku: boolean;
+  smart_mode_decision: number;
+  [property: string]: any;
+};
+type Activity$8 = {
+  id: number;
+  type: number;
+  [property: string]: any;
+};
+type Descendants = {
+  notify_msg: string;
+  platforms: string[];
+  [property: string]: any;
+};
+type DistributeCircle$9 = {
+  campus_block_interaction: boolean;
+  distribute_type: number;
+  is_campus: boolean;
+  [property: string]: any;
+};
+type EcoSystemSurveyInfo = {
+  insert_tag_list: string;
+  [property: string]: any;
+};
+type EntLogExtra$4 = {
+  log_extra: string;
+  [property: string]: any;
+};
+type EntertainmentFeatureInfo$1 = {
+  ad_query: string;
+  sequence_form: string;
+  [property: string]: any;
+};
+type EntertainmentProductInfo$11 = {
+  market_info: MarketInfo$11;
+  sub_title: null;
+  [property: string]: any;
+};
+type MarketInfo$11 = {
+  limit_free: LimitFree$11;
+  marketing_tag: null;
+  [property: string]: any;
+};
+type LimitFree$11 = {
+  in_free: boolean;
+  [property: string]: any;
+};
+type EntertainmentVideoPaidWay$5 = {
+  enable_use_new_ent_data: boolean;
+  paid_type: number;
+  paid_ways: unknown[];
+  [property: string]: any;
+};
+type FSGrouthProperty$2 = {
+  is_client_pack: boolean;
+  is_natural_traffic: boolean;
+  is_related_path: boolean;
+  [property: string]: any;
+};
+type FallCardStruct$6 = {
+  recommend_reason?: string;
+  recommend_reason_v2: string;
+  [property: string]: any;
+};
+type FeedCommentConfig$9 = {
+  audio_comment_permission: number;
+  author_audit_status: number;
+  common_comment_permission: number;
+  common_flags: string;
+  double_publish?: number;
+  double_publish_limit: number;
+  input_config_text: string;
+  input_config_text_type: string;
+  [property: string]: any;
+};
+type FollowShootClipInfo$5 = {
+  clip_from_platform?: number;
+  clip_from_user?: number;
+  clip_video_all: number;
+  origin_clip_id?: number;
+  [property: string]: any;
+};
+type FollowShootProperty$2 = {
+  recommended_camera_mode: string;
+  [property: string]: any;
+};
+type FriendRecommendInfo$5 = {
+  disable_friend_recommend_guide_label: boolean;
+  friend_recommend_source: number;
+  is_friend_recommend: string;
+  label_user_list: LabelUserList$2[];
+  recommend_user_app_list: string;
+  [property: string]: any;
+};
+type LabelUserList$2 = {
+  recommend_app_id: number;
+  recommend_time: number;
+  user: User$12;
+  [property: string]: any;
+};
+type User$12 = {
+  avatar: Avatar168x168;
+  avatar_thumb: Avatar168x168;
+  follow_status: number;
+  nickname: string;
+  sec_uid: string;
+  uid: number;
+  [property: string]: any;
+};
+type GalileoPadTextcrop$4 = {
+  android_d_h_cut_ratio: number[] | null;
+  android_d_v_cut_ratio: number[] | null;
+  ipad_d_h_cut_ratio: number[] | null;
+  ipad_d_v_cut_ratio: number[] | null;
+  pc_blocked_area_ratio: null;
+  version: number;
+  [property: string]: any;
+};
+type GameTagInfo$9 = {
+  content_type_tag?: ContentTypeTag$3;
+  game_name_tag?: GameNameTag$3;
+  is_game: boolean;
+  [property: string]: any;
+};
+type ContentTypeTag$3 = {
+  tag_id: number;
+  tag_name: string;
+  [property: string]: any;
+};
+type GameNameTag$3 = {
+  game_id_list: string[];
+  tag_id: number;
+  tag_name: string;
+  [property: string]: any;
+};
+type HotList$3 = {
+  extra: string;
+  footer: string;
+  group_id: string;
+  header: string;
+  hot_score: number;
+  i18n_title: string;
+  image_url: string;
+  label?: number;
+  pattern_type?: number;
+  rank: number;
+  schema: string;
+  sentence: string;
+  sentence_id: number;
+  title: string;
+  type: number;
+  view_count: number;
+  [property: string]: any;
+};
+type ImageAlbumMusicInfo$9 = {
+  begin_time: number;
+  end_time: number;
+  volume: number;
+  [property: string]: any;
+};
+type ImageComment$2 = {
+  comment_highlight_text: string;
+  [property: string]: any;
+};
+type Image$5 = {
+  download_url_list: string[];
+  height: number;
+  interaction_stickers: null;
+  is_aigc_media: boolean;
+  is_new_text_mode: number;
+  mask_url_list: null;
+  resolution_log_param: ResolutionLogParam;
+  uri: string;
+  url_list: string[];
+  watermark_free_download_url_list: null;
+  width: number;
+  [property: string]: any;
+};
+type ResolutionLogParam = {
+  image_source_height: number;
+  image_source_width: number;
+  [property: string]: any;
+};
+type ImpressionData$11 = {
+  group_id_list_a: number[];
+  group_id_list_b: number[];
+  group_id_list_c: number[];
+  group_id_list_d: number[];
+  similar_id_list_a: null;
+  similar_id_list_b: null;
+  [property: string]: any;
+};
+type ItemWarnNotification$9 = {
+  content: string;
+  show: boolean;
+  type: number;
+  [property: string]: any;
+};
+type MixInfo$4 = {
+  cover_url: Avatar168x168;
+  create_time: number;
+  dark_icon_url: Avatar168x168;
+  desc: string;
+  enable_ad: number;
+  extra: string;
+  ids: null;
+  is_iaa: number;
+  is_serial_mix: number;
+  light_icon_url: Avatar168x168;
+  mix_id: string;
+  mix_name: string;
+  mix_type: number;
+  paid_episodes: null;
+  series_new_mix_info: SeriesNewMixInfo$1;
+  share_info: ShareInfo3$1;
+  statis: Statis$4;
+  status: Status$8;
+  update_time: number;
+  watched_item: string;
+  [property: string]: any;
+};
+type SeriesNewMixInfo$1 = {
+  content_sub_type: number;
+  [property: string]: any;
+};
+type ShareInfo3$1 = {
+  share_desc: string;
+  share_desc_info: string;
+  share_title: string;
+  share_title_myself: string;
+  share_title_other: string;
+  share_url: string;
+  share_weibo_desc: string;
+  [property: string]: any;
+};
+type Statis$4 = {
+  collect_vv: number;
+  current_episode: number;
+  play_vv: number;
+  updated_to_episode: number;
+  [property: string]: any;
+};
+type Status$8 = {
+  is_collected: number;
+  status: number;
+  [property: string]: any;
+};
+type Music$11 = {
+  album: string;
+  artist_user_infos: null;
+  artists: unknown[];
+  audition_duration: number;
+  author: string;
+  author_deleted: boolean;
+  author_position: null;
+  author_status?: number;
+  avatar_large?: Avatar168x168;
+  avatar_medium?: Avatar168x168;
+  avatar_thumb?: Avatar168x168;
+  binded_challenge_id: number;
+  can_background_play: boolean;
+  collect_stat: number;
+  cover_color_hsv?: CoverColorHsv$3;
+  cover_hd: Avatar168x168;
+  cover_large: Avatar168x168;
+  cover_medium: Avatar168x168;
+  cover_thumb: Avatar168x168;
+  dmv_auto_show: boolean;
+  dsp_status: number;
+  duration: number;
+  end_time: number;
+  external_song_info: unknown[];
+  extra: string;
+  id: number;
+  id_str: string;
+  is_audio_url_with_cookie: boolean;
+  is_commerce_music: boolean;
+  is_del_video: boolean;
+  is_exempt_for_reply?: boolean;
+  is_matched_metadata: boolean;
+  is_original: boolean;
+  is_original_sound: boolean;
+  is_pgc: boolean;
+  is_restricted: boolean;
+  is_video_self_see: boolean;
+  lyric_short_position: null;
+  matched_pgc_sound?: MatchedPgcSound$8;
+  mid: string;
+  music_chart_ranks: null;
+  music_collect_count: number;
+  music_cover_atmosphere_color_value: string;
+  music_status: number;
+  musician_user_infos: null;
+  mute_share: boolean;
+  offline_desc: string;
+  owner_handle: string;
+  owner_id?: string;
+  owner_nickname: string;
+  pgc_music_type: number;
+  play_url: Icon$6;
+  position: null;
+  prevent_download: boolean;
+  prevent_item_download_status: number;
+  preview_end_time: number;
+  preview_start_time: number;
+  reason_type: number;
+  redirect: boolean;
+  schema_url: string;
+  search_impr: SearchImpr$10;
+  sec_uid?: string;
+  shoot_duration: number;
+  show_origin_clip: boolean;
+  song?: Song$9;
+  source_platform: number;
+  start_time: number;
+  status: number;
+  strong_beat_url?: Avatar168x168;
+  tag_list: null;
+  talent_hashtag_name_list: null;
+  title: string;
+  unshelve_countries: null;
+  user_count: number;
+  video_duration: number;
+  [property: string]: any;
+};
+type CoverColorHsv$3 = {
+  h: number;
+  s: number;
+  v: number;
+  [property: string]: any;
+};
+type MatchedPgcSound$8 = {
+  author: string;
+  cover_medium: Avatar168x168;
+  mixed_author: string;
+  mixed_title: string;
+  title: string;
+  [property: string]: any;
+};
+type Song$9 = {
+  artists: null;
+  chorus?: Chorus$3;
+  chorus_v3_infos: null;
+  id: number;
+  id_str: string;
+  title?: string;
+  [property: string]: any;
+};
+type Chorus$3 = {
+  duration_ms: number;
+  start_ms: number;
+  [property: string]: any;
+};
+type PhotoSearchEntrance$9 = {
+  ecom_type: number;
+  [property: string]: any;
+};
+type PlayProgress$9 = {
+  last_modified_time: number;
+  play_progress: number;
+  [property: string]: any;
+};
+type PoiPatchInfo$1 = {
+  extra: string;
+  item_patch_poi_prompt_mark: number;
+  [property: string]: any;
+};
+type ProductGenreInfo$4 = {
+  material_genre_sub_type_set: number[];
+  product_genre_type: number;
+  special_info: SpecialInfo$4;
+  [property: string]: any;
+};
+type SpecialInfo$4 = {
+  recommend_group_name: number;
+  [property: string]: any;
+};
+type PublishPlusAlienation$9 = {
+  alienation_type: number;
+  [property: string]: any;
+};
+type RecommendChapterInfo = {
+  chapter_abstract: string;
+  chapter_bar_color: null;
+  chapter_recommend_source: number;
+  chapter_recommend_type: number;
+  push_scene: unknown[];
+  recommend_chapter_list: RecommendChapterList[];
+  [property: string]: any;
+};
+type RecommendChapterList = {
+  desc: string;
+  detail: string;
+  points: null;
+  timestamp: number;
+  [property: string]: any;
+};
+type RelatedMusicAnchor$2 = {
+  extra: string;
+  image_url: ImageUrl;
+  priority: number;
+  schema_url: string;
+  type: string;
+  [property: string]: any;
+};
+type ImageUrl = {
+  uri: string;
+  url_list: string[];
+  [property: string]: any;
+};
+type RelationLabel$2 = {
+  count: number;
+  extra: string;
+  label_info: string;
+  type: number;
+  user_id: string;
+  user_list: User$12[];
+  [property: string]: any;
+};
+type RiskInfos$9 = {
+  content: string;
+  risk_sink: boolean;
+  type: number;
+  vote: boolean;
+  warn: boolean;
+  warn_level?: number;
+  [property: string]: any;
+};
+type SeriesBasicInfo$1 = {
+  series_author_id?: string;
+  series_id?: string;
+  [property: string]: any;
+};
+type SeriesInfo$1 = {
+  actors: null;
+  content_sub_type: number;
+  cover_url: Avatar168x168;
+  create_time: number;
+  dark_icon_url: Avatar168x168;
+  desc: string;
+  directors: unknown[];
+  enable_use_new_ent_data: boolean;
+  entertainment_suggest_info: string;
+  extra: string;
+  ids: null;
+  is_charge_series: number;
+  is_exclusive: boolean;
+  is_iaa: number;
+  light_icon_url: Avatar168x168;
+  paid_episodes: null;
+  real_name: string;
+  recommend_color: null;
+  rights_info: RightsInfo$1;
+  series_content_types: SeriesContentType$1[];
+  series_content_types_new: unknown[];
+  series_form_type: number;
+  series_id: string;
+  series_interactive: SeriesInteractive$1;
+  series_name: string;
+  series_paid_type_list: null;
+  series_type: number;
+  series_ui_config: SeriesUiConfig$1;
+  share_info: ShareInfo3$1;
+  stats: Stats$3;
+  status: Status2$1;
+  update_time: number;
+  watched_item: string;
+  [property: string]: any;
+};
+type RightsInfo$1 = {
+  has_paid: boolean;
+  [property: string]: any;
+};
+type SeriesContentType$1 = {
+  name: string;
+  series_content_type: number;
+  [property: string]: any;
+};
+type SeriesInteractive$1 = {
+  enable_config: boolean;
+  interactive_config: InteractiveConfig$1;
+  [property: string]: any;
+};
+type InteractiveConfig$1 = {
+  collection_button_copy: string;
+  display_detail_edit_button: boolean;
+  hide_desk_guide: boolean;
+  hide_find_top_tab: boolean;
+  hide_intro_card: boolean;
+  hide_intro_card_details_module: boolean;
+  hide_intro_card_tags: boolean;
+  hide_more_series_bottom_btn: boolean;
+  hide_more_series_module: boolean;
+  hide_recommendation_module: boolean;
+  more_series_module_copy: string;
+  recommendation_module_title_copy: string;
+  unlock_button_copy: string;
+  [property: string]: any;
+};
+type SeriesUiConfig$1 = {
+  collection_button: CollectionButton$1;
+  general_position_tag_infos: null;
+  series_bar_button_infos: SeriesBarButtonInfo$1[];
+  [property: string]: any;
+};
+type CollectionButton$1 = {
+  text: string;
+  [property: string]: any;
+};
+type SeriesBarButtonInfo$1 = {
+  button_text: string;
+  click_type: number;
+  condition_material_types: number[];
+  [property: string]: any;
+};
+type Stats$3 = {
+  collect_vv: number;
+  current_episode: number;
+  last_added_item_time: number;
+  play_vv: number;
+  total_duration: number;
+  total_episode: number;
+  updated_to_episode: number;
+  [property: string]: any;
+};
+type Status2$1 = {
+  is_collected: number;
+  status: number;
+  status_desc: string;
+  [property: string]: any;
+};
+type SeriesMaterialInfo$1 = {
+  material_type: number;
+  [property: string]: any;
+};
+type SeriesPaidInfo$9 = {
+  item_price: number;
+  series_paid_status: number;
+  [property: string]: any;
+};
+type SeriesPlayInfo$1 = {
+  item_title_prefix: CollectionButton$1;
+  outflow_continue_play_info: OutflowContinuePlayInfo$1;
+  series_aweme_index: number;
+  [property: string]: any;
+};
+type OutflowContinuePlayInfo$1 = {
+  next_item_episode: number;
+  [property: string]: any;
+};
+type ShareInfo4 = {
+  bool_persist: number;
+  share_desc: string;
+  share_desc_info: string;
+  share_link_desc: string;
+  share_quote: string;
+  share_signature_desc: string;
+  share_signature_url: string;
+  share_title: string;
+  share_title_myself: string;
+  share_title_other: string;
+  share_url: string;
+  share_weibo_desc: string;
+  [property: string]: any;
+};
+type StarAtlasInfo$3 = {
+  click_track_url_list: null;
+  log_extra: string;
+  track_url_list: null;
+  [property: string]: any;
+};
+type Statistics$11 = {
+  aweme_id: string;
+  collect_count: number;
+  comment_count: number;
+  digest: string;
+  digg_count: number;
+  download_count: number;
+  exposure_count: number;
+  forward_count: number;
+  live_watch_count: number;
+  lose_comment_count: number;
+  lose_count: number;
+  play_count: number;
+  recommend_count: number;
+  share_count: number;
+  whatsapp_share_count: number;
+  [property: string]: any;
+};
+type Status3$1 = {
+  allow_comment: boolean;
+  allow_friend_recommend: boolean;
+  allow_friend_recommend_guide: boolean;
+  allow_self_recommend_to_friend: boolean;
+  allow_share: boolean;
+  aweme_edit_info: AwemeEditInfo$2;
+  aweme_id: string;
+  dont_share_status: number;
+  download_status: number;
+  enable_soft_delete: number;
+  in_reviewing: boolean;
+  is_delete: boolean;
+  is_private: boolean;
+  is_prohibited: boolean;
+  listen_video_status: number;
+  not_allow_soft_del_reason: string;
+  part_see: number;
+  private_status: number;
+  review_result: ReviewResult$11;
+  reviewed: number;
+  self_see: boolean;
+  video_hide_search: number;
+  with_fusion_goods: boolean;
+  with_goods: boolean;
+  [property: string]: any;
+};
+type AwemeEditInfo$2 = {
+  button_status: number;
+  button_toast: string;
+  edit_status: number;
+  has_modified_all: boolean;
+  [property: string]: any;
+};
+type ReviewResult$11 = {
+  review_status: number;
+  [property: string]: any;
+};
+type TextExtra$10 = {
+  caption_end: number;
+  caption_start: number;
+  end: number;
+  hashtag_id?: string;
+  hashtag_name?: string;
+  is_commerce?: boolean;
+  sec_uid?: string;
+  start: number;
+  type: number;
+  user_id?: string;
+  [property: string]: any;
+};
+type TrendsInfo$2 = {
+  insert_music_ids: null;
+  track_pass_through: string;
+  trends_materials: null;
+  trends_music_info: null;
+  trends_unified_music_group: null;
+  [property: string]: any;
+};
+type Video$12 = {
+  animated_cover?: ImageUrl;
+  audio: Audio$6;
+  big_thumbs: BigThumb$8[] | null;
+  bit_rate: BitRate$7[] | null;
+  bit_rate_audio: BitRateAudio$5[] | null;
+  cdn_url_expired?: number;
+  cover: Avatar168x168;
+  download_addr?: DownloadAddr$6;
+  download_suffix_logo_addr?: DownloadAddr$6;
+  duration: number;
+  dynamic_cover?: Avatar168x168;
+  format?: string;
+  gaussian_cover?: Avatar168x168;
+  has_download_suffix_logo_addr?: boolean;
+  has_watermark: boolean;
+  height: number;
+  horizontal_type?: number;
+  is_bytevc1: number;
+  is_callback?: boolean;
+  is_h265: number;
+  is_long_video?: number;
+  is_source_HDR?: number;
+  meta: string;
+  misc_download_addrs?: string;
+  need_set_token?: boolean;
+  origin_cover: Avatar168x168;
+  play_addr: PlayAddr2$2;
+  play_addr_265?: PlayAddr265$6;
+  play_addr_h264?: PlayAddr265$6;
+  play_addr_lowbr?: PlayAddr265$6;
+  ratio: string;
+  tags: null;
+  use_static_cover?: boolean;
+  video_model?: string;
+  width: number;
+  [property: string]: any;
+};
+type Audio$6 = {
+  original_sound_infos: null;
+  [property: string]: any;
+};
+type BigThumb$8 = {
+  duration: number;
+  fext: string;
+  img_num: number;
+  img_url: string;
+  img_urls: string[];
+  img_x_len: number;
+  img_x_size: number;
+  img_y_len: number;
+  img_y_size: number;
+  interval: number;
+  uri: string;
+  uris: string[];
+  [property: string]: any;
+};
+type BitRate$7 = {
+  FPS: number;
+  HDR_bit: string;
+  HDR_type: string;
+  bit_rate: number;
+  format: string;
+  gear_name: string;
+  is_bytevc1: number;
+  is_h265: number;
+  play_addr: PlayAddr$4;
+  quality_type: number;
+  video_extra: string;
+  [property: string]: any;
+};
+type PlayAddr$4 = {
+  data_size: number;
+  file_cs?: string;
+  file_hash: string;
+  height: number;
+  uri: string;
+  url_key: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type BitRateAudio$5 = {
+  audio_extra: string;
+  audio_meta: AudioMeta$5;
+  audio_quality: number;
+  [property: string]: any;
+};
+type AudioMeta$5 = {
+  bitrate: number;
+  codec_type: string;
+  encoded_type: string;
+  file_hash: string;
+  file_id: string;
+  format: string;
+  fps: number;
+  logo_type: string;
+  media_type: string;
+  quality: string;
+  quality_desc: string;
+  size: number;
+  sub_info: string;
+  url_list: UrlList$5;
+  [property: string]: any;
+};
+type UrlList$5 = {
+  backup_url: string;
+  fallback_url: string;
+  main_url: string;
+  [property: string]: any;
+};
+type DownloadAddr$6 = {
+  data_size?: number;
+  file_cs: string;
+  height: number;
+  uri: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type PlayAddr2$2 = {
+  data_size?: number;
+  file_cs?: string;
+  file_hash?: string;
+  height: number;
+  uri: string;
+  url_key: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type PlayAddr265$6 = {
+  data_size: number;
+  file_cs: string;
+  file_hash: string;
+  height: number;
+  uri: string;
+  url_key: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type VideoControl$11 = {
+  allow_douplus: boolean;
+  allow_download: boolean;
+  allow_duet: boolean;
+  allow_dynamic_wallpaper: boolean;
+  allow_music: boolean;
+  allow_react: boolean;
+  allow_record: boolean;
+  allow_share: boolean;
+  allow_stitch: boolean;
+  disable_record_reason: string;
+  download_ignore_visibility: boolean;
+  download_info: DownloadInfo$11;
+  draft_progress_bar: number;
+  duet_ignore_visibility: boolean;
+  duet_info: DuetInfo$11;
+  prevent_download_type: number;
+  share_grayed: boolean;
+  share_ignore_visibility: boolean;
+  share_type: number;
+  show_ai_corner: boolean;
+  show_progress_bar: number;
+  show_watermark: boolean;
+  text_copy_type?: number;
+  timer_info: {
+    [property: string]: any;
+  };
+  timer_status: number;
+  [property: string]: any;
+};
+type DownloadInfo$11 = {
+  fail_info?: FailInfo$3;
+  level: number;
+  [property: string]: any;
+};
+type FailInfo$3 = {
+  code: number;
+  msg?: string;
+  reason: string;
+  [property: string]: any;
+};
+type DuetInfo$11 = {
+  fail_info?: FailInfo2$1;
+  level: number;
+  [property: string]: any;
+};
+type FailInfo2$1 = {
+  code: number;
+  reason: string;
+  [property: string]: any;
+};
+type VideoTag$9 = {
+  level: number;
+  tag_id: number;
+  tag_name: string;
+  [property: string]: any;
+};
+type VisualSearchInfo$9 = {
+  is_ecom_img: boolean;
+  is_high_accuracy_ecom: boolean;
+  is_high_recall_ecom: boolean;
+  is_show_img_entrance: boolean;
+  [property: string]: any;
+};
+type XiguaBaseInfo$9 = {
+  item_id: number;
+  star_altar_order_id: number;
+  star_altar_type: number;
+  status: number;
+  [property: string]: any;
+};
+type XiguaTask$1 = {
+  is_xigua_task: boolean;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/douyin/UserRecommendList/index.d.ts
+type UserRecommendListSuccess = UserRecommendList_V0$1;
+type UserRecommendListError = never;
+type UserRecommendList$1 = UserRecommendListSuccess | UserRecommendListError;
+//#endregion
+//#region ../response-types/dist/generated/douyin/UserVideoList/UserVideoList_V0.d.ts
+type UserVideoList_V0 = {
+  aweme_list: AwemeList$3[];
+  has_more: number;
+  log_pb: LogPb$17;
+  max_cursor: number;
+  min_cursor: number;
+  post_serial: number;
+  replace_series_cover: number;
+  request_item_cursor: number;
+  status_code: number;
+  time_list: string[];
+  [property: string]: any;
+};
+type AwemeList$3 = {
+  activity_video_type: number;
+  ad_charge_passive_unlock_config?: AdChargePassiveUnlockConfig;
+  ai_follow_images: null;
+  anchor_info?: AnchorInfo$4;
+  anchors: null;
+  authentication_token: string;
+  author: Author$11;
+  author_mask_tag: number;
+  author_user_id: number;
+  aweme_control: AwemeControl$8;
+  aweme_id: string;
+  aweme_listen_struct: AwemeListenStruct$8;
+  aweme_type: number;
+  aweme_type_tags: string;
+  boost_status: number;
+  can_be_oc_cover: boolean;
+  can_cache_to_local: boolean;
+  caption: string;
+  cf_assets_type: number;
+  challenge_position: null;
+  chapter_bar_color: null;
+  chapter_list: null;
+  collect_stat: number;
+  collection_corner_mark: number;
+  comment_gid: number;
+  comment_list: null;
+  comment_permission_info: CommentPermissionInfo$8;
+  commerce_config_data: null;
+  common_button?: CommonButton;
+  common_left_top_labels: null;
+  component_control: ComponentControl$8;
+  component_info_v2: string;
+  cover_labels: null;
+  create_scale_type: null;
+  create_time: number;
+  danmaku_control: DanmakuControl$7;
+  desc: string;
+  disable_relation_bar: number;
+  dislike_dimension_list: null;
+  dislike_dimension_list_v2: null;
+  distribute_circle: DistributeCircle$8;
+  diversion_bar_info: unknown[];
+  douplus_user_type: number;
+  douyin_p_c_video_extra?: string;
+  duet_aggregate_in_music_tab: boolean;
+  duration: number;
+  effect_inflow_effects: null;
+  enable_comment_sticker_rec: boolean;
+  enable_decorated_emoji: boolean;
+  encrypt_interest_point_list: null;
+  encrypt_key_phrase_list: null;
+  ent_log_extra: EntLogExtra$3;
+  entertainment_feature_info?: EntertainmentFeatureInfo;
+  entertainment_product_info: EntertainmentProductInfo$10;
+  entertainment_recommend_info: string;
+  entertainment_video_paid_way: EntertainmentVideoPaidWay$4;
+  entertainment_video_type: number;
+  f_s_grouth_property: FSGrouthProperty$1;
+  feed_comment_config: FeedCommentConfig$8;
+  feed_component_decision_reasons?: string;
+  flash_mob_trends: number;
+  follow_shoot_clip_info: FollowShootClipInfo$4;
+  follow_shoot_property: FollowShootProperty$1;
+  follow_shot_assets: null;
+  friend_recommend_info: FriendRecommendInfo$4;
+  galileo_pad_textcrop: GalileoPadTextcrop$3;
+  game_tag_info: GameTagInfo$8;
+  geofencing: unknown[];
+  geofencing_regions: null;
+  group_id: string;
+  guide_btn_type: number;
+  horizontal_type: number;
+  hot_list?: HotList$2;
+  hybrid_label: null;
+  image_album_music_info: ImageAlbumMusicInfo$8;
+  image_comment: ImageComment$1;
+  image_crop_ctrl: number;
+  image_follow_shot_assets: null;
+  image_infos: null;
+  image_list: null;
+  images: null;
+  img_bitrate: null;
+  impression_data: ImpressionData$10;
+  interaction_stickers: null;
+  interest_points: null;
+  is_24_story: number;
+  is_25_story: number;
+  is_ads: boolean;
+  is_aigc_media: boolean;
+  is_collects_selected: number;
+  is_duet_sing: boolean;
+  is_from_ad_auth: boolean;
+  is_image_beat: boolean;
+  is_life_item: boolean;
+  is_moment_history: number;
+  is_moment_story: number;
+  is_new_text_mode: number;
+  is_share_post: boolean;
+  is_story: number;
+  is_top: number;
+  is_use_music: boolean;
+  item_aigc_follow_shot: number;
+  item_title: string;
+  item_warn_notification: ItemWarnNotification$8;
+  jump_tab_info_list: null;
+  label_top_text: null;
+  libfinsert_task_id: string;
+  long_video: null;
+  mark_largely_following: boolean;
+  media_type: number;
+  mix_info?: MixInfo$3;
+  music: Music$10;
+  mv_info: null;
+  nearby_hot_comment: null;
+  nickname_position: null;
+  origin_comment_ids: null;
+  origin_duet_resource_uri: string;
+  origin_text_extra: null;
+  original: number;
+  original_anchor_type?: number;
+  original_images: null;
+  pack_usage_scene_by_req_path: string;
+  packed_clips: null;
+  personal_page_botton_diagnose_style: number;
+  photo_search_entrance: PhotoSearchEntrance$8;
+  play_progress: PlayProgress$8;
+  position: null;
+  prevent_download: boolean;
+  preview_title: string;
+  product_genre_info: ProductGenreInfo$3;
+  promotions: unknown[];
+  publish_plus_alienation: PublishPlusAlienation$8;
+  ref_tts_id_list: null;
+  ref_voice_modify_id_list: null;
+  region: string;
+  relation_label?: RelationLabel$1;
+  relation_labels: null;
+  reply_smart_emojis: null;
+  risk_infos: RiskInfos$8;
+  sec_item_id: string;
+  select_anchor_expanded_content: number;
+  series_basic_info: SeriesBasicInfo;
+  series_info?: SeriesInfo;
+  series_material_info?: SeriesMaterialInfo;
+  series_paid_info: SeriesPaidInfo$8;
+  series_play_info?: SeriesPlayInfo;
+  share_info: ShareInfo3;
+  share_url: string;
+  shoot_way: string;
+  show_follow_button: {
+    [property: string]: any;
+  };
+  slides_music_beats: null;
+  social_tag_list: null;
+  standard_bar_info_list: null;
+  star_atlas_info?: StarAtlasInfo$2;
+  statistics: Statistics$10;
+  status: Status3;
+  suggest_words: SuggestWords$9;
+  text_extra: TextExtra$9[];
+  trends_event_track: string;
+  trends_infos: null;
+  tts_id_list: null;
+  uniqid_position: null;
+  user_digged: number;
+  user_recommend_status: number;
+  video: Video$11;
+  video_control: VideoControl$10;
+  video_game_data_channel_config: {
+    [property: string]: any;
+  };
+  video_labels: null;
+  video_share_edit_status: number;
+  video_tag: VideoTag$8[];
+  video_text: null;
+  visual_search_info: VisualSearchInfo$8;
+  voice_modify_id_list: null;
+  vtag_search?: VtagSearch$5;
+  xigua_base_info: XiguaBaseInfo$8;
+  yumme_recreason: null;
+  [property: string]: any;
+};
+type AdChargePassiveUnlockConfig = {
+  broadcast_btn_config: BroadcastBtnConfig;
+  trial_btn_config: BroadcastBtnConfig;
+  [property: string]: any;
+};
+type BroadcastBtnConfig = {
+  btn_show_frequency: number;
+  btn_show_second: number;
+  btn_text: string;
+  show_second_type: number;
+  [property: string]: any;
+};
+type AnchorInfo$4 = {
+  content: string;
+  extra: string;
+  icon: Icon$5;
+  id: string;
+  log_extra: string;
+  mp_url: string;
+  open_url: string;
+  style_info: StyleInfo$4;
+  title: string;
+  title_tag: string;
+  type: number;
+  web_url: string;
+  [property: string]: any;
+};
+type Icon$5 = {
+  height: number;
+  uri: string;
+  url_key: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type StyleInfo$4 = {
+  default_icon: string;
+  extra: string;
+  scene_icon: string;
+  [property: string]: any;
+};
+type Author$11 = {
+  account_cert_info: string;
+  avatar_schema_list: null;
+  avatar_thumb: AvatarThumb$6;
+  ban_user_functions: null;
+  batch_unfollow_contain_tabs: null;
+  batch_unfollow_relation_desc: null;
+  can_set_geofencing: null;
+  card_entries: null;
+  card_entries_not_display: null;
+  card_sort_priority: null;
+  cf_list: null;
+  contrail_list: null;
+  cover_url: AvatarThumb$6[];
+  creator_tag_list: null;
+  custom_verify: string;
+  data_label_list: null;
+  display_info: null;
+  endorsement_info_list: null;
+  enterprise_verify_reason: string;
+  familiar_visitor_user: null;
+  follow_status: number;
+  follower_list_secondary_information_struct: null;
+  follower_status: number;
+  hide_others_recommend_interest: number;
+  hide_self_recommend_interest: number;
+  homepage_bottom_toast: null;
+  identity_labels: null;
+  im_role_ids: null;
+  interest_tags: null;
+  is_ad_fake: boolean;
+  link_item_list: null;
+  need_points: null;
+  nickname: string;
+  not_seen_item_id_list: null;
+  not_seen_item_id_list_v2: null;
+  offline_info_list: null;
+  personal_tag_list: null;
+  prevent_download: boolean;
+  private_relation_list: null;
+  profile_component_disabled: null;
+  profile_mob_params: null;
+  profile_signature_components: null;
+  risk_notice_text: string;
+  sec_uid: string;
+  share_info: ShareInfo$6;
+  signature_extra: null;
+  special_people_labels: null;
+  story25_comment: number;
+  story_interactive: number;
+  story_ttl: number;
+  text_extra: null;
+  uid: string;
+  user_permissions: null;
+  user_tags: null;
+  verification_permission_ids: null;
+  webcast_preview_labels: null;
+  white_cover_url: null;
+  [property: string]: any;
+};
+type AvatarThumb$6 = {
+  height: number;
+  uri: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type ShareInfo$6 = {
+  share_desc: string;
+  share_desc_info: string;
+  share_qrcode_url: ShareQrcodeUrl;
+  share_title: string;
+  share_title_myself: string;
+  share_title_other: string;
+  share_url: string;
+  share_weibo_desc: string;
+  [property: string]: any;
+};
+type ShareQrcodeUrl = {
+  height: number;
+  uri: string;
+  url_list: unknown[];
+  width: number;
+  [property: string]: any;
+};
+type AwemeControl$8 = {
+  can_comment: boolean;
+  can_forward: boolean;
+  can_share: boolean;
+  can_show_comment: boolean;
+  [property: string]: any;
+};
+type AwemeListenStruct$8 = {
+  trace_info: string;
+  [property: string]: any;
+};
+type CommentPermissionInfo$8 = {
+  can_comment: boolean;
+  comment_permission_status: number;
+  item_detail_entry: boolean;
+  press_entry: boolean;
+  toast_guide: boolean;
+  [property: string]: any;
+};
+type CommonButton = {
+  button_list: ButtonList[];
+  [property: string]: any;
+};
+type ButtonList = {
+  basic_info: BasicInfo$2;
+  priority: number;
+  [property: string]: any;
+};
+type BasicInfo$2 = {
+  btn_datas: null;
+  btn_name: string;
+  btn_type: string;
+  btn_ui_style: number;
+  buttons: Button$4[];
+  exemptions: number[];
+  [property: string]: any;
+};
+type Button$4 = {
+  btn_data_keys: null;
+  click_action: ClickAction;
+  content: Content$2;
+  [property: string]: any;
+};
+type ClickAction = {
+  behavior_type: number;
+  btn_data_Keys: null;
+  click_action: number;
+  [property: string]: any;
+};
+type Content$2 = {
+  content: string;
+  [property: string]: any;
+};
+type ComponentControl$8 = {
+  data_source_url: string;
+  [property: string]: any;
+};
+type DanmakuControl$7 = {
+  activities: Activity$7[];
+  danmaku_cnt: number;
+  enable_danmaku: boolean;
+  first_danmaku_offset: number;
+  is_post_denied: boolean;
+  last_danmaku_offset: number;
+  pass_through_params: string;
+  post_denied_reason: string;
+  post_privilege_level: number;
+  skip_danmaku: boolean;
+  smart_mode_decision: number;
+  [property: string]: any;
+};
+type Activity$7 = {
+  id: number;
+  type: number;
+  [property: string]: any;
+};
+type DistributeCircle$8 = {
+  campus_block_interaction: boolean;
+  distribute_type: number;
+  is_campus: boolean;
+  [property: string]: any;
+};
+type EntLogExtra$3 = {
+  log_extra: string;
+  [property: string]: any;
+};
+type EntertainmentFeatureInfo = {
+  ad_query: string;
+  sequence_form: string;
+  [property: string]: any;
+};
+type EntertainmentProductInfo$10 = {
+  market_info: MarketInfo$10;
+  sub_title: null;
+  [property: string]: any;
+};
+type MarketInfo$10 = {
+  limit_free: LimitFree$10;
+  marketing_tag: null;
+  [property: string]: any;
+};
+type LimitFree$10 = {
+  in_free: boolean;
+  [property: string]: any;
+};
+type EntertainmentVideoPaidWay$4 = {
+  enable_use_new_ent_data: boolean;
+  paid_type: number;
+  paid_ways: unknown[];
+  [property: string]: any;
+};
+type FSGrouthProperty$1 = {
+  is_client_pack: boolean;
+  is_natural_traffic: boolean;
+  is_related_path: boolean;
+  [property: string]: any;
+};
+type FeedCommentConfig$8 = {
+  audio_comment_permission: number;
+  author_audit_status: number;
+  common_comment_permission: number;
+  common_flags: string;
+  double_publish_limit: number;
+  input_config_text: string;
+  input_config_text_type: string;
+  [property: string]: any;
+};
+type FollowShootClipInfo$4 = {
+  clip_from_user: number;
+  clip_video_all: number;
+  [property: string]: any;
+};
+type FollowShootProperty$1 = {
+  recommended_camera_mode: string;
+  [property: string]: any;
+};
+type FriendRecommendInfo$4 = {
+  disable_friend_recommend_guide_label: boolean;
+  friend_recommend_source: number;
+  is_friend_recommend?: string;
+  label_user_list: LabelUserList$1[] | null;
+  primary_label_user?: PrimaryLabelUser;
+  recommend_user_app_list?: string;
+  [property: string]: any;
+};
+type LabelUserList$1 = {
+  recommend_app_id: number;
+  recommend_time: number;
+  user: User$11;
+  [property: string]: any;
+};
+type User$11 = {
+  avatar: AvatarThumb$6;
+  avatar_thumb: AvatarThumb$6;
+  follow_status: number;
+  nickname: string;
+  sec_uid: string;
+  uid: number;
+  [property: string]: any;
+};
+type PrimaryLabelUser = {
+  recommend_app_id: number;
+  recommend_time: number;
+  [property: string]: any;
+};
+type GalileoPadTextcrop$3 = {
+  android_d_h_cut_ratio: number[] | null;
+  android_d_v_cut_ratio: number[];
+  ipad_d_h_cut_ratio: number[];
+  ipad_d_v_cut_ratio: number[];
+  pc_blocked_area_ratio: null;
+  version: number;
+  [property: string]: any;
+};
+type GameTagInfo$8 = {
+  is_game: boolean;
+  [property: string]: any;
+};
+type HotList$2 = {
+  extra: string;
+  footer: string;
+  group_id: string;
+  header: string;
+  hot_score: number;
+  i18n_title: string;
+  image_url: string;
+  pattern_type: number;
+  rank: number;
+  schema: string;
+  sentence: string;
+  sentence_id: number;
+  title: string;
+  type: number;
+  view_count: number;
+  [property: string]: any;
+};
+type ImageAlbumMusicInfo$8 = {
+  begin_time: number;
+  end_time: number;
+  volume: number;
+  [property: string]: any;
+};
+type ImageComment$1 = {
+  comment_highlight_text: string;
+  [property: string]: any;
+};
+type ImpressionData$10 = {
+  group_id_list_a: unknown[];
+  group_id_list_b: unknown[];
+  group_id_list_c: unknown[];
+  group_id_list_d: unknown[];
+  similar_id_list_a: null;
+  similar_id_list_b: null;
+  [property: string]: any;
+};
+type ItemWarnNotification$8 = {
+  content: string;
+  show: boolean;
+  type: number;
+  [property: string]: any;
+};
+type MixInfo$3 = {
+  cover_url: AvatarThumb$6;
+  create_time: number;
+  dark_icon_url: AvatarThumb$6;
+  desc: string;
+  enable_ad: number;
+  extra: string;
+  ids: null;
+  is_iaa: number;
+  is_serial_mix: number;
+  light_icon_url: AvatarThumb$6;
+  mix_id: string;
+  mix_name: string;
+  mix_type: number;
+  paid_episodes: null;
+  series_new_mix_info: SeriesNewMixInfo;
+  share_info: ShareInfo2$1;
+  statis: Statis$3;
+  status: Status$7;
+  update_time: number;
+  watched_item: string;
+  [property: string]: any;
+};
+type SeriesNewMixInfo = {
+  content_sub_type: number;
+  [property: string]: any;
+};
+type ShareInfo2$1 = {
+  share_desc: string;
+  share_desc_info: string;
+  share_title: string;
+  share_title_myself: string;
+  share_title_other: string;
+  share_url: string;
+  share_weibo_desc: string;
+  [property: string]: any;
+};
+type Statis$3 = {
+  collect_vv: number;
+  current_episode: number;
+  play_vv: number;
+  updated_to_episode: number;
+  [property: string]: any;
+};
+type Status$7 = {
+  is_collected: number;
+  status: number;
+  [property: string]: any;
+};
+type Music$10 = {
+  album: string;
+  artist_user_infos: null;
+  artists: unknown[];
+  audition_duration: number;
+  author: string;
+  author_deleted: boolean;
+  author_position: null;
+  author_status: number;
+  avatar_large: AvatarThumb$6;
+  avatar_medium: AvatarThumb$6;
+  avatar_thumb: AvatarThumb$6;
+  binded_challenge_id: number;
+  can_background_play: boolean;
+  collect_stat: number;
+  cover_hd: AvatarThumb$6;
+  cover_large: AvatarThumb$6;
+  cover_medium: AvatarThumb$6;
+  cover_thumb: AvatarThumb$6;
+  dmv_auto_show: boolean;
+  dsp_status: number;
+  duration: number;
+  end_time: number;
+  external_song_info: unknown[];
+  extra: string;
+  id: number;
+  id_str: string;
+  is_audio_url_with_cookie: boolean;
+  is_commerce_music: boolean;
+  is_del_video: boolean;
+  is_matched_metadata: boolean;
+  is_original: boolean;
+  is_original_sound: boolean;
+  is_pgc: boolean;
+  is_restricted: boolean;
+  is_video_self_see: boolean;
+  lyric_short_position: null;
+  mid: string;
+  music_chart_ranks: null;
+  music_collect_count: number;
+  music_cover_atmosphere_color_value: string;
+  music_status: number;
+  musician_user_infos: null;
+  mute_share: boolean;
+  offline_desc: string;
+  owner_handle: string;
+  owner_id: string;
+  owner_nickname: string;
+  pgc_music_type: number;
+  play_url: Icon$5;
+  position: null;
+  prevent_download: boolean;
+  prevent_item_download_status: number;
+  preview_end_time: number;
+  preview_start_time: number;
+  reason_type: number;
+  redirect: boolean;
+  schema_url: string;
+  search_impr: SearchImpr$9;
+  sec_uid: string;
+  shoot_duration: number;
+  show_origin_clip: boolean;
+  source_platform: number;
+  start_time: number;
+  status: number;
+  tag_list: null;
+  talent_hashtag_name_list: null;
+  title: string;
+  unshelve_countries: null;
+  user_count: number;
+  video_duration: number;
+  [property: string]: any;
+};
+type SearchImpr$9 = {
+  entity_id: string;
+  [property: string]: any;
+};
+type PhotoSearchEntrance$8 = {
+  ecom_type: number;
+  [property: string]: any;
+};
+type PlayProgress$8 = {
+  last_modified_time: number;
+  play_progress: number;
+  [property: string]: any;
+};
+type ProductGenreInfo$3 = {
+  material_genre_sub_type_set: number[];
+  product_genre_type: number;
+  special_info: SpecialInfo$3;
+  [property: string]: any;
+};
+type SpecialInfo$3 = {
+  recommend_group_name: number;
+  [property: string]: any;
+};
+type PublishPlusAlienation$8 = {
+  alienation_type: number;
+  [property: string]: any;
+};
+type RelationLabel$1 = {
+  count: number;
+  extra: string;
+  label_info: string;
+  type: number;
+  user_id: string;
+  user_list: User$11[];
+  [property: string]: any;
+};
+type RiskInfos$8 = {
+  content: string;
+  icon_url: string;
+  risk_sink: boolean;
+  type: number;
+  vote: boolean;
+  warn: boolean;
+  warn_level: number;
+  [property: string]: any;
+};
+type SeriesBasicInfo = {
+  series_author_id?: string;
+  series_id?: string;
+  [property: string]: any;
+};
+type SeriesInfo = {
+  actors: null;
+  content_sub_type: number;
+  cover_url: AvatarThumb$6;
+  create_time: number;
+  dark_icon_url: AvatarThumb$6;
+  desc: string;
+  directors: unknown[];
+  enable_use_new_ent_data: boolean;
+  entertainment_suggest_info: string;
+  extra: string;
+  ids: null;
+  is_charge_series: number;
+  is_exclusive: boolean;
+  is_iaa: number;
+  light_icon_url: AvatarThumb$6;
+  paid_episodes: null;
+  real_name: string;
+  recommend_color: null;
+  rights_info: RightsInfo;
+  series_content_types: SeriesContentType[];
+  series_content_types_new: unknown[];
+  series_form_type: number;
+  series_id: string;
+  series_interactive: SeriesInteractive;
+  series_name: string;
+  series_paid_type_list: null;
+  series_type: number;
+  series_ui_config: SeriesUiConfig;
+  share_info: ShareInfo2$1;
+  stats: Stats$2;
+  status: Status2;
+  update_time: number;
+  watched_item: string;
+  [property: string]: any;
+};
+type RightsInfo = {
+  has_paid: boolean;
+  [property: string]: any;
+};
+type SeriesContentType = {
+  name: string;
+  series_content_type: number;
+  [property: string]: any;
+};
+type SeriesInteractive = {
+  enable_config: boolean;
+  interactive_config: InteractiveConfig;
+  [property: string]: any;
+};
+type InteractiveConfig = {
+  collection_button_copy: string;
+  display_detail_edit_button: boolean;
+  hide_desk_guide: boolean;
+  hide_find_top_tab: boolean;
+  hide_intro_card: boolean;
+  hide_intro_card_details_module: boolean;
+  hide_intro_card_tags: boolean;
+  hide_more_series_bottom_btn: boolean;
+  hide_more_series_module: boolean;
+  hide_recommendation_module: boolean;
+  more_series_module_copy: string;
+  recommendation_module_title_copy: string;
+  unlock_button_copy: string;
+  [property: string]: any;
+};
+type SeriesUiConfig = {
+  collection_button: CollectionButton;
+  general_position_tag_infos: null;
+  series_bar_button_infos: SeriesBarButtonInfo[];
+  [property: string]: any;
+};
+type CollectionButton = {
+  text: string;
+  [property: string]: any;
+};
+type SeriesBarButtonInfo = {
+  button_text: string;
+  click_type: number;
+  condition_material_types: number[];
+  [property: string]: any;
+};
+type Stats$2 = {
+  collect_vv: number;
+  current_episode: number;
+  last_added_item_time: number;
+  play_vv: number;
+  total_duration: number;
+  total_episode: number;
+  updated_to_episode: number;
+  [property: string]: any;
+};
+type Status2 = {
+  is_collected: number;
+  status: number;
+  status_desc: string;
+  [property: string]: any;
+};
+type SeriesMaterialInfo = {
+  material_type: number;
+  [property: string]: any;
+};
+type SeriesPaidInfo$8 = {
+  item_price: number;
+  series_paid_status: number;
+  [property: string]: any;
+};
+type SeriesPlayInfo = {
+  item_title_prefix: CollectionButton;
+  outflow_continue_play_info?: OutflowContinuePlayInfo;
+  series_aweme_index: number;
+  [property: string]: any;
+};
+type OutflowContinuePlayInfo = {
+  next_item_episode: number;
+  [property: string]: any;
+};
+type ShareInfo3 = {
+  share_link_desc: string;
+  share_url: string;
+  [property: string]: any;
+};
+type StarAtlasInfo$2 = {
+  click_track_url_list: null;
+  log_extra: string;
+  track_url_list: null;
+  [property: string]: any;
+};
+type Statistics$10 = {
+  admire_count: number;
+  collect_count: number;
+  comment_count: number;
+  digg_count: number;
+  play_count: number;
+  recommend_count: number;
+  share_count: number;
+  [property: string]: any;
+};
+type Status3 = {
+  allow_friend_recommend: boolean;
+  allow_friend_recommend_guide: boolean;
+  allow_self_recommend_to_friend: boolean;
+  allow_share: boolean;
+  enable_soft_delete: number;
+  in_reviewing: boolean;
+  is_delete: boolean;
+  is_prohibited: boolean;
+  listen_video_status: number;
+  not_allow_soft_del_reason: string;
+  part_see: number;
+  private_status: number;
+  review_result: ReviewResult$10;
+  [property: string]: any;
+};
+type ReviewResult$10 = {
+  review_status: number;
+  [property: string]: any;
+};
+type SuggestWords$9 = {
+  suggest_words: SuggestWord$9[];
+  [property: string]: any;
+};
+type SuggestWord$9 = {
+  extra_info: string;
+  hint_text: string;
+  icon_url: string;
+  scene: string;
+  words: Word$11[];
+  [property: string]: any;
+};
+type Word$11 = {
+  info: string;
+  word: string;
+  word_id: string;
+  [property: string]: any;
+};
+type TextExtra$9 = {
+  caption_end: number;
+  caption_start: number;
+  end: number;
+  hashtag_id?: string;
+  hashtag_name?: string;
+  is_commerce?: boolean;
+  sec_uid?: string;
+  start: number;
+  type: number;
+  user_id?: string;
+  [property: string]: any;
+};
+type Video$11 = {
+  animated_cover: AnimatedCover$3;
+  audio: Audio$5;
+  big_thumbs: BigThumb$7[];
+  bit_rate: BitRate$6[];
+  bit_rate_audio: BitRateAudio$4[];
+  cover: AvatarThumb$6;
+  duration: number;
+  dynamic_cover: AvatarThumb$6;
+  format: string;
+  gaussian_cover: AvatarThumb$6;
+  height: number;
+  horizontal_type: number;
+  is_long_video?: number;
+  is_source_HDR: number;
+  meta: string;
+  misc_download_addrs?: string;
+  origin_cover: AvatarThumb$6;
+  play_addr: PlayAddr2$1;
+  play_addr_265: PlayAddr2$1;
+  play_addr_h264: PlayAddr2$1;
+  ratio: string;
+  raw_cover: AvatarThumb$6;
+  use_static_cover: boolean;
+  video_model: string;
+  width: number;
+  [property: string]: any;
+};
+type AnimatedCover$3 = {
+  uri: string;
+  url_list: string[];
+  [property: string]: any;
+};
+type Audio$5 = {
+  original_sound_infos: null;
+  [property: string]: any;
+};
+type BigThumb$7 = {
+  duration: number;
+  fext: string;
+  img_num: number;
+  img_url: string;
+  img_urls: string[];
+  img_x_len: number;
+  img_x_size: number;
+  img_y_len: number;
+  img_y_size: number;
+  interval: number;
+  uri: string;
+  uris: string[];
+  [property: string]: any;
+};
+type BitRate$6 = {
+  FPS: number;
+  HDR_bit: string;
+  HDR_type: string;
+  bit_rate: number;
+  format: string;
+  gear_name: string;
+  is_bytevc1: number;
+  is_h265: number;
+  play_addr: PlayAddr$3;
+  quality_type: number;
+  video_extra: string;
+  [property: string]: any;
+};
+type PlayAddr$3 = {
+  data_size: number;
+  file_cs?: string;
+  file_hash: string;
+  height: number;
+  uri: string;
+  url_key: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type BitRateAudio$4 = {
+  audio_extra: string;
+  audio_meta: AudioMeta$4;
+  audio_quality: number;
+  [property: string]: any;
+};
+type AudioMeta$4 = {
+  bitrate: number;
+  codec_type: string;
+  encoded_type: string;
+  file_hash: string;
+  file_id: string;
+  format: string;
+  fps: number;
+  logo_type: string;
+  media_type: string;
+  quality: string;
+  quality_desc: string;
+  size: number;
+  sub_info: string;
+  url_list: UrlList$4;
+  [property: string]: any;
+};
+type UrlList$4 = {
+  backup_url: string;
+  fallback_url: string;
+  main_url: string;
+  [property: string]: any;
+};
+type PlayAddr2$1 = {
+  data_size: number;
+  file_cs: string;
+  file_hash: string;
+  height: number;
+  uri: string;
+  url_key: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type VideoControl$10 = {
+  allow_douplus: boolean;
+  allow_download: boolean;
+  allow_duet: boolean;
+  allow_dynamic_wallpaper: boolean;
+  allow_music: boolean;
+  allow_react: boolean;
+  allow_record: boolean;
+  allow_share: boolean;
+  allow_stitch: boolean;
+  disable_record_reason: string;
+  download_ignore_visibility: boolean;
+  download_info: DownloadInfo$10;
+  draft_progress_bar: number;
+  duet_ignore_visibility: boolean;
+  duet_info: DuetInfo$10;
+  prevent_download_type: number;
+  share_grayed: boolean;
+  share_ignore_visibility: boolean;
+  share_type: number;
+  show_ai_corner: boolean;
+  show_progress_bar: number;
+  show_watermark: boolean;
+  timer_info: TimerInfo$2;
+  timer_status: number;
+  [property: string]: any;
+};
+type DownloadInfo$10 = {
+  fail_info: FailInfo$2;
+  level: number;
+  [property: string]: any;
+};
+type FailInfo$2 = {
+  code: number;
+  reason: string;
+  [property: string]: any;
+};
+type DuetInfo$10 = {
+  level: number;
+  [property: string]: any;
+};
+type TimerInfo$2 = {
+  public_time?: number;
+  timer_status?: number;
+  [property: string]: any;
+};
+type VideoTag$8 = {
+  level: number;
+  tag_id: number;
+  tag_name: string;
+  [property: string]: any;
+};
+type VisualSearchInfo$8 = {
+  is_ecom_img: boolean;
+  is_high_accuracy_ecom: boolean;
+  is_high_recall_ecom: boolean;
+  is_show_img_entrance: boolean;
+  visual_search_longpress?: number;
+  [property: string]: any;
+};
+type VtagSearch$5 = {
+  vtag_delay_ts: number;
+  vtag_enable: boolean;
+  [property: string]: any;
+};
+type XiguaBaseInfo$8 = {
+  item_id: number;
+  star_altar_order_id: number;
+  star_altar_type: number;
+  status: number;
+  [property: string]: any;
+};
+type LogPb$17 = {
+  impr_id: string;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/douyin/UserVideoList/index.d.ts
+type UserVideoListSuccess = UserVideoList_V0;
+type UserVideoListError = never;
+type UserVideoList = UserVideoListSuccess | UserVideoListError;
+//#endregion
+//#region ../response-types/dist/generated/douyin/VideoWork/VideoWork_Error_V0.d.ts
+type VideoWork_Error_V0 = {
+  aweme_detail: null;
+  filter_detail: FilterDetail;
+  log_pb: LogPb$16;
+  status_code: number;
+  [property: string]: any;
+};
+type FilterDetail = {
+  aweme_id: string;
+  detail_msg: string;
+  filter_reason: string;
+  icon: string;
+  notice: string;
+  [property: string]: any;
+};
+type LogPb$16 = {
+  impr_id: string;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/douyin/VideoWork/VideoWork_V0.d.ts
+type VideoWork_V0$1 = {
+  aweme_detail: AwemeDetail$4;
+  log_pb: LogPb$15;
+  status_code: number;
+  [property: string]: any;
+};
+type AwemeDetail$4 = {
+  activity_video_type: number;
+  anchor_info?: AnchorInfo$3;
+  anchors: null;
+  authentication_token: string;
+  author: Author$10;
+  author_mask_tag: number;
+  author_user_id: number;
+  aweme_acl?: AwemeAcl;
+  aweme_control: AwemeControl$7;
+  aweme_id: string;
+  aweme_listen_struct: AwemeListenStruct$7;
+  aweme_type: number;
+  aweme_type_tags: string;
+  boost_status: number;
+  can_be_oc_cover: boolean;
+  can_cache_to_local: boolean;
+  caption: string;
+  cf_assets_type: number;
+  cf_recheck_ts: number;
+  challenge_position: null;
+  chapter_abstract?: string;
+  chapter_data?: ChapterData$1;
+  chapter_list: ChapterList$1[] | null;
+  chapter_review_status?: number;
+  collect_stat: number;
+  collection_corner_mark: number;
+  comment_gid: number;
+  comment_list: null;
+  comment_permission_info: CommentPermissionInfo$7;
+  commerce_config_data: null;
+  component_control: ComponentControl$7;
+  component_info_v2: string;
+  cover_labels: null;
+  create_time: number;
+  danmaku_control: DanmakuControl$6;
+  desc: string;
+  disable_relation_bar: number;
+  dislike_dimension_list: null;
+  dislike_dimension_list_v2: null;
+  distribute_circle: DistributeCircle$7;
+  diversion_bar_info: unknown[];
+  douplus_user_type: number;
+  douyin_pc_video_extra_seo: string;
+  duet_aggregate_in_music_tab: boolean;
+  duration: number;
+  ecom_comment_atmosphere_type: number;
+  enable_comment_sticker_rec: boolean;
+  enable_decorated_emoji: boolean;
+  ent_log_extra: EntLogExtra$2;
+  entertainment_product_info: EntertainmentProductInfo$9;
+  entertainment_recommend_info: string;
+  entertainment_video_paid_way: EntertainmentVideoPaidWay$3;
+  entertainment_video_type: number;
+  f_s_grouth_property: FSGrouthProperty;
+  fall_card_struct: FallCardStruct$5;
+  feed_comment_config: FeedCommentConfig$7;
+  feed_component_decision_reasons?: string;
+  flash_mob_trends: number;
+  follow_shoot_clip_info: FollowShootClipInfo$3;
+  follow_shoot_property: FollowShootProperty;
+  friend_recommend_info: FriendRecommendInfo$3;
+  galileo_pad_textcrop: GalileoPadTextcrop$2;
+  game_tag_info: GameTagInfo$7;
+  geofencing: unknown[];
+  geofencing_regions: null;
+  group_id: string;
+  guide_scene_info: {
+    [property: string]: any;
+  };
+  history_progress_rate?: string;
+  horizontal_type: number;
+  hybrid_label: null;
+  image_album_music_info: ImageAlbumMusicInfo$7;
+  image_comment: ImageComment;
+  image_crop_ctrl: number;
+  image_infos: null;
+  image_list: null;
+  images: null;
+  img_bitrate: null;
+  impression_data: ImpressionData$9;
+  incentive_item_type: number;
+  interaction_stickers: null;
+  is_24_story: number;
+  is_25_story: number;
+  is_ads: boolean;
+  is_aigc_media: boolean;
+  is_collects_selected: number;
+  is_duet_sing: boolean;
+  is_from_ad_auth: boolean;
+  is_image_beat: boolean;
+  is_life_item: boolean;
+  is_moment_history: number;
+  is_moment_story: number;
+  is_new_text_mode: number;
+  is_share_post: boolean;
+  is_story: number;
+  is_top: number;
+  is_use_music: boolean;
+  item_aigc_follow_shot: number;
+  item_title: string;
+  item_warn_notification: ItemWarnNotification$7;
+  label_top_text: null;
+  libfinsert_task_id: string;
+  long_video: null;
+  mark_largely_following: boolean;
+  media_type: number;
+  music: Music$9;
+  nickname_position: null;
+  origin_comment_ids: null;
+  origin_duet_resource_uri: string;
+  origin_text_extra: unknown[];
+  original: number;
+  original_anchor_type?: number;
+  original_images: null;
+  pack_usage_scene_by_req_path: string;
+  packed_clips: null;
+  pc_need_login: boolean;
+  personal_page_botton_diagnose_style: number;
+  photo_search_entrance: PhotoSearchEntrance$7;
+  play_progress: PlayProgress$7;
+  position: null;
+  preview_title: string;
+  preview_video_status: number;
+  product_genre_info: ProductGenreInfo$2;
+  promotions: unknown[];
+  publish_plus_alienation: PublishPlusAlienation$7;
+  rate: number;
+  recommend_chapter_apply_status?: number;
+  region: string;
+  relation_labels: null;
+  risk_infos: RiskInfos$7;
+  sec_item_id: string;
+  select_anchor_expanded_content: number;
+  seo_info: {
+    [property: string]: any;
+  };
+  series_basic_info: {
+    [property: string]: any;
+  };
+  series_paid_info: SeriesPaidInfo$7;
+  share_info: ShareInfo2;
+  share_rec_extra: string;
+  share_url: string;
+  shoot_way: string;
+  should_open_ad_report: boolean;
+  show_follow_button: {
+    [property: string]: any;
+  };
+  social_tag_list: null;
+  statistics: Statistics$9;
+  status: Status$6;
+  suggest_words: SuggestWords$8;
+  text_extra: TextExtra$8[];
+  trends_event_track: string;
+  uniqid_position: null;
+  user_digged: number;
+  user_recommend_status: number;
+  video: Video$10;
+  video_control: VideoControl$9;
+  video_game_data_channel_config: {
+    [property: string]: any;
+  };
+  video_labels: null;
+  video_share_edit_status: number;
+  video_tag: VideoTag$7[];
+  video_text: unknown[];
+  visual_search_info: VisualSearchInfo$7;
+  vtag_search: VtagSearch$4;
+  xigua_base_info: XiguaBaseInfo$7;
+  [property: string]: any;
+};
+type AnchorInfo$3 = {
+  content: string;
+  extra: string;
+  icon: Icon$4;
+  id: string;
+  log_extra: string;
+  mp_url: string;
+  open_url: string;
+  style_info: StyleInfo$3;
+  title: string;
+  title_tag: string;
+  type: number;
+  web_url: string;
+  [property: string]: any;
+};
+type Icon$4 = {
+  height: number;
+  uri: string;
+  url_key: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type StyleInfo$3 = {
+  default_icon: string;
+  extra: string;
+  scene_icon: string;
+  [property: string]: any;
+};
+type Author$10 = {
+  account_cert_info: string;
+  avatar_thumb: AvatarThumb$5;
+  awemehts_greet_info: string;
+  cf_list: null;
+  close_friend_type: number;
+  contacts_status: number;
+  contrail_list: null;
+  cover_url: AvatarThumb$5[];
+  create_time: number;
+  custom_verify: string;
+  data_label_list: null;
+  endorsement_info_list: null;
+  enterprise_verify_reason: string;
+  favoriting_count: number;
+  follow_status: number;
+  follower_count: number;
+  follower_list_secondary_information_struct: null;
+  follower_status: number;
+  following_count: number;
+  hide_others_recommend_interest: number;
+  hide_self_recommend_interest: number;
+  im_role_ids: null;
+  is_ad_fake: boolean;
+  is_blocked_v2: boolean;
+  is_blocking_v2: boolean;
+  is_cf: number;
+  live_high_value: number;
+  mate_add_permission: number;
+  max_follower_count: number;
+  nickname: string;
+  offline_info_list: null;
+  personal_tag_list: null;
+  prevent_download: boolean;
+  risk_notice_text: string;
+  sec_uid: string;
+  secret: number;
+  share_info: ShareInfo$5;
+  short_id: string;
+  signature: string;
+  signature_extra: null;
+  special_follow_status: number;
+  special_people_labels: null;
+  status: number;
+  story25_comment: number;
+  story_interactive: number;
+  story_ttl: number;
+  text_extra: null;
+  total_favorited: number;
+  uid: string;
+  unique_id: string;
+  user_age: number;
+  user_canceled: boolean;
+  user_permissions: null;
+  verification_type: number;
+  [property: string]: any;
+};
+type AvatarThumb$5 = {
+  height: number;
+  uri: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type ShareInfo$5 = {
+  share_desc: string;
+  share_desc_info: string;
+  share_qrcode_url: AvatarThumb$5;
+  share_title: string;
+  share_title_myself: string;
+  share_title_other: string;
+  share_url: string;
+  share_weibo_desc: string;
+  [property: string]: any;
+};
+type AwemeAcl = {
+  download_mask_panel: DownloadMaskPanel$3;
+  [property: string]: any;
+};
+type DownloadMaskPanel$3 = {
+  code: number;
+  show_type: number;
+  [property: string]: any;
+};
+type AwemeControl$7 = {
+  can_comment: boolean;
+  can_forward: boolean;
+  can_share: boolean;
+  can_show_comment: boolean;
+  [property: string]: any;
+};
+type AwemeListenStruct$7 = {
+  trace_info: string;
+  [property: string]: any;
+};
+type ChapterData$1 = {
+  recommend_type: string;
+  [property: string]: any;
+};
+type ChapterList$1 = {
+  desc: string;
+  detail: string;
+  timestamp: number;
+  url: string;
+  [property: string]: any;
+};
+type CommentPermissionInfo$7 = {
+  can_comment: boolean;
+  comment_permission_status: number;
+  item_detail_entry: boolean;
+  press_entry: boolean;
+  toast_guide: boolean;
+  [property: string]: any;
+};
+type ComponentControl$7 = {
+  data_source_url: string;
+  [property: string]: any;
+};
+type DanmakuControl$6 = {
+  activities: Activity$6[];
+  danmaku_cnt: number;
+  enable_danmaku: boolean;
+  first_danmaku_offset?: number;
+  is_post_denied: boolean;
+  last_danmaku_offset?: number;
+  pass_through_params: string;
+  post_denied_reason: string;
+  post_privilege_level: number;
+  skip_danmaku: boolean;
+  smart_mode_decision: number;
+  [property: string]: any;
+};
+type Activity$6 = {
+  id: number;
+  type: number;
+  [property: string]: any;
+};
+type DistributeCircle$7 = {
+  campus_block_interaction: boolean;
+  distribute_type: number;
+  is_campus: boolean;
+  [property: string]: any;
+};
+type EntLogExtra$2 = {
+  log_extra: string;
+  [property: string]: any;
+};
+type EntertainmentProductInfo$9 = {
+  market_info: MarketInfo$9;
+  [property: string]: any;
+};
+type MarketInfo$9 = {
+  limit_free: LimitFree$9;
+  [property: string]: any;
+};
+type LimitFree$9 = {
+  in_free: boolean;
+  [property: string]: any;
+};
+type EntertainmentVideoPaidWay$3 = {
+  enable_use_new_ent_data: boolean;
+  paid_type: number;
+  paid_ways: unknown[];
+  [property: string]: any;
+};
+type FSGrouthProperty = {
+  is_client_pack: boolean;
+  is_natural_traffic: boolean;
+  is_related_path: boolean;
+  [property: string]: any;
+};
+type FallCardStruct$5 = {
+  recommend_reason?: string;
+  recommend_reason_v2: string;
+  [property: string]: any;
+};
+type FeedCommentConfig$7 = {
+  audio_comment_permission: number;
+  author_audit_status: number;
+  common_comment_permission: number;
+  common_flags: string;
+  double_publish?: number;
+  double_publish_limit: number;
+  input_config_text: string;
+  input_config_text_type: string;
+  [property: string]: any;
+};
+type FollowShootClipInfo$3 = {
+  clip_from_user: number;
+  clip_video_all: number;
+  [property: string]: any;
+};
+type FollowShootProperty = {
+  recommended_camera_mode: string;
+  [property: string]: any;
+};
+type FriendRecommendInfo$3 = {
+  disable_friend_recommend_guide_label: boolean;
+  friend_recommend_source: number;
+  [property: string]: any;
+};
+type GalileoPadTextcrop$2 = {
+  android_d_h_cut_ratio: number[];
+  android_d_v_cut_ratio: number[];
+  ipad_d_h_cut_ratio: number[];
+  ipad_d_v_cut_ratio: number[];
+  version: number;
+  [property: string]: any;
+};
+type GameTagInfo$7 = {
+  content_type_tag?: ContentTypeTag$2;
+  game_name_tag?: GameNameTag$2;
+  is_game: boolean;
+  [property: string]: any;
+};
+type ContentTypeTag$2 = {
+  tag_id: number;
+  tag_name: string;
+  [property: string]: any;
+};
+type GameNameTag$2 = {
+  game_id_list: string[];
+  tag_id: number;
+  tag_name: string;
+  [property: string]: any;
+};
+type ImageAlbumMusicInfo$7 = {
+  begin_time: number;
+  end_time: number;
+  volume: number;
+  [property: string]: any;
+};
+type ImageComment = {
+  comment_highlight_text: string;
+  [property: string]: any;
+};
+type ImpressionData$9 = {
+  group_id_list_a: unknown[];
+  group_id_list_b: unknown[];
+  group_id_list_c: unknown[];
+  group_id_list_d: unknown[];
+  similar_id_list_a: null;
+  similar_id_list_b: null;
+  [property: string]: any;
+};
+type ItemWarnNotification$7 = {
+  content: string;
+  show: boolean;
+  type: number;
+  [property: string]: any;
+};
+type Music$9 = {
+  album: string;
+  artist_user_infos: null;
+  artists: unknown[];
+  audition_duration: number;
+  author: string;
+  author_deleted: boolean;
+  author_position: null;
+  author_status: number;
+  avatar_large: AvatarThumb$5;
+  avatar_medium: AvatarThumb$5;
+  avatar_thumb: AvatarThumb$5;
+  binded_challenge_id: number;
+  can_background_play: boolean;
+  collect_stat: number;
+  cover_hd: AvatarThumb$5;
+  cover_large: AvatarThumb$5;
+  cover_medium: AvatarThumb$5;
+  cover_thumb: AvatarThumb$5;
+  dmv_auto_show: boolean;
+  dsp_status: number;
+  duration: number;
+  end_time: number;
+  external_song_info: unknown[];
+  extra: string;
+  id: number;
+  id_str: string;
+  is_audio_url_with_cookie: boolean;
+  is_commerce_music: boolean;
+  is_del_video: boolean;
+  is_matched_metadata: boolean;
+  is_original: boolean;
+  is_original_sound: boolean;
+  is_pgc: boolean;
+  is_restricted: boolean;
+  is_video_self_see: boolean;
+  lyric_short_position: null;
+  matched_pgc_sound?: MatchedPgcSound$7;
+  mid: string;
+  music_chart_ranks: null;
+  music_collect_count: number;
+  music_cover_atmosphere_color_value: string;
+  music_status: number;
+  musician_user_infos: null;
+  mute_share: boolean;
+  offline_desc: string;
+  owner_handle: string;
+  owner_id: string;
+  owner_nickname: string;
+  pgc_music_type: number;
+  play_url: Icon$4;
+  position: null;
+  prevent_download: boolean;
+  prevent_item_download_status: number;
+  preview_end_time: number;
+  preview_start_time: number;
+  reason_type: number;
+  redirect: boolean;
+  schema_url: string;
+  search_impr: SearchImpr$8;
+  sec_uid: string;
+  shoot_duration: number;
+  show_origin_clip: boolean;
+  song?: Song$8;
+  source_platform: number;
+  start_time: number;
+  status: number;
+  tag_list: null;
+  title: string;
+  unshelve_countries: null;
+  user_count: number;
+  video_duration: number;
+  [property: string]: any;
+};
+type MatchedPgcSound$7 = {
+  author: string;
+  cover_medium: AvatarThumb$5;
+  mixed_author: string;
+  mixed_title: string;
+  title: string;
+  [property: string]: any;
+};
+type SearchImpr$8 = {
+  entity_id: string;
+  [property: string]: any;
+};
+type Song$8 = {
+  artists: null;
+  id: number;
+  id_str: string;
+  [property: string]: any;
+};
+type PhotoSearchEntrance$7 = {
+  ecom_type: number;
+  [property: string]: any;
+};
+type PlayProgress$7 = {
+  last_modified_time: number;
+  play_progress: number;
+  [property: string]: any;
+};
+type ProductGenreInfo$2 = {
+  material_genre_sub_type_set: number[];
+  product_genre_type: number;
+  special_info: SpecialInfo$2;
+  [property: string]: any;
+};
+type SpecialInfo$2 = {
+  recommend_group_name: number;
+  [property: string]: any;
+};
+type PublishPlusAlienation$7 = {
+  alienation_type: number;
+  [property: string]: any;
+};
+type RiskInfos$7 = {
+  content: string;
+  risk_sink: boolean;
+  type: number;
+  vote: boolean;
+  warn: boolean;
+  [property: string]: any;
+};
+type SeriesPaidInfo$7 = {
+  item_price: number;
+  series_paid_status: number;
+  [property: string]: any;
+};
+type ShareInfo2 = {
+  share_desc: string;
+  share_desc_info: string;
+  share_link_desc: string;
+  share_url: string;
+  [property: string]: any;
+};
+type Statistics$9 = {
+  admire_count: number;
+  aweme_id: string;
+  collect_count: number;
+  comment_count: number;
+  digg_count: number;
+  play_count: number;
+  recommend_count: number;
+  share_count: number;
+  [property: string]: any;
+};
+type Status$6 = {
+  allow_friend_recommend: boolean;
+  allow_friend_recommend_guide: boolean;
+  allow_self_recommend_to_friend: boolean;
+  allow_share: boolean;
+  aweme_id: string;
+  enable_soft_delete: number;
+  in_reviewing: boolean;
+  is_delete: boolean;
+  is_prohibited: boolean;
+  listen_video_status: number;
+  not_allow_soft_del_reason: string;
+  part_see: number;
+  private_status: number;
+  review_result: ReviewResult$9;
+  [property: string]: any;
+};
+type ReviewResult$9 = {
+  review_status: number;
+  [property: string]: any;
+};
+type SuggestWords$8 = {
+  suggest_words: SuggestWord$8[];
+  [property: string]: any;
+};
+type SuggestWord$8 = {
+  extra_info: string;
+  hint_text: string;
+  icon_url: string;
+  scene: string;
+  words: Word$10[];
+  [property: string]: any;
+};
+type Word$10 = {
+  info: string;
+  word: string;
+  word_id: string;
+  [property: string]: any;
+};
+type TextExtra$8 = {
+  caption_end: number;
+  caption_start: number;
+  end: number;
+  hashtag_id: string;
+  hashtag_name: string;
+  is_commerce: boolean;
+  start: number;
+  type: number;
+  [property: string]: any;
+};
+type Video$10 = {
+  audio: {
+    [property: string]: any;
+  };
+  big_thumbs: BigThumb$6[];
+  bit_rate: BitRate$5[];
+  bit_rate_audio: BitRateAudio$3[];
+  cdn_url_expired: number;
+  cover: AvatarThumb$5;
+  cover_original_scale: AvatarThumb$5;
+  download_addr: DownloadAddr$5;
+  download_suffix_logo_addr: DownloadAddr$5;
+  duration: number;
+  dynamic_cover: AvatarThumb$5;
+  format: string;
+  gaussian_cover: AvatarThumb$5;
+  has_download_suffix_logo_addr: boolean;
+  has_watermark: boolean;
+  height: number;
+  horizontal_type: number;
+  is_h265: number;
+  is_long_video: number;
+  is_source_HDR: number;
+  meta: string;
+  origin_cover: AvatarThumb$5;
+  play_addr: PlayAddr2;
+  play_addr_265: PlayAddr2;
+  play_addr_h264: PlayAddr2;
+  ratio: string;
+  video_model: string;
+  width: number;
+  [property: string]: any;
+};
+type BigThumb$6 = {
+  duration: number;
+  fext: string;
+  img_num: number;
+  img_url: string;
+  img_urls: string[];
+  img_x_len: number;
+  img_x_size: number;
+  img_y_len: number;
+  img_y_size: number;
+  interval: number;
+  uri: string;
+  uris: string[];
+  [property: string]: any;
+};
+type BitRate$5 = {
+  FPS: number;
+  HDR_bit: string;
+  HDR_type: string;
+  bit_rate: number;
+  format: string;
+  gear_name: string;
+  is_bytevc1: number;
+  is_h265: number;
+  play_addr: PlayAddr$2;
+  quality_type: number;
+  video_extra: string;
+  [property: string]: any;
+};
+type PlayAddr$2 = {
+  data_size: number;
+  file_cs?: string;
+  file_hash: string;
+  height: number;
+  uri: string;
+  url_key: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type BitRateAudio$3 = {
+  audio_extra: string;
+  audio_meta: AudioMeta$3;
+  audio_quality: number;
+  [property: string]: any;
+};
+type AudioMeta$3 = {
+  bitrate: number;
+  codec_type: string;
+  encoded_type: string;
+  file_hash: string;
+  file_id: string;
+  format: string;
+  fps: number;
+  logo_type: string;
+  media_type: string;
+  quality: string;
+  quality_desc: string;
+  size: number;
+  sub_info: string;
+  url_list: UrlList$3;
+  [property: string]: any;
+};
+type UrlList$3 = {
+  backup_url: string;
+  fallback_url: string;
+  main_url: string;
+  [property: string]: any;
+};
+type DownloadAddr$5 = {
+  data_size: number;
+  file_cs: string;
+  height: number;
+  uri: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type PlayAddr2 = {
+  data_size: number;
+  file_cs: string;
+  file_hash: string;
+  height: number;
+  uri: string;
+  url_key: string;
+  url_list: string[];
+  width: number;
+  [property: string]: any;
+};
+type VideoControl$9 = {
+  allow_douplus: boolean;
+  allow_download: boolean;
+  allow_duet: boolean;
+  allow_dynamic_wallpaper: boolean;
+  allow_music: boolean;
+  allow_react: boolean;
+  allow_record: boolean;
+  allow_share: boolean;
+  allow_stitch: boolean;
+  disable_record_reason: string;
+  download_ignore_visibility: boolean;
+  download_info: DownloadInfo$9;
+  draft_progress_bar: number;
+  duet_ignore_visibility: boolean;
+  duet_info: DuetInfo$9;
+  prevent_download_type: number;
+  share_grayed: boolean;
+  share_ignore_visibility: boolean;
+  share_type: number;
+  show_ai_corner: boolean;
+  show_progress_bar: number;
+  show_watermark: boolean;
+  timer_info: {
+    [property: string]: any;
+  };
+  timer_status: number;
+  [property: string]: any;
+};
+type DownloadInfo$9 = {
+  fail_info?: FailInfo$1;
+  level: number;
+  [property: string]: any;
+};
+type FailInfo$1 = {
+  code: number;
+  msg: string;
+  reason: string;
+  [property: string]: any;
+};
+type DuetInfo$9 = {
+  fail_info?: FailInfo2;
+  level: number;
+  [property: string]: any;
+};
+type FailInfo2 = {
+  code: number;
+  reason: string;
+  [property: string]: any;
+};
+type VideoTag$7 = {
+  level: number;
+  tag_id: number;
+  tag_name: string;
+  [property: string]: any;
+};
+type VisualSearchInfo$7 = {
+  is_ecom_img: boolean;
+  is_high_accuracy_ecom: boolean;
+  is_high_recall_ecom: boolean;
+  is_show_img_entrance: boolean;
+  visual_search_longpress: number;
+  [property: string]: any;
+};
+type VtagSearch$4 = {
+  vtag_delay_ts: number;
+  vtag_enable: boolean;
+  [property: string]: any;
+};
+type XiguaBaseInfo$7 = {
+  item_id: number;
+  star_altar_order_id: number;
+  star_altar_type: number;
+  status: number;
+  [property: string]: any;
+};
+type LogPb$15 = {
+  impr_id: string;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/douyin/VideoWork/index.d.ts
+type VideoWorkSuccess$1 = VideoWork_V0$1;
+type VideoWorkError$1 = VideoWork_Error_V0;
+type VideoWork$1 = VideoWorkSuccess$1 | VideoWorkError$1;
+//#endregion
+//#region ../response-types/dist/generated/kuaishou/Comments/Comments_V0.d.ts
+type Comments_V0 = {
+  commentCount: number;
+  pcursor: string;
+  result: number;
+  rootComments: RootComment[];
+  sinkCommentIds: number[];
+  subCommentsMap: SubCommentsMap;
+  [property: string]: any;
+};
+type RootComment = {
+  authorVerified: boolean;
+  author_id: number;
+  author_liked: boolean;
+  author_name: string;
+  cashTags: {
+    [property: string]: any;
+  };
+  commentAuthorTags: unknown[];
+  commentBottomTags: CommentBottomTag[];
+  comment_id: number;
+  content: string;
+  displaySubCommentCount?: boolean;
+  headurl: string;
+  headurls: Headurl[];
+  hot?: boolean;
+  likedCount: number;
+  photo_id: number;
+  recallType?: number;
+  reply_to: number;
+  subCommentCount?: number;
+  time: string;
+  timestamp: number;
+  type: number;
+  user_id: number;
+  user_sex: string;
+  [property: string]: any;
+};
+type CommentBottomTag = {
+  bgColor: string;
+  bgColorNight: string;
+  extra: string;
+  text: string;
+  textColor: string;
+  textColorNight: string;
+  textKey: string;
+  [property: string]: any;
+};
+type Headurl = {
+  cdn: string;
+  url: string;
+  [property: string]: any;
+};
+type SubCommentsMap = {
+  '1171179464225': T1171179464225;
+  [property: string]: any;
+};
+type T1171179464225 = {
+  pcursor: string;
+  subComments: SubComment$1[];
+  [property: string]: any;
+};
+type SubComment$1 = {
+  authorVerified: boolean;
+  author_id: number;
+  author_liked: boolean;
+  author_name: string;
+  cashTags: {
+    [property: string]: any;
+  };
+  commentAuthorTags: unknown[];
+  commentBottomTags: unknown[];
+  comment_id: number;
+  content: string;
+  headurl: string;
+  headurls: Headurl[];
+  likedCount: number;
+  photo_id: number;
+  replyToUserName: string;
+  reply_to: number;
+  time: string;
+  timestamp: number;
+  type: number;
+  user_id: number;
+  user_sex: string;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/kuaishou/Comments/index.d.ts
+type CommentsSuccess = Comments_V0;
+type CommentsError = never;
+type Comments = CommentsSuccess | CommentsError;
+//#endregion
+//#region ../response-types/dist/generated/kuaishou/DanmakuList/DanmakuList_V0.d.ts
+type DanmakuList_V0 = {
+  data: Data$22;
+  [property: string]: any;
+};
+type Data$22 = {
+  visionDanmaku: VisionDanmaku;
+  [property: string]: any;
+};
+type VisionDanmaku = {
+  __typename: string;
+  danmakus: Danmaku$1[];
+  pcursor: string;
+  positionFromInclude: number;
+  positionToExclude: number;
+  result: number;
+  [property: string]: any;
+};
+type Danmaku$1 = {
+  __typename: string;
+  body: string;
+  id: number;
+  isLiked: null;
+  isShow: boolean;
+  likeCount: null;
+  position: number;
+  quality: number;
+  userId: string;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/kuaishou/DanmakuList/index.d.ts
+type DanmakuListSuccess = DanmakuList_V0;
+type DanmakuListError = never;
+type DanmakuList$1 = DanmakuListSuccess | DanmakuListError;
+//#endregion
+//#region ../response-types/dist/generated/kuaishou/EmojiList/EmojiList_V0.d.ts
+type EmojiList_V0$1 = {
+  data: Data$21;
+  [property: string]: any;
+};
+type Data$21 = {
+  visionBaseEmoticons: VisionBaseEmoticons$1;
+  [property: string]: any;
+};
+type VisionBaseEmoticons$1 = {
+  __typename: string;
+  iconUrls: {
+    [property: string]: string;
+  };
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/kuaishou/EmojiList/index.d.ts
+type EmojiListSuccess$1 = EmojiList_V0$1;
+type EmojiListError$1 = never;
+type EmojiList$1 = EmojiListSuccess$1 | EmojiListError$1;
+//#endregion
+//#region ../response-types/dist/generated/kuaishou/VideoWork/VideoWork_V0.d.ts
+type VideoWork_V0 = {
+  counts: Counts;
+  photo: Photo;
+  result: number;
+  serialInfo: SerialInfo;
+  [property: string]: any;
+};
+type Counts = {
+  collectionCount: number;
+  fanCount: number;
+  followCount: number;
+  photoCount: number;
+  [property: string]: any;
+};
+type Photo = {
+  adminTags: unknown[];
+  caption: string;
+  commentCount: number;
+  commentShowType: number;
+  coverUrls: CoverUrl[];
+  duration: number;
+  exp_tag: string;
+  ext_params: ExtParams;
+  forcePublic: string;
+  forwardCount: number;
+  headUrl: string;
+  headUrls: CoverUrl[];
+  height: number;
+  kwaiId: string;
+  likeCount: number;
+  mainMvUrls: CoverUrl[];
+  manifest: Manifest;
+  photoId: string;
+  photoStatus: number;
+  photoType: string;
+  sameFrame: SameFrame;
+  serverExpTag: string;
+  shareCount: number;
+  share_info: string;
+  singlePicture: boolean;
+  soundTrack: SoundTrack;
+  tagShow: TagShow;
+  timestamp: number;
+  type: number;
+  userEid: string;
+  userId: number;
+  userName: string;
+  userSex: string;
+  verified: boolean;
+  viewCount: number;
+  webpCoverUrls: CoverUrl[];
+  width: number;
+  [property: string]: any;
+};
+type CoverUrl = {
+  cdn: string;
+  url: string;
+  [property: string]: any;
+};
+type ExtParams = {
+  color: string;
+  h: number;
+  interval: number;
+  mtype: number;
+  sound: number;
+  video: number;
+  w: number;
+  [property: string]: any;
+};
+type Manifest = {
+  adaptationSet: AdaptationSet[];
+  audioFeature: AudioFeature;
+  businessType: number;
+  hideAuto: boolean;
+  manualDefaultSelect: boolean;
+  mediaType: number;
+  playInfo: PlayInfo;
+  stereoType: number;
+  version: string;
+  videoFeature: VideoFeature;
+  videoId: string;
+  [property: string]: any;
+};
+type AdaptationSet = {
+  duration: number;
+  id: number;
+  representation: Representation[];
+  [property: string]: any;
+};
+type Representation = {
+  agc: boolean;
+  avgBitrate: number;
+  backupUrl: string[];
+  bitratePattern: number[];
+  colorInfo: ColorInfo;
+  comment: string;
+  defaultSelect: boolean;
+  disableAdaptive: boolean;
+  featureP2sp: boolean;
+  fileSize: number;
+  frameRate: number;
+  hdrType: number;
+  height: number;
+  hidden: boolean;
+  id: number;
+  kvqScore: KvqScore;
+  makeupGain: number;
+  maxBitrate: number;
+  minorInfo: string;
+  mute: boolean;
+  normalizeGain: number;
+  oriLoudness: number;
+  p2spCode: string;
+  quality: number;
+  qualityLabel: string;
+  qualityType: string;
+  realLoudness: number;
+  realNormalizeGain: number;
+  url: string;
+  videoCodec: string;
+  volumeInfo: VolumeInfo;
+  width: number;
+  [property: string]: any;
+};
+type ColorInfo = {
+  bright: number;
+  contrast: number;
+  saturation: number;
+  yMean: number;
+  yMeanMax: number;
+  yMeanMin: number;
+  [property: string]: any;
+};
+type KvqScore = {
+  FR: number;
+  FRPost: number;
+  NR: number;
+  NRPost: number;
+  blur: number;
+  nnvcScore: number;
+  sharpness: number;
+  srModelVersion?: string;
+  [property: string]: any;
+};
+type VolumeInfo = {
+  chCorr: number;
+  loudness: number;
+  lra: number;
+  lraHigh: number;
+  lraLow: number;
+  lraTh: number;
+  th: number;
+  tp: number;
+  [property: string]: any;
+};
+type AudioFeature = {
+  audioClip: number;
+  audioQuality: number;
+  audioSnr: number;
+  backgroundSoundProbability: number;
+  dialogProbability: number;
+  effectiveBandwidthInHz: number;
+  musicProbability: number;
+  stereophonicRichness: number;
+  [property: string]: any;
+};
+type PlayInfo = {
+  bizType: number;
+  cdnTimeRangeLevel: number;
+  strategyBus: string;
+  [property: string]: any;
+};
+type VideoFeature = {
+  avgEntropy: number;
+  blockyProbability: number;
+  blurProbability: number;
+  capSrc: number;
+  contrast: number;
+  mosScore: number;
+  overExposed: number;
+  underExposed: number;
+  yMean: number;
+  yMeanMax: number;
+  yMeanMin: number;
+  [property: string]: any;
+};
+type SameFrame = {
+  allow: boolean;
+  availableDepth: number;
+  [property: string]: any;
+};
+type SoundTrack = {
+  artist: string;
+  audioType: number;
+  audioUrls: CoverUrl[];
+  avatarUrls: CoverUrl[];
+  disableEnhancedEntry: boolean;
+  finalStatus: number;
+  genreId: number;
+  hasCopyright: boolean;
+  id: number;
+  imageUrls: CoverUrl[];
+  isOffline: boolean;
+  loudness: number;
+  name: string;
+  photoCount: number;
+  photoId: number;
+  type: number;
+  usageCount: number;
+  user: User$10;
+  [property: string]: any;
+};
+type User$10 = {
+  eid: string;
+  following: boolean;
+  headurl: string;
+  headurls: CoverUrl[];
+  kwaiId: string;
+  user_id: number;
+  user_name: string;
+  user_sex: string;
+  visitorBeFollowed: boolean;
+  [property: string]: any;
+};
+type TagShow = {
+  bannerType: number;
+  bizId: string;
+  type: number;
+  usedCount: string;
+  [property: string]: any;
+};
+type SerialInfo = {
+  msg: null;
+  serialId: null;
+  serialType: null;
+  show: boolean;
+  title: null;
+  valid: boolean;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/kuaishou/VideoWork/index.d.ts
+type VideoWorkSuccess = VideoWork_V0;
+type VideoWorkError = never;
+type VideoWork = VideoWorkSuccess | VideoWorkError;
+//#endregion
+//#region ../response-types/dist/generated/xiaohongshu/EmojiList/EmojiList_V0.d.ts
+type EmojiList_V0 = {
+  code: number;
+  data: Data$20;
+  msg: string;
+  success: boolean;
+  [property: string]: any;
+};
+type Data$20 = {
+  emoji: Emoji$5;
+  result: Result$7;
+  version: number;
+  [property: string]: any;
+};
+type Emoji$5 = {
+  tabs: Tab$1[];
+  [property: string]: any;
+};
+type Tab$1 = {
+  collection: Collection$1[];
+  [property: string]: any;
+};
+type Collection$1 = {
+  emoji: Emoji2[];
+  name: string;
+  [property: string]: any;
+};
+type Emoji2 = {
+  image: string;
+  image_name: string;
+  [property: string]: any;
+};
+type Result$7 = {
+  code: number;
+  message: string;
+  success: boolean;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/xiaohongshu/EmojiList/index.d.ts
+type EmojiListSuccess = EmojiList_V0;
+type EmojiListError = never;
+type EmojiList = EmojiListSuccess | EmojiListError;
+//#endregion
+//#region ../response-types/dist/generated/xiaohongshu/HomeFeed/HomeFeed_V0.d.ts
+type HomeFeed_V0$1 = {
+  code: number;
+  data: Data$19;
+  msg: string;
+  success: boolean;
+  [property: string]: any;
+};
+type Data$19 = {
+  cursor_score: string;
+  items: Item$17[];
+  [property: string]: any;
+};
+type Item$17 = {
+  id: string;
+  ignore: boolean;
+  model_type: string;
+  note_card: NoteCard$5;
+  track_id: string;
+  xsec_token: string;
+  [property: string]: any;
+};
+type NoteCard$5 = {
+  cover: Cover$10;
+  display_title: string;
+  interact_info: InteractInfo$5;
+  type: string;
+  user: User$9;
+  video?: Video$9;
+  [property: string]: any;
+};
+type Cover$10 = {
+  file_id: string;
+  height: number;
+  info_list: InfoList$6[];
+  url: string;
+  url_default: string;
+  url_pre: string;
+  width: number;
+  [property: string]: any;
+};
+type InfoList$6 = {
+  image_scene: string;
+  url: string;
+  [property: string]: any;
+};
+type InteractInfo$5 = {
+  liked: boolean;
+  liked_count: string;
+  [property: string]: any;
+};
+type User$9 = {
+  avatar: string;
+  nick_name: string;
+  nickname: string;
+  user_id: string;
+  xsec_token: string;
+  [property: string]: any;
+};
+type Video$9 = {
+  capa: Capa$1;
+  [property: string]: any;
+};
+type Capa$1 = {
+  duration: number;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/xiaohongshu/HomeFeed/index.d.ts
+type HomeFeedSuccess = HomeFeed_V0$1;
+type HomeFeedError = never;
+type HomeFeed$1 = HomeFeedSuccess | HomeFeedError;
+//#endregion
+//#region ../response-types/dist/generated/xiaohongshu/NoteDetail/NoteDetail_V0.d.ts
+type NoteDetail_V0 = {
+  code: number;
+  data: Data$18;
+  msg: string;
+  success: boolean;
+  [property: string]: any;
+};
+type Data$18 = {
+  current_time: number;
+  cursor_score: string;
+  items: Item$16[];
+  [property: string]: any;
+};
+type Item$16 = {
+  id: string;
+  ignore: boolean;
+  model_type: string;
+  note_card: NoteCard$4;
+  [property: string]: any;
+};
+type NoteCard$4 = {
+  at_user_list: unknown[];
+  desc: string;
+  image_list: ImageList$4[];
+  interact_info: InteractInfo$4;
+  ip_location: string;
+  last_update_time: number;
+  note_id: string;
+  share_info: ShareInfo$4;
+  tag_list: TagList$1[];
+  time: number;
+  title: string;
+  type: string;
+  user: User$8;
+  [property: string]: any;
+};
+type ImageList$4 = {
+  file_id: string;
+  height: number;
+  info_list: InfoList$5[];
+  live_photo: boolean;
+  stream: {
+    [property: string]: any;
+  };
+  trace_id: string;
+  url: string;
+  url_default: string;
+  url_pre: string;
+  width: number;
+  [property: string]: any;
+};
+type InfoList$5 = {
+  image_scene: string;
+  url: string;
+  [property: string]: any;
+};
+type InteractInfo$4 = {
+  collected: boolean;
+  collected_count: string;
+  comment_count: string;
+  followed: boolean;
+  liked: boolean;
+  liked_count: string;
+  nice_count: string;
+  relation: string;
+  share_count: string;
+  [property: string]: any;
+};
+type ShareInfo$4 = {
+  un_share: boolean;
+  [property: string]: any;
+};
+type TagList$1 = {
+  id: string;
+  name: string;
+  type: string;
+  [property: string]: any;
+};
+type User$8 = {
+  avatar: string;
+  nickname: string;
+  user_id: string;
+  xsec_token: string;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/xiaohongshu/NoteDetail/index.d.ts
+type NoteDetailSuccess = NoteDetail_V0;
+type NoteDetailError = never;
+type NoteDetail = NoteDetailSuccess | NoteDetailError;
+//#endregion
+//#region ../response-types/dist/generated/xiaohongshu/SearchNotes/SearchNotes_V0.d.ts
+type SearchNotes_V0$1 = {
+  code: number;
+  data: Data$17;
+  msg: string;
+  success: boolean;
+  [property: string]: any;
+};
+type Data$17 = {
+  has_more: boolean;
+  items: Item$15[];
+  [property: string]: any;
+};
+type Item$15 = {
+  hot_query?: HotQuery;
+  id: string;
+  model_type: string;
+  note_card?: NoteCard$3;
+  xsec_token: string;
+  [property: string]: any;
+};
+type HotQuery = {
+  queries: Query$1[];
+  source: number;
+  title: string;
+  word_request_id: string;
+  [property: string]: any;
+};
+type Query$1 = {
+  cover: string;
+  id: string;
+  name: string;
+  search_word: string;
+  [property: string]: any;
+};
+type NoteCard$3 = {
+  corner_tag_info: CornerTagInfo$1[];
+  cover: Cover$9;
+  display_title?: string;
+  image_list: ImageList$3[];
+  interact_info: InteractInfo$3;
+  type: string;
+  user: User$7;
+  [property: string]: any;
+};
+type CornerTagInfo$1 = {
+  text: string;
+  type: string;
+  [property: string]: any;
+};
+type Cover$9 = {
+  height: number;
+  url_default: string;
+  url_pre: string;
+  width: number;
+  [property: string]: any;
+};
+type ImageList$3 = {
+  height: number;
+  info_list: InfoList$4[];
+  width: number;
+  [property: string]: any;
+};
+type InfoList$4 = {
+  image_scene: string;
+  url: string;
+  [property: string]: any;
+};
+type InteractInfo$3 = {
+  collected: boolean;
+  collected_count: string;
+  comment_count: string;
+  liked: boolean;
+  liked_count: string;
+  shared_count: string;
+  [property: string]: any;
+};
+type User$7 = {
+  avatar: string;
+  nick_name: string;
+  nickname: string;
+  user_id: string;
+  xsec_token: string;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/xiaohongshu/SearchNotes/index.d.ts
+type SearchNotesSuccess = SearchNotes_V0$1;
+type SearchNotesError = never;
+type SearchNotes$1 = SearchNotesSuccess | SearchNotesError;
+//#endregion
+//#region ../response-types/dist/generated/xiaohongshu/UserProfile/UserProfile_V0.d.ts
+type UserProfile_V0 = {
+  code: number;
+  data: Data$16;
+  msg: string;
+  success: boolean;
+  [property: string]: any;
+};
+type Data$16 = {
+  basicInfo: BasicInfo$1;
+  extraInfo: ExtraInfo$3;
+  interactions: Interaction$1[];
+  result: Result$6;
+  tabPublic: TabPublic$1;
+  tags: Tag$1[];
+  [property: string]: any;
+};
+type BasicInfo$1 = {
+  desc: string;
+  gender: number;
+  imageb: string;
+  images: string;
+  ipLocation: string;
+  nickname: string;
+  redId: string;
+  [property: string]: any;
+};
+type ExtraInfo$3 = {
+  blockType: string;
+  fstatus: string;
+  [property: string]: any;
+};
+type Interaction$1 = {
+  count: string;
+  i18nCount: string;
+  name: string;
+  type: string;
+  [property: string]: any;
+};
+type Result$6 = {
+  code: number;
+  message: string;
+  success: boolean;
+  [property: string]: any;
+};
+type TabPublic$1 = {
+  collection: boolean;
+  collectionBoard: CollectionBoard$1;
+  collectionFile: CollectionBoard$1;
+  collectionNote: CollectionBoard$1;
+  [property: string]: any;
+};
+type CollectionBoard$1 = {
+  count: number;
+  display: boolean;
+  lock: boolean;
+  [property: string]: any;
+};
+type Tag$1 = {
+  name: string;
+  tagType: string;
+  [property: string]: any;
+};
+//#endregion
+//#region ../response-types/dist/generated/xiaohongshu/UserProfile/index.d.ts
+type UserProfileSuccess = UserProfile_V0;
+type UserProfileError = never;
+type UserProfile = UserProfileSuccess | UserProfileError;
+//#endregion
+//#region src/contracts/error.d.ts
+/**
+ * 错误契约。
+ *
+ * 全仓唯一的错误载体：调用方写一段跨平台通用的错误处理代码，只需要认
+ * `AmagiError` 一种形状。
+ *
+ * `contracts/` 是零依赖叶子层，本文件不 import 仓库内任何其他模块。
+ */
+/**
+ * 跨平台统一的错误大类，也是调用方唯一需要 `switch` 的判别键。
+ *
+ * 粗粒度归因用 `kind`，细粒度归因用 {@link AmagiErrorCode}。
+ */
+type ErrorKind =
+/** 入参不合法，本地就能判定，没有发出请求 */
+'validation' |
+/** 需要登录 / cookie 失效 / 身份不足 */
+'auth' |
+/** 限频，退避后可重试 */
+'rate_limit' |
+/** 风控、验证码、需要人工介入 */
+'risk' |
+/** 资源不存在、已删除、已下架 */
+'not_found' |
+/** 有身份但无权限：地区限制、付费内容、隐私设置 */
+'forbidden' |
+/** 平台侧不可用：5xx、维护、过载 */
+'unavailable' |
+/** 传输层失败：连接重置、DNS、代理 */
+'network' |
+/** 超时 */
+'timeout' |
+/** 响应拿到了但解析不了：非 JSON、protobuf 损坏、反爬 HTML */
+'parse' |
+/** amagi 自身的 bug */
+'internal' |
+/** 平台返回了没见过的错误码 */
+'unknown';
+/**
+ * 稳定的字符串错误码，可用于 `switch` 与埋点。
+ *
+ * 用字符串字面量联合而不是 `enum`：`enum` 的 `Object.values()` 会带出反向映射键，
+ * 且拿平台返回的数字码去比时容易出现 `'-101'` 与 `-101` 对不上的静默错配。
+ */
+type AmagiErrorCode = 'PARAM_INVALID' | 'PARAM_MISSING' | 'COOKIE_MISSING' | 'COOKIE_EXPIRED' | 'LOGIN_REQUIRED' | 'RATE_LIMITED' | 'RISK_CONTROL' | 'CAPTCHA_REQUIRED' | 'NOT_FOUND' | 'DELETED' | 'PRIVATE' | 'GEO_RESTRICTED' | 'PAID_CONTENT' | 'PLATFORM_ERROR' | 'PLATFORM_UNAVAILABLE' | 'NETWORK_ERROR' | 'TIMEOUT' | 'EMPTY_RESPONSE' | 'DECODE_FAILED' | 'ANTIBOT_PAGE' | 'INTERNAL_ERROR' | 'UNKNOWN_ERROR';
+/** `kind === 'validation'` 时的字段级错误 */
+interface ValidationIssue {
+  /** 点号路径，如 `'verify.stdParams.token'` */
+  path: string;
+  /** 面向人的说明 */
+  message: string;
+  /** 收到的值，用于排查 */
+  received?: unknown;
+}
+/** 失败信封里唯一的错误载体，永不为 `undefined` */
+interface AmagiError {
+  /** 判别键，跨平台统一的错误大类 */
+  kind: ErrorKind;
+  /** 稳定的字符串错误码，可用于 switch 与埋点 */
+  code: AmagiErrorCode;
+  /** 面向人的说明，取平台原文优先 */
+  message: string;
+  /** 是否值得重试。调用方据此决定退避还是放弃 */
+  retryable: boolean;
+  /** 平台原始错误码与文案，一个字都不丢 */
+  platform?: {
+    code: string | number;
+    message?: string;
+  };
+  /** 真实发生的 HTTP 状态（有请求才有） */
+  http?: {
+    status: number;
+    statusText?: string;
+  };
+  /** `kind === 'validation'` 时的字段级错误 */
+  issues?: ValidationIssue[];
+  /**
+   * 原始响应体。默认**连键都没有**，`createClient({ debug: true })` 且这次
+   * 确实**拿到了响应**时才填（网络中断 / 超时那类失败没有响应体可放）。
+   */
+  raw?: unknown;
+  /**
+   * 风控挑战（验证页地址 + 票据）。`kind === 'risk'` 且平台认得出这份响应时才有。
+   *
+   * **不受 `debug` 开关影响** —— 它是「怎么过去」这条必要信息，见
+   * {@link RiskChallenge}。
+   */
+  challenge?: RiskChallenge;
+  /** 底层 Error 对象，仅用于日志 */
+  cause?: unknown;
+}
+/** 平台判定的结论 */
+interface JudgeVerdict {
+  /** 是否视为成功 */
+  ok: boolean;
+  /** 失败时的错误大类 */
+  kind?: ErrorKind;
+  /** 失败时的细粒度错误码 */
+  code?: AmagiErrorCode;
+  /** 覆盖 {@link isRetryableKind} 的默认推导 */
+  retryable?: boolean;
+}
+/**
+ * 平台响应判定函数。
+ *
+ * 每个平台一份纯函数，把原始响应映射为「成功」或一个错误分类。
+ * **这是全仓唯一判定成败的地方** —— 平台差异只体现在这一份实现里。
+ */
+type Judge = (raw: unknown, http: {
+  status: number;
+}) => JudgeVerdict;
+/**
+ * 风控挑战：撞验证页时交给调用方的「怎么过去」。
+ *
+ * 为什么不塞进 {@link JudgeVerdict}：judge 只管**分类**，四个槽位装不下一个
+ * URL。但 `kind: 'risk'` 光有分类是条死路 —— `CAPTCHA_REQUIRED` 只告诉调用方
+ * 「你被拦了」，不给出路。以前地址只能从 `error.raw` 里自己捞，而 `raw` 只在
+ * `createClient({ debug: true })` 时才有、HTTP 路由那一面**结构上拿不到**
+ * （`createXxxRoutes` 不接 `debug`）——最需要滑块地址的入口恰好是唯一产不出它的
+ * 入口。所以这一份**不受 `debug` 管**，只要 judge 判成 `risk` 就填。
+ *
+ * 只放地址与票据，不放原始响应体：它是「必要信息」而不是「排障明细」，
+ * 也没有大对象与凭证字段的顾虑。
+ *
+ * **只做中转，不做绕过** —— amagi 不引入任何识别、轨迹模拟或自动过验证的代码。
+ */
+interface RiskChallenge {
+  /** 验证页地址（已补协议） */
+  url: string;
+  /** 前端验证 SDK 地址（已补协议），自建验证页时要它 */
+  jsSdkUrl?: string;
+  /** 验证会话票据 */
+  session?: string;
+  /** 风控业务名 */
+  bizName?: string;
+  /** 平台命中的业务码 */
+  result?: string | number;
+}
+//#endregion
+//#region src/contracts/platform.d.ts
+/**
+ * 平台契约。
+ *
+ * `contracts/` 是零依赖叶子层：本目录下的模块不 import 仓库内任何其他模块，
+ * 所以任何层都可以依赖它而不引入 import 环。
+ */
+/**
+ * amagi 支持的平台清单。
+ *
+ * `Platform` 联合类型由这个数组推导而来，两者不可能漂移 ——
+ * 新增平台只需在这里加一项。数组顺序即对外文档与遍历顺序。
+ */
+declare const PLATFORMS: readonly ["douyin", "bilibili", "kuaishou", "xiaohongshu"];
+/** amagi 支持的平台 */
+type Platform = (typeof PLATFORMS)[number];
+//#endregion
+//#region src/contracts/meta.d.ts
+/**
+ * 可观测性契约。
+ *
+ * `AmagiMeta` 挂在每一个信封上（成功与失败都有），同时进事件负载。
+ * 它把几件「看不见」的事变成肉眼可见的数字：
+ * - `attempts`：一次调用实际打了多少个请求，含重试与分页的叠乘。
+ * - `requestId` / `clientId`：多实例并发时可归因。
+ * - 前置请求（换 guest cookie、取 wbi key）以 `reason: 'prepare'` 进 trace。
+ */
+/**
+ * 一次底层请求的发起原因。
+ *
+ * 区分「端点内重试」与「传输层重试」、「翻页」与「分段并发」，
+ * 是排查请求数叠乘的入口。
+ */
+type TraceReason =
+/** 首次请求 */
+'initial' |
+/** 传输层或 `retryOn` 触发的重试 */
+'retry' |
+/** 声明式翻页的第 n 页 */
+'page' |
+/** 多请求聚合 / 分段并发里的一段 */
+'segment' |
+/** `prepare` 阶段的前置请求：换 guest cookie、取 wbi key */
+'prepare';
+/** 单次底层 HTTP 请求的明细 */
+interface RequestTrace {
+  /** 实际请求的 URL（含签名参数） */
+  url: string;
+  /** HTTP 方法 */
+  method: string;
+  /** 平台返回的状态码，请求未发出（如 DNS 失败）时缺失 */
+  status?: number;
+  /** 这一次请求本身的耗时 */
+  durationMs: number;
+  /** 这次请求为什么会发出 */
+  reason: TraceReason;
+  /** `reason === 'retry'` 时，被重试的那次失败的错误码 */
+  retryOf?: AmagiErrorCode;
+}
+/** 挂在每个信封上的元信息 */
+interface AmagiMeta {
+  /** 每次逻辑调用一个 id，贯穿事件、日志、trace */
+  requestId: string;
+  /** 发起调用的 client 实例 id；静态 fetcher 用 `'static'` */
+  clientId: string;
+  /** 平台 */
+  platform: Platform;
+  /** 端点全名，如 `'douyin.videoWork'` */
+  endpoint: string;
+  /** 从进入 fetcher 到返回信封的总耗时 */
+  durationMs: number;
+  /** 实际发出的 HTTP 请求数，含重试与分页。分页 3 页 + 1 次重试 = 4 */
+  attempts: number;
+  /**
+   * 每次底层请求的明细，按发出顺序。
+   *
+   * 默认不带：`createClient({ debug: true })` 时才填（同一个开关也给失败信封
+   * 填 `error.raw`，没有单独的 trace 开关）。不开时信封上**没有 `trace`
+   * 这个键**，而 `attempts` 照样准确 —— 计数始终发生，只有明细受开关控制。
+   *
+   * 静态 fetcher（`amagi.douyinFetcher.*`）与 HTTP 服务的平台路由没有这个开关。
+   * 要不受开关影响地逐条观测请求，监听 `http:request` / `http:response`
+   * 事件：它们的负载恒带 `trace`。URL 含签名参数，别在生产里无条件打印。
+   */
+  trace?: RequestTrace[];
+}
+//#endregion
+//#region src/contracts/request.d.ts
+/**
+ * 请求 / 响应契约。
+ *
+ * `RequestConfig` 在本文件定义并对外导出。
+ *
+ * `contracts/` 是零依赖叶子层：本文件只 type-import 外部包 `axios`，
+ * 不 import 仓库内任何其他模块。
+ */
+/** HTTP 方法 */
+type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+/**
+ * 调用方可传的请求配置。
+ *
+ * 形状即 `Omit<AxiosRequestConfig, 'url' | 'method' | 'data'>`，
+ * `amagi({ request: { timeout: 8000, proxy } })` 这类写法直接可用。
+ */
+type RequestConfig$1 = Omit<AxiosRequestConfig, 'url' | 'method' | 'data'>;
+/** 可以用来初始化或合并 {@link AmagiHeaders} 的输入 */
+type HeadersInput = AmagiHeaders | Record<string, string | number | undefined | null> | undefined | null;
+/**
+ * 大小写不敏感的 header 容器。
+ *
+ * HTTP header 名本身大小写不敏感，用普通对象装就会出现「写了 `Cookie` 却读
+ * `cookie` 读不到」这类静默失配。本类把「大小写」这个变量彻底消掉。
+ *
+ * 语义：
+ * - 查找、判断、删除全部大小写不敏感。
+ * - 写入是「后写覆盖」：值覆盖，**显示用的大小写也跟着最后一次写入**，
+ *   所以 `set('User-Agent', a)` 之后 `set('user-agent', b)` 只会留下一个
+ *   `user-agent: b`，不可能出现两条同名 header。
+ * - `undefined` / `null` 的值视为「不写这个 header」，方便直接摊入可选字段。
+ */
+declare class AmagiHeaders {
+  /** key 是小写化的 header 名，value 保留最后一次写入的原始大小写与值 */
+  private readonly entries;
+  /**
+   * @param init - 初始 header，可以是另一个 `AmagiHeaders` 或普通对象
+   */
+  constructor(init?: HeadersInput);
+  /**
+   * 读取 header 值，大小写不敏感
+   * @param name - header 名，任意大小写
+   * @returns 值，不存在时返回 `undefined`
+   */
+  get(name: string): string | undefined;
+  /**
+   * 判断 header 是否存在，大小写不敏感
+   * @param name - header 名，任意大小写
+   * @returns 存在则返回 `true`
+   */
+  has(name: string): boolean;
+  /**
+   * 写入 header。同名（忽略大小写）时覆盖值与显示大小写
+   * @param name - header 名
+   * @param value - 值。`undefined` / `null` 表示不写入
+   * @returns 自身，便于链式调用
+   */
+  set(name: string, value: string | number | undefined | null): this;
+  /**
+   * 删除 header，大小写不敏感
+   * @param name - header 名
+   * @returns 原本存在则返回 `true`
+   */
+  delete(name: string): boolean;
+  /**
+   * 合并另一组 header，后来者覆盖
+   * @param input - 待合并的 header
+   * @returns 自身，便于链式调用
+   */
+  merge(input?: HeadersInput): this;
+  /** header 条数 */
+  get size(): number;
+  /**
+   * 全部 header 名，保留最后一次写入的大小写
+   * @returns header 名数组
+   */
+  keys(): string[];
+  /**
+   * 全部 `[名, 值]` 对，名保留最后一次写入的大小写
+   * @returns 键值对数组
+   */
+  toEntries(): [string, string][];
+  /**
+   * 转成普通对象，用于交给 axios
+   * @returns 普通 header 对象，键保留最后一次写入的大小写
+   */
+  toJSON(): Record<string, string>;
+  /**
+   * 深拷贝一份，避免下游改写上游的 header
+   * @returns 新的 `AmagiHeaders` 实例
+   */
+  clone(): AmagiHeaders;
+}
+/**
+ * 一次底层 HTTP 请求的完整描述。
+ *
+ * 由端点的 `build` 产出，经 `sign` 加工，最后交给 transport 发送。
+ * 端点声明里返回数组即表示多请求聚合 / 分段并发。
+ */
+interface RequestSpec {
+  /** HTTP 方法 */
+  method: HttpMethod;
+  /** 完整 URL（含 query） */
+  url: string;
+  /** 请求头。缺省时由平台 `config.ts` 的基线补齐 */
+  headers?: HeadersInput;
+  /**
+   * 要从合并结果里**删掉**的头名（大小写不敏感），在所有 merge 之后执行。
+   *
+   * `headers` 只能覆盖同名头，给不出「这个端点不该发某个基线头」。快手 H5 端点
+   * 需要它：平台基线是照桌面 Chrome 攒的（`origin` / `sec-ch-ua*` / `sec-fetch-*`），
+   * 而 H5 端点用移动 UA，两者拼在一起是个自相矛盾的请求。
+   * 清单见 `platforms/kuaishou/config.ts` 的 `KUAISHOU_H5_DROP_HEADERS`。
+   *
+   * 删除发生在最后一步，所以**同时出现在 `headers` 与这里的头会被删掉** ——
+   * 端点自己要发的头别写进这个清单。
+   */
+  dropHeaders?: readonly string[];
+  /** 请求体，`method === 'POST'` 时使用 */
+  body?: unknown;
+  /** 期望的响应形态。protobuf 端点用 `'arraybuffer'`，反爬页用 `'text'` */
+  responseType?: 'json' | 'text' | 'arraybuffer';
+  /** 签名器需要的接口路径（小红书 `x-s`、快手 hxfalcon 都要它，与 `url` 不同） */
+  signPath?: string;
+  /** 多请求聚合 / 分段并发时标识这一条是哪个部分，会进 trace */
+  tag?: string;
+  /** 端点自定义的附加信息，透传给 `sign` / `decode` */
+  extra?: Record<string, unknown>;
+}
+/**
+ * transport 发出一次请求后拿到的原始响应。
+ *
+ * 放在 contracts 而不是 transport，是因为端点声明的 `decode(raw, res)` 需要它，
+ * 而依赖方向是 `contracts ← transport ← platforms`，contracts 不能反向依赖。
+ */
+interface RawResponse {
+  /** 平台返回的 HTTP 状态码。**原样带出，不再用 `validateStatus: () => true` 抹平** */
+  status: number;
+  /** 状态文案 */
+  statusText?: string;
+  /** 响应头，大小写不敏感 */
+  headers: AmagiHeaders;
+  /**
+   * 原始 `Set-Cookie` 头数组（一个响应里可能有多条）。
+   *
+   * `headers` 里的 `set-cookie` 是 join 成一条的字符串（多值会被 `'; '` 合并），
+   * 而 guest cookie 换身份、B站会话登录都需要**逐条**处理 Set-Cookie ——
+   * join 后无法还原成数组。所以这里单独保留原始数组。
+   */
+  setCookie?: string[];
+  /** 未经端点 `decode` 的响应体：已解析的 JSON / 字符串 / `ArrayBuffer` */
+  body: unknown;
+  /** 这一次请求本身的耗时 */
+  durationMs: number;
+  /** 实际请求的最终 URL（含签名参数、跟随重定向后的地址） */
+  url: string;
+}
+//#endregion
+//#region src/contracts/endpoint.d.ts
+/**
+ * 端点声明契约。
+ *
+ * 核心：**一个端点一份声明，其余全部派生。** 参数类型、运行时校验、
+ * HTTP 路由、fetcher 方法、bound fetcher、方法名映射、文档与测试清单
+ * 全部从这份声明推出来，不再散在十几个文件里靠人工同步。
+ *
+ * `contracts/` 是零依赖叶子层：本文件只 type-import 外部包 `zod` 与同目录契约。
+ * 端点的钩子需要「发请求」的能力，但 contracts 不能反向依赖 transport，
+ * 所以 {@link EndpointCtx} 只声明 `send` 的**形状**，由 transport 去实现。
+ */
+/**
+ * 只携带类型、不携带值的令牌。
+ *
+ * 用来把响应类型写进声明而不产生任何运行时开销：
+ * `response: type<DouyinReturnTypeMap['videoWork']>()`。
+ *
+ * `T` 取平台返回数据的实测快照类型（`XxxReturnTypeMap` 的键与端点短名
+ * 一一对应），快照自带的索引签名让「平台加字段」不算 breaking。
+ */
+interface TypeToken<T> {
+  /** 幻影字段，运行时永远是 `undefined`，只为让 TS 能推出 `T` */
+  readonly __type?: T;
+}
+/** 端点全名，形如 `'douyin.videoWork'` */
+type EndpointName = `${Platform}.${string}`;
+/**
+ * 端点钩子拿到的执行上下文。
+ *
+ * `send` 是依赖倒置点：contracts 只声明「能发一次请求并拿到 {@link RawResponse}」
+ * 这个形状，transport 提供实现。这样 `prepare` 里换 guest cookie、取 wbi key
+ * 都必须走 transport，用户配的 proxy / agent / 超时才对它生效。
+ */
+interface EndpointCtx {
+  /** 发起调用的 client 实例 id；静态 fetcher 用 `'static'` */
+  clientId: string;
+  /** 平台 */
+  platform: Platform;
+  /** 本次调用使用的 cookie */
+  cookie: string;
+  /** 本次调用使用的 User-Agent */
+  userAgent: string;
+  /** 调用方传入的请求配置 */
+  requestConfig: RequestConfig$1;
+  /**
+   * 发一次底层请求。由 transport 注入
+   * @param spec - 请求描述
+   * @param reason - 这次请求的来源，决定它在 trace 里的 `reason`
+   * @param requestConfig - 单次调用的请求配置（合并进本次请求）。缺省时
+   *   由 execute 把 ctx.requestConfig 当作默认值补上 —— 管线内任何内部请求
+   *   （prepare 换 guest cookie、取 wbi key）都与主请求用同一份配置
+   * @returns 原始响应
+   */
+  send: (spec: RequestSpec, reason?: TraceReason, requestConfig?: RequestConfig$1) => Promise<RawResponse>;
+}
+/** 自定义签名器：拿到请求描述与上下文，返回签好名的请求描述 */
+type SignFn = (spec: RequestSpec, ctx: EndpointCtx) => RequestSpec | Promise<RequestSpec>;
+/**
+ * 签名声明。
+ *
+ * - 字符串：平台签名器表里的名字（如 `'a_bogus'` / `'xhs-post'`）。
+ *   平台可以再包一层 `defineEndpoint` 把它收窄成自己的签名器名联合。
+ * - `false`：显式声明这个端点不签名（抖音搜索、表情包接口）。
+ * - 函数：一次性的自定义签名。
+ */
+type SignDecl = string | false | SignFn;
+/** 多请求聚合 / 分段并发时，部分失败怎么处理 */
+type PartialPolicy =
+/** 缺失的部分留空，整体仍算成功 */
+'tolerate' |
+/** 任一部分失败即整体失败 */
+'fail';
+/**
+ * 声明式翻页。
+ *
+ * 翻页在 `send` 的**外层**循环：每一页都完整走
+ * `build → sign → send → decode → judge`，所以每页都会重新签名。
+ *
+ * 三个钩子各管一段：`items` 从一页响应里取出本页条目，`hasMore` 说还有没有
+ * 下一页，`nextParams` 产出下一次请求用的参数。
+ */
+interface PaginateDef<TParams> {
+  /** 单页最多能取多少条，用来把目标条数切成多次请求 */
+  maxPageSize: number;
+  /** 目标条数取自哪个参数，默认 `'number'`。该参数为 0 时一个请求都不发 */
+  limitParam?: keyof TParams & string;
+  /** 每页条数写回哪个参数，默认与 `limitParam` 相同 */
+  countParam?: keyof TParams & string;
+  /**
+   * 从一页响应里取出本页条目
+   * @param page - 这一页 decode 之后的值
+   * @returns 本页条目数组；空数组表示到底了
+   */
+  items: (page: unknown) => unknown[];
+  /**
+   * 平台是否还说有更多。返回 `false` 时立刻停止
+   * @param page - 这一页 decode 之后的值
+   * @returns 是否还有下一页
+   */
+  hasMore: (page: unknown) => boolean;
+  /**
+   * 根据这一页的响应产出下一次请求用的参数（游标怎么带由端点自己决定）
+   * @param params - 本次请求用过的参数
+   * @param page - 这一页 decode 之后的值
+   * @returns 下一次请求用的参数
+   */
+  nextParams: (params: TParams, page: unknown) => TParams;
+}
+/**
+ * 端点的文档元数据 —— OpenAPI 规范里「面向人的那部分」的唯一出处。
+ *
+ * 规范从注册表派生，所以描述文案也只能长在声明里：写进文档站的 Markdown
+ * 就成了「手写第二遍」，必然漂移。
+ *
+ * `tags` 故意不在这里：**平台就是 tag**，由生成器从 {@link EndpointDef.name}
+ * 的平台段派生，同一个事实不写两遍。
+ */
+interface EndpointDoc {
+  /**
+   * OpenAPI 的 `summary`：一句话说清这个端点返回什么。
+   *
+   * 写法约定：**中文名词短语、不带句号、不超过 40 字**，例如 `'视频作品详细信息'`。
+   * 它会出现在 API 参考的端点卡片标题与侧边栏条目上，写成整句或超长都会被截断。
+   */
+  summary: string;
+  /**
+   * OpenAPI 的 `description`：一句话讲不完的部分 —— 参数之间的约束、平台侧限制、
+   * 与相近端点的区别。支持 Markdown、可多行。没有要补充的就别写。
+   */
+  description?: string;
+  /** 标为废弃：生成的 operation 带 `deprecated: true`，文档站会画删除线 */
+  deprecated?: boolean;
+  /** 指向平台官方文档（或仓库内的说明页） */
+  externalDocs?: {
+    /** 文档地址 */
+    url: string;
+    /** 链接文案，缺省由文档站决定 */
+    description?: string;
+  };
+}
+/**
+ * 一个端点的完整声明。
+ *
+ * `TParams` 是参数 **schema** 类型（不是推导后的参数类型），这样
+ * `zod.input<TParams>`（调用方能传的形状，含 coerce 前的字符串）与
+ * `zod.infer<TParams>`（校验后的形状）都还能取到。
+ *
+ * 每个可选槽位对应一种非常规端点形态：
+ * `compute` → 纯本地计算不发请求；`decode` → protobuf / multi-JSON / HTML；
+ * `build` 返回数组 → 多请求聚合与分段并发；`prepare` → 前置换凭证 / 取 key；
+ * `paginate` → 声明式翻页；`judge` → 平台判定；`normalize` → 裁剪整形。
+ */
+interface EndpointDef<TParams extends zod.ZodType, TData> {
+  /** 端点全名，形如 `'douyin.videoWork'` */
+  name: EndpointName;
+  /** HTTP 路由路径。**同平台内必须唯一**，重复则 `createRoutes` 启动即抛错 */
+  route: string;
+  /** 参数 schema。参数类型由它推导，不再手写第二遍 */
+  params: TParams;
+  /**
+   * 文档元数据：OpenAPI 的 `summary` / `description` 从这里取。
+   *
+   * 类型上可选（加字段是纯增量，已有端点不改也能编译），但**新增端点必须写**
+   * `summary`：它是 API 参考里端点卡片标题与侧边栏条目的来源，缺了渲染不出来。
+   */
+  doc?: EndpointDoc;
+  /**
+   * 前置步骤：换 guest cookie、取 wbi key、bootstrap 指纹。
+   * 产物并入 ctx，产生的请求以 `reason: 'prepare'` 进 trace
+   * @param ctx - 当前上下文
+   * @returns 要并入 ctx 的字段
+   */
+  prepare?: (ctx: EndpointCtx) => Promise<Partial<EndpointCtx>>;
+  /**
+   * 构造请求。返回数组即表示多请求聚合 / 分段并发
+   * @param params - 校验后的参数
+   * @param ctx - 当前上下文
+   * @returns 单个或多个请求描述
+   */
+  build?: (params: zod.infer<TParams>, ctx: EndpointCtx) => RequestSpec | RequestSpec[];
+  /** 签名声明：签名器名字、`false`（显式不签名）或一次性函数 */
+  sign?: SignDecl;
+  /**
+   * 解码响应体。缺省按 JSON 处理；protobuf / multi-JSON / HTML 在这里落地。
+   * 抛错时管线映射为 `kind: 'parse'` / `code: 'DECODE_FAILED'`
+   * @param raw - 原始响应体
+   * @param res - 完整的原始响应
+   * @returns 解码后的值
+   */
+  decode?: (raw: unknown, res: RawResponse) => unknown;
+  /** 声明式翻页 */
+  paginate?: PaginateDef<zod.infer<TParams>>;
+  /** 多请求聚合 / 分段并发时的部分失败语义，默认 `'fail'` */
+  partial?: PartialPolicy;
+  /** 平台响应判定。缺省用所在平台的默认 judge */
+  judge?: Judge;
+  /**
+   * 裁剪整形为最终 `data`
+   *
+   * 返回类型用 `NoInfer<TData>`：**它只被检查，不参与 `TData` 的推导**。
+   * 见 {@link EndpointDef.response} 里那段说明 —— 让它参与推导会把 `response`
+   * 令牌覆盖掉，而那个覆盖是静默的。
+   * @param decoded - decode（与 paginate 合并）之后的值
+   * @param params - 校验后的参数
+   * @returns 最终返回给调用方的数据
+   */
+  normalize?: (decoded: unknown, params: zod.infer<TParams>) => NoInfer<TData>;
+  /**
+   * 纯本地计算，不发请求。声明了它就跳过 prepare / build / sign / send
+   *
+   * 与 `normalize` 不同，这里**保留**对 `TData` 的推导能力：`compute` 端点
+   * （`avToBv` / `bvToAv` 那类）可以只写 `compute` 不写 `response`，
+   * 类型从返回值推出来就够了 —— 它不像 `normalize` 那样需要与一个映射条目对齐，
+   * 所以没有「被静默覆盖」的问题。
+   * @param params - 校验后的参数
+   * @returns 最终返回给调用方的数据
+   */
+  compute?: (params: zod.infer<TParams>) => TData;
+  /**
+   * 响应类型令牌，`type<Foo>()`。**`TData` 只由它推导。**
+   *
+   * `normalize` / `compute` 的返回类型都包了 `NoInfer<>`：推导只认这个令牌，
+   * 钩子的返回值改为**被检查**。所以钩子返回错形状会直接编译报错，而不是让
+   * `TData` 静默变宽 —— 忘写 `NoInfer` 时后者就会发生。
+   */
+  response?: TypeToken<TData>;
+  /** 覆盖默认重试策略：命中这些错误码时重试（如 B站 `-412` 的 `RISK_CONTROL`） */
+  retryOn?: AmagiErrorCode[];
+  /**
+   * `retryOn` 命中时**重新 build + 重新签名**，而不是重放同一个 `RequestSpec`。
+   *
+   * 默认（`false`）是原样重放：B站的 `-412` 只需要等一会儿再发同一个请求，
+   * 重放就够了。但抖音的 Argus 是**按单次请求的 token 组判定、不锁账号** ——
+   * 同一个 `msToken` + 同一个 `a_bogus` 重发三次，结果必然相同。这类平台需要
+   * 「换一整套参数再来」，而参数是在 `build`（`msToken`）与 `sign`（`a_bogus`
+   * 的时间戳）里现算的，所以必须把这两步收进重试循环。
+   *
+   * **opt-in 而不是默认开**：快手那类带可变状态的签名器会被多推一格
+   * （同一条理由让分页分支必须把 build 放在首次签名之前）。
+   *
+   * 语义细节：重试时按**原来的分片下标**取重建后的那一条，所以多请求聚合 /
+   * 分段并发的端点也能用 —— 失败的那一段单独换参重来，不影响其他段。
+   */
+  retryFresh?: boolean;
+  /**
+   * 跨平台语义视图的预留槽位（当前恒为 `undefined`）。
+   *
+   * 将来类型扩展为 `(raw: unknown) => unknown` 并在此实现：把平台原始
+   * 载荷归一成跨平台统一字段，配合参数上的 `view: 'canonical'` 生效。
+   */
+  toCanonical?: undefined;
+}
+/**
+ * 任意端点声明。
+ *
+ * `TParams` 出现在 `build` / `normalize` / `compute` 的**形参**位置（逆变），
+ * 所以这里必须用 `any` 才能让具体端点赋值进来 —— 换成 `unknown`
+ * 会让 `EndpointDef<具体 schema, T>` 不可赋值给它。
+ */
+type AnyEndpointDef = EndpointDef<any, any>;
+/** 一个平台的端点注册表：端点短名 → 声明 */
+type Registry = Record<string, AnyEndpointDef>;
+/** 取端点「调用方能传的参数」类型（coerce 之前，对应 `zod.input`） */
+type InputOf<D> = D extends EndpointDef<infer P, unknown> ? zod.input<P> : never;
+/** 取端点的响应数据类型 */
+type DataOf<D> = D extends EndpointDef<any, infer T> ? T : never;
+//#endregion
+//#region src/contracts/result.d.ts
+/** 成功信封 */
+interface AmagiSuccess<T> {
+  /** 判别键 */
+  success: true;
+  /** 端点声明的返回类型 */
+  data: T;
+  /**
+   * 对侧键的占位声明。
+   *
+   * 成功信封**运行时没有这个键**，所以类型只能是 `undefined`。存在的唯一理由是
+   * 让未收窄的 {@link AmagiResult} 上 `r.error` 可读（类型 `AmagiError | undefined`），
+   * 而不是 TS2339。
+   */
+  error?: undefined;
+  /** 面向人的简短说明，成功时固定为 {@link SUCCESS_MESSAGE} */
+  message: string;
+  /** 元信息 */
+  meta: AmagiMeta;
+}
+/** 失败信封 */
+interface AmagiFailure {
+  /** 判别键 */
+  success: false;
+  /** 唯一的错误载体，永不为 `undefined` */
+  error: AmagiError;
+  /**
+   * 对侧键的占位声明。
+   *
+   * 失败信封**运行时没有这个键**，所以类型只能是 `undefined`。有了它，未收窄的
+   * `r.data` 是 `T | undefined`，而不是 TS2339。
+   */
+  data?: undefined;
+  /** 等价于 `error.message`，为兼容 v6 的 `result.message` 读法保留 */
+  message: string;
+  /** 元信息 */
+  meta: AmagiMeta;
+}
+/** 所有对外 API 的唯一返回类型 */
+type AmagiResult<T> = AmagiSuccess<T> | AmagiFailure;
+/**
+ * 成功信封的类型守卫。
+ *
+ * `?: undefined` 让「不收窄直接读」不再报错，但**收窄不到 `T`**（还是
+ * `T | undefined`）。数组回调里没有 `if` 可用，`filter` 又只认类型谓词
+ * —— 这就是必须有守卫的场景：
+ *
+ * ```ts
+ * const list: AmagiResult<Work>[] = await Promise.all(ids.map(fetchOne))
+ * const works = list.filter(isSuccess).map((r) => r.data)   // Work[]
+ * ```
+ * @param result - 任意信封
+ * @returns 是成功信封时为 `true`，并把类型收窄到 {@link AmagiSuccess}
+ */
+declare const isSuccess: <T>(result: AmagiResult<T>) => result is AmagiSuccess<T>;
+/**
+ * 失败信封的类型守卫。
+ *
+ * 与 {@link isSuccess} 对称，`list.filter(isFailure)` 之后 `r.error` 是
+ * `AmagiError`（不带 `| undefined`），可以直接按 `kind` 分流。
+ * @param result - 任意信封
+ * @returns 是失败信封时为 `true`，并把类型收窄到 {@link AmagiFailure}
+ */
+declare const isFailure: <T>(result: AmagiResult<T>) => result is AmagiFailure;
+/**
+ * {@link unwrap} 失败时抛出的 Error 子类。
+ *
+ * 为什么不直接 `throw result.error`：{@link AmagiError} 是**纯数据契约**，
+ * 抛非 Error 对象会丢栈、`e instanceof Error` 为假，Node 的 `unhandledRejection`
+ * 打印与各家日志 / 监控（Sentry 归为 “Non-Error exception captured”）都处理不好。
+ *
+ * `AmagiError` 的字段**全部平铺在实例上**（`kind` / `code` / `message` /
+ * `retryable`，以及 `platform` / `http` / `issues` / `raw`），所以
+ * `catch (e) { (e as AmagiError).kind }` 直接可用；原始对象在 {@link error}，
+ * `error.cause` 原样进 `Error.cause`（**不吞**）。
+ */
+declare class AmagiThrownError extends Error implements AmagiError {
+  /** 判别键，跨平台统一的错误大类 */
+  readonly kind: AmagiError['kind'];
+  /** 稳定的字符串错误码 */
+  readonly code: AmagiError['code'];
+  /** 是否值得重试 */
+  readonly retryable: boolean;
+  /** 平台原始错误码与文案 */
+  readonly platform?: AmagiError['platform'];
+  /** 真实发生的 HTTP 状态 */
+  readonly http?: AmagiError['http'];
+  /** `kind === 'validation'` 时的字段级错误 */
+  readonly issues?: AmagiError['issues'];
+  /** 原始响应体（`createClient({ debug: true })` 时才有） */
+  readonly raw?: unknown;
+  /** 失败信封里那个错误对象，原样保留（引用相等） */
+  readonly error: AmagiError;
+  /**
+   * @param error - 失败信封的 `error`，字段平铺到实例上，`cause` 原样转交 `Error`
+   */
+  constructor(error: AmagiError);
+}
+/**
+ * 取成功信封的 `data`，失败就抛。
+ *
+ * 返回类型是 `T`，不是 `T | undefined` —— 这是它与「不收窄直接读 `r.data`」的
+ * 全部区别：愿意让失败沿调用栈往上冒的人用它，不愿意的人继续写 `if (r.success)`。
+ * 管线本身永不 reject（硬约束），`unwrap` 是调用方**显式**把失败转成异常。
+ *
+ * 与 `@ikenxuan/amagi/compat` 不重叠：`unwrap` 是单点显式选择（想抛就抛，
+ * 一处一处地写）；compat 是 v6 语义的**整体回填**（把整个 fetcher 的返回值换回
+ * v6 信封，含顶层 `code`）。要 v6 行为用 compat，要 v7 信封加异常用 `unwrap`。
+ * @param result - 任意信封
+ * @returns 成功信封的 `data`
+ * @throws {AmagiThrownError} 失败信封时抛出：`AmagiError` 全字段平铺，`cause` 不丢
+ */
+declare const unwrap: <T>(result: AmagiResult<T>) => T;
+//#endregion
+//#region src/contracts/session.d.ts
+/**
+ * 会话契约。
+ *
+ * 05-session-and-polling.md 的落地：登录会话是一等概念，与「单次请求的端点」
+ * 并列。引擎（`runtime/session.ts`）负责轮询循环 / 退避 / 超时 / 取消 /
+ * challenge 编排，平台策略（`platforms` 下各平台的 `session/qrcode.ts`）
+ * 只写协议细节。
+ *
+ * `contracts/` 是零依赖叶子层：本文件只 type-import 同目录契约与外部包。
+ */
+/** 登录会话的状态。判别键是 phase */
+type LoginState =
+/** 二维码已就绪，等待扫码 */
+{
+  phase: 'pending';
+  qrcode: Qrcode;
+} |
+/** 已扫码，等待手机端确认 */
+{
+  phase: 'scanned';
+  qrcode: Qrcode;
+} |
+/** 需要二次验证，必须应答 challenge 才能继续 */
+{
+  phase: 'challenge';
+  challenge: LoginChallenge;
+} |
+/** 登录成功 */
+{
+  phase: 'success';
+  credential: Credential;
+} |
+/** 二维码过期，需要重新开始 */
+{
+  phase: 'expired';
+} |
+/** 用户在手机端点了取消 */
+{
+  phase: 'rejected';
+} |
+/** 触发风控 */
+{
+  phase: 'risk';
+  reason: string;
+} |
+/** 会话失败（网络、协议变更、内部错误） */
+{
+  phase: 'failed';
+  error: AmagiError;
+};
+/** 二维码 */
+interface Qrcode {
+  /** 二维码承载的内容，直接拿去生成图片 */
+  content: string;
+  /** 轮询令牌。B站是 qrcode_key，抖音是 token */
+  token: string;
+  /** 绝对过期时刻，Unix 毫秒 */
+  expiresAt: number;
+  /** 剩余秒数，取码时算出 */
+  expiresInSec: number;
+}
+/** 跨平台统一的登录凭证 */
+interface Credential {
+  /** 完整登录态 cookie 串，可直接传给 fetcher */
+  cookie: string;
+  /** 凭证过期时刻，能从 cookie 里解析出来时才有 */
+  expiresAt?: number;
+  /** 平台原始产物（抖音的 sso 响应、B站的 Set-Cookie 数组等） */
+  raw?: unknown;
+}
+/** 短信验证码 challenge */
+interface SmsChallenge {
+  kind: 'sms';
+  /** 脱敏手机号，如 '138****8000' */
+  maskedMobile: string;
+  /** 平台给出的可选验证方式，原样保留供排查 */
+  availableWays: string[];
+  /** 发送验证码。返回重发等待秒数 */
+  sendCode(): Promise<{
+    ok: true;
+    retryAfterSec: number;
+  } | {
+    ok: false;
+    error: AmagiError;
+  }>;
+}
+/** 图形验证码 challenge */
+interface CaptchaChallenge {
+  kind: 'captcha';
+  imageUrl: string;
+  /** 极验/腾讯验证码等的初始化参数 */
+  payload: Record<string, unknown>;
+}
+/** 二次验证 challenge */
+type LoginChallenge = SmsChallenge | CaptchaChallenge;
+/**
+ * 按 challenge 的 kind 决定应答的形状。
+ *
+ * 条件类型是「回调返回错字段编译期报错」的落点：
+ * `c.kind === 'sms'` 收窄后 `C` 推断为 `SmsChallenge`，
+ * `ChallengeAnswer<SmsChallenge>` 求值为 `{ code: string }`。
+ */
+type ChallengeAnswer<C extends LoginChallenge> = C extends SmsChallenge ? {
+  code: string;
+} : C extends CaptchaChallenge ? {
+  ticket: string;
+  randstr?: string;
+} : never;
+/** 会话回调（watch 出口） */
+interface WatchHandlers {
+  /** 二维码就绪。同一个会话里只会调用一次 */
+  onQrcode?: (qrcode: Qrcode) => void | Promise<void>;
+  /** 已扫码待确认 */
+  onScanned?: () => void | Promise<void>;
+  /** 需要二次验证。返回值驱动状态机前进 */
+  onChallenge?: <C extends LoginChallenge>(challenge: C) => ChallengeAnswer<C> | Promise<ChallengeAnswer<C>>;
+  /** 每次状态变化都会调用，用于日志 */
+  onState?: (state: LoginState) => void;
+  /** 登录成功 */
+  onSuccess?: (credential: Credential) => void | Promise<void>;
+  /** 终止性失败（expired / rejected / risk / failed） */
+  onError?: (error: AmagiError, state: LoginState) => void | Promise<void>;
+}
+/** 会话 watch 选项 */
+interface WatchOptions extends WatchHandlers {
+  signal?: AbortSignal;
+  /** 整个会话的超时。默认取二维码的 expiresAt */
+  timeoutMs?: number;
+  /** 轮询间隔的下限，防止服务端给出过小的 interval。默认 1000 */
+  minIntervalMs?: number;
+}
+/**
+ * 平台会话上下文。
+ *
+ * 由引擎创建并逐次轮询更新；平台私有字段（biz_trace_id / verify_way /
+ * verifyTicket / encryptUid / stdParams / newVerifyFlow / diversionTag…）
+ * 放在 `data` 里由策略自己读写，引擎原样携带。
+ */
+interface SessionCtx {
+  /** 平台 */
+  platform: Platform;
+  /** 会话 cookie（申请二维码时的那一份） */
+  cookie: string;
+  /** 轮询令牌（抖音 token / B站 qrcode_key） */
+  token?: string;
+  /** 二维码（start 之后一直带着） */
+  qrcode?: Qrcode;
+  /** 调用方请求配置（代理、超时、额外请求头） */
+  requestConfig?: RequestConfig$1;
+  /** transport 的 send，策略用它发请求（修 A5：不直连 axios） */
+  send: (spec: RequestSpec, reason?: 'initial' | 'retry' | 'page' | 'segment' | 'prepare') => Promise<RawResponse>;
+  /** 平台私有状态，策略自读写 */
+  data: Record<string, unknown>;
+}
+/**
+ * 平台扫码登录策略。
+ *
+ * 轮询循环 / 超时 / 退避 / 取消全在引擎里，策略只写协议细节。
+ */
+interface QrcodeLoginStrategy {
+  readonly platform: Platform;
+  /** 取二维码 */
+  start(ctx: SessionCtx): Promise<{
+    ok: true;
+    qrcode: Qrcode;
+    ctx: SessionCtx;
+  } | {
+    ok: false;
+    error: AmagiError;
+  }>;
+  /** 单次轮询 */
+  poll(ctx: SessionCtx): Promise<{
+    ok: true;
+    state: LoginState;
+    ctx: SessionCtx;
+    intervalMs: number;
+  } | {
+    ok: false;
+    error: AmagiError;
+  }>;
+  /** 应答 challenge（只有支持二次验证的平台需要实现） */
+  answer?(ctx: SessionCtx, challenge: LoginChallenge, answer: unknown): Promise<{
+    ok: true;
+    ctx: SessionCtx;
+  } | {
+    ok: false;
+    error: AmagiError;
+  }>;
+  /** 从 opaque string 恢复 */
+  deserialize(blob: string): SessionCtx;
+  /** 序列化为 opaque string */
+  serialize(ctx: SessionCtx): string;
+}
+/** 登录命名空间：qrcode() 创建会话，resume() 从 opaque string 恢复 */
+interface LoginNamespace {
+  /** 创建扫码登录会话 */
+  qrcode(options?: RequestConfig$1): LoginSession;
+  /** 从 `serialize()` 的产物恢复会话 */
+  resume(blob: string): LoginSession;
+}
+/**
+ * 登录会话：三种消费方式（回调 / AsyncIterable / 手动单步）。
+ *
+ * 返回终态时永不 reject（除调用方回调自己抛出）。
+ */
+interface LoginSession {
+  /** 取二维码（手动单步的第一步） */
+  start(): Promise<{
+    ok: true;
+    state: LoginState;
+    ctx: SessionCtx;
+  } | {
+    ok: false;
+    error: AmagiError;
+  }>;
+  /** 手动单步：轮询一次，推进状态机 */
+  next(): Promise<{
+    ok: true;
+    state: LoginState;
+  } | {
+    ok: false;
+    error: AmagiError;
+  }>;
+  /** challenge 阶段应答，推进状态机 */
+  answer<C extends LoginChallenge>(answer: ChallengeAnswer<C>): Promise<void>;
+  /** 回调出口：一直跑到终态 */
+  watch(options?: WatchOptions): Promise<{
+    ok: true;
+    credential: Credential;
+  } | {
+    ok: false;
+    error: AmagiError;
+  }>;
+  /** 序列化为 opaque string（内部含 cookie + token + 平台标识 + 版本号） */
+  serialize(): string;
+  /** AsyncIterable 出口：`for await (const state of session)` */
+  [Symbol.asyncIterator](): AsyncIterator<LoginState>;
+}
+//#endregion
+//#region src/runtime/events.d.ts
+/**
+ * 事件总线。
+ *
+ * 四条约定：
+ *
+ * 1. **实例级，不是全局单例。** 每个 client 自带一条总线，两个实例的 `events`
+ *    互不串扰。**静态 fetcher（不经过 client 实例）不发事件** —— 它的三参签名
+ *    `(options, cookie?, requestConfig?)` 没有装总线的位置，要观测就用 client 形态。
+ * 2. **调用相关的负载都带 `meta`。** 每条负载都带 {@link AmagiMeta}，
+ *    `requestId` / `clientId` / `endpoint` / `attempts` 齐全，多实例并发可归因。
+ *    唯一的例外是 `log:*`：日志可能不属于任何一次调用（服务启动那条就不属于），
+ *    所以它的 `meta` 是可选的。
+ * 3. **12 个事件名与 v6 逐名对齐。** `AmagiEventType` 的每个取值在这条总线上
+ *    都能 `on`，监听写法从全局单例搬过来时不会有事件名静默消失。
+ *    **名字对齐、负载是新形状**：带 `meta` / `trace`，不带 `timestamp`。
+ * 4. **另有三个会话事件。** `session:state` / `session:error` / `session:success`
+ *    是扫码登录会话的出口，不在「与 v6 逐名对齐」的那 12 个里，单独一组
+ *    （{@link SESSION_BUS_EVENT_NAMES}）。
+ *
+ * 12 个名字里 `log:info` / `log:debug` 在核心链路**没有 emit 点**，
+ * 见 {@link UNEMITTED_BUS_EVENT_NAMES}。
+ */
+/** `http:request` 事件负载 */
+interface HttpRequestEvent {
+  /** 元信息 */
+  meta: AmagiMeta;
+  /** 这一条请求的明细 */
+  trace: RequestTrace;
+}
+/** `http:response` 事件负载 */
+interface HttpResponseEvent {
+  /** 元信息 */
+  meta: AmagiMeta;
+  /** 这一条请求的明细 */
+  trace: RequestTrace;
+}
+/**
+ * `http:error` 事件负载：请求拿到了响应，但状态码不是 2xx。
+ *
+ * 与 `network:error` 的分工：这条是「回来了但不对」（有状态码），
+ * `network:error` 是「根本没回来」（没有状态码）。同一条请求会先有
+ * `http:response`，再有 `http:error`。
+ */
+interface HttpErrorEvent {
+  /** 元信息 */
+  meta: AmagiMeta;
+  /** 这一条请求的明细 */
+  trace: RequestTrace;
+  /** 平台返回的状态码（恒非 2xx） */
+  status: number;
+}
+/** `network:retry` 事件负载：一次失败即将退避重试 */
+interface NetworkRetryEvent {
+  /** 元信息 */
+  meta: AmagiMeta;
+  /** 刚刚失败的那条请求的明细 */
+  trace: RequestTrace;
+  /** 归因错误码（`NETWORK_ERROR` / `TIMEOUT` / `RATE_LIMITED` / `PLATFORM_UNAVAILABLE`） */
+  code: AmagiErrorCode;
+  /** 传输层 errno（`ECONNRESET` 这类）；拿到了响应就没有 */
+  errno?: string;
+  /** 平台返回的状态码；请求根本没发出就没有 */
+  status?: number;
+  /** 这是第几次重试（`1` = 第一次重试），与 v6 `NetworkRetryEventData.attempt` 同义 */
+  attempt: number;
+  /** 允许的最大重试次数 */
+  maxRetries: number;
+  /** 这次退避要等的毫秒数 */
+  delayMs: number;
+}
+/** `network:error` 事件负载：请求始终没拿到响应，退避已用尽 */
+interface NetworkErrorEvent {
+  /** 元信息 */
+  meta: AmagiMeta;
+  /** 最后一条请求的明细 */
+  trace: RequestTrace;
+  /** 归因错误码 */
+  code: 'NETWORK_ERROR' | 'TIMEOUT';
+  /** 传输层 errno */
+  errno?: string;
+  /** 失败文案 */
+  message: string;
+  /** 这次调用一共发了几次请求 */
+  attempts: number;
+}
+/**
+ * `log:*` 事件负载（5 个级别共用）。
+ *
+ * 与 v6 `LogEventData` 的差别：`timestamp: Date` 换成可选的 `meta`
+ * —— 日志属于哪一次调用比它发生在哪一毫秒更有用，而不属于任何调用的日志
+ * （如服务启动）本来就没有 `meta`。
+ */
+interface LogEvent {
+  /** 日志级别，与事件名的后半段一致 */
+  level: 'info' | 'warn' | 'error' | 'debug' | 'mark';
+  /** 日志消息 */
+  message: string;
+  /** 附加参数 */
+  args?: unknown[];
+  /** 元信息；不属于任何一次调用的日志没有这一项 */
+  meta?: AmagiMeta;
+}
+/** `api:success` 事件负载 */
+interface ApiSuccessEvent {
+  /** 元信息 */
+  meta: AmagiMeta;
+  /** 成功信封里的 data */
+  data: unknown;
+}
+/** `api:error` 事件负载 */
+interface ApiErrorEvent {
+  /** 元信息 */
+  meta: AmagiMeta;
+  /** 失败信封里的 error */
+  error: AmagiError;
+}
+/**
+ * `session:state` 事件负载：扫码登录会话推进了一步。
+ *
+ * 取到二维码时一条，之后每次 `strategy.poll` 有结果就一条。`state.phase`
+ * 是判别键（`pending` / `scanned` / `challenge` / `success` / `expired` /
+ * `rejected` / `risk` / `failed`），负载形状与引擎里 `publish` 的现场一致。
+ */
+interface SessionStateEvent {
+  /** 元信息。一个会话一个 `requestId`，`endpoint` 形如 `'bilibili.login'` */
+  meta: AmagiMeta;
+  /** 这一步的会话状态 */
+  state: LoginState;
+}
+/**
+ * `session:error` 事件负载：会话终止于失败。
+ *
+ * 发在引擎判定「不会再前进了」的地方：轮询失败、challenge 应答失败、
+ * `AbortSignal` 取消、没有 `onChallenge` 却遇到 challenge、以及终态
+ * `rejected` / `risk` / `failed`。**唯一的例外是引擎自己的超时**
+ * （`expiresAt` 到点）：那一条只发 `session:state`（`phase: 'expired'`），
+ * 随后直接返回失败信封 —— 平台自己报的过期码则照常发这条。
+ *
+ * 与 `api:error` 的分工：那条是「一次端点调用失败」，这条是「一次登录会话失败」。
+ */
+interface SessionErrorEvent {
+  /** 元信息 */
+  meta: AmagiMeta;
+  /** 终止原因 */
+  error: AmagiError;
+}
+/** `session:success` 事件负载：拿到登录凭证，会话结束 */
+interface SessionSuccessEvent {
+  /** 元信息 */
+  meta: AmagiMeta;
+  /** 跨平台统一的登录凭证（完整 cookie 串 + 平台原始产物） */
+  credential: Credential;
+}
+/**
+ * 事件名 → 负载的映射（**实例级总线**用；顶层导出的 `AmagiEventMap` 描述的是
+ * 全局单例 `amagiEvents`，是另一张表）。
+ *
+ * 名字不与 `AmagiEventMap` 重名：两个同名 interface 一起进 dts 会被打包器给
+ * 其中一个加上 `$1` 后缀，公开面上就出现一个谁都不认识的名字。
+ *
+ * 谁在发：
+ *
+ * | 事件名 | emit 点 |
+ * | --- | --- |
+ * | `http:request` / `http:response` | `transport/client.ts` 每发一次请求 |
+ * | `http:error` | `transport/client.ts`，响应回来了但状态码非 2xx |
+ * | `network:retry` | `transport/client.ts`，一次失败即将退避重试 |
+ * | `network:error` | `transport/client.ts`，请求始终没拿到响应且退避用尽 |
+ * | `log:warn` / `log:error` | {@link createTransportEmitter}，上面两条的日志行 |
+ * | `log:mark` | `client/createClient.ts` 的 `startServer` 开始监听时 |
+ * | `api:success` / `api:error` | `runtime/execute.ts` 收尾信封时 |
+ * | `session:state` / `session:error` / `session:success` | `runtime/session.ts` 的会话引擎（扫码登录） |
+ * | `log:info` / `log:debug` | **无 emit 点**，见 {@link UNEMITTED_BUS_EVENT_NAMES} |
+ */
+interface AmagiBusEventMap {
+  /** 一条日志（info 级） */
+  'log:info': LogEvent;
+  /** 一条日志（warn 级） */
+  'log:warn': LogEvent;
+  /** 一条日志（error 级） */
+  'log:error': LogEvent;
+  /** 一条日志（debug 级） */
+  'log:debug': LogEvent;
+  /** 一条日志（mark 级，重要标记） */
+  'log:mark': LogEvent;
+  /** 一次底层请求即将发出 */
+  'http:request': HttpRequestEvent;
+  /** 一次底层请求已经结束（含非 2xx 与传输失败） */
+  'http:response': HttpResponseEvent;
+  /** 一次底层请求拿到了非 2xx 响应 */
+  'http:error': HttpErrorEvent;
+  /** 一次失败即将退避重试 */
+  'network:retry': NetworkRetryEvent;
+  /** 请求始终没拿到响应，退避已用尽 */
+  'network:error': NetworkErrorEvent;
+  /** 一次逻辑调用成功返回 */
+  'api:success': ApiSuccessEvent;
+  /** 一次逻辑调用失败返回 */
+  'api:error': ApiErrorEvent;
+  /** 扫码登录会话推进了一步 */
+  'session:state': SessionStateEvent;
+  /** 扫码登录会话终止于失败 */
+  'session:error': SessionErrorEvent;
+  /** 扫码登录会话拿到了凭证 */
+  'session:success': SessionSuccessEvent;
+}
+/** 事件名 */
+type AmagiBusEventName = keyof AmagiBusEventMap;
+/**
+ * 全部事件名（12 个与 v6 对齐 + 3 个会话事件），用于遍历与穷尽性校验。
+ *
+ * 与 {@link AmagiBusEventMap} 由 `satisfies` 挂钩：表里多一个键而这里没跟上
+ * 就编译不过，所以「全部」不是靠人记着的。
+ */
+declare const AMAGI_BUS_EVENT_NAMES: readonly ["log:info", "log:warn", "log:error", "log:debug", "log:mark", "http:request", "http:response", "http:error", "network:retry", "network:error", "api:success", "api:error", "session:state", "session:error", "session:success"];
+/**
+ * 类型安全的事件总线。
+ *
+ * 一个 client 实例一条。构造两条就是两条，彼此不共享监听器。
+ */
+declare class EventBus {
+  readonly id: string;
+  private readonly emitter;
+  /**
+   * @param id - 总线标识，仅用于诊断
+   */
+  constructor(id?: string);
+  /**
+   * 投递一个事件
+   * @param event - 事件名
+   * @param payload - 事件负载，必须带 `meta`
+   * @returns 是否有监听器处理了该事件
+   */
+  emit<K extends AmagiBusEventName>(event: K, payload: AmagiBusEventMap[K]): boolean;
+  /**
+   * 注册监听器
+   * @param event - 事件名
+   * @param listener - 处理函数
+   * @returns 自身，便于链式调用
+   */
+  on<K extends AmagiBusEventName>(event: K, listener: (payload: AmagiBusEventMap[K]) => void): this;
+  /**
+   * 注册一次性监听器
+   * @param event - 事件名
+   * @param listener - 处理函数
+   * @returns 自身，便于链式调用
+   */
+  once<K extends AmagiBusEventName>(event: K, listener: (payload: AmagiBusEventMap[K]) => void): this;
+  /**
+   * 移除监听器
+   * @param event - 事件名
+   * @param listener - 处理函数
+   * @returns 自身，便于链式调用
+   */
+  off<K extends AmagiBusEventName>(event: K, listener: (payload: AmagiBusEventMap[K]) => void): this;
+  /**
+   * 某个事件当前的监听器数量
+   * @param event - 事件名
+   * @returns 监听器数量
+   */
+  listenerCount(event: AmagiBusEventName): number;
+  /**
+   * 清空监听器
+   * @param event - 事件名；省略则清空所有事件
+   * @returns 自身，便于链式调用
+   */
+  removeAllListeners(event?: AmagiBusEventName): this;
+}
+//#endregion
+//#region src/client/method-names.d.ts
+/**
+ * 端点名 → 方法名的映射。
+ *
+ * **全仓唯一一处手写映射。** 其余派生物（参数类型、校验、路由、fetcher 方法集合、
+ * bound fetcher、文档清单）都从 registry 推出来，只有这张表必须手写 ——
+ * 因为方法名里有 15 个不规则形式，不可能用「`fetch` + 首字母大写」拼出来
+ * （`parseWork` 没有 `fetch` 前缀、`comments` 叫 `fetchWorkComments`、
+ * `search` 叫 `searchContent`、`avToBv` 叫 `convertAvToBv` …）。
+ *
+ * 这张表漏一个，就等于某个方法在 fetcher 上凭空消失。
+ *
+ * 抖音 passport 的 4 个方法（`requestPassportQrcode` / `checkPassportQrcode` /
+ * `sendPassportVerifyCode` / `validatePassportVerifyCode`）**不在这里** ——
+ * 它们是会话而不是端点，走 `client.douyin.login` 那一套。
+ */
+declare const METHOD_NAMES: {
+  readonly 'douyin.videoWork': "fetchVideoWork";
+  readonly 'douyin.imageAlbumWork': "fetchImageAlbumWork";
+  readonly 'douyin.slidesWork': "fetchSlidesWork";
+  readonly 'douyin.textWork': "fetchTextWork";
+  /** ⚠️ 不规则：没有 `fetch` 前缀 */
+  readonly 'douyin.parseWork': "parseWork";
+  /** ⚠️ 不规则：`comments` → `fetchWorkComments` */
+  readonly 'douyin.comments': "fetchWorkComments";
+  readonly 'douyin.commentReplies': "fetchCommentReplies";
+  readonly 'douyin.danmakuList': "fetchDanmakuList";
+  readonly 'douyin.userProfile': "fetchUserProfile";
+  readonly 'douyin.userVideoList': "fetchUserVideoList";
+  readonly 'douyin.userFavoriteList': "fetchUserFavoriteList";
+  readonly 'douyin.userRecommendList': "fetchUserRecommendList";
+  /** ⚠️ 不规则：`search` → `searchContent` */
+  readonly 'douyin.search': "searchContent";
+  readonly 'douyin.suggestWords': "fetchSuggestWords";
+  readonly 'douyin.musicInfo': "fetchMusicInfo";
+  readonly 'douyin.liveRoomInfo': "fetchLiveRoomInfo";
+  readonly 'douyin.emojiList': "fetchEmojiList";
+  readonly 'douyin.dynamicEmojiList': "fetchDynamicEmojiList";
+  /** ⚠️ 不规则：`request` 前缀 */
+  readonly 'douyin.loginQrcode': "requestLoginQrcode";
+  readonly 'douyin.guestUserInfo': "fetchGuestUserInfo";
+  readonly 'douyin.guestMusicInfo': "fetchGuestMusicInfo";
+  readonly 'douyin.guestMusicAwemeList': "fetchGuestMusicAwemeList";
+  readonly 'douyin.emojiResourceMeta': "fetchEmojiResourceMeta";
+  readonly 'bilibili.videoInfo': "fetchVideoInfo";
+  /** ⚠️ 不规则：多了 `Url` 后缀 */
+  readonly 'bilibili.videoStream': "fetchVideoStreamUrl";
+  readonly 'bilibili.videoDanmaku': "fetchVideoDanmaku";
+  readonly 'bilibili.comments': "fetchComments";
+  readonly 'bilibili.commentReplies': "fetchCommentReplies";
+  readonly 'bilibili.userCard': "fetchUserCard";
+  readonly 'bilibili.userDynamicList': "fetchUserDynamicList";
+  readonly 'bilibili.userLiveStatus': "fetchUserLiveStatus";
+  readonly 'bilibili.userSpaceInfo': "fetchUserSpaceInfo";
+  readonly 'bilibili.uploaderTotalViews': "fetchUploaderTotalViews";
+  readonly 'bilibili.dynamicDetail': "fetchDynamicDetail";
+  readonly 'bilibili.bangumiInfo': "fetchBangumiInfo";
+  /** ⚠️ 不规则：多了 `Url` 后缀 */
+  readonly 'bilibili.bangumiStream': "fetchBangumiStreamUrl";
+  readonly 'bilibili.liveRoomInfo': "fetchLiveRoomInfo";
+  /** ⚠️ 不规则：多了 `Info` 后缀 */
+  readonly 'bilibili.liveRoomInit': "fetchLiveRoomInitInfo";
+  readonly 'bilibili.articleContent': "fetchArticleContent";
+  readonly 'bilibili.articleCards': "fetchArticleCards";
+  readonly 'bilibili.articleInfo': "fetchArticleInfo";
+  readonly 'bilibili.articleListInfo': "fetchArticleListInfo";
+  readonly 'bilibili.loginStatus': "fetchLoginStatus";
+  readonly 'bilibili.emojiList': "fetchEmojiList";
+  /** ⚠️ 不规则：`request` 前缀 */
+  readonly 'bilibili.loginQrcode': "requestLoginQrcode";
+  /** ⚠️ 不规则：`check` 前缀 */
+  readonly 'bilibili.qrcodeStatus': "checkQrcodeStatus";
+  /** ⚠️ 不规则：`convert` 前缀 */
+  readonly 'bilibili.avToBv': "convertAvToBv";
+  /** ⚠️ 不规则：`convert` 前缀 */
+  readonly 'bilibili.bvToAv': "convertBvToAv";
+  /** ⚠️ 不规则：`request` 前缀 */
+  readonly 'bilibili.captchaFromVoucher': "requestCaptchaFromVoucher";
+  /** ⚠️ 不规则：`validate` 前缀 + `Result` 后缀 */
+  readonly 'bilibili.validateCaptcha': "validateCaptchaResult";
+  readonly 'kuaishou.videoWork': "fetchVideoWork";
+  /** 完整版 `photo/info`：当前稳定撞 `2001` 风控，主通道是 `fetchVideoWork` */
+  readonly 'kuaishou.videoWorkFull': "fetchVideoWorkFull";
+  readonly 'kuaishou.userProfile': "fetchUserProfile";
+  readonly 'kuaishou.userWorkList': "fetchUserWorkList";
+  readonly 'kuaishou.liveRoomInfo': "fetchLiveRoomInfo";
+  readonly 'kuaishou.emojiList': "fetchEmojiList";
+  readonly 'kuaishou.danmakuList': "fetchDanmakuList";
+  /** ⚠️ 不规则：`comments` → `fetchWorkComments` */
+  readonly 'kuaishou.comments': "fetchWorkComments";
+  readonly 'xiaohongshu.homeFeed': "fetchHomeFeed";
+  readonly 'xiaohongshu.noteDetail': "fetchNoteDetail";
+  readonly 'xiaohongshu.noteComments': "fetchNoteComments";
+  readonly 'xiaohongshu.userProfile': "fetchUserProfile";
+  readonly 'xiaohongshu.userNoteList': "fetchUserNoteList";
+  readonly 'xiaohongshu.emojiList': "fetchEmojiList";
+  /** ⚠️ 不规则：没有 `fetch` 前缀 */
+  readonly 'xiaohongshu.searchNotes': "searchNotes";
+};
+/** 映射表里已登记的端点全名 */
+type MappedEndpointName = keyof typeof METHOD_NAMES;
+/** 某个端点全名对应的 v6 方法名（类型层查表，供 `FetcherOf` 用） */
+type MethodNameOf<Full extends string> = Full extends MappedEndpointName ? (typeof METHOD_NAMES)[Full] : never;
+//#endregion
+//#region src/client/fetcher.d.ts
+/**
+ * 从 registry 派生 fetcher。
+ *
+ * 一个端点一份声明，其余全部派生 —— fetcher 是派生物之一：方法名来自
+ * `client/method-names.ts`（唯一手写表，15 个不规则映射在那张表里），
+ * 参数类型与返回类型来自端点声明。
+ *
+ * 运行时用 Proxy 懒加载：方法集合**自动跟随 registry**，registry 里有什么
+ * 端点，fetcher 上就有对应方法名的函数；`Object.keys` / `in` 同样跟随。
+ *
+ * 返回的 fetcher 是**绑定**形态：cookie 已随 `ClientCtx` 绑入，方法签名是
+ * `(options, requestConfig?)`。单次调用可用 `requestConfig.headers` 里任意大小写的
+ * `Cookie` 覆盖绑定 cookie。
+ */
+/** 参数对象里是否有必填键。用于区分「有参方法」与「无参方法」 */
+type HasRequiredKeys<T> = { [K in keyof T]-?: {} extends Pick<T, K> ? never : K; }[keyof T];
+/**
+ * 单个 fetcher 方法的签名。
+ *
+ * `TData` 默认取端点声明的 `response` / `normalize` / `compute` 推出的类型，
+ * 显式传泛型（`fetchX<T>()`）则覆盖返回类型 —— 这是 `typeMode` 逃生舱的替代。
+ *
+ * 无参端点（`params: zod.object({})`）的 options 参数可省略。
+ */
+type FetcherMethod<D extends AnyEndpointDef> = HasRequiredKeys<InputOf<D>> extends never ? <TData = DataOf<D>>(options?: InputOf<D>, requestConfig?: RequestConfig$1) => Promise<AmagiResult<TData>> : <TData = DataOf<D>>(options: InputOf<D>, requestConfig?: RequestConfig$1) => Promise<AmagiResult<TData>>;
+/**
+ * {@link FetcherMethod} 的「只保留成功分支」投影。
+ *
+ * 给**把失败转成异常**的下游封装用。这类封装（如 karin-plugin-kkk 的
+ * `amagiClient.ts`）在一层 Proxy 里把失败信封 `throw` 掉，于是「返回了就是成功」
+ * ——但这条语义只活在运行时，类型上仍是 `AmagiResult<T>` 这个联合，每一处
+ * `.data` 都要再收窄一遍（kkk 实测 473 处）。
+ *
+ * 为什么必须由 amagi 这边给：`TData` 的默认值 `DataOf<D>` **只在这里在作用域内**。
+ * 下游想自己写 `T extends (...a) => Promise<AmagiResult<infer D>> ? ...` 的映射类型
+ * 是做不到的 —— TS 对泛型签名做 `infer` 时按约束（这里没有约束，即 `unknown`）
+ * 实例化类型参数，默认值直接丢失，`data` 会变成 `unknown`。
+ *
+ * 与 {@link FetcherMethod} 只差返回类型：参数列表、`TData` 逃生舱都一样。
+ */
+type SuccessFetcherMethod<D extends AnyEndpointDef> = HasRequiredKeys<InputOf<D>> extends never ? <TData = DataOf<D>>(options?: InputOf<D>, requestConfig?: RequestConfig$1) => Promise<AmagiSuccess<TData>> : <TData = DataOf<D>>(options: InputOf<D>, requestConfig?: RequestConfig$1) => Promise<AmagiSuccess<TData>>;
+/**
+ * 端点短名 → fetcher 方法名。
+ *
+ * 优先查 `METHOD_NAMES` 表（不规则映射的唯一出处）；查不到时退化为
+ * 「`fetch` + 首字母大写」规则名，所以新增端点即使忘了登记表也能拿到方法。
+ */
+type MethodNameOfEndpoint<P extends Platform, K extends string> = MethodNameOf<`${P}.${K}`> extends never ? `fetch${Capitalize<K>}` : MethodNameOf<`${P}.${K}`>;
+/**
+ * 一个平台 fetcher 的类型：键是派生出的方法名（查不到表的端点用规则名兜底），
+ * 值是该方法对应的端点方法签名。
+ */
+type FetcherOf<P extends Platform, R extends Registry> = { [K in keyof R as MethodNameOfEndpoint<P, K & string>]: FetcherMethod<R[K]>; };
+/**
+ * {@link FetcherOf} 的「只保留成功分支」投影，键集合与参数完全一致。
+ *
+ * 用途见 {@link SuccessFetcherMethod}：下游用 Proxy 把失败信封转成异常之后，
+ * 把包装后的 fetcher 声明成这个类型，`.data` 就不再是 `T | undefined`。
+ * 四个平台的具名别名在各自的 `model/fetchers/<platform>/index.ts` 里
+ * （`SuccessDouyinFetcher` 等），因为 registry 的类型只在那边够得到。
+ */
+type SuccessFetcherOf<P extends Platform, R extends Registry> = { [K in keyof R as MethodNameOfEndpoint<P, K & string>]: SuccessFetcherMethod<R[K]>; };
+//#endregion
+//#region src/platforms/douyin/passport/aBogus.d.ts
+/** bdms SDK 版本号，同时也是 passport 通用参数里的 p_bd */
+declare const BDMS_SDK_VERSION = "1.0.1.19-fix.01";
+/**
+ * 生成 a_bogus
+ * @param query 除 a_bogus 之外的完整查询串（未加 `?`，保持实际发送顺序）
+ * @param userAgent 与请求头一致的 UA
+ * @returns a_bogus 参数值（未做 URL 编码）
+ */
+declare const aBogus: (query: string, userAgent: string) => string;
+//#endregion
+//#region src/platforms/douyin/passport/cookieJar.d.ts
+/**
+ * 登录流程用的轻量 CookieJar
+ *
+ * 登录过程会跨 `www.douyin.com` / `login.douyin.com` / `ttwid.bytedance.com` 三个域，
+ * 且同一个 cookie 名会被多次下发（例如 `ttwid` 在换取可信指纹后会被替换、
+ * `sessionid` 在二次验证通过后会被升级）。这里只做一件事：**按下发顺序覆盖同名 cookie**，
+ * 保证最终拿到的永远是最后一次下发的值，同时正确处理服务端的删除指令。
+ *
+ * 不做域/路径隔离：整个登录流程都在抖音自己的域下，隔离反而会漏掉跨子域下发的凭证。
+ *
+ * 另外承载一小部分**本地会话状态**（见 `INTERNAL_PREFIX`）：passport 的几个接口对外是
+ * 无状态的，会话全靠 cookie 串在调用之间传递，而 bd-ticket-guard 需要在多次调用之间
+ * 记住自己生成的密钥与服务端签发的票据。这些条目以 `__amagi_` 开头，
+ * `toString()` 不会把它们放进 Cookie 请求头，只有 `serialize()` 才会带上。
+ */
+/** 本地会话状态的 cookie 名前缀，这些条目永远不会发给服务端 */
+declare const INTERNAL_PREFIX = "__amagi_";
+declare class CookieJar {
+  /** Map 保留插入顺序，重复 set 只更新值、不改变位置 */
+  private readonly cookies;
+  /**
+   * @param initial 初始 cookie 串，形如 `a=1; b=2`
+   */
+  constructor(initial?: string);
+  /** 当前持有的 cookie 数量 */
+  get size(): number;
+  /**
+   * 写入一条 cookie
+   * @param name cookie 名
+   * @param value cookie 值
+   */
+  set(name: string, value: string): this;
+  /**
+   * 读取一条 cookie
+   * @param name cookie 名
+   */
+  get(name: string): string | undefined;
+  /**
+   * 是否持有某条 cookie
+   * @param name cookie 名
+   */
+  has(name: string): boolean;
+  /**
+   * 合并一段 `name=value; name=value` 形式的 cookie 串
+   * @param cookieString cookie 串，空值直接忽略
+   */
+  merge(cookieString?: string | null): this;
+  /**
+   * 应用响应的 Set-Cookie 头
+   * @param setCookies 单条或多条 Set-Cookie 原始值
+   */
+  applySetCookie(setCookies?: string | string[] | null): this;
+  /**
+   * 是否已经拿到登录态凭证（`ttwid` 是匿名设备指纹，不算登录）
+   */
+  isLoggedIn(): boolean;
+  /** 序列化为可直接放进 Cookie 请求头的字符串，不含本地会话状态 */
+  toString(): string;
+  /**
+   * 序列化为在两次调用之间传递的会话串，包含本地会话状态
+   *
+   * 登录流程内部用这个；最终落库的登录凭证用 `toString()`，避免把本地密钥写进配置。
+   */
+  serialize(): string;
+  /** 导出为普通对象，便于断言与日志 */
+  toJSON(): Record<string, string>;
+}
+//#endregion
+//#region src/platforms/douyin/passport/ticketGuard.d.ts
+/** 一次登录会话持有的 ticket-guard 状态 */
+interface TicketGuardState {
+  /** 服务端签发的票据 */
+  ticket: string;
+  /** 票据的时间戳签名 */
+  tsSign: string;
+  /** ECDH 派生出的 HMAC 密钥 */
+  ecdhKey: Buffer;
+}
+/**
+ * bd-ticket-guard 会话
+ *
+ * 状态全部读写自传入的 CookieJar，因此与 passport 的无状态调用形态天然兼容。
+ */
+declare class TicketGuard {
+  private readonly jar;
+  /**
+   * @param jar 当前会话 cookie
+   */
+  constructor(jar: CookieJar);
+  /** 本会话的私钥，缺失时生成一把并写回 CookieJar */
+  private get privateKey();
+  /** 未压缩格式的公钥（base64），即 `bd-ticket-guard-ree-public-key` */
+  get reePublicKey(): string;
+  /** 已签发的票据，未签发时为 undefined */
+  get state(): TicketGuardState | undefined;
+  /**
+   * 在首个 passport 请求之前把公钥交给服务端
+   *
+   * 缺了这一步扫码依然能成功，但服务端不会签发票据，后续请求也就无从携带。
+   */
+  publishPublicKey(): void;
+  /**
+   * 消化响应里可能带回的票据签发结果
+   * @param headers 响应头
+   * @returns 是否收到了新票据
+   */
+  applyServerData(headers: Record<string, unknown>): boolean;
+  /**
+   * 生成本次请求的 bd-ticket-guard 请求头
+   *
+   * 尚未拿到票据时只声明公钥，让服务端有机会签发；拿到之后带完整签名。
+   * @param path 请求路径，不含 query
+   * @param timestamp 秒级时间戳，默认取当前
+   */
+  headers(path: string, timestamp?: number): Record<string, string>;
+  /**
+   * ECDH + HKDF-SHA256 派生 HMAC 密钥
+   * @param clientCert 服务端下发的证书或裸公钥
+   */
+  private deriveEcdhKey;
+}
+//#endregion
+//#region src/platforms/douyin/passport/client.d.ts
+/** 与签名里的浏览器环境保持一致的 UA */
+declare const PASSPORT_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36";
+/** passport 接口的通用响应形状 */
+interface PassportPayload {
+  message?: string;
+  error_code?: number;
+  description?: string;
+  data?: Record<string, unknown>;
+}
+interface PassportResponse<T = PassportPayload> {
+  /** HTTP 状态码 */
+  status: number;
+  /** 原始响应体 */
+  raw: string;
+  /** 解析后的 JSON，解析失败时为空对象 */
+  body: T;
+  /** 合并了本次 Set-Cookie 之后的完整 cookie 串 */
+  cookie: string;
+}
+declare class DouyinPassportClient {
+  private readonly requestConfig?;
+  /** 会话 cookie */
+  readonly cookies: CookieJar;
+  /** bd-ticket-guard 设备票据，状态随 cookie 一起流转 */
+  readonly ticketGuard: TicketGuard;
+  /**
+   * @param cookie 已有的会话 cookie 串
+   * @param requestConfig amagi 的请求配置（代理、超时、额外请求头）
+   */
+  constructor(cookie?: string, requestConfig?: RequestConfig$1 | undefined);
+  /** CSRF token：优先用服务端下发的，缺失时本地生成并同步写进 cookie（双提交校验） */
+  private get csrfToken();
+  /**
+   * 初始化登录环境指纹
+   *
+   * 依次请求抖音首页拿 `__ac_nonce`、再向 ttwid 服务注册拿 `ttwid`。两步都是匿名的，
+   * 任意机器、任意系统都能跑；失败不抛错，只会让后续更容易命中风控。
+   */
+  bootstrap(): Promise<void>;
+  /**
+   * 请求 login.douyin.com 的 passport 接口（四重签名 + a_bogus 形态）
+   * @param path 接口路径，如 `/passport/web/get_qrcode/`
+   * @param params 业务参数，并入 query
+   */
+  request<T extends PassportPayload = PassportPayload>(path: string, params?: Record<string, string | number>): Promise<PassportResponse<T>>;
+  /**
+   * 请求 www.douyin.com 的验证页接口（lite 形态：固定 query + 表单 body，无签名）
+   * @param path 接口路径，如 `/passport/web/send_code/`
+   * @param params 业务参数，进 body
+   * @param bizTraceId 业务追踪 ID，同一次验证流程内保持一致
+   */
+  liteRequest<T extends PassportPayload = PassportPayload>(path: string, params: Record<string, string>, bizTraceId: string): Promise<PassportResponse<T>>;
+  /**
+   * 跟随扫码确认后下发的 SSO 跳转链，把最终的登录凭证收进 CookieJar
+   * @param redirectUrl `check_qrconnect` 返回的 redirect_url
+   * @returns 是否拿到登录态 cookie
+   */
+  followSsoRedirect(redirectUrl: string): Promise<boolean>;
+  /** 实际发请求：合并 cookie、消化 Set-Cookie 与 msToken */
+  private send;
+}
+//#endregion
+//#region src/platforms/douyin/passport/params.d.ts
+/**
+ * 逐字节异或 5 后转十六进制，SDK 用它编码参数名列表、验证码与密码
+ * @param input 明文
+ */
+declare const xor5Hex: (input: string) => string;
+/** 随机十六进制串，用于 biz_trace_id 一类的追踪 ID */
+declare const randomHex: (length: number) => string;
+/** 当日 UTC 12:00 的秒级时间戳，aid-sign 以此为密钥基准 */
+declare const utcNoonTimestamp: (now?: Date) => number;
+/**
+ * 计算 sign 与 qs
+ * @param params query 参数（仅排序后的前 10 个参与签名）
+ * @param data body 参数，GET 请求传空对象
+ */
+declare const makeSignAndQs: (params: Record<string, unknown>, data?: Record<string, unknown>) => {
+  sign: string;
+  qs: string;
+};
+/**
+ * 计算 `x-tt-passport-aid-sign` 请求头
+ * @param urlPath 接口路径，如 `/passport/web/get_qrcode/`
+ * @param timestamp 当日 UTC 正午时间戳（秒），默认取当前
+ */
+declare const makeAidSign: (urlPath: string, timestamp?: number) => string;
+//#endregion
+//#region src/types/ReturnDataType/Douyin/PassportLogin/PassportLogin.d.ts
+/**
+ * 抖音 passport 扫码登录的返回类型
+ *
+ * 与其它返回类型不同，这几个不是服务端原始 JSON 的映射，而是登录状态机归一化之后的结果：
+ * passport 的原始响应会把状态散落在 `data.status`、`data.error_code`、`data.account_flow`
+ * 三处，且同一种情况有多套表达。协议层把它们收敛成一个可判别联合，调用方只需 `switch`
+ * 一次即可覆盖全部分支。
+ *
+ * 它是全仓唯一一份**归一化后的手写类型**，形状由协议层决定而不是由服务端报文
+ * 决定，所以文件名不带 `_V<n>` 序号 —— 那个序号只对实测快照成立。
+ *
+ * 每个分支的 JSDoc、来源标注与收敛决策都是手写的语义信息，采样生成不出来，
+ * 类型生成器不要覆盖这份文件。
+ */
+/** 二次验证的一种可选方式 */
+interface DyPassportVerifyWay {
+  /** 方式标识，如 `mobile_sms_verify` */
+  verifyWay: string;
+  /** 该方式关联的手机号（已脱敏） */
+  mobile?: string;
+}
+/**
+ * 二次验证上下文
+ *
+ * 字段全部来自轮询响应，需原样透传给发码与验码接口，缺字段会被判为伪造请求。
+ */
+interface DyPassportVerifyContext {
+  /** 加密后的用户 ID */
+  encryptUid: string;
+  /** 验证票据 */
+  verifyTicket: string;
+  /** 验证会话票据 */
+  stdParams: Record<string, string>;
+  /** 文案场景，扫码登录固定为 `qr_connect` */
+  copywritingKey: string;
+  /** 风控分流标记 */
+  diversionTag: string;
+  /** 新版验证流标识 */
+  newVerifyFlow: string;
+  /** 服务端给出的可选验证方式 */
+  verifyWays: DyPassportVerifyWay[];
+}
+/** 一次二维码轮询的归一化结果 */
+type DyPassportPollResult =
+/** 尚未扫码 */
+{
+  status: 'new';
+  interval: number;
+} |
+/** 已扫码，等待手机端确认 */
+{
+  status: 'scanned';
+  interval: number;
+} |
+/** 已确认，可跟随 `redirectUrl` 领取登录凭证 */
+{
+  status: 'confirmed';
+  interval: number;
+  redirectUrl: string;
+} |
+/** 二维码过期 */
+{
+  status: 'expired';
+  interval: number;
+} |
+/** 触发账号二次验证 */
+{
+  status: 'verify';
+  interval: number;
+  verify: DyPassportVerifyContext;
+} |
+/** 触发风控 */
+{
+  status: 'risk';
+  interval: number;
+  message: string;
+} |
+/** 轮询被限频，退避后可继续用同一个 token 重试 */
+{
+  status: 'busy';
+  interval: number;
+  message: string;
+} |
+/** 未知状态，原样保留服务端返回，便于排查 */
+{
+  status: 'unknown';
+  interval: number;
+  message: string;
+};
+/** 登录二维码 */
+interface DyPassportQrcode {
+  /** 轮询用的二维码令牌 */
+  token: string;
+  /** 二维码承载的内容，直接拿去生成图片 */
+  content: string;
+  /**
+   * 二维码过期时间，服务端原值，是**绝对 Unix 时间戳（秒）**而非时长
+   *
+   * 想要剩余秒数请直接用 `expires_in`。
+   */
+  expire_time: number;
+  /** 距离二维码过期还剩多少秒，取二维码时算出，实测约 60 秒 */
+  expires_in: number;
+  /** 本次会话 cookie，后续调用需原样传回 */
+  cookie: string;
+}
+/** 二维码状态 */
+type DyPassportQrcodeStatus = DyPassportPollResult & {
+  /** 最新会话 cookie；`confirmed` 时已包含 sessionid / sid_guard 等登录凭证 */
+  cookie: string;
+  /** cookie 里是否已具备登录态凭证 */
+  logged_in: boolean;
+};
+/** 发码接口归一化后的结果，不含会话字段 */
+interface DyPassportSendCodeResult {
+  /** 是否发送成功 */
+  ok: boolean;
+  /** 服务端返回的脱敏手机号 */
+  mobile: string;
+  /** 允许重新发送的等待秒数 */
+  retryAfter: number;
+  /** 失败时的错误码 */
+  errorCode?: number;
+  /** 失败时的描述 */
+  message: string;
+}
+/** 发送短信验证码的结果 */
+type DyPassportSendCode = DyPassportSendCodeResult & {
+  /** 最新会话 cookie */
+  cookie: string;
+  /** 本次验证流程的追踪 ID，提交验证码时必须传回同一个值 */
+  biz_trace_id: string;
+  /** 本次实际使用的验证方式，提交验证码时应传回同一个值 */
+  verify_way: string;
+};
+/** 验码接口归一化后的结果，不含会话字段 */
+interface DyPassportValidateCodeResult {
+  /** 验证是否通过 */
+  ok: boolean;
+  /** 验证码是否填错（可以让用户重试） */
+  wrongCode: boolean;
+  /** 错误码 */
+  errorCode?: number;
+  /** 描述 */
+  message: string;
+}
+/** 提交短信验证码的结果 */
+type DyPassportValidateCode = DyPassportValidateCodeResult & {
+  /** 最新会话 cookie */
+  cookie: string;
+};
+//#endregion
+//#region src/platforms/douyin/passport/types.d.ts
+/** 二维码信息，`get_qrcode` 的解析结果 */
+interface QrcodeInfo {
+  /** 轮询用的二维码令牌 */
+  token: string;
+  /** 二维码承载的内容，优先用它渲染，缺失时回退到 token */
+  content: string;
+  /**
+   * 二维码过期时间，服务端给的是**绝对 Unix 时间戳（秒）**而非时长
+   *
+   * 实测二维码只有约 60 秒有效期，调用方应据此设置扫码等待上限。
+   */
+  expireTime: number;
+}
+/** 二次验证上下文 */
+type VerifyContext = DyPassportVerifyContext;
+/** 单个验证方式 */
+type VerifyWay = DyPassportVerifyWay;
+/** 一次轮询的结果 */
+type PollResult = DyPassportPollResult;
+/** 发送短信验证码的结果 */
+type SendCodeResult = DyPassportSendCodeResult;
+/** 提交短信验证码的结果 */
+type ValidateCodeResult = DyPassportValidateCodeResult;
+//#endregion
+//#region src/platforms/douyin/passport/parser.d.ts
+/**
+ * 解析 `get_qrcode` 响应
+ * @param payload 服务端响应体
+ * @returns 二维码信息，缺少 token 时返回 null
+ */
+declare const parseQrcode: (payload: PassportPayload) => QrcodeInfo | null;
+/**
+ * 解析 `check_qrconnect` 响应为状态机可消费的结果
+ * @param payload 服务端响应体
+ */
+declare const parsePollResult: (payload: PassportPayload) => PollResult;
+/**
+ * 解析 `send_code` 响应
+ * @param payload 服务端响应体
+ */
+declare const parseSendCodeResult: (payload: PassportPayload) => SendCodeResult;
+/**
+ * 解析 `validate_code` 响应
+ * @param payload 服务端响应体
+ */
+declare const parseValidateCodeResult: (payload: PassportPayload) => ValidateCodeResult;
+//#endregion
+//#region src/platforms/douyin/passport/sm3.d.ts
+/**
+ * SM3 摘要（GM/T 0004-2012），抖音 bdms 签名链使用的变体
+ *
+ * 与标准实现的唯一差异：字符串按 `charCodeAt` 逐字符取字节（非 UTF-8 编码），
+ * 与浏览器里 bdms 的 `strToBytes` 行为一致。签名输入均为 ASCII，实际不会踩到多字节分支，
+ * 但仍保留该分支以保证与浏览器实现逐位一致。
+ */
+/**
+ * 计算 SM3 摘要
+ * @param message 待摘要的字符串或字节数组
+ * @returns 32 字节摘要
+ */
+declare const sm3: (message: string | number[]) => number[];
+/**
+ * 连续两次 SM3（bdms 对 URL 与盐值的处理方式）
+ * @param message 待摘要的字符串或字节数组
+ * @returns 32 字节摘要
+ */
+declare const sm3Twice: (message: string | number[]) => number[];
+/**
+ * 十六进制摘要，仅用于测试与排查
+ * @param message 待摘要的字符串或字节数组
+ */
+declare const sm3Hex: (message: string | number[]) => string;
+//#endregion
+//#region src/platforms/douyin/passport/verify.d.ts
+/**
+ * 二次验证（短信验证码）的表单构造与验证方式选择。
+ *
+ * 表单被两处消费：`model/fetchers/douyin/auth.ts`（`sendPassportVerifyCode` /
+ * `validatePassportVerifyCode`）与 `platforms/douyin/session/qrcode.ts`（策略的
+ * `answer`），因此形态只留这一份。
+ *
+ * 官方验证页 SDK 要求 `type` / `std_verify_*` / `aid` / `new_authn_sdk_version`
+ * 这些字段**即使为空也必须出现**，缺字段会被判为伪造请求 —— 不要退化成「只带
+ * 非空字段」的最小形态。
+ *
+ * @module platforms/douyin/passport/verify
+ */
+/** 短信验证码的验证方式标识，服务端未给出可用方式时的兜底值 */
+declare const SMS_VERIFY_WAY = "mobile_sms_verify";
+/** 短信验证码的 act_type */
+declare const SMS_ACT_TYPE = "3737";
+/**
+ * 可以用「收 6 位验证码」这套流程走完的验证方式。
+ *
+ * 除官方常见的 `mobile_sms_verify`，账号被判定需要辅助验证时会给出
+ * `assist_mobile_sms_verify`，两者都是下行短信收码，走同一对
+ * `send_code` / `validate_code` 接口，区别只在 `std_verify_way` 的取值。
+ * 上行短信（`*_up_sms_verify`）要求用户从手机发短信出去，是另一套接口，不在此列。
+ */
+declare const SMS_CODE_WAY_PATTERN: RegExp;
+/**
+ * 判断某个验证方式能否用短信验证码流程完成。
+ * @param verifyWay - 服务端下发的 verify_way
+ * @returns 能走短信收码流程时为 `true`
+ */
+declare const isSmsCodeVerifyWay: (verifyWay: string) => boolean;
+/**
+ * 选出本次要用的 `std_verify_way`。
+ *
+ * 优先用调用方指定的；否则从服务端给出的可选方式里挑一个能收码的；都没有才回退到
+ * 默认值。**不能写死 `mobile_sms_verify`** —— 遇到辅助验证的账号会因为 way 对不上
+ * 而失败，也不能取 `verifyWays[0]`，那一项未必是短信方式。
+ * @param verify - 轮询下发的验证上下文
+ * @param requested - 调用方显式指定的验证方式
+ * @returns 本次使用的 `std_verify_way`
+ */
+declare const resolveVerifyWay: (verify: VerifyContext, requested?: string) => string;
+/**
+ * 发码与验码共用的表单字段。
+ *
+ * 字段顺序与「空值也要占位」的行为对齐官方验证页 SDK 的抓包形态：
+ * `verify_ticket` / `new_verify_flow` / `std_verify_flow_id` / `std_verify_token`
+ * 即使为空也必须出现，缺字段会被判为伪造请求。
+ * @param verify - 轮询下发的验证上下文
+ * @param verifyWay - 本次使用的验证方式，原样进 `std_verify_way`
+ * @param tail - 追加在 `std_verify_way` 之后的字段（发码是 `is6Digits`，验码是 `code`）
+ * @returns 可直接交给 `client.liteRequest` 的表单
+ */
+declare const buildVerifyBody: (verify: VerifyContext, verifyWay: string, tail: Record<string, string>) => Record<string, string>;
+declare namespace index_d_exports {
+  export { BDMS_SDK_VERSION, CookieJar, DouyinPassportClient, INTERNAL_PREFIX, PASSPORT_USER_AGENT, PassportPayload, PassportResponse, PollResult, QrcodeInfo, SMS_ACT_TYPE, SMS_CODE_WAY_PATTERN, SMS_VERIFY_WAY, SendCodeResult, TicketGuard, TicketGuardState, ValidateCodeResult, VerifyContext, VerifyWay, aBogus, buildVerifyBody, isSmsCodeVerifyWay, makeAidSign, makeSignAndQs, parsePollResult, parseQrcode, parseSendCodeResult, parseValidateCodeResult, randomHex, resolveVerifyWay, sm3, sm3Hex, sm3Twice, utcNoonTimestamp, xor5Hex };
+}
+//#endregion
+//#region src/platforms/bilibili/endpoints/avToBv.d.ts
+/** AV 转 BV 的返回形状：`{ bvid }`。不复用 `BilibiliReturnTypeMap['avToBv']`：
+ * 映射条目是 API 信封形状（`{ code, data: { bvid }, message }`），与实际返回不符。 */
+interface AvToBvData {
+  bvid: string;
+  /** 平台加字段不算 breaking（类型是实测快照） */
+  [key: string]: unknown;
+}
+//#endregion
+//#region src/platforms/bilibili/endpoints/bvToAv.d.ts
+/** BV 转 AV 的返回形状：`aid` 是 number。不复用 `BilibiliReturnTypeMap['bvToAv']`：
+ * 映射条目是 API 信封形状（`{ code, data: { aid: string }, message }`），与实际返回不符。 */
+interface BvToAvData {
+  aid: number;
+  /** 平台加字段不算 breaking（类型是实测快照） */
+  [key: string]: unknown;
+}
+//#endregion
+//#region src/platforms/bilibili/endpoints/index.d.ts
+/**
+ * B站端点注册表。
+ *
+ * 共 27 条路由。
+ */
+declare const bilibiliRegistry: {
+  readonly videoInfo: EndpointDef<import("zod").ZodObject<{
+    bvid: import("zod").ZodString;
+  }, $strip>, VideoInfo_V0>;
+  readonly videoStream: EndpointDef<import("zod").ZodObject<{
+    avid: import("zod").ZodCoercedNumber<unknown>;
+    cid: import("zod").ZodCoercedNumber<unknown>;
+  }, $strip>, VideoStream_V0>;
+  readonly videoDanmaku: EndpointDef<import("zod").ZodObject<{
+    cid: import("zod").ZodCoercedNumber<unknown>;
+    segment_index: import("zod").ZodOptional<import("zod").ZodDefault<import("zod").ZodCoercedNumber<unknown>>>;
+  }, $strip>, VideoDanmaku_V0>;
+  readonly comments: EndpointDef<import("zod").ZodObject<{
+    oid: import("zod").ZodString;
+    type: import("zod").ZodCoercedNumber<unknown>;
+    number: import("zod").ZodOptional<import("zod").ZodDefault<import("zod").ZodCoercedNumber<unknown>>>;
+    mode: import("zod").ZodOptional<import("zod").ZodCoercedNumber<unknown>>;
+    pagination_str: import("zod").ZodOptional<import("zod").ZodString>;
+    plat: import("zod").ZodOptional<import("zod").ZodCoercedNumber<unknown>>;
+    seek_rpid: import("zod").ZodOptional<import("zod").ZodString>;
+    web_location: import("zod").ZodOptional<import("zod").ZodString>;
+  }, $strip>, Comments_V0$2>;
+  readonly commentReplies: EndpointDef<import("zod").ZodObject<{
+    oid: import("zod").ZodString;
+    type: import("zod").ZodCoercedNumber<unknown>;
+    root: import("zod").ZodString;
+    number: import("zod").ZodOptional<import("zod").ZodDefault<import("zod").ZodCoercedNumber<unknown>>>;
+  }, $strip>, CommentReplies_V0$1>;
+  readonly userCard: EndpointDef<import("zod").ZodObject<{
+    host_mid: import("zod").ZodCoercedNumber<unknown>;
+  }, $strip>, UserCard_V0>;
+  readonly userDynamicList: EndpointDef<import("zod").ZodObject<{
+    host_mid: import("zod").ZodCoercedNumber<unknown>;
+  }, $strip>, UserDynamicList_V0>;
+  readonly userLiveStatus: EndpointDef<import("zod").ZodObject<{
+    host_mid: import("zod").ZodCoercedNumber<unknown>;
+  }, $strip>, UserLiveStatus_V0>;
+  readonly userSpaceInfo: EndpointDef<import("zod").ZodObject<{
+    host_mid: import("zod").ZodCoercedNumber<unknown>;
+  }, $strip>, UserSpaceInfo_V0$1>;
+  readonly uploaderTotalViews: EndpointDef<import("zod").ZodObject<{
+    host_mid: import("zod").ZodCoercedNumber<unknown>;
+  }, $strip>, UploaderTotalViews_V0>;
+  readonly dynamicDetail: EndpointDef<import("zod").ZodObject<{
+    dynamic_id: import("zod").ZodString;
+  }, $strip>, DynamicDetail>;
+  readonly bangumiInfo: EndpointDef<import("zod").ZodObject<{
+    ep_id: import("zod").ZodOptional<import("zod").ZodString>;
+    season_id: import("zod").ZodOptional<import("zod").ZodString>;
+  }, $strip>, BangumiInfo_V0>;
+  readonly bangumiStream: EndpointDef<import("zod").ZodObject<{
+    cid: import("zod").ZodCoercedNumber<unknown>;
+    ep_id: import("zod").ZodString;
+  }, $strip>, BangumiStream_V0>;
+  readonly liveRoomInfo: EndpointDef<import("zod").ZodObject<{
+    room_id: import("zod").ZodString;
+  }, $strip>, LiveRoomInfo_V0$1>;
+  readonly liveRoomInit: EndpointDef<import("zod").ZodObject<{
+    room_id: import("zod").ZodString;
+  }, $strip>, LiveRoomInit_V0>;
+  readonly articleContent: EndpointDef<import("zod").ZodObject<{
+    id: import("zod").ZodString;
+  }, $strip>, ArticleContent_V0$1>;
+  readonly articleCards: EndpointDef<import("zod").ZodObject<{
+    ids: import("zod").ZodUnion<readonly [import("zod").ZodArray<import("zod").ZodString>, import("zod").ZodString]>;
+  }, $strip>, ArticleCards_V0>;
+  readonly articleInfo: EndpointDef<import("zod").ZodObject<{
+    id: import("zod").ZodString;
+  }, $strip>, ArticleInfo_V0$1>;
+  readonly articleListInfo: EndpointDef<import("zod").ZodObject<{
+    id: import("zod").ZodString;
+  }, $strip>, ArticleListInfo_V0>;
+  readonly loginStatus: EndpointDef<import("zod").ZodObject<{}, $strip>, LoginStatus_V0>;
+  readonly loginQrcode: EndpointDef<import("zod").ZodObject<{}, $strip>, LoginQrcode_V0>;
+  readonly qrcodeStatus: EndpointDef<import("zod").ZodObject<{
+    qrcode_key: import("zod").ZodString;
+  }, $strip>, QrcodeStatus_V0>;
+  readonly captchaFromVoucher: EndpointDef<import("zod").ZodObject<{
+    csrf: import("zod").ZodOptional<import("zod").ZodString>;
+    v_voucher: import("zod").ZodString;
+  }, $strip>, any>;
+  readonly validateCaptcha: EndpointDef<import("zod").ZodObject<{
+    csrf: import("zod").ZodOptional<import("zod").ZodString>;
+    challenge: import("zod").ZodString;
+    token: import("zod").ZodString;
+    validate: import("zod").ZodString;
+    seccode: import("zod").ZodString;
+  }, $strip>, any>;
+  readonly avToBv: EndpointDef<import("zod").ZodObject<{
+    avid: import("zod").ZodCoercedNumber<unknown>;
+  }, $strip>, AvToBvData>;
+  readonly bvToAv: EndpointDef<import("zod").ZodObject<{
+    bvid: import("zod").ZodString;
+  }, $strip>, BvToAvData>;
+  readonly emojiList: EndpointDef<import("zod").ZodObject<{}, $strip>, EmojiList_V0$3>;
+};
+//#endregion
+//#region src/client/static.d.ts
+/**
+ * 从 registry 派生「静态」fetcher（`douyinFetcher.fetchVideoWork(o, ck, cfg)` 形态）。
+ *
+ * 与绑定形态（`client/fetcher.ts` 的 `createFetcherFromRegistry`，cookie 在
+ * ctx 里、方法签名 `(options, requestConfig?)`）的差别：静态形态**不绑定**，
+ * cookie 是第二参、按次传递。
+ *
+ * 方法集合自动跟随 registry，方法与 client 上的 fetcher 走同一条执行管线、
+ * 同一套信封。运行期同样是 Proxy 实现（ownKeys / in / 属性访问都反映当前
+ * registry），差异只在「每次调用现场造一个带该次 cookie 的 ctx」——静态形态
+ * 没有实例级绑定，签名器状态因此是每次调用独立的。
+ */
+/**
+ * 静态 fetcher 方法签名：`(options, cookie?, requestConfig?)`。
+ *
+ * 默认返回类型来自端点声明的 `response` / `normalize` / `compute`，
+ * 显式泛型 `fetchX<T>()` 覆盖（typeMode 逃生舱的替代）。
+ */
+type StaticFetcherMethod<D extends AnyEndpointDef> = HasRequiredKeys<InputOf<D>> extends never ? <TData = DataOf<D>>(options?: InputOf<D>, cookie?: string, requestConfig?: RequestConfig$1) => Promise<AmagiResult<TData>> : <TData = DataOf<D>>(options: InputOf<D>, cookie?: string, requestConfig?: RequestConfig$1) => Promise<AmagiResult<TData>>;
+/**
+ * 静态 fetcher 的类型：键是派生出的方法名（查不到规则表的端点用规则名兜底），
+ * 值是三参方法签名。
+ */
+type StaticFetcherOf<P extends Platform, R extends Registry> = { [K in keyof R as MethodNameOfEndpoint<P, K & string>]: StaticFetcherMethod<R[K]>; };
+//#endregion
+//#region src/model/events.d.ts
+/**
+ * Amagi 支持的事件类型
+ * @description
+ * - `log:*` - 日志相关事件
+ * - `http:*` - HTTP 请求/响应事件
+ * - `network:*` - 网络层事件（重试、错误）
+ * - `api:*` - API 调用结果事件
+ */
+type AmagiEventType = 'log:info' | 'log:warn' | 'log:error' | 'log:debug' | 'log:mark' | 'http:request' | 'http:response' | 'http:error' | 'network:retry' | 'network:error' | 'api:success' | 'api:error';
+/**
+ * 日志事件数据
+ * @description 所有 `log:*` 事件的数据结构
+ */
+interface LogEventData {
+  /** 日志级别 */
+  level: 'info' | 'warn' | 'error' | 'debug' | 'mark';
+  /** 日志消息 */
+  message: string;
+  /** 附加参数 */
+  args?: unknown[];
+  /** 事件时间戳 */
+  timestamp: Date;
+}
+/**
+ * HTTP 请求事件数据
+ * @description `http:request` 事件的数据结构
+ */
+interface HttpRequestEventData {
+  /** 请求方法 (GET, POST, etc.) */
+  method: string;
+  /** 请求 URL */
+  url: string;
+  /** 请求头 */
+  headers?: Record<string, string>;
+  /** 事件时间戳 */
+  timestamp: Date;
+}
+/**
+ * HTTP 响应事件数据
+ * @description `http:response` 事件的数据结构
+ */
+interface HttpResponseEventData {
+  /** 请求方法 */
+  method: string;
+  /** 请求 URL */
+  url: string;
+  /** HTTP 状态码 */
+  statusCode: number;
+  /** 响应耗时 (毫秒) */
+  responseTime: number;
+  /** 客户端 IP */
+  clientIP?: string;
+  /** 请求体大小 */
+  requestSize?: string;
+  /** 响应体大小 */
+  responseSize?: string;
+  /** 事件时间戳 */
+  timestamp: Date;
+}
+/**
+ * 网络重试事件数据
+ * @description `network:retry` 事件的数据结构
+ */
+interface NetworkRetryEventData {
+  /** 错误代码 */
+  errorCode: string;
+  /** 当前重试次数 */
+  attempt: number;
+  /** 最大重试次数 */
+  maxRetries: number;
+  /** 重试延迟 (毫秒) */
+  delayMs: number;
+  /** 请求 URL */
+  url?: string;
+  /** 事件时间戳 */
+  timestamp: Date;
+}
+/**
+ * 网络错误事件数据
+ * @description `network:error` 和 `http:error` 事件的数据结构
+ */
+interface NetworkErrorEventData {
+  /** 错误代码 */
+  errorCode: string;
+  /** 错误消息 */
+  message: string;
+  /** 已重试次数 */
+  retries: number;
+  /** 请求 URL */
+  url?: string;
+  /** 事件时间戳 */
+  timestamp: Date;
+}
+/**
+ * API 成功事件数据
+ * @description `api:success` 事件的数据结构
+ */
+interface ApiSuccessEventData {
+  /** 请求平台 */
+  platform: 'douyin' | 'bilibili' | 'kuaishou' | 'xiaohongshu';
+  /** 调用的 API 方法 */
+  methodType: string;
+  /** API 响应数据 (Result 结构) */
+  response: unknown;
+  /** HTTP 状态码 */
+  statusCode: number;
+  /** 请求耗时 (毫秒) */
+  duration: number;
+  /** 事件时间戳 */
+  timestamp: Date;
+}
+/**
+ * API 错误事件数据
+ * @description `api:error` 事件的数据结构
+ */
+interface ApiErrorEventData {
+  /** 请求平台 */
+  platform: 'douyin' | 'bilibili' | 'kuaishou' | 'xiaohongshu';
+  /** 调用的 API 方法 */
+  methodType: string;
+  /** 错误代码 */
+  errorCode?: string | number;
+  /** 错误消息 */
+  errorMessage: string;
+  /** 请求 URL */
+  url?: string;
+  /** 请求耗时 (毫秒) */
+  duration?: number;
+  /** 事件时间戳 */
+  timestamp: Date;
+}
+/**
+ * 事件类型到数据的映射
+ * @description 用于类型推断，确保事件名称与数据类型匹配
+ */
+interface AmagiEventMap {
+  'log:info': LogEventData;
+  'log:warn': LogEventData;
+  'log:error': LogEventData;
+  'log:debug': LogEventData;
+  'log:mark': LogEventData;
+  'http:request': HttpRequestEventData;
+  'http:response': HttpResponseEventData;
+  'http:error': NetworkErrorEventData;
+  'network:retry': NetworkRetryEventData;
+  'network:error': NetworkErrorEventData;
+  'api:success': ApiSuccessEventData;
+  'api:error': ApiErrorEventData;
+}
+/**
+ * 类型安全的事件发射器
+ * @description 继承自 Node.js EventEmitter，提供泛型约束确保事件名称与数据类型匹配
+ */
+declare class TypedEventEmitter extends EventEmitter {
+  /**
+   * 触发事件
+   * @param event - 事件名称
+   * @param data - 事件数据
+   * @returns 是否有监听器处理了该事件
+   */
+  emit<K extends AmagiEventType>(event: K, data: AmagiEventMap[K]): boolean;
+  /**
+   * 注册事件监听器
+   * @param event - 事件名称
+   * @param listener - 事件处理函数
+   * @returns this (支持链式调用)
+   */
+  on<K extends AmagiEventType>(event: K, listener: (data: AmagiEventMap[K]) => void): this;
+  /**
+   * 注册一次性事件监听器
+   * @param event - 事件名称
+   * @param listener - 事件处理函数 (只触发一次)
+   * @returns this (支持链式调用)
+   */
+  once<K extends AmagiEventType>(event: K, listener: (data: AmagiEventMap[K]) => void): this;
+  /**
+   * 移除事件监听器
+   * @param event - 事件名称
+   * @param listener - 要移除的事件处理函数
+   * @returns this (支持链式调用)
+   */
+  off<K extends AmagiEventType>(event: K, listener: (data: AmagiEventMap[K]) => void): this;
+}
+/**
+ * Amagi 全局事件发射器实例
+ * @description 单例模式，所有模块共享同一个事件总线
+ * @example
+ * ```typescript
+ * import { amagiEvents } from '../model/events'
+ *
+ * // 监听 API 成功事件
+ * amagiEvents.on('api:success', (data) => {
+ *   console.log(`[${data.platform}] ${data.methodType} 耗时 ${data.duration}ms`)
+ * })
+ * ```
+ */
+declare const amagiEvents: TypedEventEmitter;
+/**
+ * 发射日志事件
+ * @param level - 日志级别
+ * @param message - 日志消息
+ * @param args - 附加参数
+ */
+declare const emitLog: (level: LogEventData["level"], message: string, ...args: unknown[]) => void;
+/**
+ * 发射 HTTP 请求事件
+ * @param data - 请求数据 (不含 timestamp)
+ */
+declare const emitHttpRequest: (data: Omit<HttpRequestEventData, "timestamp">) => void;
+/**
+ * 发射 HTTP 响应事件
+ * @param data - 响应数据 (不含 timestamp)
+ */
+declare const emitHttpResponse: (data: Omit<HttpResponseEventData, "timestamp">) => void;
+/**
+ * 发射网络重试事件
+ * @param data - 重试数据 (不含 timestamp)
+ */
+declare const emitNetworkRetry: (data: Omit<NetworkRetryEventData, "timestamp">) => void;
+/**
+ * 发射网络错误事件
+ * @param data - 错误数据 (不含 timestamp)
+ */
+declare const emitNetworkError: (data: Omit<NetworkErrorEventData, "timestamp">) => void;
+/**
+ * 发射 API 成功事件
+ * @param data - 成功数据 (不含 timestamp)
+ */
+declare const emitApiSuccess: (data: Omit<ApiSuccessEventData, "timestamp">) => void;
+/**
+ * 发射 API 错误事件
+ * @param data - 错误数据 (不含 timestamp)
+ */
+declare const emitApiError: (data: Omit<ApiErrorEventData, "timestamp">) => void;
+/**
+ * 发射 info 级别日志
+ * @param message - 日志消息
+ * @param args - 附加参数
+ */
+declare const emitLogInfo: (message: string, ...args: unknown[]) => void;
+/**
+ * 发射 warn 级别日志
+ * @param message - 日志消息
+ * @param args - 附加参数
+ */
+declare const emitLogWarn: (message: string, ...args: unknown[]) => void;
+/**
+ * 发射 error 级别日志
+ * @param message - 日志消息
+ * @param args - 附加参数
+ */
+declare const emitLogError: (message: string, ...args: unknown[]) => void;
+/**
+ * 发射 debug 级别日志
+ * @param message - 日志消息
+ * @param args - 附加参数
+ */
+declare const emitLogDebug: (message: string, ...args: unknown[]) => void;
+/**
+ * 发射 mark 级别日志 (用于重要标记)
+ * @param message - 日志消息
+ * @param args - 附加参数
+ */
+declare const emitLogMark: (message: string, ...args: unknown[]) => void;
+//#endregion
+//#region src/model/fetchers/bilibili/index.d.ts
+/**
+ * B站数据获取器（静态）。
+ * 包含所有 B站 API 方法，调用时需要传递 cookie
+ * @example
+ * ```typescript
+ * import { bilibiliFetcher } from '@ikenxuan/amagi'
+ *
+ * const result = await bilibiliFetcher.fetchVideoInfo({ bvid: 'BV1xx411c7mD' }, cookie)
+ * ```
+ */
+declare const bilibiliFetcher: StaticFetcherOf<'bilibili', typeof bilibiliRegistry>;
+/** B站 Fetcher 类型（静态形态：三参签名） */
+type BilibiliFetcher = typeof bilibiliFetcher;
+/**
+ * 创建绑定了 Cookie 和请求配置的B站 Fetcher
+ * @param cookie - B站 Cookie
+ * @param requestConfig - 请求配置 (可选)
+ * @returns 绑定了 Cookie 的 Fetcher 对象，调用时无需传递 cookie
+ * @example
+ * ```typescript
+ * const fetcher = createBoundBilibiliFetcher('your_cookie')
+ * const result = await fetcher.fetchVideoInfo({ bvid: 'BV1xx411c7mD' })
+ * ```
+ */
+declare const createBoundBilibiliFetcher: (cookie: string, requestConfig?: RequestConfig$1) => FetcherOf<"bilibili", typeof bilibiliRegistry>;
+/** 绑定 Cookie 的B站 Fetcher 类型 */
+type BoundBilibiliFetcher = ReturnType<typeof createBoundBilibiliFetcher>;
+/**
+ * 只保留成功分支的B站 fetcher 类型。
+ *
+ * 给「用一层 Proxy 把失败信封转成异常」的下游封装用：包装后的 fetcher 声明成
+ * 这个类型，`.data` 就是 `T` 而不是 `T | undefined`。
+ */
+type SuccessBilibiliFetcher = SuccessFetcherOf<'bilibili', typeof bilibiliRegistry>;
+//#endregion
+//#region src/client/createClient.d.ts
+/** 客户端构造选项 */
+interface ClientOptions {
+  /** Cookie 配置 */
+  cookies?: {
+    douyin?: string;
+    bilibili?: string;
+    kuaishou?: string;
+    xiaohongshu?: string;
+  };
+  /** 请求配置 */
+  request?: RequestConfig$1;
+  /**
+   * 排障开关。打开后两样东西同时出现：失败信封的 `error.raw` 带平台原始响应体，
+   * 每个信封的 `meta.trace` 带这次调用发出的每一条底层请求（URL / 方法 /
+   * 状态码 / 耗时 / 发出原因）。用于排查协议变更、风控页、业务码含义不明，
+   * 以及「这一次调用到底打了几个请求」。
+   *
+   * 默认 `false`，此时失败信封上**没有** `raw` 这个键、`meta` 上也**没有**
+   * `trace` 这个键（不是 `undefined` 占位）。`meta.attempts` 与本开关无关，
+   * 一直是准的 —— 计数始终发生，只有明细受开关控制。
+   *
+   * `debug` 一个开关同时管 `error.raw` 与 `meta.trace` 两样：两者都只服务排障，
+   * 分成两个名字等于让人多记一个。要**不受开关影响**地逐条观测请求，监听
+   * `http:request` / `http:response` 事件 —— 它们的负载恒带 `trace`。
+   *
+   * 原始响应可能很大、也可能带敏感字段，`trace` 里的 URL 含签名参数，
+   * 别在生产里无条件打印。只作用于 client 实例上的 fetcher：静态 fetcher
+   * （`amagi.douyinFetcher.*`）与 HTTP 服务的平台路由没有这个开关。
+   */
+  debug?: boolean;
+}
+/**
+ * 门面版 `startServer` 的第二参。
+ *
+ * 只透出 `openapi` 一项；`port` / `host` / `token` / `routers` 这些全选项留给
+ * `server/auth.ts` 的选项版 `startServer`。
+ */
+interface FacadeServerOptions {
+  /**
+   * 自托管 OpenAPI 规范。默认 `false`（不挂）。
+   *
+   * 传 `true` 后：`GET /openapi.json` 返回从端点注册表**现算**的规范（与调用方
+   * 装的这个版本同源，不会像外挂文档那样脱节）；`GET /docs` 不再 301 到 apifox，
+   * 改 302 跳文档站的生成式端点参考。
+   */
+  openapi?: boolean;
+  /**
+   * 自定义监听实现，替代真实的 `app.listen`。
+   *
+   * `startServer` 不回传 server 句柄，所以需要自己控制端口、时机或关闭服务时
+   * 用它。注入后 `log:mark` 不发（那句话在默认实现的回调里）。
+   * @param app - Express 应用
+   * @param port - 端口
+   * @param host - 监听地址
+   */
+  listen?: (app: express.Application, port: number, host: string) => void;
+}
+/**
+ * 创建 Amagi 客户端（门面）。
+ *
+ * 顶层 `startServer / events / on / once` + 四个平台模块
+ * （`{ ...utils, fetcher }`）：fetcher 方法集合由各平台的端点注册表派生，
+ * 统一返回 `AmagiResult` 信封。
+ *
+ * `startServer` 挂的平台路由同样从 registry 派生（token / host 选项见
+ * `server/auth.ts`）。第二参 `{ openapi }` 不传时保持默认行为。
+ */
+declare const createClient: (options?: ClientOptions) => {
+  /**
+   * 启动本地 HTTP 服务（平台路由从 registry 派生）。
+   * @param port - 监听端口，默认 4567
+   * @param serverOptions - 可选，见 `FacadeServerOptions`
+   * @returns Express 应用实例
+   */
+  startServer: (port?: number | undefined, serverOptions?: FacadeServerOptions) => express.Application;
+  /** 事件系统（实例级总线） */
+  events: EventBus;
+  on: <K extends AmagiBusEventName>(event: K, listener: (payload: AmagiBusEventMap[K]) => void) => EventBus;
+  once: <K extends AmagiBusEventName>(event: K, listener: (payload: AmagiBusEventMap[K]) => void) => EventBus;
+  douyin: {
+    fetcher: FetcherOf<"douyin", {
+      readonly parseWork: EndpointDef<import("zod").ZodObject<{
+        aweme_id: import("zod").ZodString;
+      }, $strip>, ParseWork>;
+      readonly videoWork: EndpointDef<import("zod").ZodObject<{
+        aweme_id: import("zod").ZodString;
+      }, $strip>, VideoWork$1>;
+      readonly imageAlbumWork: EndpointDef<import("zod").ZodObject<{
+        aweme_id: import("zod").ZodString;
+      }, $strip>, ImageAlbumWork>;
+      readonly slidesWork: EndpointDef<import("zod").ZodObject<{
+        aweme_id: import("zod").ZodString;
+      }, $strip>, SlidesWork>;
+      readonly textWork: EndpointDef<import("zod").ZodObject<{
+        aweme_id: import("zod").ZodString;
+      }, $strip>, TextWork_V0>;
+      readonly comments: EndpointDef<import("zod").ZodObject<{
+        aweme_id: import("zod").ZodString;
+        number: import("zod").ZodOptional<import("zod").ZodCoercedNumber<unknown>>;
+        cursor: import("zod").ZodOptional<import("zod").ZodCoercedNumber<unknown>>;
+      }, $strip>, Comments_V0$1>;
+      readonly commentReplies: EndpointDef<import("zod").ZodObject<{
+        aweme_id: import("zod").ZodString;
+        comment_id: import("zod").ZodString;
+        number: import("zod").ZodOptional<import("zod").ZodCoercedNumber<unknown>>;
+        cursor: import("zod").ZodOptional<import("zod").ZodCoercedNumber<unknown>>;
+      }, $strip>, CommentReplies_V0>;
+      readonly userProfile: EndpointDef<import("zod").ZodObject<{
+        sec_uid: import("zod").ZodString;
+      }, $strip>, UserProfile_V0$1>;
+      readonly userVideoList: EndpointDef<import("zod").ZodObject<{
+        sec_uid: import("zod").ZodString;
+        number: import("zod").ZodOptional<import("zod").ZodCoercedNumber<unknown>>;
+        max_cursor: import("zod").ZodOptional<import("zod").ZodString>;
+      }, $strip>, UserVideoList_V0>;
+      readonly userFavoriteList: EndpointDef<import("zod").ZodObject<{
+        sec_uid: import("zod").ZodString;
+        number: import("zod").ZodOptional<import("zod").ZodCoercedNumber<unknown>>;
+        max_cursor: import("zod").ZodOptional<import("zod").ZodString>;
+      }, $strip>, UserFavoriteList_V0$1>;
+      readonly userRecommendList: EndpointDef<import("zod").ZodObject<{
+        sec_uid: import("zod").ZodString;
+        number: import("zod").ZodOptional<import("zod").ZodCoercedNumber<unknown>>;
+        max_cursor: import("zod").ZodOptional<import("zod").ZodString>;
+      }, $strip>, UserRecommendList_V0$1>;
+      readonly search: EndpointDef<import("zod").ZodObject<{
+        query: import("zod").ZodString;
+        type: import("zod").ZodOptional<import("zod").ZodDefault<import("zod").ZodEnum<{
+          user: "user";
+          general: "general";
+          video: "video";
+        }>>>;
+        number: import("zod").ZodOptional<import("zod").ZodCoercedNumber<unknown>>;
+        search_id: import("zod").ZodOptional<import("zod").ZodString>;
+      }, $strip>, Search>;
+      readonly suggestWords: EndpointDef<import("zod").ZodObject<{
+        query: import("zod").ZodString;
+      }, $strip>, SuggestWords_V0>;
+      readonly musicInfo: EndpointDef<import("zod").ZodObject<{
+        music_id: import("zod").ZodString;
+      }, $strip>, MusicInfo_V0>;
+      readonly liveRoomInfo: EndpointDef<import("zod").ZodObject<{
+        web_rid: import("zod").ZodString;
+        room_id: import("zod").ZodOptional<import("zod").ZodString>;
+      }, $strip>, LiveRoomInfo_V0>;
+      readonly loginQrcode: EndpointDef<import("zod").ZodObject<{
+        verify_fp: import("zod").ZodString;
+      }, $strip>, any>;
+      readonly emojiList: EndpointDef<import("zod").ZodObject<{}, $strip>, EmojiList_V0$2>;
+      readonly dynamicEmojiList: EndpointDef<import("zod").ZodObject<{}, $strip>, DynamicEmojiList_V0>;
+      readonly danmakuList: EndpointDef<import("zod").ZodObject<{
+        aweme_id: import("zod").ZodString;
+        start_time: import("zod").ZodOptional<import("zod").ZodCoercedNumber<unknown>>;
+        end_time: import("zod").ZodOptional<import("zod").ZodCoercedNumber<unknown>>;
+        duration: import("zod").ZodCoercedNumber<unknown>;
+      }, $strip>, DanmakuList_V0$1>;
+      readonly guestUserInfo: EndpointDef<import("zod").ZodObject<{
+        unique_id: import("zod").ZodString;
+      }, $strip>, GuestUserInfo_V0>;
+      readonly guestMusicInfo: EndpointDef<import("zod").ZodObject<{
+        music_id: import("zod").ZodString;
+      }, $strip>, GuestMusicInfo_V0>;
+      readonly guestMusicAwemeList: EndpointDef<import("zod").ZodObject<{
+        music_id: import("zod").ZodString;
+        number: import("zod").ZodOptional<import("zod").ZodCoercedNumber<unknown>>;
+        cursor: import("zod").ZodOptional<import("zod").ZodCoercedNumber<unknown>>;
+      }, $strip>, GuestMusicAwemeList_V0>;
+      readonly emojiResourceMeta: EndpointDef<import("zod").ZodObject<{}, $strip>, EmojiResourceMeta_V0>;
+    }>;
+    login: LoginNamespace;
+    sign: typeof douyinSign;
+    passport: typeof index_d_exports;
+    douyinApiUrls: typeof douyinApiUrls;
+  };
+  bilibili: {
+    fetcher: FetcherOf<"bilibili", {
+      readonly videoInfo: EndpointDef<import("zod").ZodObject<{
+        bvid: import("zod").ZodString;
+      }, $strip>, VideoInfo_V0>;
+      readonly videoStream: EndpointDef<import("zod").ZodObject<{
+        avid: import("zod").ZodCoercedNumber<unknown>;
+        cid: import("zod").ZodCoercedNumber<unknown>;
+      }, $strip>, VideoStream_V0>;
+      readonly videoDanmaku: EndpointDef<import("zod").ZodObject<{
+        cid: import("zod").ZodCoercedNumber<unknown>;
+        segment_index: import("zod").ZodOptional<import("zod").ZodDefault<import("zod").ZodCoercedNumber<unknown>>>;
+      }, $strip>, VideoDanmaku_V0>;
+      readonly comments: EndpointDef<import("zod").ZodObject<{
+        oid: import("zod").ZodString;
+        type: import("zod").ZodCoercedNumber<unknown>;
+        number: import("zod").ZodOptional<import("zod").ZodDefault<import("zod").ZodCoercedNumber<unknown>>>;
+        mode: import("zod").ZodOptional<import("zod").ZodCoercedNumber<unknown>>;
+        pagination_str: import("zod").ZodOptional<import("zod").ZodString>;
+        plat: import("zod").ZodOptional<import("zod").ZodCoercedNumber<unknown>>;
+        seek_rpid: import("zod").ZodOptional<import("zod").ZodString>;
+        web_location: import("zod").ZodOptional<import("zod").ZodString>;
+      }, $strip>, Comments_V0$2>;
+      readonly commentReplies: EndpointDef<import("zod").ZodObject<{
+        oid: import("zod").ZodString;
+        type: import("zod").ZodCoercedNumber<unknown>;
+        root: import("zod").ZodString;
+        number: import("zod").ZodOptional<import("zod").ZodDefault<import("zod").ZodCoercedNumber<unknown>>>;
+      }, $strip>, CommentReplies_V0$1>;
+      readonly userCard: EndpointDef<import("zod").ZodObject<{
+        host_mid: import("zod").ZodCoercedNumber<unknown>;
+      }, $strip>, UserCard_V0>;
+      readonly userDynamicList: EndpointDef<import("zod").ZodObject<{
+        host_mid: import("zod").ZodCoercedNumber<unknown>;
+      }, $strip>, UserDynamicList_V0>;
+      readonly userLiveStatus: EndpointDef<import("zod").ZodObject<{
+        host_mid: import("zod").ZodCoercedNumber<unknown>;
+      }, $strip>, UserLiveStatus_V0>;
+      readonly userSpaceInfo: EndpointDef<import("zod").ZodObject<{
+        host_mid: import("zod").ZodCoercedNumber<unknown>;
+      }, $strip>, UserSpaceInfo_V0$1>;
+      readonly uploaderTotalViews: EndpointDef<import("zod").ZodObject<{
+        host_mid: import("zod").ZodCoercedNumber<unknown>;
+      }, $strip>, UploaderTotalViews_V0>;
+      readonly dynamicDetail: EndpointDef<import("zod").ZodObject<{
+        dynamic_id: import("zod").ZodString;
+      }, $strip>, DynamicDetail>;
+      readonly bangumiInfo: EndpointDef<import("zod").ZodObject<{
+        ep_id: import("zod").ZodOptional<import("zod").ZodString>;
+        season_id: import("zod").ZodOptional<import("zod").ZodString>;
+      }, $strip>, BangumiInfo_V0>;
+      readonly bangumiStream: EndpointDef<import("zod").ZodObject<{
+        cid: import("zod").ZodCoercedNumber<unknown>;
+        ep_id: import("zod").ZodString;
+      }, $strip>, BangumiStream_V0>;
+      readonly liveRoomInfo: EndpointDef<import("zod").ZodObject<{
+        room_id: import("zod").ZodString;
+      }, $strip>, LiveRoomInfo_V0$1>;
+      readonly liveRoomInit: EndpointDef<import("zod").ZodObject<{
+        room_id: import("zod").ZodString;
+      }, $strip>, LiveRoomInit_V0>;
+      readonly articleContent: EndpointDef<import("zod").ZodObject<{
+        id: import("zod").ZodString;
+      }, $strip>, ArticleContent_V0$1>;
+      readonly articleCards: EndpointDef<import("zod").ZodObject<{
+        ids: import("zod").ZodUnion<readonly [import("zod").ZodArray<import("zod").ZodString>, import("zod").ZodString]>;
+      }, $strip>, ArticleCards_V0>;
+      readonly articleInfo: EndpointDef<import("zod").ZodObject<{
+        id: import("zod").ZodString;
+      }, $strip>, ArticleInfo_V0$1>;
+      readonly articleListInfo: EndpointDef<import("zod").ZodObject<{
+        id: import("zod").ZodString;
+      }, $strip>, ArticleListInfo_V0>;
+      readonly loginStatus: EndpointDef<import("zod").ZodObject<{}, $strip>, LoginStatus_V0>;
+      readonly loginQrcode: EndpointDef<import("zod").ZodObject<{}, $strip>, LoginQrcode_V0>;
+      readonly qrcodeStatus: EndpointDef<import("zod").ZodObject<{
+        qrcode_key: import("zod").ZodString;
+      }, $strip>, QrcodeStatus_V0>;
+      readonly captchaFromVoucher: EndpointDef<import("zod").ZodObject<{
+        csrf: import("zod").ZodOptional<import("zod").ZodString>;
+        v_voucher: import("zod").ZodString;
+      }, $strip>, any>;
+      readonly validateCaptcha: EndpointDef<import("zod").ZodObject<{
+        csrf: import("zod").ZodOptional<import("zod").ZodString>;
+        challenge: import("zod").ZodString;
+        token: import("zod").ZodString;
+        validate: import("zod").ZodString;
+        seccode: import("zod").ZodString;
+      }, $strip>, any>;
+      readonly avToBv: EndpointDef<import("zod").ZodObject<{
+        avid: import("zod").ZodCoercedNumber<unknown>;
+      }, $strip>, AvToBvData>;
+      readonly bvToAv: EndpointDef<import("zod").ZodObject<{
+        bvid: import("zod").ZodString;
+      }, $strip>, BvToAvData>;
+      readonly emojiList: EndpointDef<import("zod").ZodObject<{}, $strip>, EmojiList_V0$3>;
+    }>;
+    login: LoginNamespace;
+    sign: {
+      wbi_sign: typeof wbi_sign;
+      av2bv: typeof av2bv;
+      bv2av: typeof bv2av;
+    };
+    danmaku: {
+      parseDmSegMobileReply: typeof parseDmSegMobileReply;
+    };
+    bilibiliApiUrls: typeof bilibiliApiUrls;
+  };
+  kuaishou: {
+    fetcher: FetcherOf<"kuaishou", {
+      readonly videoWork: EndpointDef<import("zod").ZodObject<{
+        photoId: import("zod").ZodString;
+      }, $strip>, VideoWork_V0>;
+      readonly videoWorkFull: EndpointDef<import("zod").ZodObject<{
+        photoId: import("zod").ZodString;
+      }, $strip>, any>;
+      readonly comments: EndpointDef<import("zod").ZodObject<{
+        photoId: import("zod").ZodString;
+        number: import("zod").ZodOptional<import("zod").ZodCoercedNumber<unknown>>;
+      }, $strip>, Comments_V0>;
+      readonly danmakuList: EndpointDef<import("zod").ZodObject<{
+        photoId: import("zod").ZodString;
+        from: import("zod").ZodOptional<import("zod").ZodCoercedNumber<unknown>>;
+        to: import("zod").ZodOptional<import("zod").ZodCoercedNumber<unknown>>;
+        duration: import("zod").ZodOptional<import("zod").ZodCoercedNumber<unknown>>;
+      }, $strip>, DanmakuList_V0>;
+      readonly userProfile: EndpointDef<import("zod").ZodObject<{
+        principalId: import("zod").ZodString;
+      }, $strip>, any>;
+      readonly userWorkList: EndpointDef<import("zod").ZodObject<{
+        principalId: import("zod").ZodString;
+        number: import("zod").ZodOptional<import("zod").ZodCoercedNumber<unknown>>;
+      }, $strip>, any>;
+      readonly liveRoomInfo: EndpointDef<import("zod").ZodObject<{
+        principalId: import("zod").ZodString;
+      }, $strip>, any>;
+      readonly emojiList: EndpointDef<import("zod").ZodObject<{}, $strip>, EmojiList_V0$1>;
+    }>;
+    sign: typeof kuaishouSign;
+    kuaishouApiUrls: typeof kuaishouApiUrls;
+  };
+  xiaohongshu: {
+    fetcher: FetcherOf<"xiaohongshu", {
+      readonly homeFeed: EndpointDef<import("zod").ZodObject<{
+        cursor_score: import("zod").ZodOptional<import("zod").ZodString>;
+        num: import("zod").ZodOptional<import("zod").ZodCoercedNumber<unknown>>;
+        refresh_type: import("zod").ZodOptional<import("zod").ZodCoercedNumber<unknown>>;
+        note_index: import("zod").ZodOptional<import("zod").ZodCoercedNumber<unknown>>;
+        category: import("zod").ZodOptional<import("zod").ZodString>;
+        search_key: import("zod").ZodOptional<import("zod").ZodString>;
+      }, $strip>, HomeFeed_V0$1>;
+      readonly noteDetail: EndpointDef<import("zod").ZodObject<{
+        note_id: import("zod").ZodString;
+        xsec_token: import("zod").ZodString;
+      }, $strip>, NoteDetail_V0>;
+      readonly noteComments: EndpointDef<import("zod").ZodObject<{
+        note_id: import("zod").ZodString;
+        xsec_token: import("zod").ZodString;
+        number: import("zod").ZodOptional<import("zod").ZodCoercedNumber<unknown>>;
+      }, $strip>, any>;
+      readonly userProfile: EndpointDef<import("zod").ZodObject<{
+        user_id: import("zod").ZodString;
+      }, $strip>, UserProfile_V0>;
+      readonly userNoteList: EndpointDef<import("zod").ZodObject<{
+        user_id: import("zod").ZodString;
+        cursor: import("zod").ZodOptional<import("zod").ZodString>;
+        num: import("zod").ZodOptional<import("zod").ZodCoercedNumber<unknown>>;
+      }, $strip>, any>;
+      readonly emojiList: EndpointDef<import("zod").ZodObject<{}, $strip>, EmojiList_V0>;
+      readonly searchNotes: EndpointDef<import("zod").ZodObject<{
+        keyword: import("zod").ZodString;
+        page: import("zod").ZodOptional<import("zod").ZodCoercedNumber<unknown>>;
+        page_size: import("zod").ZodOptional<import("zod").ZodCoercedNumber<unknown>>;
+      }, $strip>, SearchNotes_V0$1>;
+    }>;
+    sign: typeof xiaohongshuSign;
+    xiaohongshuApiUrls: typeof xiaohongshuApiUrls;
+  };
+};
+//#endregion
+//#region src/platforms/legacy/bilibili/sign/wbi.d.ts
 /**
  * 对请求链接进行 WBI 签名
  * @param BASEURL - 完整的请求地址，可以是字符串或 URL 对象
@@ -13,7 +24732,7 @@ import express from "express";
  */
 declare const wbi_sign: (BASEURL: string | URL, cookie: string) => Promise<string>;
 //#endregion
-//#region src/platform/bilibili/sign/bv2av.d.ts
+//#region src/platforms/bilibili/sign/bv2av.d.ts
 /**
  * av号转bv号
  * @param aid av号
@@ -30,11 +24749,11 @@ declare const bv2av: (bvid: string) => number;
 //#region src/types/ReturnDataType/Bilibili/ProtobufDanmaku/ProtobufDanmaku_V0.d.ts
 type BiliProtobufDanmaku_V0 = {
   code: number;
-  data: DataData$30;
+  data: DataData$28;
   message: string;
   [property: string]: any;
 };
-type DataData$30 = {
+type DataData$28 = {
   elems: Elem[];
   [property: string]: any;
 };
@@ -59,7 +24778,7 @@ type Elem = {
 //#region src/types/ReturnDataType/Bilibili/ProtobufDanmaku/index.d.ts
 type BiliProtobufDanmaku = BiliProtobufDanmaku_V0;
 //#endregion
-//#region src/platform/bilibili/sign/danmaku_proto.d.ts
+//#region src/platforms/bilibili/decode/danmaku.d.ts
 /**
  * 解析弹幕分段响应
  * @param data - 二进制 protobuf 数据
@@ -381,50 +25100,6 @@ type BilibiliMethodOptMap = {
 };
 //#endregion
 //#region src/validation/bilibili.d.ts
-/** 视频信息参数验证 */
-declare const BilibiliVideoParamsSchema: zod.ZodType<BilibiliMethodOptionsMap['VideoInfoParams']>;
-/** 视频流参数验证 */
-declare const BilibiliVideoDownloadParamsSchema: zod.ZodType<BilibiliMethodOptionsMap['VideoStreamParams']>;
-/** 评论参数验证 */
-declare const BilibiliCommentParamsSchema: zod.ZodType<BilibiliMethodOptionsMap['CommentParams']>;
-/** 评论回复参数验证 */
-declare const BilibiliCommentReplyParamsSchema: zod.ZodType<BilibiliMethodOptionsMap['CommentReplyParams']>;
-/** 用户参数验证 */
-declare const BilibiliUserParamsSchema: zod.ZodType<BilibiliMethodOptionsMap['UserParams']>;
-/** 表情参数验证 */
-declare const BilibiliEmojiParamsSchema: zod.ZodType<BilibiliMethodOptionsMap['EmojiParams']>;
-/** 番剧信息参数验证 */
-declare const BilibiliBangumiInfoParamsSchema: zod.ZodType<BilibiliMethodOptionsMap['BangumiInfoParams']>;
-/** 番剧流参数验证 */
-declare const BilibiliBangumiStreamParamsSchema: zod.ZodType<BilibiliMethodOptionsMap['BangumiStreamParams']>;
-/** 动态参数验证 */
-declare const BilibiliDynamicParamsSchema: zod.ZodType<BilibiliMethodOptionsMap['DynamicParams']>;
-/** 直播间参数验证 */
-declare const BilibiliLiveParamsSchema: zod.ZodType<BilibiliMethodOptionsMap['LiveRoomParams']>;
-/** 登录状态参数验证 */
-declare const BilibiliLoginParamsSchema: zod.ZodType<BilibiliMethodOptionsMap['LoginBaseInfoParams']>;
-/** 申请二维码参数验证 */
-declare const BilibiliQrcodeParamsSchema: zod.ZodType<BilibiliMethodOptionsMap['GetQrcodeParams']>;
-/** 二维码状态参数验证 */
-declare const BilibiliQrcodeStatusParamsSchema: zod.ZodType<BilibiliMethodOptionsMap['QrcodeParams']>;
-/** AV转BV参数验证 */
-declare const BilibiliAv2BvParamsSchema: zod.ZodType<BilibiliMethodOptionsMap['Av2BvParams']>;
-/** BV转AV参数验证 */
-declare const BilibiliBv2AvParamsSchema: zod.ZodType<BilibiliMethodOptionsMap['Bv2AvParams']>;
-/** 专栏内容参数验证 */
-declare const BilibiliArticleParamsSchema: zod.ZodType<BilibiliMethodOptionsMap['ArticleParams']>;
-/** 专栏卡片参数验证 */
-declare const BilibiliArticleCardParamsSchema: zod.ZodType<BilibiliMethodOptionsMap['ArticleCardParams']>;
-/** 专栏信息参数验证 */
-declare const BilibiliArticleInfoParamsSchema: zod.ZodType<BilibiliMethodOptionsMap['ArticleInfoParams']>;
-/** 文集信息参数验证 */
-declare const BilibiliColumnInfoParamsSchema: zod.ZodType<BilibiliMethodOptionsMap['ColumnInfoParams']>;
-/** 验证码申请参数验证 */
-declare const BilibiliApplyCaptchaParamsSchema: zod.ZodType<BilibiliMethodOptionsMap['ApplyVoucherCaptchaParams']>;
-/** 验证码验证参数验证 */
-declare const BilibiliValidateCaptchaParamsSchema: zod.ZodType<BilibiliMethodOptionsMap['ValidateCaptchaParams']>;
-/** 弹幕参数验证 */
-declare const BilibiliDanmakuParamsSchema: zod.ZodType<BilibiliMethodOptionsMap['DanmakuParams']>;
 /** B站参数验证模式映射 */
 declare const BilibiliValidationSchemas: {
   readonly videoInfo: zod.ZodType<{
@@ -648,36 +25323,6 @@ declare const BilibiliValidationSchemas: {
     cid: number;
     segment_index?: number;
   }, unknown>>;
-};
-/** B站方法路由映射 */
-declare const BilibiliMethodRoutes: {
-  readonly videoInfo: "/fetch_one_video";
-  readonly videoStream: "/fetch_video_playurl";
-  readonly comments: "/fetch_work_comments";
-  readonly commentReplies: "/fetch_comment_reply";
-  readonly userCard: "/fetch_user_profile";
-  readonly userDynamicList: "/fetch_user_dynamic";
-  readonly userLiveStatus: "/fetch_user_live_status";
-  readonly userSpaceInfo: "/fetch_user_space_info";
-  readonly emojiList: "/fetch_emoji_list";
-  readonly bangumiInfo: "/fetch_bangumi_video_info";
-  readonly bangumiStream: "/fetch_bangumi_video_playurl";
-  readonly dynamicDetail: "/fetch_dynamic_info";
-  readonly liveRoomInfo: "/fetch_live_room_detail";
-  readonly liveRoomInit: "/fetch_liveroom_def";
-  readonly loginStatus: "/login_basic_info";
-  readonly loginQrcode: "/new_login_qrcode";
-  readonly qrcodeStatus: "/check_qrcode";
-  readonly uploaderTotalViews: "/fetch_user_full_view";
-  readonly avToBv: "/av_to_bv";
-  readonly bvToAv: "/bv_to_av";
-  readonly articleContent: "/fetch_article_content";
-  readonly articleCards: "/fetch_article_card";
-  readonly articleInfo: "/fetch_article_info";
-  readonly articleListInfo: "/fetch_column_info";
-  readonly captchaFromVoucher: "/apply_captcha";
-  readonly validateCaptcha: "/validate_captcha";
-  readonly videoDanmaku: "/fetch_danmaku";
 };
 /** B站方法类型 */
 type BilibiliMethodType = keyof typeof BilibiliValidationSchemas;
@@ -913,40 +25558,6 @@ type DouyinMethodOptMap = {
 };
 //#endregion
 //#region src/validation/douyin.d.ts
-/** 作品参数验证 */
-declare const DouyinWorkParamsSchema: zod.ZodType<DouyinMethodOptionsMap['WorkParams']>;
-/** 评论参数验证 */
-declare const DouyinCommentParamsSchema: zod.ZodType<DouyinMethodOptionsMap['CommentParams']>;
-/** 热点词参数验证 */
-declare const DouyinHotWordsParamsSchema: zod.ZodType<DouyinMethodOptionsMap['HotWordsParams']>;
-/** 搜索参数验证 */
-declare const DouyinSearchParamsSchema: zod.ZodType<DouyinMethodOptionsMap['SearchParams']>;
-/** 评论回复参数验证 */
-declare const DouyinCommentReplyParamsSchema: zod.ZodType<DouyinMethodOptionsMap['CommentReplyParams']>;
-/** 用户参数验证 */
-declare const DouyinUserParamsSchema: zod.ZodType<DouyinMethodOptionsMap['UserParams']>;
-/** 用户列表参数验证（视频列表、喜欢列表、推荐列表） */
-declare const DouyinUserListParamsSchema: zod.ZodType<DouyinMethodOptionsMap['UserListParams']>;
-/** 音乐参数验证 */
-declare const DouyinMusicParamsSchema: zod.ZodType<DouyinMethodOptionsMap['MusicParams']>;
-/** 直播间参数验证 */
-declare const DouyinLiveRoomParamsSchema: zod.ZodType<DouyinMethodOptionsMap['LiveRoomParams']>;
-/** 二维码参数验证 */
-declare const DouyinQrcodeParamsSchema: zod.ZodType<DouyinMethodOptionsMap['QrcodeParams']>;
-/** 表情列表参数验证 */
-declare const DouyinEmojiListParamsSchema: zod.ZodType<DouyinMethodOptionsMap['EmojiListParams']>;
-/** 动态表情参数验证 */
-declare const DouyinEmojiProParamsSchema: zod.ZodType<DouyinMethodOptionsMap['EmojiProParams']>;
-/** 弹幕参数验证 */
-declare const DouyinDanmakuParamsSchema: zod.ZodType<DouyinMethodOptionsMap['DanmakuParams']>;
-/** 游客用户参数验证 */
-declare const DouyinGuestUserParamsSchema: zod.ZodType<DouyinMethodOptionsMap['GuestUserParams']>;
-/** 游客原声参数验证 */
-declare const DouyinGuestMusicParamsSchema: zod.ZodType<DouyinMethodOptionsMap['GuestMusicParams']>;
-/** 游客原声作品列表参数验证 */
-declare const DouyinGuestMusicListParamsSchema: zod.ZodType<DouyinMethodOptionsMap['GuestMusicListParams']>;
-/** 表情资源包参数验证（该接口不接受任何参数） */
-declare const DouyinEmojiResourceParamsSchema: zod.ZodType<DouyinMethodOptionsMap['EmojiResourceParams']>;
 /** 抖音参数验证模式映射 */
 declare const DouyinValidationSchemas: {
   readonly textWork: zod.ZodType<{
@@ -1145,32 +25756,6 @@ declare const DouyinValidationSchemas: {
     methodType: "emojiResourceMeta";
   }, unknown>>;
 };
-/** 抖音方法路由映射 */
-declare const DouyinMethodRoutes: {
-  readonly parseWork: "/fetch_one_work";
-  readonly textWork: "/fetch_one_work";
-  readonly videoWork: "/fetch_one_work";
-  readonly imageAlbumWork: "/fetch_one_work";
-  readonly slidesWork: "/fetch_one_work";
-  readonly comments: "/fetch_work_comments";
-  readonly commentReplies: "/fetch_video_comment_replies";
-  readonly userProfile: "/fetch_user_info";
-  readonly userVideoList: "/fetch_user_post_videos";
-  readonly userFavoriteList: "/fetch_user_favorite_list";
-  readonly userRecommendList: "/fetch_user_recommend_list";
-  readonly search: "/fetch_search_info";
-  readonly suggestWords: "/fetch_suggest_words";
-  readonly musicInfo: "/fetch_music_work";
-  readonly emojiList: "/fetch_emoji_list";
-  readonly dynamicEmojiList: "/fetch_emoji_pro_list";
-  readonly liveRoomInfo: "/fetch_user_live_videos";
-  readonly danmakuList: "/fetch_work_danmaku";
-  readonly loginQrcode: "/fetch_login_qrcode";
-  readonly guestUserInfo: "/fetch_guest_user_info";
-  readonly guestMusicInfo: "/fetch_guest_music_info";
-  readonly guestMusicAwemeList: "/fetch_guest_music_aweme_list";
-  readonly emojiResourceMeta: "/fetch_emoji_resource_meta";
-};
 /** 抖音方法类型 */
 type DouyinMethodType = keyof typeof DouyinValidationSchemas;
 //#endregion
@@ -1226,30 +25811,6 @@ type KuaishouMethodOptMap = {
 //#endregion
 //#region src/validation/kuaishou.d.ts
 /**
- * 快手视频参数验证模式
- */
-declare const KuaishouVideoParamsSchema: zod.ZodType<KuaishouMethodOptionsMap['VideoInfoParams']>;
-/**
- * 快手评论参数验证模式
- */
-declare const KuaishouCommentParamsSchema: zod.ZodType<KuaishouMethodOptionsMap['CommentParams']>;
-/**
- * 快手用户主页参数验证模式
- */
-declare const KuaishouUserProfileParamsSchema: zod.ZodType<KuaishouMethodOptionsMap['UserProfileParams']>;
-/**
- * 快手用户作品列表参数验证模式
- */
-declare const KuaishouUserWorkListParamsSchema: zod.ZodType<KuaishouMethodOptionsMap['UserWorkListParams']>;
-/**
- * 快手直播间信息参数验证模式
- */
-declare const KuaishouLiveRoomInfoParamsSchema: zod.ZodType<KuaishouMethodOptionsMap['LiveRoomInfoParams']>;
-/**
- * 快手表情参数验证模式
- */
-declare const KuaishouEmojiParamsSchema: zod.ZodType<KuaishouMethodOptionsMap['EmojiListParams']>;
-/**
  * 快手参数验证模式映射
  */
 declare const KuaishouValidationSchemas: {
@@ -1298,18 +25859,44 @@ declare const KuaishouValidationSchemas: {
     methodType: "emojiList";
   }, unknown>>;
 };
-/**
- * 快手方法路由映射
- */
-declare const KuaishouMethodRoutes: {
-  readonly videoWork: "/fetch_one_work";
-  readonly comments: "/fetch_work_comments";
-  readonly userProfile: "/fetch_user_profile";
-  readonly userWorkList: "/fetch_user_work_list";
-  readonly liveRoomInfo: "/fetch_live_room_info";
-  readonly emojiList: "/fetch_emoji_list";
-};
 type KuaishouMethodType = keyof typeof KuaishouValidationSchemas;
+//#endregion
+//#region src/platforms/legacy/xiaohongshu/searchTypes.d.ts
+/**
+ * 小红书搜索排序 / 笔记类型枚举
+ *
+ * 独立成叶子模块：`types/XiaohongshuAPIParams.ts` 与 `platform/xiaohongshu/API.ts`
+ * 都要引用这两个枚举，若定义在其中任何一处会形成二者互相 import 的环；
+ * 若经 types barrel `export *` 又会泄漏到顶层公开面。故单独成叶、不进任何 barrel。
+ */
+declare enum SearchSortType {
+  /**
+   * 默认排序
+   */
+  GENERAL = "general",
+  /**
+   * 最受欢迎（按热度降序）
+   */
+  MOST_POPULAR = "popularity_descending",
+  /**
+   * 最新发布（按时间降序）
+   */
+  LATEST = "time_descending"
+}
+declare enum SearchNoteType {
+  /**
+   * 默认（全部类型）
+   */
+  ALL = 0,
+  /**
+   * 仅视频
+   */
+  VIDEO = 1,
+  /**
+   * 仅图片
+   */
+  IMAGE = 2
+}
 //#endregion
 //#region src/types/XiaohongshuAPIParams.d.ts
 /**
@@ -1394,45 +25981,11 @@ type XiaohongshuMethodOptMap = {
   searchNotes: XiaohongshuMethodOptionsMap['SearchNoteParams'];
 };
 //#endregion
-//#region src/platform/xiaohongshu/API.d.ts
+//#region src/platforms/legacy/xiaohongshu/API.d.ts
 /**
  * 根据 XiaohongshuMethodOptionsMap 创建一个新的类型，去除每个字段中的 methodType
  */
 type XiaohongshuMethodOptionsWithoutMethodType = { [K in keyof XiaohongshuMethodOptionsMap]: Omit<XiaohongshuMethodOptionsMap[K], 'methodType'>; };
-/**
- * 搜索排序类型枚举
- */
-declare enum SearchSortType {
-  /**
-   * 默认排序
-   */
-  GENERAL = "general",
-  /**
-   * 最受欢迎（按热度降序）
-   */
-  MOST_POPULAR = "popularity_descending",
-  /**
-   * 最新发布（按时间降序）
-   */
-  LATEST = "time_descending"
-}
-/**
- * 搜索笔记类型枚举
- */
-declare enum SearchNoteType {
-  /**
-   * 默认（全部类型）
-   */
-  ALL = 0,
-  /**
-   * 仅视频
-   */
-  VIDEO = 1,
-  /**
-   * 仅图片
-   */
-  IMAGE = 2
-}
 /**
  * 小红书API地址配置
  */
@@ -1610,18 +26163,6 @@ declare const XiaohongshuValidationSchemas: {
     note_type?: SearchNoteType;
   }, unknown>>;
 };
-/**
- * 小红书方法路由映射
- */
-declare const XiaohongshuMethodRoutes: {
-  readonly homeFeed: "/fetch_home_feed";
-  readonly noteDetail: "/fetch_one_note";
-  readonly noteComments: "/fetch_note_comments";
-  readonly userProfile: "/fetch_user_profile";
-  readonly userNoteList: "/fetch_user_notes";
-  readonly emojiList: "/fetch_emoji_list";
-  readonly searchNotes: "/fetch_search_notes";
-};
 type XiaohongshuMethodType = keyof typeof XiaohongshuValidationSchemas;
 //#endregion
 //#region src/types/NetworksConfigType.d.ts
@@ -1680,158 +26221,16 @@ type ErrorDetail = {
   responseCode?: string;
 };
 /** 未知错误 */
-declare enum amagiAPIErrorCode {
-  /** 未知错误 */
-  UNKNOWN = "UNKNOWN_ERROR"
-}
-/** 抖音平台API错误码 */
-declare enum douoyinAPIErrorCode {
-  /** Cookie无效或已过期 */
-  COOKIE = "INVALID_COOKIE",
-  /** 内容被隐藏或下架 */
-  FILTER = "CONTENT_FILTERED",
-  /** 当前用户未开播 */
-  NOT_LIVE = "USER_NOT_LIVE",
-  /** 未知错误 */
-  UNKNOWN = "UNKNOWN_ERROR"
-}
-/** B站平台API错误码 */
-declare enum bilibiliAPIErrorCode {
-  /** 应用程序不存在或已被封禁 */
-  APP_NOT_FOUND = "-1",
-  /** Access Key 错误 */
-  ACCESS_KEY_ERROR = "-2",
-  /** API 校验密匙错误 */
-  API_KEY_ERROR = "-3",
-  /** 调用方对该Method没有权限 */
-  METHOD_NOT_PERMITTED = "-4",
-  /** 账号未登录 */
-  NOT_LOGGED_IN = "-101",
-  /** 账号被封停 */
-  ACCOUNT_BANNED = "-102",
-  /** 积分不足 */
-  POINTS_INSUFFICIENT = "-103",
-  /** 硬币不足 */
-  COINS_INSUFFICIENT = "-104",
-  /** 验证码错误 */
-  CAPTCHA_ERROR = "-105",
-  /** 账号非正式会员或在适应期 */
-  MEMBERSHIP_LIMITED = "-106",
-  /** 应用不存在或者被封禁 */
-  APP_BANNED = "-107",
-  /** 未绑定手机 */
-  PHONE_NOT_BOUND = "-108",
-  /** 未绑定手机 */
-  PHONE_NOT_BOUND_2 = "-110",
-  /** csrf 校验失败 */
-  CSRF_ERROR = "-111",
-  /** 系统升级中 */
-  SYSTEM_UPDATING = "-112",
-  /** 账号尚未实名认证 */
-  NOT_REAL_NAME_VERIFIED = "-113",
-  /** 请先绑定手机 */
-  NEED_BIND_PHONE = "-114",
-  /** 请先完成实名认证 */
-  NEED_REAL_NAME_VERIFICATION = "-115",
-  /** 木有改动 */
-  NO_CHANGE = "-304",
-  /** 撞车跳转 */
-  CONFLICT_REDIRECT = "-307",
-  /** 风控校验失败 (UA 或 wbi 参数不合法) */
-  RISK_CONTROL_FAILED = "-352",
-  /** 请求错误 */
-  BAD_REQUEST = "-400",
-  /** 未认证 (或非法请求) */
-  UNAUTHORIZED = "-401",
-  /** 访问权限不足 */
-  FORBIDDEN = "-403",
-  /** 啥都木有 */
-  NOT_FOUND = "-404",
-  /** 不支持该方法 */
-  METHOD_NOT_ALLOWED = "-405",
-  /** 冲突 */
-  CONFLICT = "-409",
-  /** 请求被拦截 (客户端 ip 被服务端风控) */
-  IP_BLOCKED = "-412",
-  /** 服务器错误 */
-  SERVER_ERROR = "-500",
-  /** 过载保护,服务暂不可用 */
-  SERVICE_UNAVAILABLE = "-503",
-  /** 服务调用超时 */
-  GATEWAY_TIMEOUT = "-504",
-  /** 超出限制 */
-  RATE_LIMITED = "-509",
-  /** 上传文件不存在 */
-  FILE_NOT_FOUND = "-616",
-  /** 上传文件太大 */
-  FILE_TOO_LARGE = "-617",
-  /** 登录失败次数太多 */
-  LOGIN_ATTEMPTS_EXCEEDED = "-625",
-  /** 用户不存在 */
-  USER_NOT_FOUND = "-626",
-  /** 密码太弱 */
-  WEAK_PASSWORD = "-628",
-  /** 用户名或密码错误 */
-  INVALID_CREDENTIALS = "-629",
-  /** 操作对象数量限制 */
-  OBJECT_LIMIT_EXCEEDED = "-632",
-  /** 被锁定 */
-  ACCOUNT_LOCKED = "-643",
-  /** 用户等级太低 */
-  USER_LEVEL_TOO_LOW = "-650",
-  /** 重复的用户 */
-  DUPLICATE_USER = "-652",
-  /** Token 过期 */
-  TOKEN_EXPIRED = "-658",
-  /** 密码时间戳过期 */
-  PASSWORD_TIMESTAMP_EXPIRED = "-662",
-  /** 地理区域限制 */
-  GEO_RESTRICTED = "-688",
-  /** 版权限制 */
-  COPYRIGHT_RESTRICTED = "-689",
-  /** 扣节操失败 */
-  REPUTATION_DEDUCTION_FAILED = "-701",
-  /** 请求过于频繁，请稍后再试 */
-  TOO_MANY_REQUESTS = "-799",
-  /** 服务器开小差了 */
-  SERVER_TEMPORARILY_UNAVAILABLE = "-8888",
-  /** 未知错误 */
-  UNKNOWN = "UNKNOWN"
-}
-/** 快手平台API错误码 */
-declare enum kuaishouAPIErrorCode {
-  /** Cookie无效或已过期 */
-  COOKIE = "INVALID_COOKIE",
-  /** 未知错误 */
-  UNKNOWN = "UNKNOWN_ERROR"
-}
-/** 小红书平台API错误码 */
-declare enum xiaohongshuAPIErrorCode {
-  /** Cookie无效或已过期 */
-  COOKIE = "INVALID_COOKIE",
-  /** 未知错误 */
-  UNKNOWN = "UNKNOWN_ERROR",
-  /** 非法请求 */
-  ILLEGAL_REQUEST = 500,
-  /** 检测到帐号异常，请稍后重试 */
-  ACCOUNT_ABNORMAL = 300011,
-  /** 网络连接异常，请检查网络设置后重试 */
-  NETWORK_ERROR = 300012,
-  /** 访问频次异常，请勿频繁操作 */
-  FREQUENCY_ERROR = 300013,
-  /** 浏览器异常，请尝试更换浏览器后重试 */
-  BROWSER_ERROR = 300015
-}
 //#endregion
 //#region src/types/ReturnDataType/Bilibili/ArticleCard/ArticleCard_V0.d.ts
 type ArticleCard_V0 = {
   code: number;
-  data: DataData$29;
+  data: DataData$27;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type DataData$29 = {
+type DataData$27 = {
   av2: Av2;
   cv1: Cv1;
   cv2: Cv2;
@@ -1854,7 +26253,7 @@ type Av2 = {
   pubdate: number;
   rights: Rights$1;
   short_link_v2: string;
-  stat: Stat$4;
+  stat: Stat$3;
   state: number;
   tid: number;
   title: string;
@@ -1892,7 +26291,7 @@ type Rights$1 = {
   ugc_pay_preview: number;
   [property: string]: any;
 };
-type Stat$4 = {
+type Stat$3 = {
   aid: number;
   coin: number;
   danmaku: number;
@@ -1953,9 +26352,9 @@ type Cv1Author = {
   mid: number;
   name: string;
   nameplate: PurpleNameplate$1;
-  official_verify: PurpleOfficialVerify$7;
-  pendant: PurplePendant$7;
-  vip: PurpleVip$7;
+  official_verify: PurpleOfficialVerify$5;
+  pendant: PurplePendant$5;
+  vip: PurpleVip$5;
   [property: string]: any;
 };
 type PurpleNameplate$1 = {
@@ -1967,22 +26366,22 @@ type PurpleNameplate$1 = {
   nid: number;
   [property: string]: any;
 };
-type PurpleOfficialVerify$7 = {
+type PurpleOfficialVerify$5 = {
   desc: string;
   type: number;
   [property: string]: any;
 };
-type PurplePendant$7 = {
+type PurplePendant$5 = {
   expire: number;
   image: string;
   name: string;
   pid: number;
   [property: string]: any;
 };
-type PurpleVip$7 = {
+type PurpleVip$5 = {
   avatar_subscript: number;
   due_date: number;
-  label: PurpleLabel$7;
+  label: PurpleLabel$5;
   nickname_color: string;
   status: number;
   theme_type: number;
@@ -1990,7 +26389,7 @@ type PurpleVip$7 = {
   vip_pay_type: number;
   [property: string]: any;
 };
-type PurpleLabel$7 = {
+type PurpleLabel$5 = {
   label_theme: string;
   path: string;
   text: string;
@@ -2092,9 +26491,9 @@ type Cv2Author = {
   mid: number;
   name: string;
   nameplate: FluffyNameplate$1;
-  official_verify: FluffyOfficialVerify$7;
-  pendant: FluffyPendant$7;
-  vip: FluffyVip$7;
+  official_verify: FluffyOfficialVerify$5;
+  pendant: FluffyPendant$5;
+  vip: FluffyVip$5;
   [property: string]: any;
 };
 type FluffyNameplate$1 = {
@@ -2106,22 +26505,22 @@ type FluffyNameplate$1 = {
   nid: number;
   [property: string]: any;
 };
-type FluffyOfficialVerify$7 = {
+type FluffyOfficialVerify$5 = {
   desc: string;
   type: number;
   [property: string]: any;
 };
-type FluffyPendant$7 = {
+type FluffyPendant$5 = {
   expire: number;
   image: string;
   name: string;
   pid: number;
   [property: string]: any;
 };
-type FluffyVip$7 = {
+type FluffyVip$5 = {
   avatar_subscript: number;
   due_date: number;
-  label: FluffyLabel$7;
+  label: FluffyLabel$5;
   nickname_color: string;
   status: number;
   theme_type: number;
@@ -2129,7 +26528,7 @@ type FluffyVip$7 = {
   vip_pay_type: number;
   [property: string]: any;
 };
-type FluffyLabel$7 = {
+type FluffyLabel$5 = {
   label_theme: string;
   path: string;
   text: string;
@@ -2190,19 +26589,19 @@ type Lv5440 = {
 //#region src/types/ReturnDataType/Bilibili/ArticleCard/index.d.ts
 type ArticleCard = ArticleCard_V0;
 //#endregion
-//#region src/types/ReturnDataType/Bilibili/ArticleContent/ArticleContent.d.ts
+//#region src/types/ReturnDataType/Bilibili/ArticleContent/ArticleContent_V0.d.ts
 type ArticleContent_V0 = {
   code: number;
-  data: DataData$28;
+  data: DataData$26;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type DataData$28 = {
+type DataData$26 = {
   act_id: number;
   apply_time: string;
   authenMark: null;
-  author: Author$10;
+  author: Author$9;
   banner_url: string;
   categories: CategoryElement[];
   category: PurpleCategory;
@@ -2221,7 +26620,7 @@ type DataData$28 = {
   list: null;
   media: Media;
   mtime: number;
-  opus: Opus$6;
+  opus: Opus$5;
   origin_image_urls: string[];
   origin_template_id: number;
   original: number;
@@ -2240,7 +26639,7 @@ type DataData$28 = {
   words: number;
   [property: string]: any;
 };
-type Author$10 = {
+type Author$9 = {
   face: string;
   fans: number;
   level: number;
@@ -2314,7 +26713,7 @@ type Media = {
   type_name: string;
   [property: string]: any;
 };
-type Opus$6 = {
+type Opus$5 = {
   article: Article$1;
   content: Content$1;
   opus_id: number;
@@ -2413,12 +26812,12 @@ type ArticleContent = ArticleContent_V0;
 //#region src/types/ReturnDataType/Bilibili/ArticleInfo/ArticleInfo_V0.d.ts
 type ArticleInfo_V0 = {
   code: number;
-  data: DataData$27;
+  data: DataData$25;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type DataData$27 = {
+type DataData$25 = {
   attention: boolean;
   author_name: string;
   banner_url: string;
@@ -2468,11 +26867,11 @@ type ArticleInfo = ArticleInfo_V0;
 //#region src/types/ReturnDataType/Bilibili/AV2BV/AV2BV_V0.d.ts
 type BiliAv2Bv_V0 = {
   code: number;
-  data: Data$14;
+  data: Data$15;
   message: string;
   [property: string]: any;
 };
-type Data$14 = {
+type Data$15 = {
   bvid: string;
   [property: string]: any;
 };
@@ -3126,12 +27525,12 @@ type BiliBangumiVideoPlayurlNoLogin = BiliBangumiVideoPlayurlNoLogin_V0;
 //#region src/types/ReturnDataType/Bilibili/EmojiList/EmojiList_V0.d.ts
 type BiliEmojiList_V0 = {
   code: number;
-  data: Data$13;
+  data: Data$14;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type Data$13 = {
+type Data$14 = {
   packages: Package[];
   setting: Setting;
   [property: string]: any;
@@ -3202,12 +27601,12 @@ type BiliEmojiList = BiliEmojiList_V0;
 //#region src/types/ReturnDataType/Bilibili/BiliCommentReply/BiliCommentReply_V0.d.ts
 type BiliCommentReply_V0 = {
   code: number;
-  data: DataData$26;
+  data: DataData$24;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type DataData$26 = {
+type DataData$24 = {
   assist: number;
   blacklist: number;
   callbacks: {
@@ -3703,11 +28102,11 @@ type BiliCommentReply = BiliCommentReply_V0;
 //#region src/types/ReturnDataType/Bilibili/BV2AV/BV2AV_V0.d.ts
 type BiliBv2AV_V0 = {
   code: number;
-  data: Data$12;
+  data: Data$13;
   message: string;
   [property: string]: any;
 };
-type Data$12 = {
+type Data$13 = {
   aid: string;
   [property: string]: any;
 };
@@ -3718,12 +28117,12 @@ type BiliBv2AV = BiliBv2AV_V0;
 //#region src/types/ReturnDataType/Bilibili/Captcha/ApplyCaptcha/ApplyCaptcha_V0.d.ts
 type ApplyCaptcha_V0 = {
   code: number;
-  data: DataData$25;
+  data: DataData$23;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type DataData$25 = {
+type DataData$23 = {
   biliword: null;
   geetest: Geetest;
   phone: null;
@@ -3745,12 +28144,12 @@ type ApplyCaptcha = ApplyCaptcha_V0;
 //#region src/types/ReturnDataType/Bilibili/Captcha/ValidateCaptcha/ValidateCaptcha_V0.d.ts
 type ValidateCaptcha_V0 = {
   code: number;
-  data: DataData$24;
+  data: DataData$22;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type DataData$24 = {
+type DataData$22 = {
   grisk_id: string;
   is_valid: number;
   [property: string]: any;
@@ -3762,20 +28161,20 @@ type ValidateCaptcha = ValidateCaptcha_V0;
 //#region src/types/ReturnDataType/Bilibili/ColumnInfo/ColumnInfo_V0.d.ts
 type ColumnInfo_V0 = {
   code: number;
-  data: DataData$23;
+  data: DataData$21;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type DataData$23 = {
+type DataData$21 = {
   articles: null;
   attention: boolean;
-  author: Author$9;
-  last: Last;
+  author: Author$8;
+  last: Last$2;
   list: List;
   [property: string]: any;
 };
-type Author$9 = {
+type Author$8 = {
   face: string;
   fans: number;
   level: number;
@@ -3825,7 +28224,7 @@ type Label$7 = {
   text: string;
   [property: string]: any;
 };
-type Last = {
+type Last$2 = {
   attributes: number;
   author_uid: number;
   categories: string[];
@@ -3870,19 +28269,38 @@ type List = {
 //#region src/types/ReturnDataType/Bilibili/ColumnInfo/index.d.ts
 type ColumnInfo = ColumnInfo_V0;
 //#endregion
+//#region src/types/ReturnDataType/Bilibili/DynamicType.d.ts
+/**
+ * 动态类型枚举
+ *
+ * 独立成叶子模块：Dynamic 子树各叶子类型文件都要用它做判别字段，
+ * 若定义在 `DynamicInfo/index.ts` 会形成叶子反向导入 barrel 的环。
+ *
+ * 它是**运行时 enum**，不是任何端点响应的形状映射，所以没有「形状序号 `_V<n>`」，
+ * 也不必按响应类型的目录约定包一层。
+ */
+declare enum DynamicType {
+  AV = "DYNAMIC_TYPE_AV",
+  DRAW = "DYNAMIC_TYPE_DRAW",
+  WORD = "DYNAMIC_TYPE_WORD",
+  LIVE_RCMD = "DYNAMIC_TYPE_LIVE_RCMD",
+  FORWARD = "DYNAMIC_TYPE_FORWARD",
+  ARTICLE = "DYNAMIC_TYPE_ARTICLE"
+}
+//#endregion
 //#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_ARTICLE/DYNAMIC_TYPE_ARTICLE_V0.d.ts
 type DynamicTypeArticle_V0 = {
   code: number;
-  data: DataData$22;
+  data: DataData$20;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type DataData$22 = {
-  item: Item$16;
+type DataData$20 = {
+  item: Item$14;
   [property: string]: any;
 };
-type Item$16 = {
+type Item$14 = {
   basic: Basic$4;
   id_str: string;
   modules: Modules$4;
@@ -3908,8 +28326,8 @@ type LikeIcon$4 = {
 type Modules$4 = {
   module_author: ModuleAuthor$4;
   module_dynamic: ModuleDynamic$4;
-  module_more: ModuleMore$10;
-  module_stat: ModuleStat$10;
+  module_more: ModuleMore$8;
+  module_stat: ModuleStat$8;
   [property: string]: any;
 };
 type ModuleAuthor$4 = {
@@ -4071,24 +28489,24 @@ type Label$6 = {
 type ModuleDynamic$4 = {
   additional: null;
   desc: null;
-  major: Major$10;
+  major: Major$8;
   topic: null;
   [property: string]: any;
 };
-type Major$10 = {
-  opus: Opus$5;
+type Major$8 = {
+  opus: Opus$4;
   type: string;
   [property: string]: any;
 };
-type Opus$5 = {
+type Opus$4 = {
   fold_action: string[];
   jump_url: string;
   pics: string[];
-  summary: Summary$6;
+  summary: Summary$5;
   title: string;
   [property: string]: any;
 };
-type Summary$6 = {
+type Summary$5 = {
   rich_text_nodes: RichTextNode$5[];
   text: string;
   [property: string]: any;
@@ -4099,32 +28517,32 @@ type RichTextNode$5 = {
   type?: string;
   [property: string]: any;
 };
-type ModuleMore$10 = {
-  three_point_items: ThreePointItem$10[];
+type ModuleMore$8 = {
+  three_point_items: ThreePointItem$8[];
   [property: string]: any;
 };
-type ThreePointItem$10 = {
+type ThreePointItem$8 = {
   label?: string;
   type?: string;
   [property: string]: any;
 };
-type ModuleStat$10 = {
-  comment: Comment$12;
-  forward: Forward$10;
-  like: Like$11;
+type ModuleStat$8 = {
+  comment: Comment$10;
+  forward: Forward$8;
+  like: Like$9;
   [property: string]: any;
 };
-type Comment$12 = {
+type Comment$10 = {
   count: number;
   forbidden: boolean;
   [property: string]: any;
 };
-type Forward$10 = {
+type Forward$8 = {
   count: number;
   forbidden: boolean;
   [property: string]: any;
 };
-type Like$11 = {
+type Like$9 = {
   count: number;
   forbidden: boolean;
   status: boolean;
@@ -4137,16 +28555,16 @@ type DynamicTypeArticle = DynamicTypeArticle_V0;
 //#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_AV/DYNAMIC_TYPE_AV_V0.d.ts
 type DynamicTypeAV_V0$1 = {
   code: number;
-  data: DataData$21;
+  data: DataData$19;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type DataData$21 = {
-  item: Item$15;
+type DataData$19 = {
+  item: Item$13;
   [property: string]: any;
 };
-type Item$15 = {
+type Item$13 = {
   basic: Basic$3;
   id_str: string;
   modules: Modules$3;
@@ -4171,8 +28589,8 @@ type LikeIcon$3 = {
 type Modules$3 = {
   module_author: ModuleAuthor$3;
   module_dynamic: ModuleDynamic$3;
-  module_more: ModuleMore$9;
-  module_stat: ModuleStat$9;
+  module_more: ModuleMore$7;
+  module_stat: ModuleStat$7;
   [property: string]: any;
 };
 type ModuleAuthor$3 = {
@@ -4333,12 +28751,12 @@ type Label$5 = {
 };
 type ModuleDynamic$3 = {
   additional: null;
-  desc: Desc$5;
-  major: Major$9;
+  desc: Desc$4;
+  major: Major$7;
   topic: null;
   [property: string]: any;
 };
-type Desc$5 = {
+type Desc$4 = {
   rich_text_nodes: RichTextNode$4[];
   text: string;
   [property: string]: any;
@@ -4349,63 +28767,63 @@ type RichTextNode$4 = {
   type?: string;
   [property: string]: any;
 };
-type Major$9 = {
-  archive: Archive$3;
+type Major$7 = {
+  archive: Archive$2;
   type: string;
   [property: string]: any;
 };
-type Archive$3 = {
+type Archive$2 = {
   aid: string;
-  badge: Badge$3;
+  badge: Badge$2;
   bvid: string;
   cover: string;
   desc: string;
   disable_preview: number;
   duration_text: string;
   jump_url: string;
-  stat: Stat$3;
+  stat: Stat$2;
   title: string;
   type: number;
   [property: string]: any;
 };
-type Badge$3 = {
+type Badge$2 = {
   bg_color: string;
   color: string;
   icon_url: null;
   text: string;
   [property: string]: any;
 };
-type Stat$3 = {
+type Stat$2 = {
   danmaku: string;
   play: string;
   [property: string]: any;
 };
-type ModuleMore$9 = {
-  three_point_items: ThreePointItem$9[];
+type ModuleMore$7 = {
+  three_point_items: ThreePointItem$7[];
   [property: string]: any;
 };
-type ThreePointItem$9 = {
+type ThreePointItem$7 = {
   label?: string;
   type?: string;
   [property: string]: any;
 };
-type ModuleStat$9 = {
-  comment: Comment$11;
-  forward: Forward$9;
-  like: Like$10;
+type ModuleStat$7 = {
+  comment: Comment$9;
+  forward: Forward$7;
+  like: Like$8;
   [property: string]: any;
 };
-type Comment$11 = {
+type Comment$9 = {
   count: number;
   forbidden: boolean;
   [property: string]: any;
 };
-type Forward$9 = {
+type Forward$7 = {
   count: number;
   forbidden: boolean;
   [property: string]: any;
 };
-type Like$10 = {
+type Like$8 = {
   count: number;
   forbidden: boolean;
   status: boolean;
@@ -4413,21 +28831,21 @@ type Like$10 = {
 };
 //#endregion
 //#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_AV/index.d.ts
-type DynamicTypeAV = DynamicTypeAV_V0$1;
+type DynamicTypeAV$1 = DynamicTypeAV_V0$1;
 //#endregion
 //#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_DRAW/DYNAMIC_TYPE_DRAW_V0.d.ts
 type DynamicTypeDraw_V0$1 = {
   code: number;
-  data: DataData$20;
+  data: DataData$18;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type DataData$20 = {
-  item: Item$14;
+type DataData$18 = {
+  item: Item$12;
   [property: string]: any;
 };
-type Item$14 = {
+type Item$12 = {
   basic: Basic$2;
   id_str: string;
   modules: Modules$2;
@@ -4453,13 +28871,13 @@ type LikeIcon$2 = {
 type Modules$2 = {
   module_author: ModuleAuthor$2;
   module_dynamic: ModuleDynamic$2;
-  module_more: ModuleMore$8;
-  module_stat: ModuleStat$8;
+  module_more: ModuleMore$6;
+  module_stat: ModuleStat$6;
   [property: string]: any;
 };
 type ModuleAuthor$2 = {
   avatar: Avatar$3;
-  decoration_card: DecorationCard$7;
+  decoration_card: DecorationCard$5;
   face: string;
   face_nft: boolean;
   following: null;
@@ -4576,12 +28994,12 @@ type Remote$2 = {
   url: string;
   [property: string]: any;
 };
-type DecorationCard$7 = {
+type DecorationCard$5 = {
   big_card_url: string;
   card_type: number;
   card_type_name: string;
   card_url: string;
-  fan: Fan$6;
+  fan: Fan$5;
   id: number;
   image_enhance: string;
   item_id: number;
@@ -4589,16 +29007,16 @@ type DecorationCard$7 = {
   name: string;
   [property: string]: any;
 };
-type Fan$6 = {
+type Fan$5 = {
   color: string;
-  color_format: ColorFormat$6;
+  color_format: ColorFormat$5;
   is_fan: number;
   name: string;
   num_desc: string;
   number: number;
   [property: string]: any;
 };
-type ColorFormat$6 = {
+type ColorFormat$5 = {
   colors: string[];
   end_point: string;
   gradients: number[];
@@ -4649,7 +29067,7 @@ type Label$4 = {
 type ModuleDynamic$2 = {
   additional: Additional$3;
   desc: null;
-  major: Major$8;
+  major: Major$6;
   topic: Topic$4;
   [property: string]: any;
 };
@@ -4701,20 +29119,20 @@ type Desc2$1 = {
   visible: boolean;
   [property: string]: any;
 };
-type Major$8 = {
-  opus: Opus$4;
+type Major$6 = {
+  opus: Opus$3;
   type: string;
   [property: string]: any;
 };
-type Opus$4 = {
+type Opus$3 = {
   fold_action: string[];
   jump_url: string;
-  pics: Pic$3[];
-  summary: Summary$5;
+  pics: Pic$2[];
+  summary: Summary$4;
   title: null;
   [property: string]: any;
 };
-type Pic$3 = {
+type Pic$2 = {
   height?: number;
   live_url?: null;
   size?: number;
@@ -4722,7 +29140,7 @@ type Pic$3 = {
   width?: number;
   [property: string]: any;
 };
-type Summary$5 = {
+type Summary$4 = {
   rich_text_nodes: RichTextNode$3[];
   text: string;
   [property: string]: any;
@@ -4738,822 +29156,6 @@ type Topic$4 = {
   id: number;
   jump_url: string;
   name: string;
-  [property: string]: any;
-};
-type ModuleMore$8 = {
-  three_point_items: ThreePointItem$8[];
-  [property: string]: any;
-};
-type ThreePointItem$8 = {
-  label?: string;
-  type?: string;
-  [property: string]: any;
-};
-type ModuleStat$8 = {
-  comment: Comment$10;
-  forward: Forward$8;
-  like: Like$9;
-  [property: string]: any;
-};
-type Comment$10 = {
-  count: number;
-  forbidden: boolean;
-  [property: string]: any;
-};
-type Forward$8 = {
-  count: number;
-  forbidden: boolean;
-  [property: string]: any;
-};
-type Like$9 = {
-  count: number;
-  forbidden: boolean;
-  status: boolean;
-  [property: string]: any;
-};
-//#endregion
-//#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_DRAW/index.d.ts
-type DynamicTypeDraw = DynamicTypeDraw_V0$1;
-//#endregion
-//#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_FORWARD/Forward/DYNAMIC_TYPE_AV/DYNAMIC_TYPE_AV_V0.d.ts
-type DynamicTypeAV_V0 = {
-  code: number;
-  data: DataData$19;
-  message: string;
-  ttl: number;
-  [property: string]: any;
-};
-type DataData$19 = {
-  item: Item$13;
-  [property: string]: any;
-};
-type Item$13 = {
-  basic: ItemBasic$6;
-  id_str: string;
-  modules: ItemModules$6;
-  orig: Orig$5;
-  type: DynamicType.AV;
-  visible: boolean;
-  [property: string]: any;
-};
-type ItemBasic$6 = {
-  comment_id_str: string;
-  comment_type: number;
-  editable: boolean;
-  like_icon: PurpleLikeIcon$5;
-  rid_str: string;
-  [property: string]: any;
-};
-type PurpleLikeIcon$5 = {
-  action_url: string;
-  end_url: string;
-  id: number;
-  start_url: string;
-  [property: string]: any;
-};
-type ItemModules$6 = {
-  module_author: PurpleModuleAuthor$5;
-  module_dynamic: PurpleModuleDynamic$5;
-  module_more: ModuleMore$7;
-  module_stat: ModuleStat$7;
-  [property: string]: any;
-};
-type PurpleModuleAuthor$5 = {
-  avatar: PurpleAvatar$5;
-  face: string;
-  face_nft: boolean;
-  following: null;
-  jump_url: string;
-  label: string;
-  mid: number;
-  name: string;
-  official_verify: PurpleOfficialVerify$6;
-  pendant: PurplePendant$6;
-  pub_action: string;
-  pub_location_text: string;
-  pub_time: string;
-  pub_ts: number;
-  type: string;
-  vip: PurpleVip$6;
-  [property: string]: any;
-};
-type PurpleAvatar$5 = {
-  container_size: PurpleContainerSize$6;
-  fallback_layers: PurpleFallbackLayers$6;
-  mid: string;
-  [property: string]: any;
-};
-type PurpleContainerSize$6 = {
-  height: number;
-  width: number;
-  [property: string]: any;
-};
-type PurpleFallbackLayers$6 = {
-  is_critical_group: boolean;
-  layers: PurpleLayer$6[];
-  [property: string]: any;
-};
-type PurpleLayer$6 = {
-  general_spec: PurpleGeneralSpec$6;
-  layer_config: PurpleLayerConfig$6;
-  resource: PurpleResource$6;
-  visible: boolean;
-  [property: string]: any;
-};
-type PurpleGeneralSpec$6 = {
-  pos_spec: PurplePosSpec$6;
-  render_spec: PurpleRenderSpec$6;
-  size_spec: PurpleSizeSpec$6;
-  [property: string]: any;
-};
-type PurplePosSpec$6 = {
-  axis_x: number;
-  axis_y: number;
-  coordinate_pos: number;
-  [property: string]: any;
-};
-type PurpleRenderSpec$6 = {
-  opacity: number;
-  [property: string]: any;
-};
-type PurpleSizeSpec$6 = {
-  height: number;
-  width: number;
-  [property: string]: any;
-};
-type PurpleLayerConfig$6 = {
-  is_critical?: boolean;
-  tags: PurpleTags$6;
-  [property: string]: any;
-};
-type PurpleTags$6 = {
-  AVATAR_LAYER?: {
-    [key: string]: any;
-  };
-  GENERAL_CFG: PurpleGENERALCFG$6;
-  ICON_LAYER: {
-    [key: string]: any;
-  };
-  [property: string]: any;
-};
-type PurpleGENERALCFG$6 = {
-  config_type: number;
-  general_config: PurpleGeneralConfig$6;
-  [property: string]: any;
-};
-type PurpleGeneralConfig$6 = {
-  web_css_style: PurpleWebcssStyle$6;
-  [property: string]: any;
-};
-type PurpleWebcssStyle$6 = {
-  'background-color': string;
-  border: string;
-  borderRadius: string;
-  boxSizing: string;
-  [property: string]: any;
-};
-type PurpleResource$6 = {
-  res_image: PurpleResImage$6;
-  res_type: number;
-  [property: string]: any;
-};
-type PurpleResImage$6 = {
-  image_src: PurpleImageSrc$6;
-  [property: string]: any;
-};
-type PurpleImageSrc$6 = {
-  local: number;
-  placeholder?: number;
-  remote?: PurpleRemote$6;
-  src_type: number;
-  [property: string]: any;
-};
-type PurpleRemote$6 = {
-  bfs_style: string;
-  url: string;
-  [property: string]: any;
-};
-type PurpleOfficialVerify$6 = {
-  desc: string;
-  type: number;
-  [property: string]: any;
-};
-type PurplePendant$6 = {
-  expire: number;
-  image: string;
-  image_enhance: string;
-  image_enhance_frame: string;
-  n_pid: number;
-  name: string;
-  pid: number;
-  [property: string]: any;
-};
-type PurpleVip$6 = {
-  avatar_subscript: number;
-  avatar_subscript_url: string;
-  due_date: number;
-  label: PurpleLabel$6;
-  nickname_color: string;
-  status: number;
-  theme_type: number;
-  type: number;
-  [property: string]: any;
-};
-type PurpleLabel$6 = {
-  bg_color: string;
-  bg_style: number;
-  border_color: string;
-  img_label_uri_hans: string;
-  img_label_uri_hans_static: string;
-  img_label_uri_hant: string;
-  img_label_uri_hant_static: string;
-  label_theme: string;
-  path: string;
-  text: string;
-  text_color: string;
-  use_img_label: boolean;
-  [property: string]: any;
-};
-type PurpleModuleDynamic$5 = {
-  additional: null;
-  desc: Desc$4;
-  major: null;
-  topic: Topic$3;
-  [property: string]: any;
-};
-type Desc$4 = {
-  rich_text_nodes: RichTextNode$2[];
-  text: string;
-  [property: string]: any;
-};
-type RichTextNode$2 = {
-  emoji?: Emoji$5;
-  orig_text: string;
-  rid?: string;
-  text: string;
-  type: string;
-  [property: string]: any;
-};
-type Emoji$5 = {
-  icon_url: string;
-  size: number;
-  text: string;
-  type: number;
-  [property: string]: any;
-};
-type Topic$3 = {
-  id: number;
-  jump_url: string;
-  name: string;
-  [property: string]: any;
-};
-type ModuleMore$7 = {
-  three_point_items: ThreePointItem$7[];
-  [property: string]: any;
-};
-type ThreePointItem$7 = {
-  label: string;
-  modal?: Modal$3;
-  params: Params$3;
-  type: string;
-  [property: string]: any;
-};
-type Modal$3 = {
-  cancel: string;
-  confirm: string;
-  content: string;
-  title: string;
-  [property: string]: any;
-};
-type Params$3 = {
-  dyn_id_str: string;
-  dyn_type: number;
-  dynamic_id?: string;
-  rid_str: string;
-  status?: number;
-  type?: number;
-  [property: string]: any;
-};
-type ModuleStat$7 = {
-  comment: Comment$9;
-  forward: Forward$7;
-  like: Like$8;
-  [property: string]: any;
-};
-type Comment$9 = {
-  count: number;
-  forbidden: boolean;
-  [property: string]: any;
-};
-type Forward$7 = {
-  count: number;
-  forbidden: boolean;
-  [property: string]: any;
-};
-type Like$8 = {
-  count: number;
-  forbidden: boolean;
-  status: boolean;
-  [property: string]: any;
-};
-type Orig$5 = {
-  basic: OrigBasic$5;
-  id_str: string;
-  modules: OrigModules$5;
-  type: string;
-  visible: boolean;
-  [property: string]: any;
-};
-type OrigBasic$5 = {
-  comment_id_str: string;
-  comment_type: number;
-  like_icon: FluffyLikeIcon$5;
-  rid_str: string;
-  [property: string]: any;
-};
-type FluffyLikeIcon$5 = {
-  action_url: string;
-  end_url: string;
-  id: number;
-  start_url: string;
-  [property: string]: any;
-};
-type OrigModules$5 = {
-  module_author: FluffyModuleAuthor$5;
-  module_dynamic: FluffyModuleDynamic$5;
-  [property: string]: any;
-};
-type FluffyModuleAuthor$5 = {
-  avatar: FluffyAvatar$5;
-  decoration_card: DecorationCard$6;
-  face: string;
-  face_nft: boolean;
-  following: null;
-  jump_url: string;
-  label: string;
-  mid: number;
-  name: string;
-  official_verify: FluffyOfficialVerify$6;
-  pendant: FluffyPendant$6;
-  pub_action: string;
-  pub_time: string;
-  pub_ts: number;
-  type: string;
-  vip: FluffyVip$6;
-  [property: string]: any;
-};
-type FluffyAvatar$5 = {
-  container_size: FluffyContainerSize$6;
-  fallback_layers: FluffyFallbackLayers$6;
-  mid: string;
-  [property: string]: any;
-};
-type FluffyContainerSize$6 = {
-  height: number;
-  width: number;
-  [property: string]: any;
-};
-type FluffyFallbackLayers$6 = {
-  is_critical_group: boolean;
-  layers: FluffyLayer$6[];
-  [property: string]: any;
-};
-type FluffyLayer$6 = {
-  general_spec: FluffyGeneralSpec$6;
-  layer_config: FluffyLayerConfig$6;
-  resource: FluffyResource$6;
-  visible: boolean;
-  [property: string]: any;
-};
-type FluffyGeneralSpec$6 = {
-  pos_spec: FluffyPosSpec$6;
-  render_spec: FluffyRenderSpec$6;
-  size_spec: FluffySizeSpec$6;
-  [property: string]: any;
-};
-type FluffyPosSpec$6 = {
-  axis_x: number;
-  axis_y: number;
-  coordinate_pos: number;
-  [property: string]: any;
-};
-type FluffyRenderSpec$6 = {
-  opacity: number;
-  [property: string]: any;
-};
-type FluffySizeSpec$6 = {
-  height: number;
-  width: number;
-  [property: string]: any;
-};
-type FluffyLayerConfig$6 = {
-  is_critical?: boolean;
-  tags: FluffyTags$6;
-  [property: string]: any;
-};
-type FluffyTags$6 = {
-  AVATAR_LAYER?: {
-    [key: string]: any;
-  };
-  GENERAL_CFG: FluffyGENERALCFG$6;
-  ICON_LAYER: {
-    [key: string]: any;
-  };
-  PENDENT_LAYER?: {
-    [key: string]: any;
-  };
-  [property: string]: any;
-};
-type FluffyGENERALCFG$6 = {
-  config_type: number;
-  general_config: FluffyGeneralConfig$6;
-  [property: string]: any;
-};
-type FluffyGeneralConfig$6 = {
-  web_css_style: FluffyWebcssStyle$6;
-  [property: string]: any;
-};
-type FluffyWebcssStyle$6 = {
-  'background-color': string;
-  border: string;
-  borderRadius: string;
-  boxSizing: string;
-  [property: string]: any;
-};
-type FluffyResource$6 = {
-  res_image: FluffyResImage$6;
-  res_type: number;
-  [property: string]: any;
-};
-type FluffyResImage$6 = {
-  image_src: FluffyImageSrc$6;
-  [property: string]: any;
-};
-type FluffyImageSrc$6 = {
-  local: number;
-  placeholder?: number;
-  remote?: FluffyRemote$6;
-  src_type: number;
-  [property: string]: any;
-};
-type FluffyRemote$6 = {
-  bfs_style: string;
-  url: string;
-  [property: string]: any;
-};
-type DecorationCard$6 = {
-  big_card_url: string;
-  card_type: number;
-  card_type_name: string;
-  card_url: string;
-  fan: Fan$5;
-  id: number;
-  image_enhance: string;
-  item_id: number;
-  jump_url: string;
-  name: string;
-  [property: string]: any;
-};
-type Fan$5 = {
-  color: string;
-  color_format: ColorFormat$5;
-  is_fan: number;
-  name: string;
-  num_desc: string;
-  number: number;
-  [property: string]: any;
-};
-type ColorFormat$5 = {
-  colors: string[];
-  end_point: string;
-  gradients: number[];
-  start_point: string;
-  [property: string]: any;
-};
-type FluffyOfficialVerify$6 = {
-  desc: string;
-  type: number;
-  [property: string]: any;
-};
-type FluffyPendant$6 = {
-  expire: number;
-  image: string;
-  image_enhance: string;
-  image_enhance_frame: string;
-  n_pid: number;
-  name: string;
-  pid: number;
-  [property: string]: any;
-};
-type FluffyVip$6 = {
-  avatar_subscript: number;
-  avatar_subscript_url: string;
-  due_date: number;
-  label: FluffyLabel$6;
-  nickname_color: string;
-  status: number;
-  theme_type: number;
-  type: number;
-  [property: string]: any;
-};
-type FluffyLabel$6 = {
-  bg_color: string;
-  bg_style: number;
-  border_color: string;
-  img_label_uri_hans: string;
-  img_label_uri_hans_static: string;
-  img_label_uri_hant: string;
-  img_label_uri_hant_static: string;
-  label_theme: string;
-  path: string;
-  text: string;
-  text_color: string;
-  use_img_label: boolean;
-  [property: string]: any;
-};
-type FluffyModuleDynamic$5 = {
-  additional: null;
-  desc: null;
-  major: Major$7;
-  topic: null;
-  [property: string]: any;
-};
-type Major$7 = {
-  archive: Archive$2;
-  type: string;
-  [property: string]: any;
-};
-type Archive$2 = {
-  aid: string;
-  badge: Badge$2;
-  bvid: string;
-  cover: string;
-  desc: string;
-  disable_preview: number;
-  duration_text: string;
-  jump_url: string;
-  stat: Stat$2;
-  title: string;
-  type: number;
-  [property: string]: any;
-};
-type Badge$2 = {
-  bg_color: string;
-  color: string;
-  icon_url: null;
-  text: string;
-  [property: string]: any;
-};
-type Stat$2 = {
-  danmaku: string;
-  play: string;
-  [property: string]: any;
-};
-//#endregion
-//#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_FORWARD/Forward/DYNAMIC_TYPE_AV/DYNAMIC_TYPE_AV_V1.d.ts
-type DynamicTypeAV_V1 = {
-  code: number;
-  data: DataData$18;
-  message: string;
-  ttl: number;
-  [property: string]: any;
-};
-type DataData$18 = {
-  item: Item$12;
-  [property: string]: any;
-};
-type Item$12 = {
-  basic: ItemBasic$5;
-  id_str: string;
-  modules: ItemModules$5;
-  orig: Orig$4;
-  type: DynamicType.AV;
-  visible: boolean;
-  [property: string]: any;
-};
-type ItemBasic$5 = {
-  comment_id_str: string;
-  comment_type: number;
-  like_icon: PurpleLikeIcon$4;
-  rid_str: string;
-  [property: string]: any;
-};
-type PurpleLikeIcon$4 = {
-  action_url: string;
-  end_url: string;
-  id: number;
-  start_url: string;
-  [property: string]: any;
-};
-type ItemModules$5 = {
-  module_author: PurpleModuleAuthor$4;
-  module_dynamic: PurpleModuleDynamic$4;
-  module_more: ModuleMore$6;
-  module_stat: ModuleStat$6;
-  [property: string]: any;
-};
-type PurpleModuleAuthor$4 = {
-  avatar: PurpleAvatar$4;
-  decoration_card: DecorationCard$5;
-  face: string;
-  face_nft: boolean;
-  following: null;
-  jump_url: string;
-  label: string;
-  mid: number;
-  name: string;
-  official_verify: PurpleOfficialVerify$5;
-  pendant: PurplePendant$5;
-  pub_action: string;
-  pub_location_text: string;
-  pub_time: string;
-  pub_ts: number;
-  type: string;
-  vip: PurpleVip$5;
-  [property: string]: any;
-};
-type PurpleAvatar$4 = {
-  container_size: PurpleContainerSize$5;
-  fallback_layers: PurpleFallbackLayers$5;
-  mid: string;
-  [property: string]: any;
-};
-type PurpleContainerSize$5 = {
-  height: number;
-  width: number;
-  [property: string]: any;
-};
-type PurpleFallbackLayers$5 = {
-  is_critical_group: boolean;
-  layers: PurpleLayer$5[];
-  [property: string]: any;
-};
-type PurpleLayer$5 = {
-  general_spec: PurpleGeneralSpec$5;
-  layer_config: PurpleLayerConfig$5;
-  resource: PurpleResource$5;
-  visible: boolean;
-  [property: string]: any;
-};
-type PurpleGeneralSpec$5 = {
-  pos_spec: PurplePosSpec$5;
-  render_spec: PurpleRenderSpec$5;
-  size_spec: PurpleSizeSpec$5;
-  [property: string]: any;
-};
-type PurplePosSpec$5 = {
-  axis_x: number;
-  axis_y: number;
-  coordinate_pos: number;
-  [property: string]: any;
-};
-type PurpleRenderSpec$5 = {
-  opacity: number;
-  [property: string]: any;
-};
-type PurpleSizeSpec$5 = {
-  height: number;
-  width: number;
-  [property: string]: any;
-};
-type PurpleLayerConfig$5 = {
-  is_critical?: boolean;
-  tags: PurpleTags$5;
-  [property: string]: any;
-};
-type PurpleTags$5 = {
-  AVATAR_LAYER?: {
-    [key: string]: any;
-  };
-  GENERAL_CFG: PurpleGENERALCFG$5;
-  ICON_LAYER: {
-    [key: string]: any;
-  };
-  [property: string]: any;
-};
-type PurpleGENERALCFG$5 = {
-  config_type: number;
-  general_config: PurpleGeneralConfig$5;
-  [property: string]: any;
-};
-type PurpleGeneralConfig$5 = {
-  web_css_style: PurpleWebcssStyle$5;
-  [property: string]: any;
-};
-type PurpleWebcssStyle$5 = {
-  'background-color': string;
-  border: string;
-  borderRadius: string;
-  boxSizing: string;
-  [property: string]: any;
-};
-type PurpleResource$5 = {
-  res_image: PurpleResImage$5;
-  res_type: number;
-  [property: string]: any;
-};
-type PurpleResImage$5 = {
-  image_src: PurpleImageSrc$5;
-  [property: string]: any;
-};
-type PurpleImageSrc$5 = {
-  local: number;
-  placeholder?: number;
-  remote?: PurpleRemote$5;
-  src_type: number;
-  [property: string]: any;
-};
-type PurpleRemote$5 = {
-  bfs_style: string;
-  url: string;
-  [property: string]: any;
-};
-type DecorationCard$5 = {
-  big_card_url: string;
-  card_type: number;
-  card_type_name: string;
-  card_url: string;
-  fan: {
-    [key: string]: any;
-  };
-  id: number;
-  image_enhance: string;
-  item_id: number;
-  jump_url: string;
-  name: string;
-  [property: string]: any;
-};
-type PurpleOfficialVerify$5 = {
-  desc: string;
-  type: number;
-  [property: string]: any;
-};
-type PurplePendant$5 = {
-  expire: number;
-  image: string;
-  image_enhance: string;
-  image_enhance_frame: string;
-  n_pid: number;
-  name: string;
-  pid: number;
-  [property: string]: any;
-};
-type PurpleVip$5 = {
-  avatar_subscript: number;
-  avatar_subscript_url: string;
-  due_date: number;
-  label: PurpleLabel$5;
-  nickname_color: string;
-  status: number;
-  theme_type: number;
-  type: number;
-  [property: string]: any;
-};
-type PurpleLabel$5 = {
-  bg_color: string;
-  bg_style: number;
-  border_color: string;
-  img_label_uri_hans: string;
-  img_label_uri_hans_static: string;
-  img_label_uri_hant: string;
-  img_label_uri_hant_static: string;
-  label_theme: string;
-  path: string;
-  text: string;
-  text_color: string;
-  use_img_label: boolean;
-  [property: string]: any;
-};
-type PurpleModuleDynamic$4 = {
-  additional: null;
-  desc: PurpleDesc;
-  major: null;
-  topic: null;
-  [property: string]: any;
-};
-type PurpleDesc = {
-  rich_text_nodes: PurpleRichTextNode[];
-  text: string;
-  [property: string]: any;
-};
-type PurpleRichTextNode = {
-  emoji?: Emoji$4;
-  jump_url: string;
-  orig_text: string;
-  style: {
-    [key: string]: any;
-  };
-  text: string;
-  type: string;
-  [property: string]: any;
-};
-type Emoji$4 = {
-  icon_url: string;
-  id: number;
-  package_id: number;
-  size: number;
-  text: string;
-  type: number;
   [property: string]: any;
 };
 type ModuleMore$6 = {
@@ -5587,238 +29189,12 @@ type Like$7 = {
   status: boolean;
   [property: string]: any;
 };
-type Orig$4 = {
-  basic: OrigBasic$4;
-  id_str: string;
-  modules: OrigModules$4;
-  type: string;
-  visible: boolean;
-  [property: string]: any;
-};
-type OrigBasic$4 = {
-  comment_id_str: string;
-  comment_type: number;
-  like_icon: FluffyLikeIcon$4;
-  rid_str: string;
-  [property: string]: any;
-};
-type FluffyLikeIcon$4 = {
-  action_url: string;
-  end_url: string;
-  id: number;
-  start_url: string;
-  [property: string]: any;
-};
-type OrigModules$4 = {
-  module_author: FluffyModuleAuthor$4;
-  module_dynamic: FluffyModuleDynamic$4;
-  [property: string]: any;
-};
-type FluffyModuleAuthor$4 = {
-  avatar: FluffyAvatar$4;
-  face: string;
-  face_nft: boolean;
-  following: null;
-  jump_url: string;
-  label: string;
-  mid: number;
-  name: string;
-  official_verify: FluffyOfficialVerify$5;
-  pendant: FluffyPendant$5;
-  pub_action: string;
-  pub_time: string;
-  pub_ts: number;
-  type: string;
-  vip: FluffyVip$5;
-  [property: string]: any;
-};
-type FluffyAvatar$4 = {
-  container_size: FluffyContainerSize$5;
-  fallback_layers: FluffyFallbackLayers$5;
-  mid: string;
-  [property: string]: any;
-};
-type FluffyContainerSize$5 = {
-  height: number;
-  width: number;
-  [property: string]: any;
-};
-type FluffyFallbackLayers$5 = {
-  is_critical_group: boolean;
-  layers: FluffyLayer$5[];
-  [property: string]: any;
-};
-type FluffyLayer$5 = {
-  general_spec?: FluffyGeneralSpec$5;
-  layer_config?: FluffyLayerConfig$5;
-  resource?: FluffyResource$5;
-  visible?: boolean;
-  [property: string]: any;
-};
-type FluffyGeneralSpec$5 = {
-  pos_spec: FluffyPosSpec$5;
-  render_spec: FluffyRenderSpec$5;
-  size_spec: FluffySizeSpec$5;
-  [property: string]: any;
-};
-type FluffyPosSpec$5 = {
-  axis_x: number;
-  axis_y: number;
-  coordinate_pos: number;
-  [property: string]: any;
-};
-type FluffyRenderSpec$5 = {
-  opacity: number;
-  [property: string]: any;
-};
-type FluffySizeSpec$5 = {
-  height: number;
-  width: number;
-  [property: string]: any;
-};
-type FluffyLayerConfig$5 = {
-  is_critical: boolean;
-  tags: FluffyTags$5;
-  [property: string]: any;
-};
-type FluffyTags$5 = {
-  AVATAR_LAYER: {
-    [key: string]: any;
-  };
-  GENERAL_CFG: FluffyGENERALCFG$5;
-  [property: string]: any;
-};
-type FluffyGENERALCFG$5 = {
-  config_type: number;
-  general_config: FluffyGeneralConfig$5;
-  [property: string]: any;
-};
-type FluffyGeneralConfig$5 = {
-  web_css_style: FluffyWebcssStyle$5;
-  [property: string]: any;
-};
-type FluffyWebcssStyle$5 = {
-  borderRadius: string;
-  [property: string]: any;
-};
-type FluffyResource$5 = {
-  res_image: FluffyResImage$5;
-  res_type: number;
-  [property: string]: any;
-};
-type FluffyResImage$5 = {
-  image_src: FluffyImageSrc$5;
-  [property: string]: any;
-};
-type FluffyImageSrc$5 = {
-  placeholder: number;
-  remote: FluffyRemote$5;
-  src_type: number;
-  [property: string]: any;
-};
-type FluffyRemote$5 = {
-  bfs_style: string;
-  url: string;
-  [property: string]: any;
-};
-type FluffyOfficialVerify$5 = {
-  desc: string;
-  type: number;
-  [property: string]: any;
-};
-type FluffyPendant$5 = {
-  expire: number;
-  image: string;
-  image_enhance: string;
-  image_enhance_frame: string;
-  n_pid: number;
-  name: string;
-  pid: number;
-  [property: string]: any;
-};
-type FluffyVip$5 = {
-  avatar_subscript: number;
-  avatar_subscript_url: string;
-  due_date: number;
-  label: FluffyLabel$5;
-  nickname_color: string;
-  status: number;
-  theme_type: number;
-  type: number;
-  [property: string]: any;
-};
-type FluffyLabel$5 = {
-  bg_color: string;
-  bg_style: number;
-  border_color: string;
-  img_label_uri_hans: string;
-  img_label_uri_hans_static: string;
-  img_label_uri_hant: string;
-  img_label_uri_hant_static: string;
-  label_theme: string;
-  path: string;
-  text: string;
-  text_color: string;
-  use_img_label: boolean;
-  [property: string]: any;
-};
-type FluffyModuleDynamic$4 = {
-  additional: null;
-  desc: FluffyDesc;
-  major: Major$6;
-  topic: null;
-  [property: string]: any;
-};
-type FluffyDesc = {
-  rich_text_nodes: FluffyRichTextNode[];
-  text: string;
-  [property: string]: any;
-};
-type FluffyRichTextNode = {
-  jump_url: string;
-  orig_text: string;
-  style: null;
-  text: string;
-  type: string;
-  [property: string]: any;
-};
-type Major$6 = {
-  archive: Archive$1;
-  type: string;
-  [property: string]: any;
-};
-type Archive$1 = {
-  aid: string;
-  badge: Badge$1;
-  bvid: string;
-  cover: string;
-  desc: string;
-  disable_preview: number;
-  duration_text: string;
-  jump_url: string;
-  stat: Stat$1;
-  title: string;
-  type: number;
-  [property: string]: any;
-};
-type Badge$1 = {
-  bg_color: string;
-  color: string;
-  icon_url: null;
-  text: string;
-  [property: string]: any;
-};
-type Stat$1 = {
-  danmaku: string;
-  play: string;
-  [property: string]: any;
-};
 //#endregion
-//#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_FORWARD/Forward/DYNAMIC_TYPE_AV/index.d.ts
-type DynamicTypeAV$1 = DynamicTypeAV_V0 | DynamicTypeAV_V1;
+//#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_DRAW/index.d.ts
+type DynamicTypeDraw$1 = DynamicTypeDraw_V0$1;
 //#endregion
-//#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_FORWARD/Forward/DYNAMIC_TYPE_DRAW/DYNAMIC_TYPE_DRAW_V0.d.ts
-type DynamicTypeDraw_V0 = {
+//#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_FORWARD/Forward/DYNAMIC_TYPE_AV/DYNAMIC_TYPE_AV_V0.d.ts
+type DynamicTypeAV_V0 = {
   code: number;
   data: DataData$17;
   message: string;
@@ -5834,14 +29210,15 @@ type Item$11 = {
   id_str: string;
   modules: ItemModules$4;
   orig: Orig$3;
-  type: DynamicType.DRAW;
+  type: DynamicType.AV;
   visible: boolean;
   [property: string]: any;
 };
 type ItemBasic$4 = {
   comment_id_str: string;
   comment_type: number;
-  editable: boolean;
+  /** 合并说明见文件头：旧 `_V1` 那次抓包没有这个键 */
+  editable?: boolean;
   like_icon: PurpleLikeIcon$3;
   rid_str: string;
   [property: string]: any;
@@ -5862,6 +29239,8 @@ type ItemModules$4 = {
 };
 type PurpleModuleAuthor$3 = {
   avatar: PurpleAvatar$3;
+  /** 合并说明见文件头：只有旧 `_V1` 那次抓到装扮卡 */
+  decoration_card?: PurpleDecorationCard;
   face: string;
   face_nft: boolean;
   following: null;
@@ -5975,6 +29354,25 @@ type PurpleRemote$4 = {
   url: string;
   [property: string]: any;
 };
+/**
+ * 装扮卡（转发者那侧）。只有样本 B 那次抓到它，而且那次的 `fan` 是**空对象** ——
+ * 所以这里的 `fan` 只能是「任意键的对象」，`orig` 那侧的 `DecorationCard` 才有结构。
+ */
+type PurpleDecorationCard = {
+  big_card_url: string;
+  card_type: number;
+  card_type_name: string;
+  card_url: string;
+  fan: {
+    [key: string]: any;
+  };
+  id: number;
+  image_enhance: string;
+  item_id: number;
+  jump_url: string;
+  name: string;
+  [property: string]: any;
+};
 type PurpleOfficialVerify$4 = {
   desc: string;
   type: number;
@@ -6020,30 +29418,40 @@ type PurpleModuleDynamic$3 = {
   additional: null;
   desc: Desc$3;
   major: null;
-  topic: Topic$2;
+  /** 合并说明见文件头：旧 `_V0` 抓到话题对象、旧 `_V1` 抓到 `null` */
+  topic: Topic$3 | null;
   [property: string]: any;
 };
 type Desc$3 = {
-  rich_text_nodes: DescRichTextNode$2[];
+  rich_text_nodes: RichTextNode$2[];
   text: string;
   [property: string]: any;
 };
-type DescRichTextNode$2 = {
-  emoji?: Emoji$3;
+/** `rid` / `jump_url` / `style` 各自只在一次抓包里出现，合并说明见文件头 */
+type RichTextNode$2 = {
+  emoji?: Emoji$4;
+  jump_url?: string;
   orig_text: string;
   rid?: string;
+  style?: {
+    [key: string]: any;
+  };
   text: string;
   type: string;
   [property: string]: any;
 };
-type Emoji$3 = {
+type Emoji$4 = {
   icon_url: string;
+  /** 只有旧 `_V1` 那次抓包有 */
+  id?: number;
+  /** 只有旧 `_V1` 那次抓包有 */
+  package_id?: number;
   size: number;
   text: string;
   type: number;
   [property: string]: any;
 };
-type Topic$2 = {
+type Topic$3 = {
   id: number;
   jump_url: string;
   name: string;
@@ -6053,21 +29461,22 @@ type ModuleMore$5 = {
   three_point_items: ThreePointItem$5[];
   [property: string]: any;
 };
+/** 旧 `_V1` 那次抓到的元素只有 `label` / `type`，所以四个键都可选（合并说明见文件头） */
 type ThreePointItem$5 = {
-  label: string;
-  modal?: Modal$2;
-  params: Params$2;
-  type: string;
+  label?: string;
+  modal?: Modal$3;
+  params?: Params$3;
+  type?: string;
   [property: string]: any;
 };
-type Modal$2 = {
+type Modal$3 = {
   cancel: string;
   confirm: string;
   content: string;
   title: string;
   [property: string]: any;
 };
-type Params$2 = {
+type Params$3 = {
   dyn_id_str: string;
   dyn_type: number;
   dynamic_id?: string;
@@ -6109,7 +29518,6 @@ type Orig$3 = {
 type OrigBasic$3 = {
   comment_id_str: string;
   comment_type: number;
-  jump_url: string;
   like_icon: FluffyLikeIcon$3;
   rid_str: string;
   [property: string]: any;
@@ -6128,7 +29536,8 @@ type OrigModules$3 = {
 };
 type FluffyModuleAuthor$3 = {
   avatar: FluffyAvatar$3;
-  decoration_card: DecorationCard$4;
+  /** 合并说明见文件头：只有旧 `_V0` 那次抓到装扮卡 */
+  decoration_card?: DecorationCard$4;
   face: string;
   face_nft: boolean;
   following: null;
@@ -6161,11 +29570,12 @@ type FluffyFallbackLayers$4 = {
   layers: FluffyLayer$4[];
   [property: string]: any;
 };
+/** 数组元素形状不一致（旧 `_V1` 那次抓到的两个 layer 各缺一半键），所以四个键都可选 */
 type FluffyLayer$4 = {
-  general_spec: FluffyGeneralSpec$4;
-  layer_config: FluffyLayerConfig$4;
-  resource: FluffyResource$4;
-  visible: boolean;
+  general_spec?: FluffyGeneralSpec$4;
+  layer_config?: FluffyLayerConfig$4;
+  resource?: FluffyResource$4;
+  visible?: boolean;
   [property: string]: any;
 };
 type FluffyGeneralSpec$4 = {
@@ -6199,7 +29609,8 @@ type FluffyTags$4 = {
     [key: string]: any;
   };
   GENERAL_CFG: FluffyGENERALCFG$4;
-  ICON_LAYER: {
+  /** 只有旧 `_V0` 那次抓包有（合并说明见文件头） */
+  ICON_LAYER?: {
     [key: string]: any;
   };
   PENDENT_LAYER?: {
@@ -6216,11 +29627,12 @@ type FluffyGeneralConfig$4 = {
   web_css_style: FluffyWebcssStyle$4;
   [property: string]: any;
 };
+/** 旧 `_V1` 那次只抓到 `borderRadius`，其余三个键因此可选（合并说明见文件头） */
 type FluffyWebcssStyle$4 = {
-  'background-color': string;
-  border: string;
+  'background-color'?: string;
+  border?: string;
   borderRadius: string;
-  boxSizing: string;
+  boxSizing?: string;
   [property: string]: any;
 };
 type FluffyResource$4 = {
@@ -6233,7 +29645,8 @@ type FluffyResImage$4 = {
   [property: string]: any;
 };
 type FluffyImageSrc$4 = {
-  local: number;
+  /** 只有旧 `_V0` 那次抓包有（合并说明见文件头） */
+  local?: number;
   placeholder?: number;
   remote?: FluffyRemote$4;
   src_type: number;
@@ -6244,6 +29657,13 @@ type FluffyRemote$4 = {
   url: string;
   [property: string]: any;
 };
+/**
+ * 装扮卡（`orig` 那侧）。只有样本 A 那次抓到它。
+ *
+ * 与转发者那侧的 `PurpleDecorationCard` 分成两个类型：两次抓包各只在一侧抓到卡，
+ * 而且形状不同（这边的 `fan` 有结构、那边抓到的是空对象）。合成一个就得把 `fan` 的键
+ * 全拉成可选，那会凭空削弱这一侧的类型（下游有按必需键读 `fan.color` 的代码）。
+ */
 type DecorationCard$4 = {
   big_card_url: string;
   card_type: number;
@@ -6316,47 +29736,63 @@ type FluffyLabel$4 = {
 };
 type FluffyModuleDynamic$3 = {
   additional: null;
-  desc: null;
+  /** 合并说明见文件头：旧 `_V0` 抓到 `null`、旧 `_V1` 抓到对象 */
+  desc: FluffyDesc | null;
   major: Major$5;
   topic: null;
   [property: string]: any;
 };
-type Major$5 = {
-  opus: Opus$3;
-  type: string;
+/** 被转发原动态的正文。只有旧 `_V1` 那次抓到（旧 `_V0` 那次 `desc` 是 `null`） */
+type FluffyDesc = {
+  rich_text_nodes: FluffyRichTextNode[];
+  text: string;
   [property: string]: any;
 };
-type Opus$3 = {
-  fold_action: string[];
+type FluffyRichTextNode = {
   jump_url: string;
-  pics: Pic$2[];
-  summary: Summary$4;
-  title: null;
-  [property: string]: any;
-};
-type Pic$2 = {
-  height?: number;
-  live_url?: null;
-  size?: number;
-  url?: string;
-  width?: number;
-  [property: string]: any;
-};
-type Summary$4 = {
-  rich_text_nodes: SummaryRichTextNode$2[];
-  text: string;
-  [property: string]: any;
-};
-type SummaryRichTextNode$2 = {
-  jump_url?: string;
   orig_text: string;
+  style: null;
   text: string;
   type: string;
+  [property: string]: any;
+};
+type Major$5 = {
+  archive: Archive$1;
+  type: string;
+  [property: string]: any;
+};
+type Archive$1 = {
+  aid: string;
+  badge: Badge$1;
+  bvid: string;
+  cover: string;
+  desc: string;
+  disable_preview: number;
+  duration_text: string;
+  jump_url: string;
+  stat: Stat$1;
+  title: string;
+  type: number;
+  [property: string]: any;
+};
+type Badge$1 = {
+  bg_color: string;
+  color: string;
+  icon_url: null;
+  text: string;
+  [property: string]: any;
+};
+type Stat$1 = {
+  danmaku: string;
+  play: string;
   [property: string]: any;
 };
 //#endregion
-//#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_FORWARD/Forward/DYNAMIC_TYPE_DRAW/DYNAMIC_TYPE_DRAW_V1.d.ts
-type DynamicTypeDraw_V1 = {
+//#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_FORWARD/Forward/DYNAMIC_TYPE_AV/index.d.ts
+type DynamicTypeAV = DynamicTypeAV_V0;
+//#endregion
+//#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_FORWARD/Forward/DYNAMIC_TYPE_DRAW/DYNAMIC_TYPE_DRAW_V0.d.ts
+type DynamicTypeDraw_V0 = {
   code: number;
   data: DataData$16;
   message: string;
@@ -6379,6 +29815,8 @@ type Item$10 = {
 type ItemBasic$3 = {
   comment_id_str: string;
   comment_type: number;
+  /** 合并说明见文件头：旧 `_V1` 那次抓包没有这个键 */
+  editable?: boolean;
   like_icon: PurpleLikeIcon$2;
   rid_str: string;
   [property: string]: any;
@@ -6554,12 +29992,15 @@ type PurpleLabel$3 = {
   [property: string]: any;
 };
 type PurpleModuleDynamic$2 = {
-  additional: Additional$2;
+  /** 合并说明见文件头：旧 `_V0` 抓到 `null`、旧 `_V1` 抓到相关内容卡片 */
+  additional: Additional$2 | null;
   desc: Desc$2;
   major: null;
-  topic: null;
+  /** 合并说明见文件头：旧 `_V0` 抓到话题对象、旧 `_V1` 抓到 `null` */
+  topic: Topic$2 | null;
   [property: string]: any;
 };
+/** 相关内容卡片（种类见 `Dynamic/index.ts` 的 `AdditionalType`）。只有旧 `_V1` 那次抓到 */
 type Additional$2 = {
   common: Common;
   type: string;
@@ -6594,19 +30035,54 @@ type Desc$2 = {
   text: string;
   [property: string]: any;
 };
+/** 旧 `_V1` 那次抓到的元素形状不齐（三个键都可缺），所以全部可选（合并说明见文件头） */
 type DescRichTextNode$1 = {
+  emoji?: Emoji$3;
   orig_text?: string;
+  rid?: string;
   text?: string;
   type?: string;
+  [property: string]: any;
+};
+type Emoji$3 = {
+  icon_url: string;
+  size: number;
+  text: string;
+  type: number;
+  [property: string]: any;
+};
+type Topic$2 = {
+  id: number;
+  jump_url: string;
+  name: string;
   [property: string]: any;
 };
 type ModuleMore$4 = {
   three_point_items: ThreePointItem$4[];
   [property: string]: any;
 };
+/** 旧 `_V1` 那次抓到的元素只有 `label` / `type`，所以四个键都可选（合并说明见文件头） */
 type ThreePointItem$4 = {
   label?: string;
+  modal?: Modal$2;
+  params?: Params$2;
   type?: string;
+  [property: string]: any;
+};
+type Modal$2 = {
+  cancel: string;
+  confirm: string;
+  content: string;
+  title: string;
+  [property: string]: any;
+};
+type Params$2 = {
+  dyn_id_str: string;
+  dyn_type: number;
+  dynamic_id?: string;
+  rid_str: string;
+  status?: number;
+  type?: number;
   [property: string]: any;
 };
 type ModuleStat$4 = {
@@ -6868,6 +30344,7 @@ type Opus$2 = {
   [property: string]: any;
 };
 type Pic$1 = {
+  /** 只有旧 `_V1` 那次抓包有（合并说明见文件头） */
   aigc?: null;
   height?: number;
   live_url?: null;
@@ -6881,11 +30358,12 @@ type Summary$3 = {
   text: string;
   [property: string]: any;
 };
+/** `rid` / `style` 只有旧 `_V1` 那次抓到，所以可选（合并说明见文件头） */
 type SummaryRichTextNode$1 = {
-  jump_url: string;
+  jump_url?: string;
   orig_text: string;
-  rid: string;
-  style: {
+  rid?: string;
+  style?: {
     [key: string]: any;
   };
   text: string;
@@ -6894,7 +30372,7 @@ type SummaryRichTextNode$1 = {
 };
 //#endregion
 //#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_FORWARD/Forward/DYNAMIC_TYPE_DRAW/index.d.ts
-type DynamicTypeDraw$1 = DynamicTypeDraw_V0 | DynamicTypeDraw_V1;
+type DynamicTypeDraw = DynamicTypeDraw_V0;
 //#endregion
 //#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_FORWARD/Forward/DYNAMIC_TYPE_LIVE_RCMD/DYNAMIC_TYPE_LIVE_RCMD_V0.d.ts
 type DynamicTypeLiveRcmd_V0$1 = {
@@ -7974,13 +31452,13 @@ type FixOrig<O, LiteralType extends string> = O & {
   type: LiteralType;
 };
 type OriginalDynamicItemMap = {
-  [DynamicType.AV]: DynamicTypeAV$1['data']['item'];
-  [DynamicType.DRAW]: DynamicTypeDraw$1['data']['item'];
+  [DynamicType.AV]: DynamicTypeAV['data']['item'];
+  [DynamicType.DRAW]: DynamicTypeDraw['data']['item'];
   [DynamicType.WORD]: DynamicTypeWord$1['data']['item'];
   [DynamicType.LIVE_RCMD]: DynamicTypeLiveRcmd$1['data']['item'];
 };
-type ItemBasic = DynamicTypeWord$1['data']['item']['basic'] | DynamicTypeLiveRcmd$1['data']['item']['basic'] | DynamicTypeDraw$1['data']['item']['basic'] | DynamicTypeAV$1['data']['item']['basic'];
-type ItemModules = DynamicTypeWord$1['data']['item']['modules'] | DynamicTypeLiveRcmd$1['data']['item']['modules'] | DynamicTypeDraw$1['data']['item']['modules'] | DynamicTypeAV$1['data']['item']['modules'];
+type ItemBasic = DynamicTypeWord$1['data']['item']['basic'] | DynamicTypeLiveRcmd$1['data']['item']['basic'] | DynamicTypeDraw['data']['item']['basic'] | DynamicTypeAV['data']['item']['basic'];
+type ItemModules = DynamicTypeWord$1['data']['item']['modules'] | DynamicTypeLiveRcmd$1['data']['item']['modules'] | DynamicTypeDraw['data']['item']['modules'] | DynamicTypeAV['data']['item']['modules'];
 type DataData$13<T extends keyof OriginalDynamicItemMap> = {
   item: {
     basic: ItemBasic;
@@ -8681,18 +32159,10 @@ declare enum AdditionalType {
 }
 //#endregion
 //#region src/types/ReturnDataType/Bilibili/DynamicInfo/index.d.ts
-declare enum DynamicType {
-  AV = "DYNAMIC_TYPE_AV",
-  DRAW = "DYNAMIC_TYPE_DRAW",
-  WORD = "DYNAMIC_TYPE_WORD",
-  LIVE_RCMD = "DYNAMIC_TYPE_LIVE_RCMD",
-  FORWARD = "DYNAMIC_TYPE_FORWARD",
-  ARTICLE = "DYNAMIC_TYPE_ARTICLE"
-}
-type BiliDynamicInfoUnion = DynamicTypeAV | DynamicTypeDraw | DynamicTypeWord | DynamicTypeLiveRcmd | DynamicTypeForwardUnion | DynamicTypeArticle;
+type BiliDynamicInfoUnion = DynamicTypeAV$1 | DynamicTypeDraw$1 | DynamicTypeWord | DynamicTypeLiveRcmd | DynamicTypeForwardUnion | DynamicTypeArticle;
 type DynamicTypeItemMap$1 = {
-  [DynamicType.AV]: DynamicTypeAV['data']['item'];
-  [DynamicType.DRAW]: DynamicTypeDraw['data']['item'];
+  [DynamicType.AV]: DynamicTypeAV$1['data']['item'];
+  [DynamicType.DRAW]: DynamicTypeDraw$1['data']['item'];
   [DynamicType.WORD]: DynamicTypeWord['data']['item'];
   [DynamicType.LIVE_RCMD]: DynamicTypeLiveRcmd['data']['item'];
   [DynamicType.FORWARD]: DynamicTypeForwardUnion['data']['item'];
@@ -8712,12 +32182,12 @@ type BiliDynamicInfo<T extends DynamicType> = {
 //#region src/types/ReturnDataType/Bilibili/LiveRoomDef/LiveRoomDef_V0.d.ts
 type BiliLiveRoomDef_V0 = {
   code: number;
-  data: Data$11;
+  data: Data$12;
   message: string;
   msg: string;
   [property: string]: any;
 };
-type Data$11 = {
+type Data$12 = {
   encrypted: boolean;
   hidden_till: number;
   is_hidden: boolean;
@@ -8743,12 +32213,12 @@ type BiliLiveRoomDef = BiliLiveRoomDef_V0;
 //#region src/types/ReturnDataType/Bilibili/LiveRoomDetail/LiveRoomDetail_V0.d.ts
 type BiliLiveRoomDetail_V0 = {
   code: number;
-  data: Data$10;
+  data: Data$11;
   message: string;
   msg: string;
   [property: string]: any;
 };
-type Data$10 = {
+type Data$11 = {
   allow_change_area_time: number;
   allow_upload_cover_time: number;
   area_id: number;
@@ -8859,7 +32329,31 @@ type FluffyData = {
 //#region src/types/ReturnDataType/Bilibili/Login/CheckQrcode/index.d.ts
 type BiliCheckQrcode = BiliCheckQrcode_V0;
 //#endregion
-//#region src/types/ReturnDataType/Bilibili/Login/NewLoginQrcode/NewLoginQrcode.d.ts
+//#region src/types/ReturnDataType/Bilibili/Login/LoginStatus/LoginStatus_V0.d.ts
+/**
+ * 登录基本信息（`/login_basic_info`）的实测快照。
+ *
+ * 形状与端点声明里的本地类型一致 —— 映射表这一格两边读的是同一份声明。
+ *
+ * 索引签名用 `any` 而不是 `unknown`：本目录的稳定性承诺是「读未声明字段不产生
+ * 编译错误」，`unknown` 只做到「读得到」，往下一步用就得先收窄，等于承诺没兑现。
+ */
+type BiliLoginStatus_V0 = {
+  code?: number;
+  data?: Data$10;
+  message?: string;
+  [property: string]: any;
+};
+type Data$10 = {
+  isLogin?: boolean;
+  vipStatus?: number;
+  [property: string]: any;
+};
+//#endregion
+//#region src/types/ReturnDataType/Bilibili/Login/LoginStatus/index.d.ts
+type BiliLoginStatus = BiliLoginStatus_V0;
+//#endregion
+//#region src/types/ReturnDataType/Bilibili/Login/NewLoginQrcode/NewLoginQrcode_V0.d.ts
 type BiliNewLoginQrcode_V0 = {
   code: number;
   data: Data$9;
@@ -9032,8 +32526,8 @@ type BiliUserDynamic = {
   ttl: number;
   [property: string]: any;
 };
-type AVItem = DynamicTypeAV['data']['item'];
-type DrawItem = DynamicTypeDraw['data']['item'];
+type AVItem = DynamicTypeAV$1['data']['item'];
+type DrawItem = DynamicTypeDraw$1['data']['item'];
 type WordItem = DynamicTypeWord['data']['item'];
 type LiveRcmdItem = DynamicTypeLiveRcmd['data']['item'];
 type ForwardItem = DynamicTypeForwardUnion['data']['item'];
@@ -11470,7 +34964,7 @@ interface BilibiliReturnTypeMap {
   dynamicDetail: BiliDynamicInfoUnion;
   liveRoomInfo: BiliLiveRoomDetail;
   liveRoomInit: BiliLiveRoomDef;
-  loginStatus: any;
+  loginStatus: BiliLoginStatus;
   loginQrcode: BiliNewLoginQrcode;
   qrcodeStatus: BiliCheckQrcode;
   uploaderTotalViews: BiliUserFullView;
@@ -11496,7 +34990,7 @@ type AwemeDetail$3 = {
   activity_video_type: number;
   anchors: null;
   authentication_token: string;
-  author: Author$8;
+  author: Author$7;
   author_mask_tag: number;
   author_user_id: number;
   aweme_acl: Awemeacl$2;
@@ -11644,7 +35138,7 @@ type AwemeDetail$3 = {
   xigua_base_info: XiguaBaseInfo$6;
   [property: string]: any;
 };
-type Author$8 = {
+type Author$7 = {
   avatar_thumb: AuthorAvatarThumb$6;
   awemehts_greet_info: string;
   cf_list: null;
@@ -12989,6 +36483,104 @@ type ReportToggles = {
 //#region src/types/ReturnDataType/Douyin/EmojiProList/index.d.ts
 type DyEmojiProList = DyEmojiProList_V0;
 //#endregion
+//#region src/types/ReturnDataType/Douyin/EmojiResourceMeta/EmojiResourceMeta_V0.d.ts
+/**
+ * 表情资源包元信息（免鉴权）—— 抖音 App 的 `api.amemv.com` 接口。
+ *
+ * `md5` 同时是版本号，抖音 App 自己就按它做增量判断。下载、校验、解包属于业务逻辑，
+ * 这条接口只回答「是哪个包、去哪下」（#188）。
+ *
+ * **字段清单未经 corpus 样本验证**，其余靠索引签名开放。
+ */
+type DyEmojiResourceMeta_V0 = {
+  android_emoji_resource?: EmojiResource;
+  [property: string]: any;
+};
+type EmojiResource = {
+  id?: number | string;
+  /** 同时是版本号 */
+  md5?: string;
+  resource_url?: string;
+  update_time?: number | string;
+  [property: string]: any;
+};
+//#endregion
+//#region src/types/ReturnDataType/Douyin/EmojiResourceMeta/index.d.ts
+type DyEmojiResourceMeta = DyEmojiResourceMeta_V0;
+//#endregion
+//#region src/types/ReturnDataType/Douyin/GuestMusicAwemeList/GuestMusicAwemeList_V0.d.ts
+/**
+ * 使用某条原声的作品列表（免鉴权）—— iesdouyin v2 游客接口的响应。
+ *
+ * 每条的 `music` 字段被抖音裁成空对象，所以这条接口**只能用来拿 `aweme_id`**（#188）。
+ *
+ * **字段清单未经 corpus 样本验证**，其余靠索引签名开放。
+ */
+type DyGuestMusicAwemeList_V0 = {
+  status_code: number;
+  aweme_list?: GuestMusicAweme[];
+  cursor?: number;
+  has_more?: number | boolean;
+  [property: string]: any;
+};
+type GuestMusicAweme = {
+  aweme_id: string;
+  [property: string]: any;
+};
+//#endregion
+//#region src/types/ReturnDataType/Douyin/GuestMusicAwemeList/index.d.ts
+type DyGuestMusicAwemeList = DyGuestMusicAwemeList_V0;
+//#endregion
+//#region src/types/ReturnDataType/Douyin/GuestMusicInfo/GuestMusicInfo_V0.d.ts
+/**
+ * 原声本体（免鉴权）—— iesdouyin v2 游客接口的响应。
+ *
+ * `music_info` 里**没有 `play_url`**：mp3 只能从源作品上取，
+ * `extra.extract_item_id` 就是创建这条原声的那个作品（#188）。
+ *
+ * **字段清单未经 corpus 样本验证**，其余靠索引签名开放。
+ */
+type DyGuestMusicInfo_V0 = {
+  status_code: number;
+  music_info?: GuestMusicInfo;
+  [property: string]: any;
+};
+type GuestMusicInfo = {
+  /**
+   * 原声 id。**不要读 `id`** —— 19 位 id 过 JSON 必丢精度，
+   * 真值在 `mid` / `id_str` 上（下游 `kkkkkk-10086` 踩过）
+   */
+  mid?: string;
+  id_str?: string;
+  title?: string;
+  [property: string]: any;
+};
+//#endregion
+//#region src/types/ReturnDataType/Douyin/GuestMusicInfo/index.d.ts
+type DyGuestMusicInfo = DyGuestMusicInfo_V0;
+//#endregion
+//#region src/types/ReturnDataType/Douyin/GuestUserInfo/GuestUserInfo_V0.d.ts
+/**
+ * 抖音号（`unique_id`）转用户信息 —— iesdouyin v2 游客接口的响应。
+ *
+ * **字段清单未经完整样本验证**：只钉住确实读取到的那几个键（`user_info.sec_uid`），
+ * 其余靠索引签名开放。这条接口免鉴权、容易录到样本，有完整样本后应由生成式类型取代。
+ */
+type DyGuestUserInfo_V0 = {
+  status_code: number;
+  /** 抖音号不存在时这个键缺失，`status_code` 为 5 */
+  user_info?: GuestUserInfo;
+  [property: string]: any;
+};
+type GuestUserInfo = {
+  /** 唯一免签名途径拿到的 sec_uid —— 这是这条接口存在的理由 */
+  sec_uid: string;
+  [property: string]: any;
+};
+//#endregion
+//#region src/types/ReturnDataType/Douyin/GuestUserInfo/index.d.ts
+type DyGuestUserInfo = DyGuestUserInfo_V0;
+//#endregion
 //#region src/types/ReturnDataType/Douyin/ImageAlbumWork/ImageAlbumWork_V0.d.ts
 /** 图集作品 */
 type DyImageAlbumWork_V0 = {
@@ -13001,7 +36593,7 @@ type AwemeDetail$2 = {
   activity_video_type: number;
   anchors: null;
   authentication_token: string;
-  author: Author$7;
+  author: Author$6;
   author_mask_tag: number;
   author_user_id: number;
   aweme_control: AwemeControl$4;
@@ -13135,7 +36727,7 @@ type AwemeDetail$2 = {
   xigua_base_info: XiguaBaseInfo$5;
   [property: string]: any;
 };
-type Author$7 = {
+type Author$6 = {
   account_cert_info: string;
   avatar_thumb: AuthorAvatarThumb$5;
   awemehts_greet_info: string;
@@ -13681,6 +37273,30 @@ type LogPb$10 = {
 //#region src/types/ReturnDataType/Douyin/ImageAlbumWork/index.d.ts
 type DyImageAlbumWork = DyImageAlbumWork_V0;
 //#endregion
+//#region src/types/ReturnDataType/Douyin/LoginQrcode/LoginQrcode_V0.d.ts
+/**
+ * 登录二维码（`/fetch_login_qrcode`）的实测快照。
+ *
+ * 形状是从 `platforms/douyin/endpoints/loginQrcode.ts` 的本地 `LoginQrcodeData`
+ * 原样搬过来的（映射表原先是 `any`）。
+ *
+ * 与 `DyPassportQrcode` 不是一回事，两个都要留：`DyPassportQrcode` 是扫码登录状态机
+ * **归一化之后**的形状（`runtime/session` 用），这份是本端点的**原始响应**。
+ *
+ * 索引签名用 `any` 而不是本地声明里的 `unknown`，理由同 `BiliLoginStatus_V0`。
+ */
+type DyLoginQrcode_V0 = {
+  data?: Data$3;
+  [property: string]: any;
+};
+type Data$3 = {
+  qrcode_index_url?: string;
+  [property: string]: any;
+};
+//#endregion
+//#region src/types/ReturnDataType/Douyin/LoginQrcode/index.d.ts
+type DyLoginQrcode = DyLoginQrcode_V0;
+//#endregion
 //#region src/types/ReturnDataType/Douyin/MusicWork/MusicWork_V0.d.ts
 type DyMusicWork_V0 = {
   extra: Extra$6;
@@ -13914,153 +37530,6 @@ type MediumCoverurl = {
 //#region src/types/ReturnDataType/Douyin/MusicWork/index.d.ts
 type DyMusicWork = DyMusicWork_V0;
 //#endregion
-//#region src/types/ReturnDataType/Douyin/PassportLogin/PassportLogin.d.ts
-/**
- * 抖音 passport 扫码登录的返回类型
- *
- * 与其它返回类型不同，这几个不是服务端原始 JSON 的映射，而是登录状态机归一化之后的结果：
- * passport 的原始响应会把状态散落在 `data.status`、`data.error_code`、`data.account_flow`
- * 三处，且同一种情况有多套表达。协议层把它们收敛成一个可判别联合，调用方只需 `switch`
- * 一次即可覆盖全部分支。
- */
-/** 二次验证的一种可选方式 */
-interface DyPassportVerifyWay {
-  /** 方式标识，如 `mobile_sms_verify` */
-  verifyWay: string;
-  /** 该方式关联的手机号（已脱敏） */
-  mobile?: string;
-}
-/**
- * 二次验证上下文
- *
- * 字段全部来自轮询响应，需原样透传给发码与验码接口，缺字段会被判为伪造请求。
- */
-interface DyPassportVerifyContext {
-  /** 加密后的用户 ID */
-  encryptUid: string;
-  /** 验证票据 */
-  verifyTicket: string;
-  /** 验证会话票据 */
-  stdParams: Record<string, string>;
-  /** 文案场景，扫码登录固定为 `qr_connect` */
-  copywritingKey: string;
-  /** 风控分流标记 */
-  diversionTag: string;
-  /** 新版验证流标识 */
-  newVerifyFlow: string;
-  /** 服务端给出的可选验证方式 */
-  verifyWays: DyPassportVerifyWay[];
-}
-/** 一次二维码轮询的归一化结果 */
-type DyPassportPollResult =
-/** 尚未扫码 */
-{
-  status: 'new';
-  interval: number;
-} |
-/** 已扫码，等待手机端确认 */
-{
-  status: 'scanned';
-  interval: number;
-} |
-/** 已确认，可跟随 `redirectUrl` 领取登录凭证 */
-{
-  status: 'confirmed';
-  interval: number;
-  redirectUrl: string;
-} |
-/** 二维码过期 */
-{
-  status: 'expired';
-  interval: number;
-} |
-/** 触发账号二次验证 */
-{
-  status: 'verify';
-  interval: number;
-  verify: DyPassportVerifyContext;
-} |
-/** 触发风控 */
-{
-  status: 'risk';
-  interval: number;
-  message: string;
-} |
-/** 轮询被限频，退避后可继续用同一个 token 重试 */
-{
-  status: 'busy';
-  interval: number;
-  message: string;
-} |
-/** 未知状态，原样保留服务端返回，便于排查 */
-{
-  status: 'unknown';
-  interval: number;
-  message: string;
-};
-/** 登录二维码 */
-interface DyPassportQrcode {
-  /** 轮询用的二维码令牌 */
-  token: string;
-  /** 二维码承载的内容，直接拿去生成图片 */
-  content: string;
-  /**
-   * 二维码过期时间，服务端原值，是**绝对 Unix 时间戳（秒）**而非时长
-   *
-   * 想要剩余秒数请直接用 `expires_in`。
-   */
-  expire_time: number;
-  /** 距离二维码过期还剩多少秒，取二维码时算出，实测约 60 秒 */
-  expires_in: number;
-  /** 本次会话 cookie，后续调用需原样传回 */
-  cookie: string;
-}
-/** 二维码状态 */
-type DyPassportQrcodeStatus = DyPassportPollResult & {
-  /** 最新会话 cookie；`confirmed` 时已包含 sessionid / sid_guard 等登录凭证 */
-  cookie: string;
-  /** cookie 里是否已具备登录态凭证 */
-  logged_in: boolean;
-};
-/** 发码接口归一化后的结果，不含会话字段 */
-interface DyPassportSendCodeResult {
-  /** 是否发送成功 */
-  ok: boolean;
-  /** 服务端返回的脱敏手机号 */
-  mobile: string;
-  /** 允许重新发送的等待秒数 */
-  retryAfter: number;
-  /** 失败时的错误码 */
-  errorCode?: number;
-  /** 失败时的描述 */
-  message: string;
-}
-/** 发送短信验证码的结果 */
-type DyPassportSendCode = DyPassportSendCodeResult & {
-  /** 最新会话 cookie */
-  cookie: string;
-  /** 本次验证流程的追踪 ID，提交验证码时必须传回同一个值 */
-  biz_trace_id: string;
-  /** 本次实际使用的验证方式，提交验证码时应传回同一个值 */
-  verify_way: string;
-};
-/** 验码接口归一化后的结果，不含会话字段 */
-interface DyPassportValidateCodeResult {
-  /** 验证是否通过 */
-  ok: boolean;
-  /** 验证码是否填错（可以让用户重试） */
-  wrongCode: boolean;
-  /** 错误码 */
-  errorCode?: number;
-  /** 描述 */
-  message: string;
-}
-/** 提交短信验证码的结果 */
-type DyPassportValidateCode = DyPassportValidateCodeResult & {
-  /** 最新会话 cookie */
-  cookie: string;
-};
-//#endregion
 //#region src/types/ReturnDataType/Douyin/SearchInfo/SearchInfoGeneral/SearchInfoGeneral_V0.d.ts
 type SearchInfoGeneralData_V0 = {
   ad_info: {
@@ -14123,7 +37592,7 @@ type AwemeInfo$1 = {
   ai_follow_images: null;
   anchor_info?: AnchorInfo$2;
   anchors: null;
-  author: Author$6;
+  author: Author$5;
   author_user_id: number;
   aweme_id: string;
   aweme_type: number;
@@ -14227,7 +37696,7 @@ type StyleInfo$2 = {
   scene_icon: string;
   [property: string]: any;
 };
-type Author$6 = {
+type Author$5 = {
   account_cert_info?: string;
   ad_cover_url: null;
   avatar_168x168: Avatar168X168$1;
@@ -15409,7 +38878,7 @@ type AwemeInfo = {
   ai_follow_images: null;
   anchor_info?: AnchorInfo$1;
   anchors: null;
-  author: Author$5;
+  author: Author$4;
   author_user_id: number;
   aweme_id: string;
   aweme_type: number;
@@ -15515,7 +38984,7 @@ type StyleInfo$1 = {
   scene_icon: string;
   [property: string]: any;
 };
-type Author$5 = {
+type Author$4 = {
   account_cert_info?: string;
   ad_cover_url: null;
   avatar_schema_list: null;
@@ -16075,7 +39544,7 @@ type AwemeDetail$1 = {
   activity_video_type: number;
   anchors: null;
   authentication_token: string;
-  author: Author$4;
+  author: Author$3;
   author_mask_tag: number;
   author_user_id: number;
   aweme_control: AwemeControl$3;
@@ -16210,7 +39679,7 @@ type AwemeDetail$1 = {
   xigua_base_info: XiguaBaseInfo$4;
   [property: string]: any;
 };
-type Author$4 = {
+type Author$3 = {
   account_cert_info: string;
   avatar_thumb: AvatarThumb$1;
   awemehts_greet_info: string;
@@ -16927,7 +40396,7 @@ type AwemeList$2 = {
   activity_video_type: number;
   anchors: null;
   authentication_token: string;
-  author: Author$3;
+  author: Author$2;
   author_mask_tag: number;
   author_user_id: number;
   aweme_acl: Awemeacl$1;
@@ -17076,7 +40545,7 @@ type AwemeList$2 = {
   xigua_base_info: XiguaBaseInfo$3;
   [property: string]: any;
 };
-type Author$3 = {
+type Author$2 = {
   account_cert_info?: string;
   avatar_thumb: AuthorAvatarThumb$2;
   custom_verify: string;
@@ -18328,12 +41797,12 @@ type DyUserInfo = DyUserInfo_V0;
 //#endregion
 //#region src/types/ReturnDataType/Douyin/UserLiveVideos/UserLiveVideos_V0.d.ts
 type DyUserLiveVideos_V0 = {
-  data: Data$3;
+  data: Data$2;
   extra: UserLiveVideosExtra;
   status_code: number;
   [property: string]: any;
 };
-type Data$3 = {
+type Data$2 = {
   data: Datum[];
   enter_mode: number;
   enter_room_id: string;
@@ -20434,7 +43903,7 @@ type AwemeList$1 = {
   anchor_info: AnchorInfo;
   anchors: null;
   authentication_token: string;
-  author: Author$2;
+  author: Author$1;
   author_mask_tag: number;
   author_user_id: number;
   aweme_control: AwemeControl$1;
@@ -20602,7 +44071,7 @@ type StyleInfo = {
   scene_icon: string;
   [property: string]: any;
 };
-type Author$2 = {
+type Author$1 = {
   account_cert_info: string;
   avatar_schema_list: null;
   avatar_thumb: AuthorAvatarThumb$1;
@@ -23239,7 +46708,7 @@ type AwemeDetail = {
   activity_video_type: number;
   anchors: null;
   authentication_token: string;
-  author: Author$1;
+  author: Author;
   author_mask_tag: number;
   author_user_id: number;
   aweme_control: AwemeControl;
@@ -23372,7 +46841,7 @@ type AwemeDetail = {
   xigua_base_info: XiguaBaseInfo;
   [property: string]: any;
 };
-type Author$1 = {
+type Author = {
   account_cert_info: string;
   avatar_thumb: AuthorAvatarThumb;
   awemehts_greet_info: string;
@@ -24326,28 +47795,116 @@ interface DouyinReturnTypeMap {
   danmakuList: DyDanmakuList;
   musicInfo: DyMusicWork;
   liveRoomInfo: DyUserLiveVideos;
-  loginQrcode: any;
+  loginQrcode: DyLoginQrcode;
   commentReplies: CommentReply;
   passportQrcode: DyPassportQrcode;
   passportQrcodeStatus: DyPassportQrcodeStatus;
   passportSendCode: DyPassportSendCode;
   passportValidateCode: DyPassportValidateCode;
   /** iesdouyin v2 原样响应，字段怎么读由调用方决定 */
-  guestUserInfo: any;
+  guestUserInfo: DyGuestUserInfo;
   /** iesdouyin v2 原样响应，字段怎么读由调用方决定 */
-  guestMusicInfo: any;
+  guestMusicInfo: DyGuestMusicInfo;
   /** iesdouyin v2 原样响应，字段怎么读由调用方决定 */
-  guestMusicAwemeList: any;
+  guestMusicAwemeList: DyGuestMusicAwemeList;
   /** App 资源包元信息原样响应 */
-  emojiResourceMeta: any;
+  emojiResourceMeta: DyEmojiResourceMeta;
 }
+//#endregion
+//#region src/types/ReturnDataType/Kuaishou/Danmaku/Danmaku_V0.d.ts
+/**
+ * 快手 `danmaku` 响应类型（PC GraphQL `visionDanmaku`）。
+ *
+ * **不做归一化**（amagi 是接口库，抹平平台差异是下游的事）：GraphQL 的
+ * `data.visionDanmaku` 两层原样留着，字段名与 `__typename` 也一个不动。
+ * 端点的 `normalize` 只做一件事 —— 把多个时间窗口拿到的 `danmakus` 合并去重后
+ * 放回**最后**的原位，并把 `positionFromInclude` / `positionToExclude` 改写成
+ * 本次实际扫描的整体范围（单窗口时它们就是那一窗的值）。
+ *
+ * 读这份类型前要知道两件反直觉的事，否则会把数据读错：
+ *
+ * 1. **`isShow: false` 不是「隐藏」，是「还没显示过」。** 服务端返回的每一条都是
+ *    `false`（实测 75/75）—— 前端 `timeupdate` 里的判断是 `!isShow`，false 才该上屏，
+ *    上屏后前端自己改成 true。按 `isShow !== false` 过滤等于把全部弹幕丢掉。
+ * 2. **`userId` 为 `'0'` 表示匿名发送者**，不是某个真实用户的 ID。
+ *
+ * 另外 `position` 是**毫秒偏移**（不是秒），`id` 是**数字**而不是字符串。
+ *
+ * 形状与其中的实测结论来自 @OduckO 的 kuaishou-parser（GPL-3.0-only，与 amagi 同许可）：
+ * https://github.com/OduckO —— 对照其 `src/types.ts` 的 `KsDanmakuRaw` 与真实响应样本。
+ *
+ * 每一层都保留 `[property: string]: any`：平台加字段不算 breaking，
+ * 去掉索引签名会让这条承诺失效。
+ */
+type KsDanmaku_V0 = {
+  /** GraphQL 的固定外层。免鉴权接口，未登录也是这个形状（不会回 null 空壳） */
+  data: KsDanmakuData;
+  [property: string]: any;
+};
+/** `data` 层：只有 `visionDanmaku` 一个业务键 */
+type KsDanmakuData = {
+  /** 弹幕结果节点 */
+  visionDanmaku: KsDanmakuNode;
+  [property: string]: any;
+};
+/** `data.visionDanmaku`：一次（或合并多次）窗口查询的结果 */
+type KsDanmakuNode = {
+  /**
+   * 接口状态码。`1` = 成功。
+   *
+   * 合法参数下约 13% 的请求回 `11`（其余字段全 null）—— 偶发抖动，退避重试就好，
+   * 端点声明了 `retryOn` 自动处理。`21` = 缺 position 参数（入参问题，重试无用）。
+   */
+  result?: number;
+  /** 本次结果的起点（毫秒，含）。多窗口合并后是整体扫描范围的起点 */
+  positionFromInclude?: number | null;
+  /** 本次结果的终点（毫秒，排他）。多窗口合并后是整体扫描范围的终点 */
+  positionToExclude?: number | null;
+  /** 下一页游标。弹幕不靠游标翻页（实测恒为 `no_more`），翻的是时间窗口 */
+  pcursor?: string | null;
+  /**
+   * 弹幕列表，按 `position` 升序。
+   *
+   * 多窗口调用时这里是**跨窗口合并去重**后的条目，所以这个键一定在
+   * （没有弹幕时是空数组）。
+   */
+  danmakus: KsDanmakuItem[];
+  /** GraphQL 类型名，恒为 `VisionDanmakuResult` */
+  __typename?: string;
+  [property: string]: any;
+};
+/** 一条弹幕 */
+type KsDanmakuItem = {
+  /** 弹幕 ID。**是数字**，不是字符串 */
+  id?: number;
+  /** 弹幕正文。快手限 40 字，表情以 `[捂脸]` 这类文本码内嵌 */
+  body?: string;
+  /** 出现时间，**毫秒**偏移 */
+  position?: number;
+  /** 发送者 ID。`'0'` = 匿名发送者，不是真实用户 */
+  userId?: string | null;
+  /** 当前登录用户是否点过赞。匿名请求恒为 null */
+  isLiked?: boolean | null;
+  /** 点赞数。实测多为 null */
+  likeCount?: number | null;
+  /** 质量分（服务端排序用） */
+  quality?: number | null;
+  /** **不是「是否可见」**：服务端恒给 `false`，含义是「还没上屏」。见本文件顶部说明 */
+  isShow?: boolean;
+  /** GraphQL 类型名，恒为 `VisionDanmaku` */
+  __typename?: string;
+  [property: string]: any;
+};
+//#endregion
+//#region src/types/ReturnDataType/Kuaishou/Danmaku/index.d.ts
+type KsDanmaku = KsDanmaku_V0;
 //#endregion
 //#region src/types/ReturnDataType/Kuaishou/EmojiList/EmojiList_V0.d.ts
 type KsEmojiList_V0 = {
-  data: Data$2;
+  data: Data$1;
   [property: string]: any;
 };
-type Data$2 = {
+type Data$1 = {
   visionBaseEmoticons: VisionBaseEmoticons;
   [property: string]: any;
 };
@@ -25066,309 +48623,624 @@ type KsLiveRoomConfig = {
 //#region src/types/ReturnDataType/Kuaishou/LiveRoomDetail/index.d.ts
 type KsLiveRoomInfo = KsLiveRoomInfo_V0;
 //#endregion
+//#region src/types/ReturnDataType/Kuaishou/WorkComments/WorkComments_V0.d.ts
+/**
+ * 快手 `comments` 响应类型（H5 `/rest/wd/photo/comment/list`）。
+ *
+ * 从 PC GraphQL 的 `commentListQuery` 整条换过来，**不做归一化**（amagi 是接口库，
+ * 抹平平台差异是下游的事）。与 GraphQL 那套的三处结构差异因此原样留给调用方：
+ *
+ * 1. 没有 `data.visionCommentList` 那两层，条目与游标都在顶层
+ * 2. 字段名是 **snake_case**（`comment_id` / `author_id` / `reply_to`），
+ *    GraphQL 那套是 camelCase（`commentId` / `authorId` / `replyTo`）—— 两套不通用
+ * 3. 子评论**不内嵌**在根评论里，而是在 {@link KsWorkComments_V0.subCommentsMap}
+ *    里按根评论 ID 分组
+ *
+ * 下游改读字段时的对照表（左 = 原 GraphQL，右 = 现 H5）：
+ * `commentId` → `comment_id`、`authorId` → `author_id`、`authorName` → `author_name`、
+ * `authorLiked` → `author_liked`、`replyTo` → `reply_to`、
+ * `realLikedCount` → 无（只有 `likedCount`）、
+ * `rootComments[i].subComments` → `subCommentsMap[comment_id].subComments`、
+ * `rootComments[i].subCommentsPcursor` → `subCommentsMap[comment_id].pcursor`。
+ *
+ * 形状与其中的实测结论来自 @OduckO 的 kuaishou-parser（GPL-3.0-only，与 amagi 同许可）：
+ * https://github.com/OduckO —— 对照其 `src/types.ts` 的 `KsCommentRestRaw` /
+ * `KsCommentRaw` / `KsAttachmentRaw`。
+ *
+ * 每一层都保留 `[property: string]: any`：平台加字段不算 breaking，
+ * 去掉索引签名会让这条承诺失效。
+ */
+type KsWorkComments_V0 = {
+  /**
+   * 接口状态码。`1` = 成功。
+   *
+   * 失败码语义与 PC GraphQL 那套完全不同：`2` = 平台拒绝 / IP 级冷却
+   * （连查十几个作品后全线 `2`，随机 did 和重试都救不回来，要等几分钟）、
+   * `50` = 签名验证失败（body 没进签名输入，重试无用）、`2001` = 撞风控滑块。
+   */
+  result: number;
+  /** 失败原因文案，成功时不返回 */
+  error_msg?: string | null;
+  /** 评论总数（含子评论） */
+  commentCount?: number;
+  /** 下一页游标，`no_more` 或空表示到底 */
+  pcursor?: string;
+  /**
+   * 根评论列表。
+   *
+   * 多页调用时这里是**跨页累积**后的条目 —— `endpoints/comments.ts` 的 `normalize`
+   * 把累积结果回填到最后一页的原位，所以这个键一定在（没有评论时是空数组）。
+   */
+  rootComments: KsCommentRaw[];
+  /**
+   * 子评论，按**根评论 ID** 分组。
+   *
+   * 这是 H5 这套最容易踩的结构差异：`rootComments[i].subComments` 是空的，
+   * 回复串要拿根评论的 `comment_id` 到这张表里取。
+   */
+  subCommentsMap?: Record<string, KsSubCommentGroup>;
+  /** 风控挑战配置（撞滑块时才有）。amagi 只做中转不做绕过，滑块地址交给用户自己过 */
+  captchaConfig?: string;
+  [property: string]: any;
+};
+/** `subCommentsMap` 里的一组子评论（键是根评论的 `comment_id`） */
+type KsSubCommentGroup = {
+  /** 该根评论下已加载的子评论。快手评论区只有两层，这一串是平铺的，不会再往下嵌 */
+  subComments?: KsCommentRaw[];
+  /** 这一串子评论的游标，`no_more` 表示已到底 */
+  pcursor?: string;
+  [property: string]: any;
+};
+/**
+ * 一条评论（根评论与子评论同形状）。
+ *
+ * 字段名以 H5 REST 的实测形状为准：**snake_case**。PC GraphQL 那套 camelCase
+ * （`commentId` / `authorId` / `replyTo`）在这条链路上一个都不出现。
+ */
+type KsCommentRaw = {
+  /** 评论 ID */
+  comment_id?: string;
+  /** 评论者用户 ID。实测数字与字符串都出现过 */
+  author_id?: string | number;
+  /** 评论者昵称 */
+  author_name?: string;
+  /** 是否被作品作者点赞（YouTube 里「创作者已点赞」的同类信息） */
+  author_liked?: boolean;
+  /** 正文。表情是 `[捂脸]` 这样的文本码，要靠 `emojiList` 的映射表才能还原成图片 */
+  content?: string;
+  /** 头像（单张） */
+  headurl?: string;
+  /** 头像多 CDN 列表 */
+  headurls?: KsCdnUrl[];
+  /** 毫秒时间戳 */
+  timestamp?: number;
+  /** 接口直接给好的时间文案。实测两种形式都出现过：相对式「3天前」与绝对式 `2026-08-07 21:17:25` */
+  time?: string;
+  /** 点赞数。类型不稳定：有时是数字，有时是字符串（还可能是「1.2万」这种展示值） */
+  likedCount?: string | number;
+  /** 当前登录账号是否点过赞（未登录恒为 false / 不返回） */
+  liked?: boolean;
+  /** 评论者所在地区，如「广东」—— 快手评论区会把它展示出来 */
+  authorArea?: string;
+  /** 评论者是否官方认证 */
+  authorVerified?: boolean;
+  /** 认证详情 */
+  authorVerifiedDetail?: Record<string, any>;
+  /** 是否「神评论」（快手对高赞置顶评论的标记） */
+  godComment?: boolean;
+  /** 是否热评 */
+  hot?: boolean;
+  /** 子评论总数 */
+  subCommentCount?: number;
+  /**
+   * 展示用的子评论数标记。
+   *
+   * 实测样本里给的是布尔 `true`，对照项目的类型声明写的是 `number`，两种都容得下。
+   */
+  displaySubCommentCount?: number | boolean;
+  /** 子评论是否可见 */
+  subCommentVisible?: boolean;
+  /** 子评论可见条数上限 */
+  subCommentVisibleLimit?: number;
+  /**
+   * 被回复者的**用户 ID**（不是评论 ID）。
+   *
+   * 实测确认：拉了 79 条根评论 + 76 条子评论，`reply_to` 的值全部对不上任何
+   * `comment_id`，但能和 `author_id` 对上 —— 它存的是「回复给哪个人」。
+   *
+   * **这条结论由对照项目线上跑出来，精简样本证不实**：那份样本里有一条子评论的
+   * `reply_to` 正好等于兄弟子评论的 `comment_id`，与结论直接冲突。要给这条结论
+   * 背书得换成真抓包。
+   *
+   * 根评论的 `reply_to` 为 `0`。
+   *
+   * 这决定了回复关系只能还原到「谁回复谁」这一层：同一组里多人回复同一个人时，
+   * 无法区分他们回复的是那个人的哪一条发言。要展示层级用 {@link replyToUserName} 更直接。
+   */
+  reply_to?: string | number;
+  /**
+   * 被回复者的昵称（子评论才有）。
+   *
+   * 这是快手表达回复关系的主要方式。它**不区分**被回复者的哪一条发言 ——
+   * 快手的评论区只有两层（根评论 + 平铺的回复），没有 YouTube 那种真正的树。
+   */
+  replyToUserName?: string;
+  /**
+   * 用户 ID。语义不稳：实测有的节点与 `author_id` 一致，有的不一致
+   * （对照项目只把它当 `author_id` 缺失时的兜底），认作者一律优先读 `author_id`。
+   */
+  user_id?: string | number;
+  /** 评论者性别，实测取值 `F` / `M` / `U` */
+  user_sex?: string;
+  /**
+   * 所属作品 ID（长数字形式）。
+   *
+   * 注意接口给的是 **JSON 数字**且超出 `Number.MAX_SAFE_INTEGER`
+   * （实测 `5220235123506273443`，`JSON.parse` 之后末三位变成 `000`）。
+   * 要精确值别用它，用作品接口里字符串形式的 `photo.photoId`。
+   */
+  photo_id?: number | string;
+  /** 评论状态 */
+  status?: number;
+  /** 评论类型标记，实测恒为 0 */
+  type?: number;
+  /** 召回类型（热评/推荐链路的标记），实测取值 1 */
+  recallType?: number;
+  /** 评论者身份标签（实测为空数组） */
+  commentAuthorTags?: any[];
+  /** 评论底部标签（实测为空数组） */
+  commentBottomTags?: any[];
+  /** 现金活动标签（实测为空对象） */
+  cashTags?: Record<string, any>;
+  /** 图片附件 —— 评论区的表情包图片就在这里 */
+  attachments?: KsAttachmentRaw[];
+  [property: string]: any;
+};
+/**
+ * 评论里的图片附件。
+ *
+ * 这就是用户口中「评论区的表情包图片」—— 用户从自己收藏里发出来的图，在评论区显示为
+ * 一张图片而不是 `[xxx]` 文本码，与官方表情是两套完全不同的机制（官方表情靠映射表
+ * 还原，这个本身就是可直接下载的 URL）。实测出现率不高（约 500 条评论里 7 个），
+ * 所以所有字段都要当可选处理。
+ */
+type KsAttachmentRaw = {
+  /** 附件类型，实测取值 `PHOTO` */
+  type?: string;
+  /** 附件 ID，同时也是被引用作品的 photoId（长数字形式） */
+  id?: string;
+  /** App 内预览链接（`kwai://` scheme，网页端不可用） */
+  previewURL?: string;
+  /** 尺寸信息。注意 `width` / `height` 实测恒为 0，真实尺寸看 `thumbWidth` / `thumbHeight` */
+  layout?: {
+    width?: number;
+    height?: number;
+    thumbWidth?: number;
+    thumbHeight?: number;
+    [property: string]: any;
+  };
+  content?: {
+    /** 图片直链，多 CDN 备份 */
+    smallUrl?: KsCdnUrl[];
+    /** 被引用作品的元信息 */
+    photoInfo?: {
+      userName?: string;
+      /** 来源标记，如 `LIKE_TAB`（来自用户的点赞收藏） */
+      photoSource?: string;
+      photoId?: string;
+      photoType?: number;
+      serverExpTag?: string;
+      [property: string]: any;
+    };
+    [property: string]: any;
+  };
+  [property: string]: any;
+};
+/** CDN 地址项。快手的多 CDN 字段（`headurls` / `smallUrl` / `audioUrls` …）都是这个形状 */
+type KsCdnUrl = {
+  cdn?: string;
+  url?: string;
+  [property: string]: any;
+};
+//#endregion
 //#region src/types/ReturnDataType/Kuaishou/OneWork/OneWork_V0.d.ts
 type KsOneWork_V0 = {
-  data: Data$1;
+  /**
+   * 接口状态码。`1` = 成功。
+   *
+   * 失败码语义与 PC GraphQL 那套完全不同：`50` = 签名验证失败（body 没进签名输入，
+   * 重试无用）、`2` = 平台拒绝 / IP 级冷却（可重试但要长退避）、`2001` = 撞风控滑块。
+   */
+  result: number;
+  /** 失败原因文案，成功时不返回 */
+  error_msg?: string | null;
+  /** 作品主体。视频、图集、单图三类作品的字段都在这里 */
+  photo: KsPhoto;
+  /** 作者维度的计数 */
+  counts?: KsAuthorCounts;
+  /**
+   * 图集数据（图集类作品才有）。
+   *
+   * 同一份数据在响应里出现两次，扩展名不同：顶层这份给 `.jpg`，
+   * {@link KsExtParams.atlas} 那份给 `.webp`（同一张图实测 348KB，jpg 变体通常翻倍）。
+   * 快手自己的 H5 页用的是 webp，两处都要认 —— 精简版 `simple/info` 只有
+   * `photo.ext_params.atlas` 那一处。
+   */
+  atlas?: KsAtlasNode;
+  /**
+   * 单图作品的图片节点，与 {@link atlas} 同形状（`type` 恒为 3）。
+   *
+   * 注意它**不带 `list`**：单图作品的原图就是 `photo.coverUrls`，这个节点只用来带配乐。
+   */
+  single?: KsAtlasNode;
+  /** 合集 / 剧集信息 */
+  serialInfo?: KsSerialInfo;
+  /**
+   * **图集的视频版**（只有完整版 `/rest/wd/photo/info` 返回）。
+   *
+   * 这是解开「App 里图集会动、下载下来是静态图」之谜的关键 —— 快手把整个图集预渲染成了
+   * 一个带配乐的 mp4。实测样本：31 张图 → 26 秒 / 720×960 / 780 帧 / 1.99 MB，
+   * 路径含 `newWatermark`（带水印）。
+   *
+   * 也就是说 App 播的是这个文件，长按保存走的是 `atlas.list` 的静态 webp —— 两条不同的通道。
+   */
+  mp4Url?: string;
+  /** 同类推荐作品（只有完整版返回）。实测返回 6 条同题材作品，对「收集某类素材」很实用 */
+  photos?: KsPhoto[];
+  /** 接口顺带返回的前几条评论（只有完整版返回，省掉一次 `photo/comment/list`） */
+  comments?: KsCommentRaw[];
   [property: string]: any;
 };
-type Data$1 = {
-  visionVideoDetail: VisionVideoDetail;
+/** 作者维度的计数。挂在响应顶层，不在 `photo` 里 */
+type KsAuthorCounts = {
+  /** 粉丝数 */
+  fanCount?: number;
+  /** 关注数 */
+  followCount?: number;
+  /** 收藏数（语义未逐一核对，实测样本给 2142） */
+  collectionCount?: number;
+  /** 作品数 */
+  photoCount?: number;
   [property: string]: any;
 };
-type VisionVideoDetail = {
-  __typename: string;
-  author: Author;
-  commentLimit: CommentLimit;
-  danmakuSwitch: boolean;
-  llsid: string;
-  photo: Photo;
-  status: number;
-  tags: Tag$1[];
+/**
+ * 合集 / 剧集信息。
+ *
+ * 五份样本里 `valid` 为 false、`title` / `msg` / `serialId` / `serialType` 全为 null，
+ * 也就是「这个作品不属于任何合集」时的形状；属于合集时的取值没采到样本。
+ */
+type KsSerialInfo = {
+  /** 是否有合集 */
+  valid?: boolean;
+  /** 合集标题 */
+  title?: string | null;
+  /** 提示文案 */
+  msg?: string | null;
+  /** 合集 ID */
+  serialId?: string | number | null;
+  /** 合集类型 */
+  serialType?: string | number | null;
+  /** 是否展示合集入口 */
+  show?: boolean;
+  [property: string]: any;
+};
+/**
+ * 图集 / 单图节点（顶层 `atlas` / `single` 与 `ext_params.atlas` / `.single` 同形状）。
+ *
+ * 图片直链要自己拼：`https://` + `cdn[0]`（或 `cdnList[0].cdn`）+ `list[i]`；
+ * 配乐同理，用 `musicCdnList[0].cdn` + `music`。
+ */
+type KsAtlasNode = {
+  /** 图片 CDN 域名列表 */
+  cdn?: string[];
+  /** 图片 CDN 域名列表（对象形式，与 {@link cdn} 内容一致） */
+  cdnList?: Array<{
+    cdn?: string;
+    [property: string]: any;
+  }>;
+  /** 图片相对路径列表。单图作品没有这个字段 */
+  list?: string[];
+  /** 每张图的尺寸，下标与 {@link list} 对齐 */
+  size?: Array<{
+    w?: number;
+    h?: number;
+    [property: string]: any;
+  }>;
+  /** 配乐相对路径（.m4a）。图集的配乐走这里，视频的原声走 `photo.soundTrack` */
+  music?: string;
+  /** 配乐 CDN 域名列表 */
+  musicCdnList?: Array<{
+    cdn?: string;
+    [property: string]: any;
+  }>;
+  /** 音量 */
+  volume?: number;
+  /** `1` = 横版图集，`2` = 竖版图集，`3` = 单图 */
+  type?: number;
+  [property: string]: any;
+};
+/**
+ * 作品主体。
+ *
+ * 类型分发规则（实测）：
+ * - `ext_params.atlas` 存在 → 图集（`atlas.type` `1` 横版 / `2` 竖版），图片是 webp，另有 m4a 配乐
+ * - `ext_params.single` / `ext_params.karaoke` 存在 → 单图，原图走 `coverUrls`
+ * - 否则 → 视频，优先 `manifest.adaptationSet`，回落 `mainMvUrls`
+ *
+ * 最省事的判据是 {@link photoType}；{@link type} 五份样本恒为 1，拿它分类会全错。
+ */
+type KsPhoto = {
+  /** 作品长数字 ID（字符串形式）。请求用的短 ID 不在响应里 */
+  photoId: string;
+  /**
+   * 作品类型。实测取值 `VIDEO` / `SINGLE_PICTURE` / `VERTICAL_ATLAS` / `HORIZONTAL_ATLAS`，
+   * 另有 `SPHERICAL_VIDEO`（全景视频）/ `PAY_COURSE_VIDEO`（付费课程试看）。
+   *
+   * 声明成 `string` 而不是字面量联合：平台加一种新作品类型不该让下游编译失败。
+   */
+  photoType: string;
+  /** 媒体类型标记，五份样本恒为 1 —— **不是**作品类型，别拿它分类 */
   type: number;
-  [property: string]: any;
-};
-type Author = {
-  __typename: string;
-  following: boolean;
-  headerUrl: string;
-  id: string;
-  name: string;
-  [property: string]: any;
-};
-type CommentLimit = {
-  __typename: string;
-  canAddComment: number;
-  [property: string]: any;
-};
-type Photo = {
-  __typename: string;
+  /** 是否图片类作品。注意图集也是 `true`，只有视频是 `false` */
+  singlePicture: boolean;
+  /** 作品文案。话题标签（`#xxx`）混在正文里，要自己抽 */
   caption: string;
-  coronaCropManifest: null;
-  coronaCropManifestH265: null;
-  coverUrl: string;
-  croppedPhotoH265Url: string;
-  croppedPhotoUrl: string;
-  duration: number;
-  expTag: string;
-  id: string;
-  likeCount: string;
-  liked: boolean;
-  llsid: null;
-  manifest: Manifest;
-  manifestH265: ManifestH265;
-  musicBlocked: null;
-  photoH265Url: string;
-  photoUrl: string;
-  realLikeCount: number;
-  stereoType: number;
+  /** 发布时间，毫秒时间戳 */
   timestamp: number;
-  videoRatio: number;
-  videoResource: VideoResource;
-  viewCount: string;
-  [property: string]: any;
-};
-type Manifest = {
-  __typename: string;
-  adaptationSet: ManifestAdaptationSet[];
-  businessType: number;
-  mediaType: number;
-  version: string;
-  [property: string]: any;
-};
-type ManifestAdaptationSet = {
-  __typename?: string;
+  /** 视频时长（毫秒）。图集 / 单图不返回 */
   duration?: number;
-  id?: number;
-  representation?: PurpleRepresentation[];
+  /** 封面宽 */
+  width: number;
+  /** 封面高 */
+  height: number;
+  /** 作者昵称 */
+  userName: string;
+  /** 作者数字 ID */
+  userId: number;
+  /** 作者 eid（`3xhm7mmxrcewj92` 形式），拼主页地址用的就是它 */
+  userEid: string;
+  /** 作者性别，实测取值 `F` / `M` / `U` */
+  userSex: string;
+  /** 作者快手号（设置过才有） */
+  kwaiId?: string;
+  /** 作者头像（单张） */
+  headUrl: string;
+  /** 作者头像多 CDN 列表 */
+  headUrls: KsCdnUrl[];
+  /** 是否官方认证 */
+  verified: boolean;
+  /** 认证详情，只有认证账号才返回 */
+  verifiedDetail?: KsVerifiedDetail;
+  /** 点赞数 */
+  likeCount: number;
+  /** 评论数 */
+  commentCount: number;
+  /** 播放数 */
+  viewCount: number;
+  /** 转发数 */
+  forwardCount: number;
+  /** 分享数（图集样本有，视频样本没有） */
+  shareCount?: number;
+  /** 封面图多 CDN 列表（jpg 原图） */
+  coverUrls: KsCdnUrl[];
+  /** 封面图 webp 变体，体积比 jpg 小得多 */
+  webpCoverUrls: KsCdnUrl[];
+  /** 视频直链（单档）。图集 / 单图作品这里是空数组 */
+  mainMvUrls: KsCdnUrl[];
+  /** 视频多档位清单。只有视频作品返回，图集 / 单图没有这个字段 */
+  manifest?: KsManifest;
+  /** 作品使用的音乐 */
+  music?: KsMusicNode;
+  /**
+   * 作品原声：视频作品的独立音轨（.m4a），可脱离视频单独播放。
+   *
+   * 与 {@link music} 同形状。图集类作品没有 `soundTrack`，配乐走 `ext_params.atlas.music`。
+   */
+  soundTrack?: KsMusicNode;
+  /** 扩展参数。图集 / 单图的图片数据就藏在这里 */
+  ext_params: KsExtParams;
+  /**
+   * 分享信息，形如 `userId=...&photoId=...&...` 的 query 串。
+   *
+   * 推荐流条目（{@link KsOneWork_V0.photos}）的作品 ID 只能从这里正则抠出来。
+   */
+  share_info: string;
+  /** 作品状态 */
+  photoStatus: number;
+  /** 是否强制公开，实测是字符串 */
+  forcePublic: string;
+  /** 曝光标记（推荐链路用） */
+  exp_tag: string;
+  /** 服务端曝光标记 */
+  serverExpTag: string;
+  /** 话题 / 活动标签展示信息 */
+  tagShow?: KsTagShow;
+  /** 评论区展示样式 */
+  commentShowType: number;
+  /** 运营标签（实测为空数组） */
+  adminTags: any[];
+  /** 合拍设置 */
+  sameFrame?: {
+    allow?: boolean;
+    availableDepth?: number;
+    [property: string]: any;
+  };
   [property: string]: any;
 };
-type PurpleRepresentation = {
-  __typename?: string;
-  avgBitrate?: number;
-  backupUrl?: string[];
-  codecs?: null;
-  defaultSelect?: boolean;
-  disableAdaptive?: boolean;
-  featureP2sp?: boolean;
-  frameRate?: number;
-  height?: number;
-  hidden?: boolean;
+/** 认证详情 */
+type KsVerifiedDetail = {
+  /** 认证说明，如「XX 领域优质创作者」 */
+  description?: string;
+  iconType?: number;
+  type?: number;
+  viceVerifiedType?: number;
+  newVerified?: boolean;
+  /** 是否音乐公司认证 */
+  musicCompany?: boolean;
+  [property: string]: any;
+};
+/** 话题 / 活动标签展示信息 */
+type KsTagShow = {
+  /** 标签业务 ID */
+  bizId?: string;
+  /** 使用该标签的作品数，实测是字符串 */
+  usedCount?: string;
+  bannerType?: number;
+  type?: number;
+  [property: string]: any;
+};
+/**
+ * 扩展参数。
+ *
+ * 图集 / 单图作品的图片数据在这里 —— 而且这一份的图片路径是 **webp**，
+ * 顶层 {@link KsOneWork_V0.atlas} 那份是 jpg。精简版 `simple/info` 只有这一处。
+ */
+type KsExtParams = {
+  /** 图集数据（webp 变体） */
+  atlas?: KsAtlasNode;
+  /** 单图数据 */
+  single?: KsAtlasNode;
+  /** K 歌作品的数据，与 `single` 同形状（单图的兜底判据之一） */
+  karaoke?: KsAtlasNode;
+  /** 媒体类型标记，实测 `3` = 视频，`6` = 图集 / 单图 */
+  mtype?: number;
+  /** 主色调，形如 `#RRGGBB` */
+  color?: string;
+  /** 宽 */
+  w?: number;
+  /** 高 */
+  h?: number;
+  /** 视频时长（毫秒），视频作品才有 */
+  video?: number;
+  /** 音轨时长（毫秒），视频作品才有 */
+  sound?: number;
+  /** 视频作品才有，含义未确认 */
+  interval?: number;
+  /** 图片类作品才有，含义未确认（实测恒为 0） */
+  f?: number;
+  [property: string]: any;
+};
+/**
+ * 视频多档位清单（只有视频作品返回）。
+ *
+ * 除了这里声明的键，实测还有 `playInfo` / `videoFeature` / `audioFeature` /
+ * `stereoType` / `hideAuto` / `manualDefaultSelect` 等一批画质与音频分析字段，
+ * 都是平台内部用的，交给索引签名兜。
+ */
+type KsManifest = {
+  /** 档位分组，视频直链在 `representation` 里 */
+  adaptationSet?: KsAdaptationSet[];
+  mediaType?: number;
+  businessType?: number;
+  version?: string;
+  /** 视频 ID */
+  videoId?: string;
+  [property: string]: any;
+};
+/** 一组档位 */
+type KsAdaptationSet = {
   id?: number;
-  m3u8Slice?: null;
-  maxBitrate?: number;
-  qualityLabel?: string;
-  qualityType?: string;
+  /** 时长（毫秒） */
+  duration?: number;
+  /** 同一视频的不同清晰度档位 */
+  representation?: KsRepresentation[];
+  [property: string]: any;
+};
+/**
+ * 一个清晰度档位。
+ *
+ * 实测每档还带一堆音量归一化与画质评分字段（`normalizeGain` / `kvqScore` /
+ * `colorInfo` …），要用哪个自己从索引签名里取。
+ */
+type KsRepresentation = {
+  id?: number;
+  /** 视频直链 */
   url?: string;
-  width?: number;
-  [property: string]: any;
-};
-type ManifestH265 = {
-  adaptationSet: ManifestH265AdaptationSet[];
-  businessType: number;
-  hideAuto: boolean;
-  manualDefaultSelect: boolean;
-  mediaType: number;
-  playInfo: ManifestH265PlayInfo;
-  stereoType: number;
-  version: string;
-  videoFeature: ManifestH265VideoFeature;
-  videoId: string;
-  [property: string]: any;
-};
-type ManifestH265AdaptationSet = {
-  duration?: number;
-  id?: number;
-  representation?: FluffyRepresentation[];
-  [property: string]: any;
-};
-type FluffyRepresentation = {
-  agc?: boolean;
-  avgBitrate?: number;
+  /** 备用 CDN 直链 */
   backupUrl?: string[];
-  comment?: string;
-  defaultSelect?: boolean;
-  disableAdaptive?: boolean;
-  featureP2sp?: boolean;
+  width?: number;
+  height?: number;
+  /** 平均码率 */
+  avgBitrate?: number;
+  maxBitrate?: number;
+  frameRate?: number;
+  /** 编码，如 `avc` / `hevc` */
+  videoCodec?: string;
+  /** 档位标识，如 `1080p` */
+  qualityType?: string;
+  /** 档位中文名，如「超清」 */
+  qualityLabel?: string;
+  /** 文件大小（字节） */
   fileSize?: number;
-  frameRate?: number;
-  hdrType?: number;
-  height?: number;
-  hidden?: boolean;
-  id?: number;
-  kvqScore?: PurpleKvqScore;
-  makeupGain?: number;
-  maxBitrate?: number;
-  mute?: boolean;
-  normalizeGain?: number;
-  oriLoudness?: number;
-  p2spCode?: string;
-  quality?: number;
-  qualityLabel?: string;
-  qualityType?: string;
-  url?: string;
-  width?: number;
-  [property: string]: any;
-};
-type PurpleKvqScore = {
-  NR: number;
-  NRPost: number;
-  [property: string]: any;
-};
-type ManifestH265PlayInfo = {
-  cdnTimeRangeLevel: number;
-  [property: string]: any;
-};
-type ManifestH265VideoFeature = {
-  avgEntropy: number;
-  blockyProbability: number;
-  blurProbability: number;
-  mosScore: number;
-  [property: string]: any;
-};
-type VideoResource = {
-  h264: H264;
-  hevc: Hevc;
-  [property: string]: any;
-};
-type H264 = {
-  adaptationSet: H264AdaptationSet[];
-  businessType: number;
-  hideAuto: boolean;
-  manualDefaultSelect: boolean;
-  mediaType: number;
-  playInfo: H264PlayInfo;
-  stereoType: number;
-  version: string;
-  videoFeature: H264VideoFeature;
-  videoId: string;
-  [property: string]: any;
-};
-type H264AdaptationSet = {
-  duration?: number;
-  id?: number;
-  representation?: TentacledRepresentation[];
-  [property: string]: any;
-};
-type TentacledRepresentation = {
-  agc?: boolean;
-  avgBitrate?: number;
-  backupUrl?: string[];
-  bitratePattern?: number[];
-  comment?: string;
+  /** 是否默认选中的档位 */
   defaultSelect?: boolean;
-  disableAdaptive?: boolean;
-  featureP2sp?: boolean;
-  fileSize?: number;
-  frameRate?: number;
-  hdrType?: number;
-  height?: number;
+  /** 是否在画质列表里隐藏 */
   hidden?: boolean;
+  [property: string]: any;
+};
+/**
+ * 音乐节点（`photo.music` 与 `photo.soundTrack` 同形状）。
+ *
+ * `soundTrack` 是「作品原声」——一条独立的 m4a 音轨，可以脱离视频单独播放，
+ * 这也是「只想听声音」场景的数据来源。
+ */
+type KsMusicNode = {
+  /** 音乐 ID */
   id?: number;
-  kvqScore?: FluffyKvqScore;
-  makeupGain?: number;
-  maxBitrate?: number;
-  mute?: boolean;
-  normalizeGain?: number;
-  oriLoudness?: number;
-  p2spCode?: string;
-  quality?: number;
-  qualityLabel?: string;
-  qualityType?: string;
-  url?: string;
-  width?: number;
-  [property: string]: any;
-};
-type FluffyKvqScore = {
-  FRPost: number;
-  NR: number;
-  NRPost: number;
-  [property: string]: any;
-};
-type H264PlayInfo = {
-  cdnTimeRangeLevel: number;
-  [property: string]: any;
-};
-type H264VideoFeature = {
-  avgEntropy: number;
-  blockyProbability: number;
-  blurProbability: number;
-  mosScore: number;
-  [property: string]: any;
-};
-type Hevc = {
-  adaptationSet: HevcAdaptationSet[];
-  businessType: number;
-  hideAuto: boolean;
-  manualDefaultSelect: boolean;
-  mediaType: number;
-  playInfo: HevcPlayInfo;
-  stereoType: number;
-  version: string;
-  videoFeature: HevcVideoFeature;
-  videoId: string;
-  [property: string]: any;
-};
-type HevcAdaptationSet = {
+  /** 音乐名，如「噜啦噜啦的作品原声」 */
+  name?: string;
+  /** 演唱 / 上传者 */
+  artist?: string;
+  /** 音频直链多 CDN 列表（.m4a） */
+  audioUrls?: KsCdnUrl[];
+  /** 封面图多 CDN 列表 */
+  imageUrls?: KsCdnUrl[];
+  /** 头像多 CDN 列表 */
+  avatarUrls?: KsCdnUrl[];
+  /** 时长（毫秒） */
   duration?: number;
-  id?: number;
-  representation?: StickyRepresentation[];
+  /**
+   * 音乐所属作品的长 ID。
+   *
+   * 这里是 **JSON 数字**且超出 `Number.MAX_SAFE_INTEGER`（实测 `5220235123506273443`，
+   * `JSON.parse` 之后末三位变成 `000`）。要精确值读 {@link KsPhoto.photoId}，
+   * 同一个 ID 在那边是字符串。
+   */
+  photoId?: number | string;
+  type?: number;
+  audioType?: number;
+  /** 使用该音乐的作品数 */
+  photoCount?: number;
+  /** 使用次数 */
+  usageCount?: number;
+  /** 是否有版权 */
+  hasCopyright?: boolean;
+  /** 是否已下架 */
+  isOffline?: boolean;
+  /** 音乐上传者。注意这一层的字段名是 snake_case */
+  user?: KsMusicUser;
   [property: string]: any;
 };
-type StickyRepresentation = {
-  agc?: boolean;
-  avgBitrate?: number;
-  backupUrl?: string[];
-  comment?: string;
-  defaultSelect?: boolean;
-  disableAdaptive?: boolean;
-  featureP2sp?: boolean;
-  fileSize?: number;
-  frameRate?: number;
-  hdrType?: number;
-  height?: number;
-  hidden?: boolean;
-  id?: number;
-  kvqScore?: TentacledKvqScore;
-  makeupGain?: number;
-  maxBitrate?: number;
-  mute?: boolean;
-  normalizeGain?: number;
-  oriLoudness?: number;
-  p2spCode?: string;
-  quality?: number;
-  qualityLabel?: string;
-  qualityType?: string;
-  url?: string;
-  width?: number;
-  [property: string]: any;
-};
-type TentacledKvqScore = {
-  NR: number;
-  NRPost: number;
-  [property: string]: any;
-};
-type HevcPlayInfo = {
-  cdnTimeRangeLevel: number;
-  [property: string]: any;
-};
-type HevcVideoFeature = {
-  avgEntropy: number;
-  blockyProbability: number;
-  blurProbability: number;
-  mosScore: number;
-  [property: string]: any;
-};
-type Tag$1 = {
-  __typename: string;
-  name: string;
-  type: string;
+/** 音乐上传者 */
+type KsMusicUser = {
+  user_id?: number | string;
+  user_name?: string;
+  /** 性别，实测取值 `F` / `M` / `U` */
+  user_sex?: string;
+  /** 用户 eid，拼主页地址用 */
+  eid?: string;
+  headurl?: string;
+  headurls?: KsCdnUrl[];
+  /** 当前登录账号是否已关注（未登录恒为 false） */
+  following?: boolean;
+  visitorBeFollowed?: boolean;
   [property: string]: any;
 };
 //#endregion
 //#region src/types/ReturnDataType/Kuaishou/OneWork/index.d.ts
 type KsOneWork = KsOneWork_V0;
 //#endregion
-//#region src/types/ReturnDataType/Kuaishou/UserCommon.d.ts
+//#region src/types/ReturnDataType/Kuaishou/UserCommon/UserCommon_V0.d.ts
 type KsUserProfileUserInfo = {
   id: string;
   name: string;
@@ -25451,8 +49323,8 @@ type KsUserProfileCounts = {
   [property: string]: any;
 };
 //#endregion
-//#region src/types/ReturnDataType/Kuaishou/UserHomeDetail.d.ts
-type KsUserHomeDetail = {
+//#region src/types/ReturnDataType/Kuaishou/UserHomeDetail/UserHomeDetail_V0.d.ts
+type KsUserHomeDetail_V0 = {
   principalId: string;
   author: KsUserHomeAuthorInfo;
   profile: KsUserHomeProfileState;
@@ -25565,17 +49437,26 @@ type KsUserHomeFollowButtonState = {
   [property: string]: any;
 };
 //#endregion
-//#region src/types/ReturnDataType/Kuaishou/UserProfile.d.ts
-type KsUserProfile = KsUserHomeDetail;
+//#region src/types/ReturnDataType/Kuaishou/UserProfile/UserProfile_V0.d.ts
+/**
+ * 快手 `userProfile` 响应类型。
+ *
+ * 与 `KsUserHomeDetail_V0` 同形：`live_api/profile/home` 一条响应同时喂
+ * `userProfile` 与 `userWorkList` 两个端点，形状只声明一份。
+ */
+type KsUserProfile_V0 = KsUserHomeDetail_V0;
 //#endregion
-//#region src/types/ReturnDataType/Kuaishou/UserWorkList.d.ts
+//#region src/types/ReturnDataType/Kuaishou/UserProfile/index.d.ts
+type KsUserProfile = KsUserProfile_V0;
+//#endregion
+//#region src/types/ReturnDataType/Kuaishou/UserWorkList/UserWorkList_V0.d.ts
 /**
  * 快手用户公开视频列表。
  *
  * 该结构对应 `live_api/profile/public` 的分页结果，
  * 用于对标抖音等平台的独立用户作品列表能力。
  */
-type KsUserWorkList = {
+type KsUserWorkList_V0 = {
   principalId: string;
   list: KsUserHomeWork[];
   pcursor: string;
@@ -25584,57 +49465,8 @@ type KsUserWorkList = {
   [property: string]: any;
 };
 //#endregion
-//#region src/types/ReturnDataType/Kuaishou/WorkComments/WorkComments_V0.d.ts
-type KsWorkComments_V0 = {
-  data: Data;
-  [property: string]: any;
-};
-type Data = {
-  visionCommentList: VisionCommentList;
-  [property: string]: any;
-};
-type VisionCommentList = {
-  __typename: string;
-  commentCount: number;
-  pcursor: string;
-  rootComments: RootComment[];
-  [property: string]: any;
-};
-type RootComment = {
-  __typename: string;
-  authorId: string;
-  authorLiked: boolean;
-  authorName: string;
-  commentId: string;
-  content: string;
-  headurl: string;
-  liked: boolean;
-  likedCount: string;
-  realLikedCount: number;
-  status: string;
-  subCommentCount: number | null;
-  subComments: SubComment$1[];
-  subCommentsPcursor: null | string;
-  timestamp: number;
-  [property: string]: any;
-};
-type SubComment$1 = {
-  __typename: string;
-  authorId: string;
-  authorLiked: boolean;
-  authorName: string;
-  commentId: string;
-  content: string;
-  headurl: string;
-  liked: boolean;
-  likedCount: string;
-  realLikedCount: number;
-  replyTo: string;
-  replyToUserName: string;
-  status: string;
-  timestamp: number;
-  [property: string]: any;
-};
+//#region src/types/ReturnDataType/Kuaishou/UserWorkList/index.d.ts
+type KsUserWorkList = KsUserWorkList_V0;
 //#endregion
 //#region src/types/ReturnDataType/Kuaishou/WorkComments/index.d.ts
 type KsWorkComments = KsWorkComments_V0;
@@ -25645,7 +49477,19 @@ type KsWorkComments = KsWorkComments_V0;
  */
 interface KuaishouReturnTypeMap {
   videoWork: KsOneWork;
+  /**
+   * 完整版与免签主通道**共用**一份类型。
+   *
+   * 不是偷懒：`KsOneWork` 里那几个只有完整版才有的键（`mp4Url` / `photos` /
+   * `comments`）本来就声明成可选的，正是为了同时描述两种响应。给其中一条单开
+   * 一份类型只会多一处会漂移的重复。
+   *
+   * 另一层现实：那三个键在两个仓库共 15 份响应样本里出现 **0 次**，corpus 也
+   * 录不到（完整版稳定撞 `2001`）—— 所以「完整版类型更宽」目前只体现在声明上。
+   */
+  videoWorkFull: KsOneWork;
   comments: KsWorkComments;
+  danmakuList: KsDanmaku;
   emojiList: KsEmojiList;
   userProfile: KsUserProfile;
   userWorkList: KsUserWorkList;
@@ -26042,7 +49886,53 @@ type Result$2 = {
 //#region src/types/ReturnDataType/Xiaohongshu/XiaohongshuEmojiList/index.d.ts
 type XiaohongshuEmojiList = XiaohongshuEmojiList_V0;
 //#endregion
+//#region src/types/ReturnDataType/Xiaohongshu/XiaohongshuUserNoteList/XiaohongshuUserNoteList_V0.d.ts
+/**
+ * 用户笔记列表（`/fetch_user_notes`）的实测快照。
+ *
+ * 形状与端点声明里的本地类型一致。
+ *
+ * 只有顶层有索引签名，`data` 与 `notes` 元素没有补 —— 保持本地声明的原样。
+ *
+ * 索引签名用 `any` 而不是 `unknown`，理由同 `BiliLoginStatus_V0`。
+ */
+type XiaohongshuUserNoteList_V0 = {
+  code: number;
+  msg: string;
+  success: boolean;
+  data: Data;
+  /** 平台加字段不算 breaking（类型是实测快照） */
+  [property: string]: any;
+};
+type Data = {
+  cursor: string;
+  has_more: boolean;
+  notes: Note[];
+};
+type Note = {
+  id: string;
+  type: string;
+  xsec_token: string;
+};
+//#endregion
+//#region src/types/ReturnDataType/Xiaohongshu/XiaohongshuUserNoteList/index.d.ts
+type XiaohongshuUserNoteList = XiaohongshuUserNoteList_V0;
+//#endregion
 //#region src/types/ReturnDataType/Xiaohongshu/XiaohongshuUserProfile/XiaohongshuUserProfile_V0.d.ts
+/**
+ * ⚠️ **这份类型的字段名已经漂了，不要照它写代码。**
+ *
+ * 整棵 `data` 用的是驼峰（`basicInfo` / `extraInfo` / `ipLocation` / `redId` /
+ * `tabPublic` / `verifyInfo`），而接口**实测返回下划线**（`basic_info`）——
+ * 对应端点因此没有复用这个映射条目，自己写了一份最小声明。
+ *
+ * 更糟的是这些键声明成**必需**的，所以类型不只是不全，是在说谎：读
+ * `data.basicInfo` 编译期毫无问题，运行时永远 `undefined`。
+ *
+ * 没有在这里直接改成下划线：目前只有一处证据（那份只覆盖 3 个字段的本地声明），
+ * 拿不到整份真实响应。凭猜把 7 个键逐个改名，等于用一份新的猜测替换旧的猜测 ——
+ * 一份「已知有问题且写明了问题」的类型，比一份「看起来对但没人验过」的类型安全。
+ */
 type XiaohongshuUserProfile_V0 = {
   code: number;
   data: DataData;
@@ -26126,350 +50016,16 @@ interface XiaohongshuReturnTypeMap {
   noteDetail: OneNote;
   noteComments: NoteComments;
   userProfile: XiaohongshuUserProfile;
-  userNoteList: any;
+  userNoteList: XiaohongshuUserNoteList;
   emojiList: XiaohongshuEmojiList;
   searchNotes: SearchNotes;
 }
-//#endregion
-//#region src/types/method-keys.d.ts
-/**
- * API 方法名常量定义
- *
- * 设计说明：
- * - 底层 getdata.ts 和 API.ts 仍使用中文 key (内部实现)
- * - Fetcher 层使用英文方法名 (对外 API)
- * - 此文件提供中英文映射，用于日志、事件等场景
- */
-/** B站内部方法名 (中文，用于 getdata.ts) */
-declare const BilibiliInternalMethods: {
-  readonly VIDEO_INFO: "单个视频作品数据";
-  readonly VIDEO_STREAM: "单个视频下载信息数据";
-  readonly VIDEO_DANMAKU: "实时弹幕";
-  readonly COMMENTS: "评论数据";
-  readonly COMMENT_REPLIES: "指定评论的回复";
-  readonly USER_CARD: "用户主页数据";
-  readonly USER_DYNAMICS: "用户主页动态列表数据";
-  readonly USER_LIVE_STATUS: "用户直播状态";
-  readonly USER_SPACE_INFO: "用户空间详细信息";
-  readonly USER_TOTAL_VIEWS: "获取UP主总播放量";
-  readonly DYNAMIC_DETAIL: "动态详情数据";
-  readonly BANGUMI_INFO: "番剧基本信息数据";
-  readonly BANGUMI_STREAM: "番剧下载信息数据";
-  readonly LIVE_ROOM_INFO: "直播间信息";
-  readonly LIVE_ROOM_INIT: "直播间初始化信息";
-  readonly ARTICLE_CONTENT: "专栏正文内容";
-  readonly ARTICLE_CARDS: "专栏显示卡片信息";
-  readonly ARTICLE_INFO: "专栏文章基本信息";
-  readonly ARTICLE_LIST_INFO: "文集基本信息";
-  readonly LOGIN_STATUS: "登录基本信息";
-  readonly LOGIN_QRCODE: "申请二维码";
-  readonly QRCODE_STATUS: "二维码状态";
-  readonly APPLY_CAPTCHA: "从_v_voucher_申请_captcha";
-  readonly VALIDATE_CAPTCHA: "验证验证码结果";
-  readonly AV_TO_BV: "AV转BV";
-  readonly BV_TO_AV: "BV转AV";
-  readonly EMOJI_LIST: "Emoji数据";
-};
-/** B站 Fetcher 方法名 (英文，对外 API) */
-declare const BilibiliFetcherMethods: {
-  readonly VIDEO_INFO: "fetchVideoInfo";
-  readonly VIDEO_STREAM: "fetchVideoStreamUrl";
-  readonly VIDEO_DANMAKU: "fetchVideoDanmaku";
-  readonly COMMENTS: "fetchComments";
-  readonly COMMENT_REPLIES: "fetchCommentReplies";
-  readonly USER_CARD: "fetchUserCard";
-  readonly USER_DYNAMICS: "fetchUserDynamicList";
-  readonly USER_LIVE_STATUS: "fetchUserLiveStatus";
-  readonly USER_SPACE_INFO: "fetchUserSpaceInfo";
-  readonly USER_TOTAL_VIEWS: "fetchUploaderTotalViews";
-  readonly DYNAMIC_DETAIL: "fetchDynamicDetail";
-  readonly BANGUMI_INFO: "fetchBangumiInfo";
-  readonly BANGUMI_STREAM: "fetchBangumiStreamUrl";
-  readonly LIVE_ROOM_INFO: "fetchLiveRoomInfo";
-  readonly LIVE_ROOM_INIT: "fetchLiveRoomInitInfo";
-  readonly ARTICLE_CONTENT: "fetchArticleContent";
-  readonly ARTICLE_CARDS: "fetchArticleCards";
-  readonly ARTICLE_INFO: "fetchArticleInfo";
-  readonly ARTICLE_LIST_INFO: "fetchArticleListInfo";
-  readonly LOGIN_STATUS: "fetchLoginStatus";
-  readonly LOGIN_QRCODE: "requestLoginQrcode";
-  readonly QRCODE_STATUS: "checkQrcodeStatus";
-  readonly APPLY_CAPTCHA: "requestCaptchaFromVoucher";
-  readonly VALIDATE_CAPTCHA: "validateCaptchaResult";
-  readonly AV_TO_BV: "convertAvToBv";
-  readonly BV_TO_AV: "convertBvToAv";
-  readonly EMOJI_LIST: "fetchEmojiList";
-};
-/** 抖音内部方法名 (中文，用于 getdata.ts) */
-declare const DouyinInternalMethods: {
-  readonly VIDEO_WORK: "视频作品数据";
-  readonly IMAGE_ALBUM_WORK: "图集作品数据";
-  readonly SLIDES_WORK: "合辑作品数据";
-  readonly TEXT_WORK: "文字作品数据";
-  readonly PARSE_WORK: "聚合解析";
-  readonly DANMAKU: "弹幕数据";
-  readonly WORK_COMMENTS: "评论数据";
-  readonly COMMENT_REPLIES: "指定评论回复数据";
-  readonly USER_PROFILE: "用户主页数据";
-  readonly USER_VIDEO_LIST: "用户主页视频列表数据";
-  readonly SEARCH: "搜索数据";
-  readonly SUGGEST_WORDS: "热点词数据";
-  readonly MUSIC_INFO: "音乐数据";
-  readonly LIVE_ROOM_INFO: "直播间信息数据";
-  readonly LOGIN_QRCODE: "申请二维码数据";
-  readonly EMOJI_LIST: "Emoji数据";
-  readonly DYNAMIC_EMOJI_LIST: "动态表情数据";
-};
-/** 抖音 Fetcher 方法名 (英文，对外 API) */
-declare const DouyinFetcherMethods: {
-  readonly VIDEO_WORK: "fetchVideoWork";
-  readonly IMAGE_ALBUM_WORK: "fetchImageAlbumWork";
-  readonly SLIDES_WORK: "fetchSlidesWork";
-  readonly TEXT_WORK: "fetchTextWork";
-  readonly PARSE_WORK: "parseWork";
-  readonly DANMAKU: "fetchDanmakuList";
-  readonly WORK_COMMENTS: "fetchWorkComments";
-  readonly COMMENT_REPLIES: "fetchCommentReplies";
-  readonly USER_PROFILE: "fetchUserProfile";
-  readonly USER_VIDEO_LIST: "fetchUserVideoList";
-  readonly SEARCH: "searchContent";
-  readonly SUGGEST_WORDS: "fetchSuggestWords";
-  readonly MUSIC_INFO: "fetchMusicInfo";
-  readonly LIVE_ROOM_INFO: "fetchLiveRoomInfo";
-  readonly LOGIN_QRCODE: "requestLoginQrcode";
-  readonly EMOJI_LIST: "fetchEmojiList";
-  readonly DYNAMIC_EMOJI_LIST: "fetchDynamicEmojiList";
-};
-/** 快手内部方法名 (中文，用于 getdata.ts) */
-declare const KuaishouInternalMethods: {
-  readonly VIDEO_WORK: "单个视频作品数据";
-  readonly WORK_COMMENTS: "评论数据";
-  readonly USER_PROFILE: "用户主页数据";
-  readonly USER_WORK_LIST: "用户作品列表数据";
-  readonly LIVE_ROOM_INFO: "直播间信息数据";
-  readonly EMOJI_LIST: "Emoji数据";
-};
-/** 快手 Fetcher 方法名 (英文，对外 API) */
-declare const KuaishouFetcherMethods: {
-  readonly VIDEO_WORK: "fetchVideoWork";
-  readonly WORK_COMMENTS: "fetchWorkComments";
-  readonly USER_PROFILE: "fetchUserProfile";
-  readonly USER_WORK_LIST: "fetchUserWorkList";
-  readonly LIVE_ROOM_INFO: "fetchLiveRoomInfo";
-  readonly EMOJI_LIST: "fetchEmojiList";
-};
-/** 小红书内部方法名 (中文，用于 getdata.ts) */
-declare const XiaohongshuInternalMethods: {
-  readonly HOME_FEED: "首页推荐数据";
-  readonly NOTE_DETAIL: "单个笔记数据";
-  readonly NOTE_COMMENTS: "评论数据";
-  readonly USER_PROFILE: "用户数据";
-  readonly USER_NOTES: "用户笔记数据";
-  readonly SEARCH_NOTES: "搜索笔记";
-  readonly EMOJI_LIST: "表情列表";
-};
-/** 小红书 Fetcher 方法名 (英文，对外 API) */
-declare const XiaohongshuFetcherMethods: {
-  readonly HOME_FEED: "fetchHomeFeed";
-  readonly NOTE_DETAIL: "fetchNoteDetail";
-  readonly NOTE_COMMENTS: "fetchNoteComments";
-  readonly USER_PROFILE: "fetchUserProfile";
-  readonly USER_NOTES: "fetchUserNoteList";
-  readonly SEARCH_NOTES: "searchNotes";
-  readonly EMOJI_LIST: "fetchEmojiList";
-};
-type BilibiliInternalMethodKey = (typeof BilibiliInternalMethods)[keyof typeof BilibiliInternalMethods];
-type BilibiliFetcherMethodKey = (typeof BilibiliFetcherMethods)[keyof typeof BilibiliFetcherMethods];
-type DouyinInternalMethodKey = (typeof DouyinInternalMethods)[keyof typeof DouyinInternalMethods];
-type DouyinFetcherMethodKey = (typeof DouyinFetcherMethods)[keyof typeof DouyinFetcherMethods];
-type KuaishouInternalMethodKey = (typeof KuaishouInternalMethods)[keyof typeof KuaishouInternalMethods];
-type KuaishouFetcherMethodKey = (typeof KuaishouFetcherMethods)[keyof typeof KuaishouFetcherMethods];
-type XiaohongshuInternalMethodKey = (typeof XiaohongshuInternalMethods)[keyof typeof XiaohongshuInternalMethods];
-type XiaohongshuFetcherMethodKey = (typeof XiaohongshuFetcherMethods)[keyof typeof XiaohongshuFetcherMethods];
-/** B站：内部中文方法名 -> Fetcher 英文方法名 */
-declare const BilibiliMethodToFetcher: Record<BilibiliInternalMethodKey, BilibiliFetcherMethodKey>;
-/** 抖音：内部中文方法名 -> Fetcher 英文方法名 */
-declare const DouyinMethodToFetcher: Record<DouyinInternalMethodKey, DouyinFetcherMethodKey>;
-/** 快手：内部中文方法名 -> Fetcher 英文方法名 */
-declare const KuaishouMethodToFetcher: Record<KuaishouInternalMethodKey, KuaishouFetcherMethodKey>;
-/** 小红书：内部中文方法名 -> Fetcher 英文方法名 */
-declare const XiaohongshuMethodToFetcher: Record<XiaohongshuInternalMethodKey, XiaohongshuFetcherMethodKey>;
-/**
- * 将内部方法名转换为 Fetcher 方法名
- * @param platform - 平台名称
- * @param internalMethod - 内部方法名 (中文)
- * @returns Fetcher 方法名 (英文)
- */
-declare function toFetcherMethod(platform: 'bilibili' | 'douyin' | 'kuaishou' | 'xiaohongshu', internalMethod: string): string;
-/**
- * 获取所有平台的方法名映射
- */
-declare const MethodMaps: {
-  readonly bilibili: {
-    readonly internal: {
-      readonly VIDEO_INFO: "单个视频作品数据";
-      readonly VIDEO_STREAM: "单个视频下载信息数据";
-      readonly VIDEO_DANMAKU: "实时弹幕";
-      readonly COMMENTS: "评论数据";
-      readonly COMMENT_REPLIES: "指定评论的回复";
-      readonly USER_CARD: "用户主页数据";
-      readonly USER_DYNAMICS: "用户主页动态列表数据";
-      readonly USER_LIVE_STATUS: "用户直播状态";
-      readonly USER_SPACE_INFO: "用户空间详细信息";
-      readonly USER_TOTAL_VIEWS: "获取UP主总播放量";
-      readonly DYNAMIC_DETAIL: "动态详情数据";
-      readonly BANGUMI_INFO: "番剧基本信息数据";
-      readonly BANGUMI_STREAM: "番剧下载信息数据";
-      readonly LIVE_ROOM_INFO: "直播间信息";
-      readonly LIVE_ROOM_INIT: "直播间初始化信息";
-      readonly ARTICLE_CONTENT: "专栏正文内容";
-      readonly ARTICLE_CARDS: "专栏显示卡片信息";
-      readonly ARTICLE_INFO: "专栏文章基本信息";
-      readonly ARTICLE_LIST_INFO: "文集基本信息";
-      readonly LOGIN_STATUS: "登录基本信息";
-      readonly LOGIN_QRCODE: "申请二维码";
-      readonly QRCODE_STATUS: "二维码状态";
-      readonly APPLY_CAPTCHA: "从_v_voucher_申请_captcha";
-      readonly VALIDATE_CAPTCHA: "验证验证码结果";
-      readonly AV_TO_BV: "AV转BV";
-      readonly BV_TO_AV: "BV转AV";
-      readonly EMOJI_LIST: "Emoji数据";
-    };
-    readonly fetcher: {
-      readonly VIDEO_INFO: "fetchVideoInfo";
-      readonly VIDEO_STREAM: "fetchVideoStreamUrl";
-      readonly VIDEO_DANMAKU: "fetchVideoDanmaku";
-      readonly COMMENTS: "fetchComments";
-      readonly COMMENT_REPLIES: "fetchCommentReplies";
-      readonly USER_CARD: "fetchUserCard";
-      readonly USER_DYNAMICS: "fetchUserDynamicList";
-      readonly USER_LIVE_STATUS: "fetchUserLiveStatus";
-      readonly USER_SPACE_INFO: "fetchUserSpaceInfo";
-      readonly USER_TOTAL_VIEWS: "fetchUploaderTotalViews";
-      readonly DYNAMIC_DETAIL: "fetchDynamicDetail";
-      readonly BANGUMI_INFO: "fetchBangumiInfo";
-      readonly BANGUMI_STREAM: "fetchBangumiStreamUrl";
-      readonly LIVE_ROOM_INFO: "fetchLiveRoomInfo";
-      readonly LIVE_ROOM_INIT: "fetchLiveRoomInitInfo";
-      readonly ARTICLE_CONTENT: "fetchArticleContent";
-      readonly ARTICLE_CARDS: "fetchArticleCards";
-      readonly ARTICLE_INFO: "fetchArticleInfo";
-      readonly ARTICLE_LIST_INFO: "fetchArticleListInfo";
-      readonly LOGIN_STATUS: "fetchLoginStatus";
-      readonly LOGIN_QRCODE: "requestLoginQrcode";
-      readonly QRCODE_STATUS: "checkQrcodeStatus";
-      readonly APPLY_CAPTCHA: "requestCaptchaFromVoucher";
-      readonly VALIDATE_CAPTCHA: "validateCaptchaResult";
-      readonly AV_TO_BV: "convertAvToBv";
-      readonly BV_TO_AV: "convertBvToAv";
-      readonly EMOJI_LIST: "fetchEmojiList";
-    };
-    readonly toFetcher: Record<BilibiliInternalMethodKey, BilibiliFetcherMethodKey>;
-  };
-  readonly douyin: {
-    readonly internal: {
-      readonly VIDEO_WORK: "视频作品数据";
-      readonly IMAGE_ALBUM_WORK: "图集作品数据";
-      readonly SLIDES_WORK: "合辑作品数据";
-      readonly TEXT_WORK: "文字作品数据";
-      readonly PARSE_WORK: "聚合解析";
-      readonly DANMAKU: "弹幕数据";
-      readonly WORK_COMMENTS: "评论数据";
-      readonly COMMENT_REPLIES: "指定评论回复数据";
-      readonly USER_PROFILE: "用户主页数据";
-      readonly USER_VIDEO_LIST: "用户主页视频列表数据";
-      readonly SEARCH: "搜索数据";
-      readonly SUGGEST_WORDS: "热点词数据";
-      readonly MUSIC_INFO: "音乐数据";
-      readonly LIVE_ROOM_INFO: "直播间信息数据";
-      readonly LOGIN_QRCODE: "申请二维码数据";
-      readonly EMOJI_LIST: "Emoji数据";
-      readonly DYNAMIC_EMOJI_LIST: "动态表情数据";
-    };
-    readonly fetcher: {
-      readonly VIDEO_WORK: "fetchVideoWork";
-      readonly IMAGE_ALBUM_WORK: "fetchImageAlbumWork";
-      readonly SLIDES_WORK: "fetchSlidesWork";
-      readonly TEXT_WORK: "fetchTextWork";
-      readonly PARSE_WORK: "parseWork";
-      readonly DANMAKU: "fetchDanmakuList";
-      readonly WORK_COMMENTS: "fetchWorkComments";
-      readonly COMMENT_REPLIES: "fetchCommentReplies";
-      readonly USER_PROFILE: "fetchUserProfile";
-      readonly USER_VIDEO_LIST: "fetchUserVideoList";
-      readonly SEARCH: "searchContent";
-      readonly SUGGEST_WORDS: "fetchSuggestWords";
-      readonly MUSIC_INFO: "fetchMusicInfo";
-      readonly LIVE_ROOM_INFO: "fetchLiveRoomInfo";
-      readonly LOGIN_QRCODE: "requestLoginQrcode";
-      readonly EMOJI_LIST: "fetchEmojiList";
-      readonly DYNAMIC_EMOJI_LIST: "fetchDynamicEmojiList";
-    };
-    readonly toFetcher: Record<DouyinInternalMethodKey, DouyinFetcherMethodKey>;
-  };
-  readonly kuaishou: {
-    readonly internal: {
-      readonly VIDEO_WORK: "单个视频作品数据";
-      readonly WORK_COMMENTS: "评论数据";
-      readonly USER_PROFILE: "用户主页数据";
-      readonly USER_WORK_LIST: "用户作品列表数据";
-      readonly LIVE_ROOM_INFO: "直播间信息数据";
-      readonly EMOJI_LIST: "Emoji数据";
-    };
-    readonly fetcher: {
-      readonly VIDEO_WORK: "fetchVideoWork";
-      readonly WORK_COMMENTS: "fetchWorkComments";
-      readonly USER_PROFILE: "fetchUserProfile";
-      readonly USER_WORK_LIST: "fetchUserWorkList";
-      readonly LIVE_ROOM_INFO: "fetchLiveRoomInfo";
-      readonly EMOJI_LIST: "fetchEmojiList";
-    };
-    readonly toFetcher: Record<KuaishouInternalMethodKey, KuaishouFetcherMethodKey>;
-  };
-  readonly xiaohongshu: {
-    readonly internal: {
-      readonly HOME_FEED: "首页推荐数据";
-      readonly NOTE_DETAIL: "单个笔记数据";
-      readonly NOTE_COMMENTS: "评论数据";
-      readonly USER_PROFILE: "用户数据";
-      readonly USER_NOTES: "用户笔记数据";
-      readonly SEARCH_NOTES: "搜索笔记";
-      readonly EMOJI_LIST: "表情列表";
-    };
-    readonly fetcher: {
-      readonly HOME_FEED: "fetchHomeFeed";
-      readonly NOTE_DETAIL: "fetchNoteDetail";
-      readonly NOTE_COMMENTS: "fetchNoteComments";
-      readonly USER_PROFILE: "fetchUserProfile";
-      readonly USER_NOTES: "fetchUserNoteList";
-      readonly SEARCH_NOTES: "searchNotes";
-      readonly EMOJI_LIST: "fetchEmojiList";
-    };
-    readonly toFetcher: Record<XiaohongshuInternalMethodKey, XiaohongshuFetcherMethodKey>;
-  };
-};
 //#endregion
 //#region src/types/index.d.ts
 /**
  * 移除methodType字段的工具类型
  */
 type OmitMethodType<T> = Omit<T, 'methodType'>;
-/**
- * 类型精度控制参数
- */
-type TypeControl = {
-  /**
-   * 获取返回类型
-   * 类型定义时间：2025-02-02
-   *
-   * 类型解析模式：
-   * - `strict`: 返回严格类型（基于接口响应定义，随时间推移可能缺少未声明的字段）
-   * - `loose` 或 `未指定`: 返回宽松的 any 类型（默认）
-   *
-   * @default 'loose'
-   */
-  typeMode?: 'strict' | 'loose';
-};
 type DouyinDataOptionsMap = { [K in DouyinMethodType]: {
   opt: DouyinMethodOptMap[K];
   data: DouyinReturnTypeMap[K];
@@ -26486,17 +50042,18 @@ type XiaohongshuDataOptionsMap = { [K in XiaohongshuMethodType]: {
   opt: XiaohongshuMethodOptMap[K];
   data: XiaohongshuReturnTypeMap[K];
 }; };
-type XiaohongshuDataOptions<T extends keyof XiaohongshuDataOptionsMap> = OmitMethodType<XiaohongshuDataOptionsMap[T]['opt'] & TypeControl>;
-type DouyinDataOptions<T extends DouyinMethodType> = OmitMethodType<zod.infer<(typeof DouyinValidationSchemas)[T]> & TypeControl>;
-type BilibiliDataOptions<T extends keyof BilibiliDataOptionsMap> = OmitMethodType<BilibiliDataOptionsMap[T]['opt'] & TypeControl>;
-type KuaishouDataOptions<T extends keyof KuaishouDataOptionsMap> = OmitMethodType<KuaishouDataOptionsMap[T]['opt'] & TypeControl>;
+type XiaohongshuDataOptions<T extends keyof XiaohongshuDataOptionsMap> = OmitMethodType<XiaohongshuDataOptionsMap[T]['opt']>;
+type DouyinDataOptions<T extends DouyinMethodType> = OmitMethodType<zod.infer<(typeof DouyinValidationSchemas)[T]>>;
+type BilibiliDataOptions<T extends keyof BilibiliDataOptionsMap> = OmitMethodType<BilibiliDataOptionsMap[T]['opt']>;
+type KuaishouDataOptions<T extends keyof KuaishouDataOptionsMap> = OmitMethodType<KuaishouDataOptionsMap[T]['opt']>;
 /**
  * API请求错误类型
  * 该类型是方法 `getXXXData` 封装后请求遇到错误时的返回类型
  */
-type APIErrorType<T extends 'douyin' | 'bilibili' | 'kuaishou' | 'xiaohongshu' | 'default' = 'default'> = {
-  /** 错误码 */
-  code: T extends 'douyin' ? douoyinAPIErrorCode : T extends 'bilibili' ? bilibiliAPIErrorCode : T extends 'kuaishou' ? kuaishouAPIErrorCode : T extends 'xiaohongshu' ? xiaohongshuAPIErrorCode : amagiAPIErrorCode;
+type APIErrorType = {
+  /** 错误码（v6 的 5 个 APIErrorCode 枚举在 6.2 删除：字符串枚举比数字码恒假、
+   *  混合枚举泄漏反向映射。替代物是 `AmagiErrorCode` 联合 + `error.platform.code`） */
+  code: number | string;
   /** 错误时的响应数据 */
   data: any;
   /** amagi 错误详情 */
@@ -26505,7 +50062,7 @@ type APIErrorType<T extends 'douyin' | 'bilibili' | 'kuaishou' | 'xiaohongshu' |
   amagiMessage: string;
 };
 //#endregion
-//#region src/platform/bilibili/API.d.ts
+//#region src/platforms/legacy/bilibili/API.d.ts
 /** 去除 methodType 字段后的参数类型 */
 type BilibiliMethodOptionsWithoutMethodType = { [K in keyof BilibiliMethodOptionsMap]: OmitMethodType<BilibiliMethodOptionsMap[K]>; };
 /**
@@ -26596,1984 +50153,7 @@ declare class BilibiliAPI {
 /** B站 API URL 构建器实例 */
 declare const bilibiliApiUrls: BilibiliAPI;
 //#endregion
-//#region src/validation/index.d.ts
-/**
- * 基础响应类型
- */
-type BaseResponse = {
-  /** 响应消息 */
-  message: string;
-  /** 响应状态码 */
-  code: number;
-};
-/**
- * 成功响应类型
- * @template T - 响应数据的类型，默认为any
- */
-type SuccessResult<T = any> = BaseResponse & {
-  /** 响应状态 */
-  success: true;
-  /** 响应数据，类型由泛型 T 决定 */
-  data: T;
-  /** 成功响应时错误信息为空 */
-  error: never;
-};
-/**
- * 错误响应类型
- */
-type ErrorResult = BaseResponse & {
-  /** 响应状态 */
-  success: false;
-  /** API 错误类型 */
-  error: APIErrorType;
-  /** 错误响应时数据为空 */
-  data: never;
-};
-/**
- * 通用API响应类型
- * @template T - 成功响应数据的类型，默认为any
- */
-type Result<T> = SuccessResult<T> | ErrorResult;
-/**
- * 验证抖音参数
- * @param methodType - 抖音方法类型
- * @param params - 待验证的参数
- * @returns 验证后的参数，符合原始API期望的类型
- */
-declare const validateDouyinParams: <T extends DouyinMethodType>(methodType: T, params: unknown) => zod.infer<(typeof DouyinValidationSchemas)[T]>;
-/**
- * 验证哔哩哔哩参数
- * @param methodType - 哔哩哔哩方法类型
- * @param params - 待验证的参数
- * @returns 验证后的参数，符合原始API期望的类型
- */
-declare const validateBilibiliParams: <T extends BilibiliMethodType>(methodType: T, params: unknown) => zod.infer<(typeof BilibiliValidationSchemas)[T]>;
-/**
- * 验证快手参数
- * @param methodType - 快手方法类型
- * @param params - 待验证的参数
- * @returns 验证后的参数，符合原始API期望的类型
- */
-declare const validateKuaishouParams: <T extends KuaishouMethodType>(methodType: T, params: unknown) => zod.infer<(typeof KuaishouValidationSchemas)[T]>;
-/**
- * 验证小红书参数
- * @param methodType - 小红书方法类型
- * @param params - 待验证的参数
- * @returns 验证后的参数
- */
-declare const validateXiaohongshuParams: <T extends XiaohongshuMethodType>(methodType: T, params: unknown) => zod.infer<(typeof XiaohongshuValidationSchemas)[T]>;
-/**
- * 创建成功响应格式
- * @param data - 响应数据
- * @param message - 响应消息（可选）
- * @param code - 响应状态码（可选，默认200）
- * @returns 格式化的成功API响应对象
- */
-declare const createSuccessResponse: <T>(data: T, message: string, code?: number) => SuccessResult<T>;
-/**
- * 创建失败响应格式
- * @param error - 错误信息
- * @param message - 详细错误消息（可选）
- * @param code - 错误状态码（可选，默认500）
- * @returns 格式化的错误响应对象
- */
-declare const createErrorResponse: (error: APIErrorType, message: string, code?: number, data?: unknown) => ErrorResult;
-//#endregion
-//#region src/model/fetchers/bilibili/types.d.ts
-/** B站视频信息请求参数 */
-interface BilibiliVideoInfoOptions extends BaseRequestOptions {
-  /** BV号，如 `BV1xx411c7mD` */
-  bvid: string;
-}
-/** B站视频流请求参数 */
-interface BilibiliVideoStreamOptions extends BaseRequestOptions {
-  /** AV号 (纯数字)，如 `170001` */
-  avid: number;
-  /** 视频分P的 CID，可从视频信息接口获取 */
-  cid: number;
-}
-/** B站评论请求参数 */
-interface BilibiliCommentsOptions extends BaseRequestOptions {
-  /** 目标 ID，视频为 AV号，动态为动态ID */
-  oid: string;
-  /** 评论区类型: 1=视频, 11=图文动态, 12=专栏, 17=纯文字动态 */
-  type: number;
-  /** 获取数量 */
-  number?: number;
-  /** 页码，从 1 开始 */
-  pn?: number;
-}
-/** B站评论回复请求参数 */
-interface BilibiliCommentRepliesOptions extends BaseRequestOptions {
-  /** 目标 ID，视频为 AV号，动态为动态ID */
-  oid: string;
-  /** 评论区类型: 1=视频, 11=图文动态, 12=专栏, 17=纯文字动态 */
-  type: number;
-  /** 根评论 rpid */
-  root: string;
-  /** 获取数量 */
-  number?: number;
-  /** 页码，从 1 开始 */
-  pn?: number;
-}
-/** B站用户请求参数 */
-interface BilibiliUserOptions extends BaseRequestOptions {
-  /** 用户 UID (纯数字)，如 `438881796` */
-  host_mid: number;
-}
-/** B站动态请求参数 */
-interface BilibiliDynamicOptions extends BaseRequestOptions {
-  /** 动态 ID，如 `123456789012345678` */
-  dynamic_id: string;
-}
-/** B站番剧信息请求参数 */
-interface BilibiliBangumiInfoOptions extends BaseRequestOptions {
-  /** 剧集 EP ID，与 season_id 二选一 */
-  ep_id?: string;
-  /** 季度 ID，与 ep_id 二选一 */
-  season_id?: string;
-}
-/** B站番剧流请求参数 */
-interface BilibiliBangumiStreamOptions extends BaseRequestOptions {
-  /** 视频 CID，可从番剧信息接口获取 */
-  cid: number;
-  /** 剧集 EP ID */
-  ep_id: string;
-}
-/** B站直播间请求参数 */
-interface BilibiliLiveRoomOptions extends BaseRequestOptions {
-  /** 直播间 ID (房间号) */
-  room_id: string;
-}
-/** B站二维码状态请求参数 */
-interface BilibiliQrcodeStatusOptions extends BaseRequestOptions {
-  /** 二维码 key，从申请二维码接口获取 */
-  qrcode_key: string;
-}
-/** B站 AV 转 BV 请求参数 */
-interface BilibiliAv2BvOptions extends BaseRequestOptions {
-  /** AV号 (纯数字)，如 `170001` */
-  avid: number;
-}
-/** B站 BV 转 AV 请求参数 */
-interface BilibiliBv2AvOptions extends BaseRequestOptions {
-  /** BV号，如 `BV1xx411c7mD` */
-  bvid: string;
-}
-/** B站专栏请求参数 */
-interface BilibiliArticleOptions extends BaseRequestOptions {
-  /** 专栏 cv 号 (纯数字)，如 `12345678` */
-  id: string;
-}
-/** B站专栏卡片请求参数 */
-interface BilibiliArticleCardOptions extends BaseRequestOptions {
-  /** 专栏 cv 号列表，单个字符串或数组 */
-  ids: string | string[];
-}
-/** B站弹幕请求参数 */
-interface BilibiliDanmakuOptions extends BaseRequestOptions {
-  /** 视频分P的 CID */
-  cid: number;
-  /** 分段序号，6分钟一段，从 1 开始 */
-  segment_index?: number;
-}
-/** B站验证码申请请求参数 */
-interface BilibiliApplyCaptchaOptions extends BaseRequestOptions {
-  /** CSRF Token，从 Cookie 中的 bili_jct 获取 */
-  csrf?: string;
-  /** v_voucher 凭证，风控触发时返回 */
-  v_voucher: string;
-}
-/** B站验证码验证请求参数 */
-interface BilibiliValidateCaptchaOptions extends BaseRequestOptions {
-  /** CSRF Token，从 Cookie 中的 bili_jct 获取 */
-  csrf?: string;
-  /** 极验 challenge */
-  challenge: string;
-  /** 极验 token */
-  token: string;
-  /** 极验 validate */
-  validate: string;
-  /** 极验 seccode */
-  seccode: string;
-}
-/**
- * B站 Fetcher 接口定义
- * 包含所有 B站 API 方法的类型签名
- */
-interface IBilibiliFetcher {
-  /**
-   * 获取B站视频详细信息
-   */
-  fetchVideoInfo: MethodOverload<BilibiliVideoInfoOptions, BilibiliReturnTypeMap['videoInfo']>;
-  /**
-   * 获取B站视频流地址
-   */
-  fetchVideoStreamUrl: MethodOverload<BilibiliVideoStreamOptions, BilibiliReturnTypeMap['videoStream']>;
-  /**
-   * 获取B站视频实时弹幕
-   */
-  fetchVideoDanmaku: MethodOverload<BilibiliDanmakuOptions, BilibiliReturnTypeMap['videoDanmaku']>;
-  /**
-   * 获取B站视频/动态评论列表
-   */
-  fetchComments: MethodOverload<BilibiliCommentsOptions, BilibiliReturnTypeMap['comments']>;
-  /**
-   * 获取B站指定评论的回复列表
-   */
-  fetchCommentReplies: MethodOverload<BilibiliCommentRepliesOptions, BilibiliReturnTypeMap['commentReplies']>;
-  /**
-   * 获取B站用户名片信息
-   */
-  fetchUserCard: MethodOverload<BilibiliUserOptions, BilibiliReturnTypeMap['userCard']>;
-  /**
-   * 获取B站用户动态列表
-   */
-  fetchUserDynamicList: MethodOverload<BilibiliUserOptions, BilibiliReturnTypeMap['userDynamicList']>;
-  /**
-   * 按用户 UID 获取B站直播状态
-   */
-  fetchUserLiveStatus: MethodOverload<BilibiliUserOptions, BilibiliReturnTypeMap['userLiveStatus']>;
-  /**
-   * 获取B站用户空间详细信息
-   */
-  fetchUserSpaceInfo: MethodOverload<BilibiliUserOptions, BilibiliReturnTypeMap['userSpaceInfo']>;
-  /**
-   * 获取B站 UP 主总播放量
-   */
-  fetchUploaderTotalViews: MethodOverload<BilibiliUserOptions, BilibiliReturnTypeMap['uploaderTotalViews']>;
-  /**
-   * 获取B站动态详情
-   */
-  fetchDynamicDetail: MethodOverload<BilibiliDynamicOptions, BilibiliReturnTypeMap['dynamicDetail']>;
-  /**
-   * 获取B站番剧基本信息
-   */
-  fetchBangumiInfo: MethodOverload<BilibiliBangumiInfoOptions, BilibiliReturnTypeMap['bangumiInfo']>;
-  /**
-   * 获取B站番剧视频流地址
-   */
-  fetchBangumiStreamUrl: MethodOverload<BilibiliBangumiStreamOptions, BilibiliReturnTypeMap['bangumiStream']>;
-  /**
-   * 获取B站直播间信息
-   */
-  fetchLiveRoomInfo: MethodOverload<BilibiliLiveRoomOptions, BilibiliReturnTypeMap['liveRoomInfo']>;
-  /**
-   * 获取B站直播间初始化信息
-   */
-  fetchLiveRoomInitInfo: MethodOverload<BilibiliLiveRoomOptions, BilibiliReturnTypeMap['liveRoomInit']>;
-  /**
-   * 获取B站专栏正文内容
-   */
-  fetchArticleContent: MethodOverload<BilibiliArticleOptions, BilibiliReturnTypeMap['articleContent']>;
-  /**
-   * 获取B站专栏卡片信息
-   */
-  fetchArticleCards: MethodOverload<BilibiliArticleCardOptions, BilibiliReturnTypeMap['articleCards']>;
-  /**
-   * 获取B站专栏文章基本信息
-   */
-  fetchArticleInfo: MethodOverload<BilibiliArticleOptions, BilibiliReturnTypeMap['articleInfo']>;
-  /**
-   * 获取B站文集基本信息
-   */
-  fetchArticleListInfo: MethodOverload<BilibiliArticleOptions, BilibiliReturnTypeMap['articleListInfo']>;
-  /**
-   * 获取B站登录状态信息
-   */
-  fetchLoginStatus: NoParamMethodOverload<BilibiliReturnTypeMap['loginStatus']>;
-  /**
-   * 申请B站登录二维码
-   */
-  requestLoginQrcode: NoParamMethodOverload<BilibiliReturnTypeMap['loginQrcode']>;
-  /**
-   * 检查B站登录二维码扫描状态
-   */
-  checkQrcodeStatus: MethodOverload<BilibiliQrcodeStatusOptions, BilibiliReturnTypeMap['qrcodeStatus']>;
-  /**
-   * 从 v_voucher 申请验证码
-   */
-  requestCaptchaFromVoucher: MethodOverload<BilibiliApplyCaptchaOptions, BilibiliReturnTypeMap['captchaFromVoucher']>;
-  /**
-   * 验证验证码结果
-   */
-  validateCaptchaResult: MethodOverload<BilibiliValidateCaptchaOptions, BilibiliReturnTypeMap['validateCaptcha']>;
-  /**
-   * 将 AV 号转换为 BV 号
-   */
-  convertAvToBv: MethodOverload<BilibiliAv2BvOptions, BilibiliReturnTypeMap['avToBv']>;
-  /**
-   * 将 BV 号转换为 AV 号
-   */
-  convertBvToAv: MethodOverload<BilibiliBv2AvOptions, BilibiliReturnTypeMap['bvToAv']>;
-  /**
-   * 获取B站表情包列表
-   */
-  fetchEmojiList: NoParamMethodOverload<BilibiliReturnTypeMap['emojiList']>;
-}
-//#endregion
-//#region src/platform/douyin/passport/aBogus.d.ts
-/** bdms SDK 版本号，同时也是 passport 通用参数里的 p_bd */
-declare const BDMS_SDK_VERSION = "1.0.1.19-fix.01";
-/**
- * 生成 a_bogus
- * @param query 除 a_bogus 之外的完整查询串（未加 `?`，保持实际发送顺序）
- * @param userAgent 与请求头一致的 UA
- * @returns a_bogus 参数值（未做 URL 编码）
- */
-declare const aBogus: (query: string, userAgent: string) => string;
-//#endregion
-//#region src/platform/douyin/passport/cookieJar.d.ts
-/**
- * 登录流程用的轻量 CookieJar
- *
- * 登录过程会跨 `www.douyin.com` / `login.douyin.com` / `ttwid.bytedance.com` 三个域，
- * 且同一个 cookie 名会被多次下发（例如 `ttwid` 在换取可信指纹后会被替换、
- * `sessionid` 在二次验证通过后会被升级）。这里只做一件事：**按下发顺序覆盖同名 cookie**，
- * 保证最终拿到的永远是最后一次下发的值，同时正确处理服务端的删除指令。
- *
- * 不做域/路径隔离：整个登录流程都在抖音自己的域下，隔离反而会漏掉跨子域下发的凭证。
- *
- * 另外承载一小部分**本地会话状态**（见 `INTERNAL_PREFIX`）：passport 的几个接口对外是
- * 无状态的，会话全靠 cookie 串在调用之间传递，而 bd-ticket-guard 需要在多次调用之间
- * 记住自己生成的密钥与服务端签发的票据。这些条目以 `__amagi_` 开头，
- * `toString()` 不会把它们放进 Cookie 请求头，只有 `serialize()` 才会带上。
- */
-/** 本地会话状态的 cookie 名前缀，这些条目永远不会发给服务端 */
-declare const INTERNAL_PREFIX = "__amagi_";
-declare class CookieJar {
-  /** Map 保留插入顺序，重复 set 只更新值、不改变位置 */
-  private readonly cookies;
-  /**
-   * @param initial 初始 cookie 串，形如 `a=1; b=2`
-   */
-  constructor(initial?: string);
-  /** 当前持有的 cookie 数量 */
-  get size(): number;
-  /**
-   * 写入一条 cookie
-   * @param name cookie 名
-   * @param value cookie 值
-   */
-  set(name: string, value: string): this;
-  /**
-   * 读取一条 cookie
-   * @param name cookie 名
-   */
-  get(name: string): string | undefined;
-  /**
-   * 是否持有某条 cookie
-   * @param name cookie 名
-   */
-  has(name: string): boolean;
-  /**
-   * 合并一段 `name=value; name=value` 形式的 cookie 串
-   * @param cookieString cookie 串，空值直接忽略
-   */
-  merge(cookieString?: string | null): this;
-  /**
-   * 应用响应的 Set-Cookie 头
-   * @param setCookies 单条或多条 Set-Cookie 原始值
-   */
-  applySetCookie(setCookies?: string | string[] | null): this;
-  /**
-   * 是否已经拿到登录态凭证（`ttwid` 是匿名设备指纹，不算登录）
-   */
-  isLoggedIn(): boolean;
-  /** 序列化为可直接放进 Cookie 请求头的字符串，不含本地会话状态 */
-  toString(): string;
-  /**
-   * 序列化为在两次调用之间传递的会话串，包含本地会话状态
-   *
-   * 登录流程内部用这个；最终落库的登录凭证用 `toString()`，避免把本地密钥写进配置。
-   */
-  serialize(): string;
-  /** 导出为普通对象，便于断言与日志 */
-  toJSON(): Record<string, string>;
-}
-//#endregion
-//#region src/platform/douyin/passport/ticketGuard.d.ts
-/** 一次登录会话持有的 ticket-guard 状态 */
-interface TicketGuardState {
-  /** 服务端签发的票据 */
-  ticket: string;
-  /** 票据的时间戳签名 */
-  tsSign: string;
-  /** ECDH 派生出的 HMAC 密钥 */
-  ecdhKey: Buffer;
-}
-/**
- * bd-ticket-guard 会话
- *
- * 状态全部读写自传入的 CookieJar，因此与 passport 的无状态调用形态天然兼容。
- */
-declare class TicketGuard {
-  private readonly jar;
-  /**
-   * @param jar 当前会话 cookie
-   */
-  constructor(jar: CookieJar);
-  /** 本会话的私钥，缺失时生成一把并写回 CookieJar */
-  private get privateKey();
-  /** 未压缩格式的公钥（base64），即 `bd-ticket-guard-ree-public-key` */
-  get reePublicKey(): string;
-  /** 已签发的票据，未签发时为 undefined */
-  get state(): TicketGuardState | undefined;
-  /**
-   * 在首个 passport 请求之前把公钥交给服务端
-   *
-   * 缺了这一步扫码依然能成功，但服务端不会签发票据，后续请求也就无从携带。
-   */
-  publishPublicKey(): void;
-  /**
-   * 消化响应里可能带回的票据签发结果
-   * @param headers 响应头
-   * @returns 是否收到了新票据
-   */
-  applyServerData(headers: Record<string, unknown>): boolean;
-  /**
-   * 生成本次请求的 bd-ticket-guard 请求头
-   *
-   * 尚未拿到票据时只声明公钥，让服务端有机会签发；拿到之后带完整签名。
-   * @param path 请求路径，不含 query
-   * @param timestamp 秒级时间戳，默认取当前
-   */
-  headers(path: string, timestamp?: number): Record<string, string>;
-  /**
-   * ECDH + HKDF-SHA256 派生 HMAC 密钥
-   * @param clientCert 服务端下发的证书或裸公钥
-   */
-  private deriveEcdhKey;
-}
-//#endregion
-//#region src/platform/douyin/passport/client.d.ts
-/** 与签名里的浏览器环境保持一致的 UA */
-declare const PASSPORT_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36";
-/** passport 接口的通用响应形状 */
-interface PassportPayload {
-  message?: string;
-  error_code?: number;
-  description?: string;
-  data?: Record<string, unknown>;
-}
-interface PassportResponse<T = PassportPayload> {
-  /** HTTP 状态码 */
-  status: number;
-  /** 原始响应体 */
-  raw: string;
-  /** 解析后的 JSON，解析失败时为空对象 */
-  body: T;
-  /** 合并了本次 Set-Cookie 之后的完整 cookie 串 */
-  cookie: string;
-}
-declare class DouyinPassportClient {
-  private readonly requestConfig?;
-  /** 会话 cookie */
-  readonly cookies: CookieJar;
-  /** bd-ticket-guard 设备票据，状态随 cookie 一起流转 */
-  readonly ticketGuard: TicketGuard;
-  /**
-   * @param cookie 已有的会话 cookie 串
-   * @param requestConfig amagi 的请求配置（代理、超时、额外请求头）
-   */
-  constructor(cookie?: string, requestConfig?: RequestConfig | undefined);
-  /** CSRF token：优先用服务端下发的，缺失时本地生成并同步写进 cookie（双提交校验） */
-  private get csrfToken();
-  /**
-   * 初始化登录环境指纹
-   *
-   * 依次请求抖音首页拿 `__ac_nonce`、再向 ttwid 服务注册拿 `ttwid`。两步都是匿名的，
-   * 任意机器、任意系统都能跑；失败不抛错，只会让后续更容易命中风控。
-   */
-  bootstrap(): Promise<void>;
-  /**
-   * 请求 login.douyin.com 的 passport 接口（四重签名 + a_bogus 形态）
-   * @param path 接口路径，如 `/passport/web/get_qrcode/`
-   * @param params 业务参数，并入 query
-   */
-  request<T extends PassportPayload = PassportPayload>(path: string, params?: Record<string, string | number>): Promise<PassportResponse<T>>;
-  /**
-   * 请求 www.douyin.com 的验证页接口（lite 形态：固定 query + 表单 body，无签名）
-   * @param path 接口路径，如 `/passport/web/send_code/`
-   * @param params 业务参数，进 body
-   * @param bizTraceId 业务追踪 ID，同一次验证流程内保持一致
-   */
-  liteRequest<T extends PassportPayload = PassportPayload>(path: string, params: Record<string, string>, bizTraceId: string): Promise<PassportResponse<T>>;
-  /**
-   * 跟随扫码确认后下发的 SSO 跳转链，把最终的登录凭证收进 CookieJar
-   * @param redirectUrl `check_qrconnect` 返回的 redirect_url
-   * @returns 是否拿到登录态 cookie
-   */
-  followSsoRedirect(redirectUrl: string): Promise<boolean>;
-  /** 实际发请求：合并 cookie、消化 Set-Cookie 与 msToken */
-  private send;
-}
-//#endregion
-//#region src/platform/douyin/passport/params.d.ts
-/**
- * 逐字节异或 5 后转十六进制，SDK 用它编码参数名列表、验证码与密码
- * @param input 明文
- */
-declare const xor5Hex: (input: string) => string;
-/** 随机十六进制串，用于 biz_trace_id 一类的追踪 ID */
-declare const randomHex: (length: number) => string;
-/** 当日 UTC 12:00 的秒级时间戳，aid-sign 以此为密钥基准 */
-declare const utcNoonTimestamp: (now?: Date) => number;
-/**
- * 计算 sign 与 qs
- * @param params query 参数（仅排序后的前 10 个参与签名）
- * @param data body 参数，GET 请求传空对象
- */
-declare const makeSignAndQs: (params: Record<string, unknown>, data?: Record<string, unknown>) => {
-  sign: string;
-  qs: string;
-};
-/**
- * 计算 `x-tt-passport-aid-sign` 请求头
- * @param urlPath 接口路径，如 `/passport/web/get_qrcode/`
- * @param timestamp 当日 UTC 正午时间戳（秒），默认取当前
- */
-declare const makeAidSign: (urlPath: string, timestamp?: number) => string;
-//#endregion
-//#region src/platform/douyin/passport/types.d.ts
-/** 二维码信息，`get_qrcode` 的解析结果 */
-interface QrcodeInfo {
-  /** 轮询用的二维码令牌 */
-  token: string;
-  /** 二维码承载的内容，优先用它渲染，缺失时回退到 token */
-  content: string;
-  /**
-   * 二维码过期时间，服务端给的是**绝对 Unix 时间戳（秒）**而非时长
-   *
-   * 实测二维码只有约 60 秒有效期，调用方应据此设置扫码等待上限。
-   */
-  expireTime: number;
-}
-/** 二次验证上下文 */
-type VerifyContext = DyPassportVerifyContext;
-/** 单个验证方式 */
-type VerifyWay = DyPassportVerifyWay;
-/** 一次轮询的结果 */
-type PollResult = DyPassportPollResult;
-/** 发送短信验证码的结果 */
-type SendCodeResult = DyPassportSendCodeResult;
-/** 提交短信验证码的结果 */
-type ValidateCodeResult = DyPassportValidateCodeResult;
-//#endregion
-//#region src/platform/douyin/passport/parser.d.ts
-/**
- * 解析 `get_qrcode` 响应
- * @param payload 服务端响应体
- * @returns 二维码信息，缺少 token 时返回 null
- */
-declare const parseQrcode: (payload: PassportPayload) => QrcodeInfo | null;
-/**
- * 解析 `check_qrconnect` 响应为状态机可消费的结果
- * @param payload 服务端响应体
- */
-declare const parsePollResult: (payload: PassportPayload) => PollResult;
-/**
- * 解析 `send_code` 响应
- * @param payload 服务端响应体
- */
-declare const parseSendCodeResult: (payload: PassportPayload) => SendCodeResult;
-/**
- * 解析 `validate_code` 响应
- * @param payload 服务端响应体
- */
-declare const parseValidateCodeResult: (payload: PassportPayload) => ValidateCodeResult;
-//#endregion
-//#region src/platform/douyin/passport/sm3.d.ts
-/**
- * SM3 摘要（GM/T 0004-2012），抖音 bdms 签名链使用的变体
- *
- * 与标准实现的唯一差异：字符串按 `charCodeAt` 逐字符取字节（非 UTF-8 编码），
- * 与浏览器里 bdms 的 `strToBytes` 行为一致。签名输入均为 ASCII，实际不会踩到多字节分支，
- * 但仍保留该分支以保证与浏览器实现逐位一致。
- */
-/**
- * 计算 SM3 摘要
- * @param message 待摘要的字符串或字节数组
- * @returns 32 字节摘要
- */
-declare const sm3: (message: string | number[]) => number[];
-/**
- * 连续两次 SM3（bdms 对 URL 与盐值的处理方式）
- * @param message 待摘要的字符串或字节数组
- * @returns 32 字节摘要
- */
-declare const sm3Twice: (message: string | number[]) => number[];
-/**
- * 十六进制摘要，仅用于测试与排查
- * @param message 待摘要的字符串或字节数组
- */
-declare const sm3Hex: (message: string | number[]) => string;
-declare namespace index_d_exports {
-  export { BDMS_SDK_VERSION, CookieJar, DouyinPassportClient, INTERNAL_PREFIX, PASSPORT_USER_AGENT, PassportPayload, PassportResponse, PollResult, QrcodeInfo, SendCodeResult, TicketGuard, TicketGuardState, ValidateCodeResult, VerifyContext, VerifyWay, aBogus, makeAidSign, makeSignAndQs, parsePollResult, parseQrcode, parseSendCodeResult, parseValidateCodeResult, randomHex, sm3, sm3Hex, sm3Twice, utcNoonTimestamp, xor5Hex };
-}
-//#endregion
-//#region src/model/fetchers/douyin/auth.d.ts
-/**
- * 判断某个验证方式能否用短信验证码流程完成
- * @param verifyWay 服务端下发的 verify_way
- */
-declare const isSmsCodeVerifyWay: (verifyWay: string) => boolean;
-/**
- * 以下四个别名对应 `DouyinReturnTypeMap` 里的 passport 条目，保留是为了让调用方
- * 能按 `Douyin<接口名>` 的习惯直接引用，定义本身只有 ReturnDataType 那一份。
- */
-/** 登录二维码 */
-type DouyinPassportQrcode = DouyinReturnTypeMap['passportQrcode'];
-/** 二维码状态 */
-type DouyinPassportQrcodeStatus = DouyinReturnTypeMap['passportQrcodeStatus'];
-/** 发送短信验证码的结果 */
-type DouyinPassportSendCode = DouyinReturnTypeMap['passportSendCode'];
-/** 提交短信验证码的结果 */
-type DouyinPassportValidateCode = DouyinReturnTypeMap['passportValidateCode'];
-/** 二维码状态查询参数 */
-interface DouyinPassportQrcodeStatusOptions extends BaseRequestOptions {
-  /** `requestPassportQrcode` 返回的令牌 */
-  token: string;
-}
-/** 发送短信验证码参数 */
-interface DouyinPassportSendCodeOptions extends BaseRequestOptions {
-  /** 轮询返回 `status: 'verify'` 时给出的验证上下文 */
-  verify: VerifyContext;
-  /** 追踪 ID，不传则自动生成 */
-  biz_trace_id?: string;
-  /**
-   * 本次使用的验证方式
-   *
-   * 不传则从 `verify.verifyWays` 里自动挑一个能收验证码的。服务端对不同账号会给出
-   * 不同的取值（如 `mobile_sms_verify` 或辅助验证的 `assist_mobile_sms_verify`），
-   * 必须原样回传，写死会导致验证失败。
-   */
-  verify_way?: string;
-}
-/** 提交短信验证码参数 */
-interface DouyinPassportValidateCodeOptions extends DouyinPassportSendCodeOptions {
-  /** 用户收到的 6 位验证码明文 */
-  code: string;
-}
-/**
- * 申请抖音扫码登录二维码
- *
- * 首次调用会自动完成环境指纹初始化（`__ac_nonce` + `ttwid`），无需额外准备。
- * @param options - 请求选项 (可选)
- * @param cookie - 已有的会话 Cookie (可选，续用同一会话时传入)
- * @param requestConfig - 请求配置 (可选)
- * @returns 二维码令牌、内容与会话 cookie
- * @example
- * ```typescript
- * const qrcode = await requestPassportQrcode()
- * console.log(qrcode.data.content) // 拿去生成二维码图片
- * ```
- */
-declare function requestPassportQrcode<M extends TypeMode = 'loose'>(options?: {
-  typeMode?: M;
-}, cookie?: string, requestConfig?: RequestConfig): Promise<Result<ConditionalReturnType<DouyinReturnTypeMap['passportQrcode'], M>>>;
-/**
- * 查询抖音扫码登录二维码的状态
- *
- * 状态为 `confirmed` 时会自动跟随 SSO 跳转领取登录凭证，返回的 `cookie` 即完整登录态。
- * @param options - 二维码状态参数
- * @param options.token - `requestPassportQrcode` 返回的令牌
- * @param cookie - 会话 Cookie，必须是申请二维码时返回的那一份
- * @param requestConfig - 请求配置 (可选)
- * @returns 扫码状态与最新会话 cookie
- * @example
- * ```typescript
- * const status = await checkPassportQrcode({ token }, cookie)
- * // new 未扫码 / scanned 已扫待确认 / verify 需二次验证 / confirmed 登录成功 / expired 已过期
- * console.log(status.data.status)
- * ```
- */
-declare function checkPassportQrcode<M extends TypeMode = 'loose'>(options: DouyinPassportQrcodeStatusOptions & {
-  typeMode?: M;
-}, cookie?: string, requestConfig?: RequestConfig): Promise<Result<ConditionalReturnType<DouyinReturnTypeMap['passportQrcodeStatus'], M>>>;
-/**
- * 向账号绑定手机发送二次验证短信验证码
- *
- * 用于轮询返回 `status: 'verify'`（即 `error_code=2046` / `account_flow=verify`）的场景。
- * @param options - 发码参数
- * @param options.verify - 轮询返回的验证上下文
- * @param options.biz_trace_id - 追踪 ID (可选，不传自动生成)
- * @param cookie - 会话 Cookie
- * @param requestConfig - 请求配置 (可选)
- * @returns 脱敏手机号、重发等待秒数与追踪 ID
- */
-declare function sendPassportVerifyCode<M extends TypeMode = 'loose'>(options: DouyinPassportSendCodeOptions & {
-  typeMode?: M;
-}, cookie?: string, requestConfig?: RequestConfig): Promise<Result<ConditionalReturnType<DouyinReturnTypeMap['passportSendCode'], M>>>;
-/**
- * 提交二次验证的短信验证码
- * @param options - 验码参数
- * @param options.verify - 轮询返回的验证上下文
- * @param options.code - 用户收到的 6 位验证码明文
- * @param options.biz_trace_id - 必须与发码时用的是同一个
- * @param cookie - 会话 Cookie
- * @param requestConfig - 请求配置 (可选)
- * @returns 验证结果；`wrongCode` 为 true 表示验证码填错，可以让用户重试
- */
-declare function validatePassportVerifyCode<M extends TypeMode = 'loose'>(options: DouyinPassportValidateCodeOptions & {
-  typeMode?: M;
-}, cookie?: string, requestConfig?: RequestConfig): Promise<Result<ConditionalReturnType<DouyinReturnTypeMap['passportValidateCode'], M>>>;
-//#endregion
-//#region src/model/fetchers/douyin/types.d.ts
-/** 抖音作品请求参数 */
-interface DouyinWorkOptions extends BaseRequestOptions {
-  /** 作品 ID，如 `7123456789012345678` */
-  aweme_id: string;
-}
-/** 抖音评论请求参数 */
-interface DouyinCommentsOptions extends BaseRequestOptions {
-  /** 作品 ID */
-  aweme_id: string;
-  /** 获取数量，默认 20 */
-  number?: number;
-  /** 游标，用于翻页，从上一次请求结果获取 */
-  cursor?: number;
-}
-/** 抖音评论回复请求参数 */
-interface DouyinCommentRepliesOptions extends BaseRequestOptions {
-  /** 作品 ID */
-  aweme_id: string;
-  /** 评论 ID */
-  comment_id: string;
-  /** 获取数量，默认 20 */
-  number?: number;
-  /** 游标，用于翻页 */
-  cursor?: number;
-}
-/** 抖音用户请求参数 */
-interface DouyinUserOptions extends BaseRequestOptions {
-  /** 用户 sec_uid，如 `MS4wLjABAAAA...` */
-  sec_uid: string;
-}
-/** 抖音用户列表请求参数（视频列表、喜欢列表、推荐列表） */
-interface DouyinUserListOptions extends BaseRequestOptions {
-  /** 用户 sec_uid，如 `MS4wLjABAAAA...` */
-  sec_uid: string;
-  /** 获取数量，默认 18 */
-  number?: number;
-}
-/** 抖音搜索请求参数 */
-interface DouyinSearchOptions extends BaseRequestOptions {
-  /** 搜索关键词 */
-  query: string;
-  /** 搜索类型: general=综合, user=用户, video=视频 */
-  type?: 'general' | 'user' | 'video';
-  /** 获取数量 */
-  number?: number;
-  /** 搜索 ID，用于翻页，从上一次请求结果获取 */
-  search_id?: string;
-}
-/** 抖音热词请求参数 */
-interface DouyinSuggestWordsOptions extends BaseRequestOptions {
-  /** 搜索词，用于获取联想词 */
-  query: string;
-}
-/** 抖音音乐请求参数 */
-interface DouyinMusicOptions extends BaseRequestOptions {
-  /** 音乐 ID */
-  music_id: string;
-}
-/** 抖音直播间请求参数 */
-interface DouyinLiveRoomOptions extends BaseRequestOptions {
-  /** 直播间 ID */
-  room_id: string;
-  /** 直播间真实房间号 (web_rid) */
-  web_rid: string;
-}
-/** 抖音二维码请求参数 */
-interface DouyinQrcodeOptions extends BaseRequestOptions {
-  /** fp 指纹，用于设备标识 */
-  verify_fp: string;
-}
-/** 抖音弹幕请求参数 */
-interface DouyinDanmakuOptions extends BaseRequestOptions {
-  /** 作品 ID */
-  aweme_id: string;
-  /** 开始时间 (毫秒) */
-  start_time?: number;
-  /** 结束时间 (毫秒) */
-  end_time?: number;
-  /** 视频总时长 (毫秒)，必填 */
-  duration: number;
-}
-/** 抖音游客用户请求参数 */
-interface DouyinGuestUserOptions extends BaseRequestOptions {
-  /** 抖音号，如 `ubb_up` */
-  unique_id: string;
-}
-/** 抖音游客原声请求参数 */
-interface DouyinGuestMusicOptions extends BaseRequestOptions {
-  /** 原声 ID (mid) */
-  music_id: string;
-}
-/** 抖音游客原声作品列表请求参数 */
-interface DouyinGuestMusicListOptions extends BaseRequestOptions {
-  /** 原声 ID (mid) */
-  music_id: string;
-  /** 获取数量，默认 10 */
-  number?: number;
-  /** 游标，用于翻页 */
-  cursor?: number;
-}
-/**
- * 抖音 Fetcher 接口定义
- * 包含所有抖音 API 方法的类型签名
- */
-interface IDouyinFetcher {
-  /**
-   * 获取抖音视频作品数据
-   */
-  fetchVideoWork: MethodOverload<DouyinWorkOptions, DouyinReturnTypeMap['videoWork']>;
-  /**
-   * 获取抖音图集作品数据
-   */
-  fetchImageAlbumWork: MethodOverload<DouyinWorkOptions, DouyinReturnTypeMap['imageAlbumWork']>;
-  /**
-   * 获取抖音合辑作品数据
-   */
-  fetchSlidesWork: MethodOverload<DouyinWorkOptions, DouyinReturnTypeMap['slidesWork']>;
-  /**
-   * 获取抖音文字作品数据
-   */
-  fetchTextWork: MethodOverload<DouyinWorkOptions, DouyinReturnTypeMap['textWork']>;
-  /**
-   * 聚合解析抖音作品数据 (自动识别作品类型)
-   */
-  parseWork: MethodOverload<DouyinWorkOptions, DouyinReturnTypeMap['parseWork']>;
-  /**
-   * 获取抖音视频弹幕数据
-   */
-  fetchDanmakuList: MethodOverload<DouyinDanmakuOptions, DouyinReturnTypeMap['danmakuList']>;
-  /**
-   * 获取抖音作品评论数据
-   */
-  fetchWorkComments: MethodOverload<DouyinCommentsOptions, DouyinReturnTypeMap['comments']>;
-  /**
-   * 获取抖音指定评论的回复数据
-   */
-  fetchCommentReplies: MethodOverload<DouyinCommentRepliesOptions, DouyinReturnTypeMap['commentReplies']>;
-  /**
-   * 获取抖音用户主页数据
-   */
-  fetchUserProfile: MethodOverload<DouyinUserOptions, DouyinReturnTypeMap['userProfile']>;
-  /**
-   * 获取抖音用户视频列表数据
-   */
-  fetchUserVideoList: MethodOverload<DouyinUserListOptions, DouyinReturnTypeMap['userVideoList']>;
-  /**
-   * 获取抖音用户喜欢列表数据
-   */
-  fetchUserFavoriteList: MethodOverload<DouyinUserListOptions, DouyinReturnTypeMap['userFavoriteList']>;
-  /**
-   * 获取抖音用户推荐列表数据
-   */
-  fetchUserRecommendList: MethodOverload<DouyinUserListOptions, DouyinReturnTypeMap['userRecommendList']>;
-  /**
-   * 抖音搜索内容
-   */
-  searchContent: MethodOverload<DouyinSearchOptions, DouyinReturnTypeMap['search']>;
-  /**
-   * 获取抖音热词/搜索建议
-   */
-  fetchSuggestWords: MethodOverload<DouyinSuggestWordsOptions, DouyinReturnTypeMap['suggestWords']>;
-  /**
-   * 获取抖音音乐数据
-   */
-  fetchMusicInfo: MethodOverload<DouyinMusicOptions, DouyinReturnTypeMap['musicInfo']>;
-  /**
-   * 获取抖音直播间信息
-   */
-  fetchLiveRoomInfo: MethodOverload<DouyinLiveRoomOptions, DouyinReturnTypeMap['liveRoomInfo']>;
-  /**
-   * 申请抖音登录二维码
-   */
-  requestLoginQrcode: MethodOverload<DouyinQrcodeOptions, DouyinReturnTypeMap['loginQrcode']>;
-  /**
-   * 申请抖音 passport 扫码登录二维码
-   *
-   * 与 `requestLoginQrcode`（旧的 sso.douyin.com 形态）不同，这一套能走完整的登录流程：
-   * 取码 → 轮询 → 二次验证 → 下发登录 cookie。
-   *
-   * 登录是有会话的：返回的 `cookie` 需要在后续调用中原样传回，因此这几个方法只在
-   * `douyinFetcher` 上提供，不进绑定了固定 cookie 的 `BoundDouyinFetcher`。
-   */
-  requestPassportQrcode: NoParamMethodOverload<DouyinReturnTypeMap['passportQrcode']>;
-  /**
-   * 查询 passport 扫码登录二维码的状态
-   */
-  checkPassportQrcode: MethodOverload<DouyinPassportQrcodeStatusOptions, DouyinReturnTypeMap['passportQrcodeStatus']>;
-  /**
-   * 向账号绑定手机发送二次验证短信验证码
-   */
-  sendPassportVerifyCode: MethodOverload<DouyinPassportSendCodeOptions, DouyinReturnTypeMap['passportSendCode']>;
-  /**
-   * 提交二次验证的短信验证码
-   */
-  validatePassportVerifyCode: MethodOverload<DouyinPassportValidateCodeOptions, DouyinReturnTypeMap['passportValidateCode']>;
-  /**
-   * 获取抖音表情列表
-   */
-  fetchEmojiList: NoParamMethodOverload<DouyinReturnTypeMap['emojiList']>;
-  /**
-   * 获取抖音动态表情列表
-   */
-  fetchDynamicEmojiList: NoParamMethodOverload<DouyinReturnTypeMap['dynamicEmojiList']>;
-  /**
-   * 通过抖音号获取用户信息 (免鉴权)
-   */
-  fetchGuestUserInfo: MethodOverload<DouyinGuestUserOptions, DouyinReturnTypeMap['guestUserInfo']>;
-  /**
-   * 获取原声本体 (免鉴权)
-   */
-  fetchGuestMusicInfo: MethodOverload<DouyinGuestMusicOptions, DouyinReturnTypeMap['guestMusicInfo']>;
-  /**
-   * 获取使用某条原声的作品列表 (免鉴权)
-   */
-  fetchGuestMusicAwemeList: MethodOverload<DouyinGuestMusicListOptions, DouyinReturnTypeMap['guestMusicAwemeList']>;
-  /**
-   * 获取表情资源包元信息 (免鉴权)
-   */
-  fetchEmojiResourceMeta: NoParamMethodOverload<DouyinReturnTypeMap['emojiResourceMeta']>;
-}
-//#endregion
-//#region src/model/fetchers/kuaishou/types.d.ts
-/** 快手作品请求参数 */
-interface KuaishouVideoWorkOptions extends BaseRequestOptions {
-  /** 作品 ID (photoId) */
-  photoId: string;
-}
-/** 快手评论请求参数 */
-interface KuaishouCommentsOptions extends BaseRequestOptions {
-  /** 作品 ID (photoId) */
-  photoId: string;
-}
-/** 快手用户资料请求参数 */
-interface KuaishouUserProfileOptions extends BaseRequestOptions {
-  /** 用户主页 principalId，可直接取 profile 页 URL 末段 */
-  principalId: string;
-}
-/** 快手用户作品列表请求参数 */
-interface KuaishouUserWorkListOptions extends BaseRequestOptions {
-  /** 用户主页 principalId，可直接取 profile 页 URL 末段 */
-  principalId: string;
-  /** 分页游标；为空时请求首屏作品列表 */
-  pcursor?: string;
-  /** 每页数量，默认 12 */
-  count?: number;
-}
-/** 快手直播间信息请求参数 */
-interface KuaishouLiveRoomInfoOptions extends BaseRequestOptions {
-  /** 直播间 principalId，可直接取 /u/{principalId} URL 末段 */
-  principalId: string;
-}
-/**
- * 快手 Fetcher 接口定义
- * 包含所有快手 API 方法的类型签名
- */
-interface IKuaishouFetcher {
-  /**
-   * 获取快手视频作品数据
-   */
-  fetchVideoWork: MethodOverload<KuaishouVideoWorkOptions, KuaishouReturnTypeMap['videoWork']>;
-  /**
-   * 获取快手作品评论数据
-   */
-  fetchWorkComments: MethodOverload<KuaishouCommentsOptions, KuaishouReturnTypeMap['comments']>;
-  /** 获取快手用户主页数据 */
-  fetchUserProfile: MethodOverload<KuaishouUserProfileOptions, KuaishouReturnTypeMap['userProfile']>;
-  /** 获取快手用户作品列表数据 */
-  fetchUserWorkList: MethodOverload<KuaishouUserWorkListOptions, KuaishouReturnTypeMap['userWorkList']>;
-  /** 获取快手直播间信息数据 */
-  fetchLiveRoomInfo: MethodOverload<KuaishouLiveRoomInfoOptions, KuaishouReturnTypeMap['liveRoomInfo']>;
-  /**
-   * 获取快手表情列表
-   */
-  fetchEmojiList: NoParamMethodOverload<KuaishouReturnTypeMap['emojiList']>;
-}
-/**
- * 绑定了 Cookie 的快手 Fetcher 接口
- * 调用方法时无需传递 cookie 参数
- */
-interface IBoundKuaishouFetcher {
-  /** 获取快手视频作品数据 */
-  fetchVideoWork: BoundMethodOverload<KuaishouVideoWorkOptions, KuaishouReturnTypeMap['videoWork']>;
-  /** 获取快手作品评论数据 */
-  fetchWorkComments: BoundMethodOverload<KuaishouCommentsOptions, KuaishouReturnTypeMap['comments']>;
-  /** 获取快手用户主页数据 */
-  fetchUserProfile: BoundMethodOverload<KuaishouUserProfileOptions, KuaishouReturnTypeMap['userProfile']>;
-  /** 获取快手用户作品列表数据 */
-  fetchUserWorkList: BoundMethodOverload<KuaishouUserWorkListOptions, KuaishouReturnTypeMap['userWorkList']>;
-  /** 获取快手直播间信息数据 */
-  fetchLiveRoomInfo: BoundMethodOverload<KuaishouLiveRoomInfoOptions, KuaishouReturnTypeMap['liveRoomInfo']>;
-  /** 获取快手表情列表 */
-  fetchEmojiList: BoundNoParamMethodOverload<KuaishouReturnTypeMap['emojiList']>;
-}
-//#endregion
-//#region src/model/fetchers/xiaohongshu/types.d.ts
-/** 小红书首页推荐请求参数 */
-interface XiaohongshuHomeFeedOptions extends BaseRequestOptions {
-  /** 游标分数，用于翻页 */
-  cursor_score?: string;
-  /** 获取数量，默认 20 */
-  num?: number;
-  /** 刷新类型: 1=下拉刷新, 3=上拉加载 */
-  refresh_type?: number;
-  /** 笔记索引 */
-  note_index?: number;
-  /** 未读开始笔记 ID */
-  unread_begin_note_id?: string;
-  /** 未读结束笔记 ID */
-  unread_end_note_id?: string;
-  /** 未读笔记数量 */
-  unread_note_count?: number;
-}
-/** 小红书笔记详情请求参数 */
-interface XiaohongshuNoteDetailOptions extends BaseRequestOptions {
-  /** 笔记 ID，如 `64a1b2c3d4e5f6` */
-  note_id: string;
-  /** xsec_token，从笔记链接或首页获取，必填 */
-  xsec_token: string;
-}
-/** 小红书评论请求参数 */
-interface XiaohongshuCommentsOptions extends BaseRequestOptions {
-  /** 笔记 ID */
-  note_id: string;
-  /** 游标，用于翻页 */
-  cursor?: string;
-  /** xsec_token，从笔记链接或首页获取，必填 */
-  xsec_token: string;
-}
-/** 小红书用户请求参数 */
-interface XiaohongshuUserProfileOptions extends BaseRequestOptions {
-  /** 用户 ID */
-  user_id: string;
-}
-/** 小红书用户笔记请求参数 */
-interface XiaohongshuUserNotesOptions extends BaseRequestOptions {
-  /** 用户 ID */
-  user_id: string;
-  /** 游标，用于翻页 */
-  cursor?: string;
-  /** 获取数量，默认 30 */
-  num?: number;
-}
-/** 小红书搜索请求参数 */
-interface XiaohongshuSearchNotesOptions extends BaseRequestOptions {
-  /** 搜索关键词 */
-  keyword: string;
-  /** 页码，从 1 开始 */
-  page?: number;
-  /** 每页数量，默认 20 */
-  page_size?: number;
-  /** 排序方式: general=综合, time_descending=最新, popularity_descending=最热 */
-  sort?: 'general' | 'time_descending' | 'popularity_descending';
-  /** 笔记类型: 0=全部, 1=视频, 2=图文 */
-  note_type?: 0 | 1 | 2;
-}
-/**
- * 小红书 Fetcher 接口定义
- * 包含所有小红书 API 方法的类型签名
- */
-interface IXiaohongshuFetcher {
-  /** 获取小红书首页推荐数据 */
-  fetchHomeFeed: OptionalParamMethodOverload<XiaohongshuHomeFeedOptions, XiaohongshuReturnTypeMap['homeFeed']>;
-  /** 获取小红书笔记详情 */
-  fetchNoteDetail: MethodOverload<XiaohongshuNoteDetailOptions, XiaohongshuReturnTypeMap['noteDetail']>;
-  /** 获取小红书笔记评论数据 */
-  fetchNoteComments: MethodOverload<XiaohongshuCommentsOptions, XiaohongshuReturnTypeMap['noteComments']>;
-  /** 获取小红书用户主页数据 */
-  fetchUserProfile: MethodOverload<XiaohongshuUserProfileOptions, XiaohongshuReturnTypeMap['userProfile']>;
-  /** 获取小红书用户笔记列表 */
-  fetchUserNoteList: MethodOverload<XiaohongshuUserNotesOptions, XiaohongshuReturnTypeMap['userNoteList']>;
-  /** 搜索小红书笔记 */
-  searchNotes: MethodOverload<XiaohongshuSearchNotesOptions, XiaohongshuReturnTypeMap['searchNotes']>;
-  /** 获取小红书表情列表 */
-  fetchEmojiList: NoParamMethodOverload<XiaohongshuReturnTypeMap['emojiList']>;
-}
-/**
- * 绑定了 Cookie 的小红书 Fetcher 接口
- * 调用方法时无需传递 cookie 参数
- */
-interface IBoundXiaohongshuFetcher {
-  /** 获取小红书首页推荐数据 */
-  fetchHomeFeed: BoundOptionalParamMethodOverload<XiaohongshuHomeFeedOptions, XiaohongshuReturnTypeMap['homeFeed']>;
-  /** 获取小红书笔记详情 */
-  fetchNoteDetail: BoundMethodOverload<XiaohongshuNoteDetailOptions, XiaohongshuReturnTypeMap['noteDetail']>;
-  /** 获取小红书笔记评论数据 */
-  fetchNoteComments: BoundMethodOverload<XiaohongshuCommentsOptions, XiaohongshuReturnTypeMap['noteComments']>;
-  /** 获取小红书用户主页数据 */
-  fetchUserProfile: BoundMethodOverload<XiaohongshuUserProfileOptions, XiaohongshuReturnTypeMap['userProfile']>;
-  /** 获取小红书用户笔记列表 */
-  fetchUserNoteList: BoundMethodOverload<XiaohongshuUserNotesOptions, XiaohongshuReturnTypeMap['userNoteList']>;
-  /** 搜索小红书笔记 */
-  searchNotes: BoundMethodOverload<XiaohongshuSearchNotesOptions, XiaohongshuReturnTypeMap['searchNotes']>;
-  /** 获取小红书表情列表 */
-  fetchEmojiList: BoundNoParamMethodOverload<XiaohongshuReturnTypeMap['emojiList']>;
-}
-//#endregion
-//#region src/model/fetchers/types.d.ts
-/**
- * 类型精度模式
- * - strict: 严格类型，基于接口响应定义
- * - loose: 宽松类型，返回 any
- */
-type TypeMode = 'strict' | 'loose';
-/** 条件返回类型 */
-type ConditionalReturnType<T, M extends TypeMode> = M extends 'strict' ? T : any;
-/**
- * 从 Options 中提取 TypeMode
- * 用于从 options.typeMode 推断返回类型
- */
-type ExtractTypeMode<T> = T extends {
-  typeMode: infer M extends TypeMode;
-} ? M : 'loose';
-/** 基础请求选项 */
-interface BaseRequestOptions {
-  /** 类型精度模式: 'strict' 返回严格类型 */
-  typeMode?: TypeMode;
-}
-/** 数据获取器配置 */
-interface FetcherConfig {
-  /** Cookie */
-  cookie?: string;
-  /** 请求配置 */
-  requestConfig?: RequestConfig;
-}
-//#endregion
-//#region src/model/fetchers/shared/request-types.d.ts
-type RequestHeaders = NonNullable<RequestConfig['headers']>;
-/**
- * 未显式覆盖 Cookie 的单次请求配置。
- *
- * Cookie 请求头必须使用大写 `Cookie`。小写 `cookie` 会被类型系统拒绝，
- * 避免 Axios 请求头与平台签名逻辑读取到不同字段。
- */
-type FetcherRequestConfigWithoutCookie = Omit<RequestConfig, 'headers'> & {
-  headers?: RequestHeaders & {
-    Cookie?: never;
-    cookie?: never;
-  };
-};
-/**
- * 显式覆盖 Cookie 的单次请求配置。
- *
- * 裸 Fetcher 会把 `Cookie` 的字符串字面量与 cookie 参数关联起来：
- * 两处必须传入相同的值。
- */
-type FetcherRequestConfigWithCookie<TCookie extends string> = Omit<RequestConfig, 'headers'> & {
-  headers: RequestHeaders & {
-    Cookie: TCookie;
-    cookie?: never;
-  };
-};
-/** 裸 Fetcher 匿名请求使用的严格配置。 */
-type AnonymousFetcherRequestConfig = FetcherRequestConfigWithCookie<''>;
-/**
- * 根据裸 Fetcher 的单次请求配置推导 cookie 参数类型。
- *
- * - 大写 `Cookie`：cookie 参数必须与请求头字符串字面量一致。
- * - 小写 `cookie`：返回 `never`，拒绝大小写错误。
- * - 未显式声明 Cookie：保持原有的可选字符串参数。
- */
-type FetcherCookieForRequestConfig<TRequestConfig extends RequestConfig> = TRequestConfig extends {
-  headers: infer THeaders;
-} ? THeaders extends {
-  cookie: unknown;
-} ? never : THeaders extends {
-  Cookie: infer TCookie;
-} ? TCookie extends string ? TCookie : never : string | undefined : string | undefined;
-//#endregion
-//#region src/model/fetchers/shared/overload-types.d.ts
-/**
- * 为单个方法生成函数重载类型
- * @template TOptions - 方法的选项参数类型
- * @template TStrictReturn - typeMode='strict' 时的返回类型
- */
-type MethodOverload<TOptions, TStrictReturn> = {
-  (options: TOptions & {
-    typeMode: 'strict';
-  }, cookie?: string): Promise<Result<TStrictReturn>>;
-  <const TRequestConfig extends RequestConfig>(options: TOptions & {
-    typeMode: 'strict';
-  }, cookie: NoInfer<FetcherCookieForRequestConfig<TRequestConfig>>, requestConfig: TRequestConfig): Promise<Result<TStrictReturn>>;
-  (options: TOptions, cookie?: string): Promise<Result<any>>;
-  <const TRequestConfig extends RequestConfig>(options: TOptions, cookie: NoInfer<FetcherCookieForRequestConfig<TRequestConfig>>, requestConfig: TRequestConfig): Promise<Result<any>>;
-};
-/**
- * 为绑定 Cookie 的方法生成函数重载类型（少了 cookie 参数）
- *
- * 第二个参数用于覆盖当前调用的请求配置。绑定 Fetcher 的实现会将它与
- * 实例级配置合并，不会修改实例本身。
- */
-type BoundMethodOverload<TOptions, TStrictReturn, TRequestConfig extends RequestConfig | undefined = RequestConfig | undefined> = {
-  (options: TOptions & {
-    typeMode: 'strict';
-  }, requestConfig?: TRequestConfig): Promise<Result<TStrictReturn>>;
-  (options: TOptions, requestConfig?: TRequestConfig): Promise<Result<any>>;
-};
-/**
- * 为无参数方法生成函数重载类型
- */
-type NoParamMethodOverload<TStrictReturn> = {
-  (options: {
-    typeMode: 'strict';
-  }, cookie?: string): Promise<Result<TStrictReturn>>;
-  <const TRequestConfig extends RequestConfig>(options: {
-    typeMode: 'strict';
-  }, cookie: NoInfer<FetcherCookieForRequestConfig<TRequestConfig>>, requestConfig: TRequestConfig): Promise<Result<TStrictReturn>>;
-  (options?: {
-    typeMode?: TypeMode;
-  }, cookie?: string): Promise<Result<any>>;
-  <const TRequestConfig extends RequestConfig>(options: {
-    typeMode?: TypeMode;
-  } | undefined, cookie: NoInfer<FetcherCookieForRequestConfig<TRequestConfig>>, requestConfig: TRequestConfig): Promise<Result<any>>;
-};
-/**
- * 为绑定 Cookie 的无参数方法生成函数重载类型
- *
- * `requestConfig` 只影响当前调用，并由绑定 Fetcher 与实例级配置合并。
- */
-type BoundNoParamMethodOverload<TStrictReturn, TRequestConfig extends RequestConfig | undefined = RequestConfig | undefined> = {
-  (options: {
-    typeMode: 'strict';
-  }, requestConfig?: TRequestConfig): Promise<Result<TStrictReturn>>;
-  (options?: {
-    typeMode?: TypeMode;
-  }, requestConfig?: TRequestConfig): Promise<Result<any>>;
-};
-/**
- * 为带可选参数的方法生成函数重载类型（参数可选但可能包含额外字段）
- */
-type OptionalParamMethodOverload<TOptions, TStrictReturn> = {
-  (options: TOptions & {
-    typeMode: 'strict';
-  }, cookie?: string): Promise<Result<TStrictReturn>>;
-  <const TRequestConfig extends RequestConfig>(options: TOptions & {
-    typeMode: 'strict';
-  }, cookie: NoInfer<FetcherCookieForRequestConfig<TRequestConfig>>, requestConfig: TRequestConfig): Promise<Result<TStrictReturn>>;
-  (options?: TOptions, cookie?: string): Promise<Result<any>>;
-  <const TRequestConfig extends RequestConfig>(options: TOptions | undefined, cookie: NoInfer<FetcherCookieForRequestConfig<TRequestConfig>>, requestConfig: TRequestConfig): Promise<Result<any>>;
-};
-/**
- * 为绑定 Cookie 的带可选参数方法生成函数重载类型
- *
- * `requestConfig` 只影响当前调用，并由绑定 Fetcher 与实例级配置合并。
- */
-type BoundOptionalParamMethodOverload<TOptions, TStrictReturn, TRequestConfig extends RequestConfig | undefined = RequestConfig | undefined> = {
-  (options: TOptions & {
-    typeMode: 'strict';
-  }, requestConfig?: TRequestConfig): Promise<Result<TStrictReturn>>;
-  (options?: TOptions, requestConfig?: TRequestConfig): Promise<Result<any>>;
-};
-//#endregion
-//#region src/model/fetchers/bilibili/bound.d.ts
-/**
- * 绑定了 Cookie 的 B站 Fetcher 接口
- * 调用方法时无需传递 cookie 参数
- */
-interface IBoundBilibiliFetcher {
-  /** 获取B站视频详细信息 */
-  fetchVideoInfo: BoundMethodOverload<BilibiliVideoInfoOptions, BilibiliReturnTypeMap['videoInfo']>;
-  /** 获取B站视频流地址 */
-  fetchVideoStreamUrl: BoundMethodOverload<BilibiliVideoStreamOptions, BilibiliReturnTypeMap['videoStream']>;
-  /** 获取B站视频实时弹幕 */
-  fetchVideoDanmaku: BoundMethodOverload<BilibiliDanmakuOptions, BilibiliReturnTypeMap['videoDanmaku']>;
-  /** 获取B站视频/动态评论列表 */
-  fetchComments: BoundMethodOverload<BilibiliCommentsOptions, BilibiliReturnTypeMap['comments']>;
-  /** 获取B站指定评论的回复列表 */
-  fetchCommentReplies: BoundMethodOverload<BilibiliCommentRepliesOptions, BilibiliReturnTypeMap['commentReplies']>;
-  /** 获取B站用户名片信息 */
-  fetchUserCard: BoundMethodOverload<BilibiliUserOptions, BilibiliReturnTypeMap['userCard']>;
-  /** 获取B站用户动态列表 */
-  fetchUserDynamicList: BoundMethodOverload<BilibiliUserOptions, BilibiliReturnTypeMap['userDynamicList']>;
-  /** 按用户 UID 获取B站直播状态 */
-  fetchUserLiveStatus: BoundMethodOverload<BilibiliUserOptions, BilibiliReturnTypeMap['userLiveStatus']>;
-  /** 获取B站用户空间详细信息 */
-  fetchUserSpaceInfo: BoundMethodOverload<BilibiliUserOptions, BilibiliReturnTypeMap['userSpaceInfo']>;
-  /** 获取B站 UP 主总播放量 */
-  fetchUploaderTotalViews: BoundMethodOverload<BilibiliUserOptions, BilibiliReturnTypeMap['uploaderTotalViews']>;
-  /** 获取B站动态详情 */
-  fetchDynamicDetail: BoundMethodOverload<BilibiliDynamicOptions, BilibiliReturnTypeMap['dynamicDetail']>;
-  /** 获取B站番剧基本信息 */
-  fetchBangumiInfo: BoundMethodOverload<BilibiliBangumiInfoOptions, BilibiliReturnTypeMap['bangumiInfo']>;
-  /** 获取B站番剧视频流地址 */
-  fetchBangumiStreamUrl: BoundMethodOverload<BilibiliBangumiStreamOptions, BilibiliReturnTypeMap['bangumiStream']>;
-  /** 获取B站直播间信息 */
-  fetchLiveRoomInfo: BoundMethodOverload<BilibiliLiveRoomOptions, BilibiliReturnTypeMap['liveRoomInfo']>;
-  /** 获取B站直播间初始化信息 */
-  fetchLiveRoomInitInfo: BoundMethodOverload<BilibiliLiveRoomOptions, BilibiliReturnTypeMap['liveRoomInit']>;
-  /** 获取B站专栏正文内容 */
-  fetchArticleContent: BoundMethodOverload<BilibiliArticleOptions, BilibiliReturnTypeMap['articleContent']>;
-  /** 获取B站专栏卡片信息 */
-  fetchArticleCards: BoundMethodOverload<BilibiliArticleCardOptions, BilibiliReturnTypeMap['articleCards']>;
-  /** 获取B站专栏文章基本信息 */
-  fetchArticleInfo: BoundMethodOverload<BilibiliArticleOptions, BilibiliReturnTypeMap['articleInfo']>;
-  /** 获取B站文集基本信息 */
-  fetchArticleListInfo: BoundMethodOverload<BilibiliArticleOptions, BilibiliReturnTypeMap['articleListInfo']>;
-  /** 获取B站登录状态信息 */
-  fetchLoginStatus: BoundNoParamMethodOverload<BilibiliReturnTypeMap['loginStatus']>;
-  /** 申请B站登录二维码 */
-  requestLoginQrcode: BoundNoParamMethodOverload<BilibiliReturnTypeMap['loginQrcode']>;
-  /** 检查B站登录二维码扫描状态 */
-  checkQrcodeStatus: BoundMethodOverload<BilibiliQrcodeStatusOptions, BilibiliReturnTypeMap['qrcodeStatus']>;
-  /** 从 v_voucher 申请验证码 */
-  requestCaptchaFromVoucher: BoundMethodOverload<BilibiliApplyCaptchaOptions, BilibiliReturnTypeMap['captchaFromVoucher']>;
-  /** 验证验证码结果 */
-  validateCaptchaResult: BoundMethodOverload<BilibiliValidateCaptchaOptions, BilibiliReturnTypeMap['validateCaptcha']>;
-  /** 将 AV 号转换为 BV 号 */
-  convertAvToBv: BoundMethodOverload<BilibiliAv2BvOptions, BilibiliReturnTypeMap['avToBv']>;
-  /** 将 BV 号转换为 AV 号 */
-  convertBvToAv: BoundMethodOverload<BilibiliBv2AvOptions, BilibiliReturnTypeMap['bvToAv']>;
-  /** 获取B站表情包列表 */
-  fetchEmojiList: BoundNoParamMethodOverload<BilibiliReturnTypeMap['emojiList']>;
-}
-/**
- * 创建绑定了 Cookie 和请求配置的 B站 Fetcher
- * @param cookie - B站 Cookie
- * @param requestConfig - 请求配置 (可选)
- * @returns 绑定了 Cookie 的 Fetcher 对象，调用时无需传递 cookie
- * @example
- * ```typescript
- * const fetcher = createBoundBilibiliFetcher('your_cookie')
- * const result = await fetcher.fetchVideoInfo({ bvid: 'BV1xx411c7mD' })
- * // 严格模式
- * const strictResult = await fetcher.fetchVideoInfo({ bvid: 'BV1xx411c7mD', typeMode: 'strict' })
- * ```
- */
-declare function createBoundBilibiliFetcher(cookie: string, requestConfig?: RequestConfig): IBoundBilibiliFetcher;
-//#endregion
-//#region src/model/fetchers/bilibili/index.d.ts
-/**
- * B站数据获取器
- * 包含所有 B站 API 方法，调用时需要传递 cookie
- * @example
- * ```typescript
- * import { bilibiliFetcher } from '@ikenxuan/amagi'
- *
- * const result = await bilibiliFetcher.fetchVideoInfo({ bvid: 'BV1xx411c7mD' }, cookie)
- * ```
- */
-declare const bilibiliFetcher: IBilibiliFetcher;
-/** B站 Fetcher 类型 */
-type BilibiliFetcher = typeof bilibiliFetcher;
-/** 绑定 Cookie 的 B站 Fetcher 类型 */
-type BoundBilibiliFetcher = IBoundBilibiliFetcher;
-//#endregion
-//#region src/model/fetchers/douyin/bound.d.ts
-/**
- * 绑定了 Cookie 的抖音 Fetcher 接口
- * 调用方法时无需传递 cookie 参数
- */
-interface IBoundDouyinFetcher {
-  /** 获取抖音视频作品数据 */
-  fetchVideoWork: BoundMethodOverload<DouyinWorkOptions, DouyinReturnTypeMap['videoWork']>;
-  /** 获取抖音图集作品数据 */
-  fetchImageAlbumWork: BoundMethodOverload<DouyinWorkOptions, DouyinReturnTypeMap['imageAlbumWork']>;
-  /** 获取抖音合辑作品数据 */
-  fetchSlidesWork: BoundMethodOverload<DouyinWorkOptions, DouyinReturnTypeMap['slidesWork']>;
-  /** 获取抖音文字作品数据 */
-  fetchTextWork: BoundMethodOverload<DouyinWorkOptions, DouyinReturnTypeMap['textWork']>;
-  /** 聚合解析抖音作品数据 (自动识别作品类型) */
-  parseWork: BoundMethodOverload<DouyinWorkOptions, DouyinReturnTypeMap['parseWork']>;
-  /** 获取抖音视频弹幕数据 */
-  fetchDanmakuList: BoundMethodOverload<DouyinDanmakuOptions, DouyinReturnTypeMap['danmakuList']>;
-  /** 获取抖音作品评论数据 */
-  fetchWorkComments: BoundMethodOverload<DouyinCommentsOptions, DouyinReturnTypeMap['comments']>;
-  /** 获取抖音指定评论的回复数据 */
-  fetchCommentReplies: BoundMethodOverload<DouyinCommentRepliesOptions, DouyinReturnTypeMap['commentReplies']>;
-  /** 获取抖音用户主页数据 */
-  fetchUserProfile: BoundMethodOverload<DouyinUserOptions, DouyinReturnTypeMap['userProfile']>;
-  /** 获取抖音用户视频列表数据 */
-  fetchUserVideoList: BoundMethodOverload<DouyinUserListOptions, DouyinReturnTypeMap['userVideoList']>;
-  /** 获取抖音用户喜欢列表数据 */
-  fetchUserFavoriteList: BoundMethodOverload<DouyinUserListOptions, DouyinReturnTypeMap['userFavoriteList']>;
-  /** 获取抖音用户推荐列表数据 */
-  fetchUserRecommendList: BoundMethodOverload<DouyinUserListOptions, DouyinReturnTypeMap['userRecommendList']>;
-  /** 抖音搜索内容 */
-  searchContent: BoundMethodOverload<DouyinSearchOptions, DouyinReturnTypeMap['search']>;
-  /** 获取抖音热词/搜索建议 */
-  fetchSuggestWords: BoundMethodOverload<DouyinSuggestWordsOptions, DouyinReturnTypeMap['suggestWords']>;
-  /** 获取抖音音乐数据 */
-  fetchMusicInfo: BoundMethodOverload<DouyinMusicOptions, DouyinReturnTypeMap['musicInfo']>;
-  /** 获取抖音直播间信息 */
-  fetchLiveRoomInfo: BoundMethodOverload<DouyinLiveRoomOptions, DouyinReturnTypeMap['liveRoomInfo']>;
-  /** 申请抖音登录二维码 */
-  requestLoginQrcode: BoundMethodOverload<DouyinQrcodeOptions, DouyinReturnTypeMap['loginQrcode']>;
-  /** 获取抖音表情列表 */
-  fetchEmojiList: BoundNoParamMethodOverload<DouyinReturnTypeMap['emojiList']>;
-  /** 获取抖音动态表情列表 */
-  fetchDynamicEmojiList: BoundNoParamMethodOverload<DouyinReturnTypeMap['dynamicEmojiList']>;
-  /** 通过抖音号获取用户信息 (免鉴权) */
-  fetchGuestUserInfo: BoundMethodOverload<DouyinGuestUserOptions, DouyinReturnTypeMap['guestUserInfo']>;
-  /** 获取原声本体 (免鉴权) */
-  fetchGuestMusicInfo: BoundMethodOverload<DouyinGuestMusicOptions, DouyinReturnTypeMap['guestMusicInfo']>;
-  /** 获取使用某条原声的作品列表 (免鉴权) */
-  fetchGuestMusicAwemeList: BoundMethodOverload<DouyinGuestMusicListOptions, DouyinReturnTypeMap['guestMusicAwemeList']>;
-  /** 获取表情资源包元信息 (免鉴权) */
-  fetchEmojiResourceMeta: BoundNoParamMethodOverload<DouyinReturnTypeMap['emojiResourceMeta']>;
-}
-/**
- * 创建绑定了 Cookie 和请求配置的抖音 Fetcher
- * @param cookie - 抖音 Cookie
- * @param requestConfig - 请求配置 (可选)
- * @returns 绑定了 Cookie 的 Fetcher 对象，调用时无需传递 cookie
- * @example
- * ```typescript
- * const fetcher = createBoundDouyinFetcher('your_cookie')
- * const result = await fetcher.fetchVideoWork({ aweme_id: '7123456789' })
- * // 严格模式
- * const strictResult = await fetcher.fetchVideoWork({ aweme_id: '7123456789', typeMode: 'strict' })
- * ```
- */
-declare function createBoundDouyinFetcher(cookie: string, requestConfig?: RequestConfig): IBoundDouyinFetcher;
-//#endregion
-//#region src/model/fetchers/douyin/index.d.ts
-/**
- * 抖音数据获取器
- * 包含所有抖音 API 方法，调用时需要传递 cookie
- * @example
- * ```typescript
- * import { douyinFetcher } from '@ikenxuan/amagi'
- *
- * const result = await douyinFetcher.fetchVideoWork({ aweme_id: '7123456789' }, cookie)
- * ```
- */
-declare const douyinFetcher: IDouyinFetcher;
-/** 抖音 Fetcher 类型 */
-type DouyinFetcher = typeof douyinFetcher;
-/** 绑定 Cookie 的抖音 Fetcher 类型 */
-type BoundDouyinFetcher = IBoundDouyinFetcher;
-//#endregion
-//#region src/model/fetchers/kuaishou/index.d.ts
-/**
- * 快手数据获取器
- * 包含所有快手 API 方法，调用时需要传递 cookie
- * @example
- * ```typescript
- * import { kuaishouFetcher } from '@ikenxuan/amagi'
- *
- * const result = await kuaishouFetcher.fetchVideoWork({ photoId: '3x123456789' }, cookie)
- * ```
- */
-declare const kuaishouFetcher: IKuaishouFetcher;
-/** 快手 Fetcher 类型 */
-type KuaishouFetcher = typeof kuaishouFetcher;
-/**
- * 创建绑定了 Cookie 和请求配置的快手 Fetcher
- * @param cookie - 快手 Cookie
- * @param requestConfig - 请求配置 (可选)
- * @returns 绑定了 Cookie 的 Fetcher 对象，调用时无需传递 cookie
- * @example
- * ```typescript
- * const fetcher = createBoundKuaishouFetcher('your_cookie')
- * const result = await fetcher.fetchVideoWork({ photoId: '3x123456789' })
- * // 严格模式
- * const strictResult = await fetcher.fetchVideoWork({ photoId: '3x123456789', typeMode: 'strict' })
- * ```
- */
-declare function createBoundKuaishouFetcher(cookie: string, requestConfig?: RequestConfig): IBoundKuaishouFetcher;
-/** 绑定 Cookie 的快手 Fetcher 类型 */
-type BoundKuaishouFetcher = IBoundKuaishouFetcher;
-//#endregion
-//#region src/model/fetchers/xiaohongshu/index.d.ts
-/**
- * 小红书数据获取器
- * 包含所有小红书 API 方法，调用时需要传递 cookie
- * @example
- * ```typescript
- * import { xiaohongshuFetcher } from '@ikenxuan/amagi'
- *
- * const result = await xiaohongshuFetcher.fetchNoteDetail({
- *   note_id: '691db851000000001e037279',
- *   xsec_token: 'xxx'
- * }, cookie)
- * ```
- */
-declare const xiaohongshuFetcher: IXiaohongshuFetcher;
-/** 小红书 Fetcher 类型 */
-type XiaohongshuFetcher = typeof xiaohongshuFetcher;
-/**
- * 创建绑定了 Cookie 和请求配置的小红书 Fetcher
- * @param cookie - 小红书 Cookie
- * @param requestConfig - 请求配置 (可选)
- * @returns 绑定了 Cookie 的 Fetcher 对象，调用时无需传递 cookie
- * @example
- * ```typescript
- * const fetcher = createBoundXiaohongshuFetcher('your_cookie')
- * const result = await fetcher.fetchNoteDetail({
- *   note_id: '691db851000000001e037279',
- *   xsec_token: 'xxx'
- * })
- * ```
- */
-declare function createBoundXiaohongshuFetcher(cookie: string, requestConfig?: RequestConfig): IBoundXiaohongshuFetcher;
-/** 绑定 Cookie 的小红书 Fetcher 类型 */
-type BoundXiaohongshuFetcher = IBoundXiaohongshuFetcher;
-//#endregion
-//#region src/model/events.d.ts
-/**
- * Amagi 支持的事件类型
- * @description
- * - `log:*` - 日志相关事件
- * - `http:*` - HTTP 请求/响应事件
- * - `network:*` - 网络层事件（重试、错误）
- * - `api:*` - API 调用结果事件
- */
-type AmagiEventType = 'log:info' | 'log:warn' | 'log:error' | 'log:debug' | 'log:mark' | 'http:request' | 'http:response' | 'http:error' | 'network:retry' | 'network:error' | 'api:success' | 'api:error';
-/**
- * 日志事件数据
- * @description 所有 `log:*` 事件的数据结构
- */
-interface LogEventData {
-  /** 日志级别 */
-  level: 'info' | 'warn' | 'error' | 'debug' | 'mark';
-  /** 日志消息 */
-  message: string;
-  /** 附加参数 */
-  args?: unknown[];
-  /** 事件时间戳 */
-  timestamp: Date;
-}
-/**
- * HTTP 请求事件数据
- * @description `http:request` 事件的数据结构
- */
-interface HttpRequestEventData {
-  /** 请求方法 (GET, POST, etc.) */
-  method: string;
-  /** 请求 URL */
-  url: string;
-  /** 请求头 */
-  headers?: Record<string, string>;
-  /** 事件时间戳 */
-  timestamp: Date;
-}
-/**
- * HTTP 响应事件数据
- * @description `http:response` 事件的数据结构
- */
-interface HttpResponseEventData {
-  /** 请求方法 */
-  method: string;
-  /** 请求 URL */
-  url: string;
-  /** HTTP 状态码 */
-  statusCode: number;
-  /** 响应耗时 (毫秒) */
-  responseTime: number;
-  /** 客户端 IP */
-  clientIP?: string;
-  /** 请求体大小 */
-  requestSize?: string;
-  /** 响应体大小 */
-  responseSize?: string;
-  /** 事件时间戳 */
-  timestamp: Date;
-}
-/**
- * 网络重试事件数据
- * @description `network:retry` 事件的数据结构
- */
-interface NetworkRetryEventData {
-  /** 错误代码 */
-  errorCode: string;
-  /** 当前重试次数 */
-  attempt: number;
-  /** 最大重试次数 */
-  maxRetries: number;
-  /** 重试延迟 (毫秒) */
-  delayMs: number;
-  /** 请求 URL */
-  url?: string;
-  /** 事件时间戳 */
-  timestamp: Date;
-}
-/**
- * 网络错误事件数据
- * @description `network:error` 和 `http:error` 事件的数据结构
- */
-interface NetworkErrorEventData {
-  /** 错误代码 */
-  errorCode: string;
-  /** 错误消息 */
-  message: string;
-  /** 已重试次数 */
-  retries: number;
-  /** 请求 URL */
-  url?: string;
-  /** 事件时间戳 */
-  timestamp: Date;
-}
-/**
- * API 成功事件数据
- * @description `api:success` 事件的数据结构
- */
-interface ApiSuccessEventData {
-  /** 请求平台 */
-  platform: 'douyin' | 'bilibili' | 'kuaishou' | 'xiaohongshu';
-  /** 调用的 API 方法 */
-  methodType: string;
-  /** API 响应数据 (Result 结构) */
-  response: unknown;
-  /** HTTP 状态码 */
-  statusCode: number;
-  /** 请求耗时 (毫秒) */
-  duration: number;
-  /** 事件时间戳 */
-  timestamp: Date;
-}
-/**
- * API 错误事件数据
- * @description `api:error` 事件的数据结构
- */
-interface ApiErrorEventData {
-  /** 请求平台 */
-  platform: 'douyin' | 'bilibili' | 'kuaishou' | 'xiaohongshu';
-  /** 调用的 API 方法 */
-  methodType: string;
-  /** 错误代码 */
-  errorCode?: string | number;
-  /** 错误消息 */
-  errorMessage: string;
-  /** 请求 URL */
-  url?: string;
-  /** 请求耗时 (毫秒) */
-  duration?: number;
-  /** 事件时间戳 */
-  timestamp: Date;
-}
-/**
- * 事件类型到数据的映射
- * @description 用于类型推断，确保事件名称与数据类型匹配
- */
-interface AmagiEventMap {
-  'log:info': LogEventData;
-  'log:warn': LogEventData;
-  'log:error': LogEventData;
-  'log:debug': LogEventData;
-  'log:mark': LogEventData;
-  'http:request': HttpRequestEventData;
-  'http:response': HttpResponseEventData;
-  'http:error': NetworkErrorEventData;
-  'network:retry': NetworkRetryEventData;
-  'network:error': NetworkErrorEventData;
-  'api:success': ApiSuccessEventData;
-  'api:error': ApiErrorEventData;
-}
-/**
- * 类型安全的事件发射器
- * @description 继承自 Node.js EventEmitter，提供泛型约束确保事件名称与数据类型匹配
- */
-declare class TypedEventEmitter extends EventEmitter$1 {
-  /**
-   * 触发事件
-   * @param event - 事件名称
-   * @param data - 事件数据
-   * @returns 是否有监听器处理了该事件
-   */
-  emit<K extends AmagiEventType>(event: K, data: AmagiEventMap[K]): boolean;
-  /**
-   * 注册事件监听器
-   * @param event - 事件名称
-   * @param listener - 事件处理函数
-   * @returns this (支持链式调用)
-   */
-  on<K extends AmagiEventType>(event: K, listener: (data: AmagiEventMap[K]) => void): this;
-  /**
-   * 注册一次性事件监听器
-   * @param event - 事件名称
-   * @param listener - 事件处理函数 (只触发一次)
-   * @returns this (支持链式调用)
-   */
-  once<K extends AmagiEventType>(event: K, listener: (data: AmagiEventMap[K]) => void): this;
-  /**
-   * 移除事件监听器
-   * @param event - 事件名称
-   * @param listener - 要移除的事件处理函数
-   * @returns this (支持链式调用)
-   */
-  off<K extends AmagiEventType>(event: K, listener: (data: AmagiEventMap[K]) => void): this;
-}
-/**
- * Amagi 全局事件发射器实例
- * @description 单例模式，所有模块共享同一个事件总线
- * @example
- * ```typescript
- * import { amagiEvents } from 'amagi/model/events'
- *
- * // 监听 API 成功事件
- * amagiEvents.on('api:success', (data) => {
- *   console.log(`[${data.platform}] ${data.methodType} 耗时 ${data.duration}ms`)
- * })
- * ```
- */
-declare const amagiEvents: TypedEventEmitter;
-/**
- * 发射日志事件
- * @param level - 日志级别
- * @param message - 日志消息
- * @param args - 附加参数
- */
-declare const emitLog: (level: LogEventData["level"], message: string, ...args: unknown[]) => void;
-/**
- * 发射 HTTP 请求事件
- * @param data - 请求数据 (不含 timestamp)
- */
-declare const emitHttpRequest: (data: Omit<HttpRequestEventData, "timestamp">) => void;
-/**
- * 发射 HTTP 响应事件
- * @param data - 响应数据 (不含 timestamp)
- */
-declare const emitHttpResponse: (data: Omit<HttpResponseEventData, "timestamp">) => void;
-/**
- * 发射网络重试事件
- * @param data - 重试数据 (不含 timestamp)
- */
-declare const emitNetworkRetry: (data: Omit<NetworkRetryEventData, "timestamp">) => void;
-/**
- * 发射网络错误事件
- * @param data - 错误数据 (不含 timestamp)
- */
-declare const emitNetworkError: (data: Omit<NetworkErrorEventData, "timestamp">) => void;
-/**
- * 发射 API 成功事件
- * @param data - 成功数据 (不含 timestamp)
- */
-declare const emitApiSuccess: (data: Omit<ApiSuccessEventData, "timestamp">) => void;
-/**
- * 发射 API 错误事件
- * @param data - 错误数据 (不含 timestamp)
- */
-declare const emitApiError: (data: Omit<ApiErrorEventData, "timestamp">) => void;
-/**
- * 发射 info 级别日志
- * @param message - 日志消息
- * @param args - 附加参数
- */
-declare const emitLogInfo: (message: string, ...args: unknown[]) => void;
-/**
- * 发射 warn 级别日志
- * @param message - 日志消息
- * @param args - 附加参数
- */
-declare const emitLogWarn: (message: string, ...args: unknown[]) => void;
-/**
- * 发射 error 级别日志
- * @param message - 日志消息
- * @param args - 附加参数
- */
-declare const emitLogError: (message: string, ...args: unknown[]) => void;
-/**
- * 发射 debug 级别日志
- * @param message - 日志消息
- * @param args - 附加参数
- */
-declare const emitLogDebug: (message: string, ...args: unknown[]) => void;
-/**
- * 发射 mark 级别日志 (用于重要标记)
- * @param message - 日志消息
- * @param args - 附加参数
- */
-declare const emitLogMark: (message: string, ...args: unknown[]) => void;
-//#endregion
-//#region src/server/index.d.ts
-/**
- * 请求配置选项接口
- */
-type RequestConfig = Omit<AxiosRequestConfig, 'url' | 'method' | 'data'>;
-/**
- * Cookie配置选项接口
- */
-type CookieConfig = {
-  /** 抖音Cookie */
-  douyin?: string;
-  /** B站Cookie */
-  bilibili?: string;
-  /** 快手Cookie */
-  kuaishou?: string;
-  /** 小红书Cookie */
-  xiaohongshu?: string;
-};
-/**
- * 客户端配置选项接口
- */
-type Options = {
-  /** Cookie配置 */
-  cookies?: CookieConfig;
-  /** 请求配置 */
-  request?: Omit<AxiosRequestConfig, 'url' | 'method' | 'data'>;
-};
-/**
- * 创建Amagi客户端实例
- * @param options - 客户端配置选项，包含Cookie和请求配置
- * @returns 包含数据获取方法、服务器启动方法、绑定Cookie的平台工具集和API对象的对象
- */
-declare const createAmagiClient: (options?: Options) => {
-  /** 启动本地HTTP服务 */
-  startServer: (port?: number) => express.Application;
-  /** 事件系统 */
-  events: {
-    emit<K extends AmagiEventType>(event: K, data: AmagiEventMap[K]): boolean;
-    on<K extends AmagiEventType>(event: K, listener: (data: AmagiEventMap[K]) => void): /*elided*/ any;
-    once<K extends AmagiEventType>(event: K, listener: (data: AmagiEventMap[K]) => void): /*elided*/ any;
-    off<K extends AmagiEventType>(event: K, listener: (data: AmagiEventMap[K]) => void): /*elided*/ any;
-    [EventEmitter.captureRejectionSymbol]?<K>(error: Error, event: string | symbol, ...args: any[]): void;
-    addListener<K>(eventName: string | symbol, listener: (...args: any[]) => void): /*elided*/ any;
-    removeListener<K>(eventName: string | symbol, listener: (...args: any[]) => void): /*elided*/ any;
-    removeAllListeners(eventName?: string | symbol | undefined): /*elided*/ any;
-    setMaxListeners(n: number): /*elided*/ any;
-    getMaxListeners(): number;
-    listeners<K>(eventName: string | symbol): Function[];
-    rawListeners<K>(eventName: string | symbol): Function[];
-    listenerCount<K>(eventName: string | symbol, listener?: Function | undefined): number;
-    prependListener<K>(eventName: string | symbol, listener: (...args: any[]) => void): /*elided*/ any;
-    prependOnceListener<K>(eventName: string | symbol, listener: (...args: any[]) => void): /*elided*/ any;
-    eventNames(): (string | symbol)[];
-  };
-  /**
-   * 注册事件监听器
-   * @param event - 事件名称
-   * @param listener - 事件处理函数
-   */
-  on: <K extends AmagiEventType>(event: K, listener: (data: AmagiEventMap[K]) => void) => {
-    emit<K_1 extends AmagiEventType>(event: K_1, data: AmagiEventMap[K_1]): boolean;
-    on<K_1 extends AmagiEventType>(event: K_1, listener: (data: AmagiEventMap[K_1]) => void): /*elided*/ any;
-    once<K_1 extends AmagiEventType>(event: K_1, listener: (data: AmagiEventMap[K_1]) => void): /*elided*/ any;
-    off<K_1 extends AmagiEventType>(event: K_1, listener: (data: AmagiEventMap[K_1]) => void): /*elided*/ any;
-    [EventEmitter.captureRejectionSymbol]?<K_1>(error: Error, event: string | symbol, ...args: any[]): void;
-    addListener<K_1>(eventName: string | symbol, listener: (...args: any[]) => void): /*elided*/ any;
-    removeListener<K_1>(eventName: string | symbol, listener: (...args: any[]) => void): /*elided*/ any;
-    removeAllListeners(eventName?: string | symbol | undefined): /*elided*/ any;
-    setMaxListeners(n: number): /*elided*/ any;
-    getMaxListeners(): number;
-    listeners<K_1>(eventName: string | symbol): Function[];
-    rawListeners<K_1>(eventName: string | symbol): Function[];
-    listenerCount<K_1>(eventName: string | symbol, listener?: Function | undefined): number;
-    prependListener<K_1>(eventName: string | symbol, listener: (...args: any[]) => void): /*elided*/ any;
-    prependOnceListener<K_1>(eventName: string | symbol, listener: (...args: any[]) => void): /*elided*/ any;
-    eventNames(): (string | symbol)[];
-  };
-  /**
-   * 注册一次性事件监听器
-   * @param event - 事件名称
-   * @param listener - 事件处理函数 (只触发一次)
-   */
-  once: <K extends AmagiEventType>(event: K, listener: (data: AmagiEventMap[K]) => void) => {
-    emit<K_1 extends AmagiEventType>(event: K_1, data: AmagiEventMap[K_1]): boolean;
-    on<K_1 extends AmagiEventType>(event: K_1, listener: (data: AmagiEventMap[K_1]) => void): /*elided*/ any;
-    once<K_1 extends AmagiEventType>(event: K_1, listener: (data: AmagiEventMap[K_1]) => void): /*elided*/ any;
-    off<K_1 extends AmagiEventType>(event: K_1, listener: (data: AmagiEventMap[K_1]) => void): /*elided*/ any;
-    [EventEmitter.captureRejectionSymbol]?<K_1>(error: Error, event: string | symbol, ...args: any[]): void;
-    addListener<K_1>(eventName: string | symbol, listener: (...args: any[]) => void): /*elided*/ any;
-    removeListener<K_1>(eventName: string | symbol, listener: (...args: any[]) => void): /*elided*/ any;
-    removeAllListeners(eventName?: string | symbol | undefined): /*elided*/ any;
-    setMaxListeners(n: number): /*elided*/ any;
-    getMaxListeners(): number;
-    listeners<K_1>(eventName: string | symbol): Function[];
-    rawListeners<K_1>(eventName: string | symbol): Function[];
-    listenerCount<K_1>(eventName: string | symbol, listener?: Function | undefined): number;
-    prependListener<K_1>(eventName: string | symbol, listener: (...args: any[]) => void): /*elided*/ any;
-    prependOnceListener<K_1>(eventName: string | symbol, listener: (...args: any[]) => void): /*elided*/ any;
-    eventNames(): (string | symbol)[];
-  };
-  douyin: {
-    /** fetcher */
-    fetcher: IBoundDouyinFetcher;
-    sign: typeof douyinSign;
-    passport: typeof index_d_exports;
-    douyinApiUrls: typeof douyinApiUrls;
-  };
-  bilibili: {
-    /** fetcher */
-    fetcher: IBoundBilibiliFetcher;
-    sign: {
-      wbi_sign: typeof wbi_sign;
-      av2bv: typeof av2bv;
-      bv2av: typeof bv2av;
-    };
-    danmaku: {
-      parseDmSegMobileReply: typeof parseDmSegMobileReply;
-    };
-    bilibiliApiUrls: typeof bilibiliApiUrls;
-  };
-  kuaishou: {
-    /** fetcher */
-    fetcher: IBoundKuaishouFetcher;
-    sign: typeof kuaishouSign;
-    kuaishouApiUrls: typeof kuaishouApiUrls;
-  };
-  xiaohongshu: {
-    /** fetcher */
-    fetcher: IBoundXiaohongshuFetcher;
-    sign: typeof xiaohongshuSign;
-    xiaohongshuApiUrls: typeof xiaohongshuApiUrls;
-  };
-};
-//#endregion
-//#region src/platform/bilibili/getdata.d.ts
-/**
- * 哔哩哔哩API官方HTTP请求错误码
- */
-declare const bilibiliErrorCodeMap: {
-  '-1': string;
-  '-2': string;
-  '-3': string;
-  '-4': string;
-  '-101': string;
-  '-102': string;
-  '-103': string;
-  '-104': string;
-  '-105': string;
-  '-106': string;
-  '-107': string;
-  '-108': string;
-  '-110': string;
-  '-111': string;
-  '-112': string;
-  '-113': string;
-  '-114': string;
-  '-115': string;
-  '-304': string;
-  '-307': string;
-  '-352': string;
-  '-400': string;
-  '-401': string;
-  '-403': string;
-  '-404': string;
-  '-405': string;
-  '-409': string;
-  '-412': string;
-  '-500': string;
-  '-503': string;
-  '-504': string;
-  '-509': string;
-  '-616': string;
-  '-617': string;
-  '-625': string;
-  '-626': string;
-  '-628': string;
-  '-629': string;
-  '-632': string;
-  '-643': string;
-  '-650': string;
-  '-652': string;
-  '-658': string;
-  '-662': string;
-  '-688': string;
-  '-689': string;
-  '-701': string;
-  '-799': string;
-  '-8888': string;
-  100000: string;
-  100003: string;
-};
-//#endregion
-//#region src/platform/bilibili/qtparam.d.ts
+//#region src/platforms/legacy/bilibili/qtparam.d.ts
 /**
  * 生成B站视频流请求参数
  * @param BASEURL - 基础请求URL
@@ -28594,20 +50174,20 @@ declare const qtparam: (BASEURL: string, cookie: string) => Promise<{
   isvip: false;
 }>;
 //#endregion
-//#region src/platform/bilibili/routes.d.ts
+//#region src/platforms/bilibili/routes.d.ts
 /**
  * 创建B站路由
  * @param cookie - B站Cookie
- * @param requestConfig - 可选的请求配置
+ * @param requestConfig - 可选的请求配置（缺省时由运行期装配平台默认基线，见 client/runtime.ts）
  * @returns Express路由器
  */
-declare const createBilibiliRoutes: (cookie: string, requestConfig?: RequestConfig) => express.Router;
+declare const createBilibiliRoutes: (cookie: string, requestConfig?: RequestConfig$1) => Router;
 //#endregion
-//#region src/platform/bilibili/index.d.ts
+//#region src/platforms/bilibili/utils.d.ts
 type bilibiliUtilsModel = {
   /** 签名算法相关 */
   sign: {
-    /** WBI签名算法 */
+    /** WBI签名算法（v6 实现，在 `../legacy/bilibili/`） */
     wbi_sign: typeof wbi_sign;
     /** AV号转BV号 */
     av2bv: typeof av2bv;
@@ -28625,7 +50205,7 @@ type bilibiliUtilsModel = {
 /** B站相关功能模块 (工具集) */
 declare const bilibiliUtils: bilibiliUtilsModel;
 //#endregion
-//#region src/platform/douyin/sign/secsdkWebSign.d.ts
+//#region src/platforms/douyin/sign/secsdkWebSign.d.ts
 /** 签名入参 */
 interface SecsdkSignOptions {
   /** 10 位秒级时间戳，缺省取当前时间 */
@@ -28641,7 +50221,7 @@ interface ApplySecsdkOptions extends SecsdkSignOptions {
   method?: string;
 }
 //#endregion
-//#region src/platform/douyin/sign/index.d.ts
+//#region src/platforms/legacy/douyin/sign/index.d.ts
 declare class douyinSign {
   /**
    * 生成一个指定长度的随机字符串
@@ -28677,7 +50257,7 @@ declare class douyinSign {
   static VerifyFpManager(): string;
 }
 //#endregion
-//#region src/platform/douyin/API.d.ts
+//#region src/platforms/legacy/douyin/API.d.ts
 /** 去除 methodType 字段后的参数类型 */
 type DouyinMethodOptionsWithoutMethodType = { [K in keyof DouyinDataOptionsMap]: OmitMethodType<DouyinDataOptionsMap[K]['opt']>; };
 /**
@@ -28743,18 +50323,18 @@ declare class DouyinAPI {
 /** 默认的 DouyinAPI 实例（使用默认浏览器版本 125.0.0.0） */
 declare const douyinApiUrls: DouyinAPI;
 //#endregion
-//#region src/platform/douyin/routes.d.ts
+//#region src/platforms/douyin/routes.d.ts
 /**
  * 创建抖音路由
  * @param cookie - 抖音Cookie
- * @param requestConfig - 可选的请求配置
+ * @param requestConfig - 可选的请求配置（缺省时由运行期装配平台默认基线，见 client/runtime.ts）
  * @returns Express路由器
  */
-declare const createDouyinRoutes: (cookie: string, requestConfig?: RequestConfig) => express.Router;
+declare const createDouyinRoutes: (cookie: string, requestConfig?: RequestConfig$1) => Router;
 //#endregion
-//#region src/platform/douyin/index.d.ts
+//#region src/platforms/douyin/utils.d.ts
 type douyinUtilsModel = {
-  /** 签名算法相关 */
+  /** 签名算法相关（v6 实现，在 `../legacy/douyin/`；比 v7 的签名表多一个 `SecSdk` 静态方法） */
   sign: typeof douyinSign;
   /**
    * passport 扫码登录协议（签名、CookieJar、响应解析）
@@ -28773,7 +50353,7 @@ type douyinUtilsModel = {
 /** 抖音相关功能模块 (工具集) */
 declare const douyinUtils: douyinUtilsModel;
 //#endregion
-//#region src/platform/kuaishou/API.d.ts
+//#region src/platforms/legacy/kuaishou/API.d.ts
 /**
  * 根据 KuaishouMethodOptionsMap 创建一个新的类型，去除每个字段中的 methodType
  */
@@ -28984,7 +50564,14 @@ declare class API {
  */
 declare const kuaishouApiUrls: API;
 //#endregion
-//#region src/platform/kuaishou/sign/helpers.d.ts
+//#region src/platforms/legacy/kuaishou/sign/helpers.d.ts
+/**
+ * v6 遗留实现，新实现在 `platforms/kuaishou/sign/`。
+ *
+ * 注意下面 `buildKuaishouHxfalconPayload` 里 `requestBody: {}` 是硬编码的：
+ * 它让 `buildKuaishouHxfalconSignInput` 拼请求体的分支永远为假，严格校验签名的
+ * H5 接口（`/rest/wd/photo/info`）因此一律返回 `result=50`。
+ */
 /**
  * 快手 `__NS_hxfalcon` 组包所需的标准化载荷。
  *
@@ -28997,7 +50584,7 @@ type KuaishouHxfalconPayload = {
   requestBody: Record<string, unknown>;
 };
 //#endregion
-//#region src/platform/kuaishou/sign/index.d.ts
+//#region src/platforms/legacy/kuaishou/sign/index.d.ts
 /**
  * 快手 `live_api` 请求签名结果。
  */
@@ -29055,18 +50642,18 @@ declare class kuaishouSign {
   static signLiveApiRequest(request: KuaishouLiveApiRequest, cookie?: string): KuaishouLiveApiSignature;
 }
 //#endregion
-//#region src/platform/kuaishou/routes.d.ts
+//#region src/platforms/kuaishou/routes.d.ts
 /**
  * 创建快手路由
  * @param cookie - 快手Cookie
- * @param requestConfig - 可选的请求配置
+ * @param requestConfig - 可选的请求配置（缺省时由运行期装配平台默认基线，见 client/runtime.ts）
  * @returns Express路由器
  */
-declare const createKuaishouRoutes: (cookie: string, requestConfig?: RequestConfig) => express.Router;
+declare const createKuaishouRoutes: (cookie: string, requestConfig?: RequestConfig$1) => Router;
 //#endregion
-//#region src/platform/kuaishou/index.d.ts
+//#region src/platforms/kuaishou/utils.d.ts
 type kuaishouUtilsModel = {
-  /** 签名算法相关 */
+  /** 签名算法相关（v6 实现，在 `../legacy/kuaishou/`） */
   sign: typeof kuaishouSign;
   /** 该类下的方法只会返回请求描述对象，需要手动请求对应地址以获取数据 */
   kuaishouApiUrls: typeof kuaishouApiUrls;
@@ -29074,7 +50661,7 @@ type kuaishouUtilsModel = {
 /** 快手相关功能模块 (工具集) */
 declare const kuaishouUtils: kuaishouUtilsModel;
 //#endregion
-//#region src/platform/xiaohongshu/sign/index.d.ts
+//#region src/platforms/legacy/xiaohongshu/sign/index.d.ts
 /**
  * 小红书签名算法类
  */
@@ -29122,6 +50709,10 @@ declare class xiaohongshuSign {
   static generateXB3Traceid(): string;
   /**
    * 从cookie字符串中提取a1值
+   *
+   * 按名精确匹配（`contracts/cookie.ts` 的 `getCookieValue`）—— 正则匹配会在
+   * `xa1=WRONG; a1=RIGHT` 这类输入上取错值。未命中返回空串（`getCookieValue`
+   * 返回 `undefined`，这里用 `?? ''` 承接）。
    * @param cookieString - 完整的cookie字符串
    * @returns a1 cookie值
    */
@@ -29133,18 +50724,18 @@ declare class xiaohongshuSign {
   static getSearchId: () => string;
 }
 //#endregion
-//#region src/platform/xiaohongshu/routes.d.ts
+//#region src/platforms/xiaohongshu/routes.d.ts
 /**
  * 创建小红书路由
  * @param cookie - 小红书Cookie
- * @param requestConfig - 可选的请求配置
+ * @param requestConfig - 可选的请求配置（缺省时由运行期装配平台默认基线，见 client/runtime.ts）
  * @returns Express路由器
  */
-declare const createXiaohongshuRoutes: (cookie: string, requestConfig?: RequestConfig) => express.Router;
+declare const createXiaohongshuRoutes: (cookie: string, requestConfig?: RequestConfig$1) => Router;
 //#endregion
-//#region src/platform/xiaohongshu/index.d.ts
+//#region src/platforms/xiaohongshu/utils.d.ts
 type xiaohongshuUtilsModel = {
-  /** 签名算法相关 */
+  /** 签名算法相关（v6 实现，在 `../legacy/xiaohongshu/`） */
   sign: typeof xiaohongshuSign;
   /**
    * 该类下的所有方法只会返回拼接好参数后的 Url 地址，需要手动请求该地址以获取数据
@@ -29214,12 +50805,144 @@ declare const handleError: (error: unknown, requestPath?: string) => {
   requestPath?: string;
 };
 //#endregion
-//#region src/model/networks.d.ts
+//#region src/validation/index.d.ts
+/**
+ * 校验结果（不抛错，失败以 `issues` 表达）。
+ *
+ * 需要「校验失败抛异常」行为的调用方用 `assertValidXxxParams`。
+ */
+type ValidateOutcome<T> = {
+  ok: true;
+  value: T;
+} | {
+  ok: false;
+  issues: ValidationIssue[];
+};
+/**
+ * 验证抖音参数（不抛错）
+ * @param methodType - 抖音方法类型
+ * @param params - 待验证的参数
+ * @returns `ValidateOutcome`：成功带 value，失败带字段级 issues
+ */
+declare const validateDouyinParams: <T extends DouyinMethodType>(methodType: T, params: unknown) => ValidateOutcome<zod.infer<(typeof DouyinValidationSchemas)[T]>>;
+/**
+ * 验证哔哩哔哩参数（不抛错）
+ * @param methodType - 哔哩哔哩方法类型
+ * @param params - 待验证的参数
+ * @returns `ValidateOutcome`：成功带 value，失败带字段级 issues
+ */
+declare const validateBilibiliParams: <T extends BilibiliMethodType>(methodType: T, params: unknown) => ValidateOutcome<zod.infer<(typeof BilibiliValidationSchemas)[T]>>;
+/**
+ * 验证快手参数（不抛错）
+ * @param methodType - 快手方法类型
+ * @param params - 待验证的参数
+ * @returns `ValidateOutcome`：成功带 value，失败带字段级 issues
+ */
+declare const validateKuaishouParams: <T extends KuaishouMethodType>(methodType: T, params: unknown) => ValidateOutcome<zod.infer<(typeof KuaishouValidationSchemas)[T]>>;
+/**
+ * 验证小红书参数（不抛错）
+ * @param methodType - 小红书方法类型
+ * @param params - 待验证的参数
+ * @returns `ValidateOutcome`：成功带 value，失败带字段级 issues
+ */
+declare const validateXiaohongshuParams: <T extends XiaohongshuMethodType>(methodType: T, params: unknown) => ValidateOutcome<zod.infer<(typeof XiaohongshuValidationSchemas)[T]>>;
+/**
+ * 验证抖音参数，失败抛 `ValidationError`（不产出失败结果）
+ * @param methodType - 抖音方法类型
+ * @param params - 待验证的参数
+ * @returns 校验通过后的参数
+ */
+declare const assertValidDouyinParams: <T extends DouyinMethodType>(methodType: T, params: unknown) => zod.infer<(typeof DouyinValidationSchemas)[T]>;
+/**
+ * 验证哔哩哔哩参数，失败抛 `ValidationError`
+ * @param methodType - 哔哩哔哩方法类型
+ * @param params - 待验证的参数
+ * @returns 校验通过后的参数
+ */
+declare const assertValidBilibiliParams: <T extends BilibiliMethodType>(methodType: T, params: unknown) => zod.infer<(typeof BilibiliValidationSchemas)[T]>;
+/**
+ * 验证快手参数，失败抛 `ValidationError`
+ * @param methodType - 快手方法类型
+ * @param params - 待验证的参数
+ * @returns 校验通过后的参数
+ */
+declare const assertValidKuaishouParams: <T extends KuaishouMethodType>(methodType: T, params: unknown) => zod.infer<(typeof KuaishouValidationSchemas)[T]>;
+/**
+ * 验证小红书参数，失败抛 `ValidationError`
+ * @param methodType - 小红书方法类型
+ * @param params - 待验证的参数
+ * @returns 校验通过后的参数
+ */
+declare const assertValidXiaohongshuParams: <T extends XiaohongshuMethodType>(methodType: T, params: unknown) => zod.infer<(typeof XiaohongshuValidationSchemas)[T]>;
+/**
+ * 创建成功信封
+ *
+ * 一般用不到 —— 主路径的成功信封由执行管线构造。需要手工组装
+ * `AmagiResult` 时用它：`createSuccessResponse(data, meta)`。
+ * @param data - 端点声明的返回数据
+ * @param meta - 请求元信息（与管线的 `AmagiMeta` 同形）
+ * @param message - 覆盖默认的 {@link SUCCESS_MESSAGE}
+ * @returns 成功信封
+ */
+declare const createSuccessResponse: <T>(data: T, meta: AmagiMeta, message?: string) => AmagiSuccess<T>;
+/**
+ * 创建失败信封
+ *
+ * 一般用不到 —— 主路径的失败信封由执行管线构造（错误归因、cause 保留
+ * 都在管线内）。需要手工组装 `AmagiResult` 时用它：`createErrorResponse(error, meta)`。
+ * @param error - 唯一错误载体（`AmagiError`，非空）
+ * @param meta - 请求元信息
+ * @returns 失败信封（`message` 等价于 `error.message`）
+ */
+declare const createErrorResponse: (error: AmagiError, meta: AmagiMeta) => AmagiFailure;
+//#endregion
+//#region src/validation/legacy.d.ts
+/**
+ * 基础响应类型（v6 形状）
+ */
+type BaseResponse = {
+  /** 响应消息 */
+  message: string;
+  /** 响应状态码 */
+  code: number;
+};
+/**
+ * 成功响应类型（v6 形状）
+ * @template T - 响应数据的类型
+ */
+type SuccessResult<T = any> = BaseResponse & {
+  /** 响应状态 */
+  success: true;
+  /** 响应数据，类型由泛型 T 决定 */
+  data: T;
+  /** 成功响应时错误信息为空 */
+  error: never;
+};
+/**
+ * 错误响应类型（v6 形状）
+ */
+type ErrorResult = BaseResponse & {
+  /** 响应状态 */
+  success: false;
+  /** API 错误类型 */
+  error: APIErrorType;
+  /** 错误响应时数据为空 */
+  data: never;
+};
+/**
+ * 通用API响应类型（v6 形状）
+ * @template T - 成功响应数据的类型
+ */
+type Result<T> = SuccessResult<T> | ErrorResult;
+//#endregion
+//#region src/transport/legacy.d.ts
 /**
  * 执行网络请求并返回数据（带自动重试）
  * @param config - axios请求配置
  * @param maxRetries - 最大重试次数，默认3次
  * @returns 响应数据或错误结果
+ * @deprecated 用 client fetcher / `HttpClient`。返回的是 `ErrorResult`，
+ *   不是 `AmagiResult` 信封
  */
 declare const fetchData: <T>(config: AxiosRequestConfig<T>, maxRetries?: number) => Promise<T | ErrorResult>;
 /**
@@ -29227,237 +50950,135 @@ declare const fetchData: <T>(config: AxiosRequestConfig<T>, maxRetries?: number)
  * @param config - axios请求配置
  * @param maxRetries - 最大重试次数，默认3次
  * @returns 完整响应或错误结果
+ * @deprecated 用 client fetcher / `HttpClient`。返回的是 `ErrorResult`，
+ *   不是 `AmagiResult` 信封
  */
 declare const fetchResponse: <T = unknown>(config: AxiosRequestConfig, maxRetries?: number) => Promise<AxiosResponse<T> | ErrorResult>;
 /**
  * 判断结果是否为网络错误响应
  * @param result - 请求结果
- * @returns 是否为ErrorResult
+ * @returns 是否为网络错误
  *
- * 通过检查 error 字段中的 amagiError 来区分网络错误和业务错误
+ * 识别两种形状：`success: false` 且 `error.amagiError` 存在（本模块返回的
+ * `ErrorResult`），或 `error.kind === 'network'`（v7 失败信封），两代结果都能判。
  */
 declare const isNetworkErrorResult: (result: unknown) => result is ErrorResult;
-/**
- * 获取响应头和数据（带自动重试）
- * @param config - axios请求配置
- * @param maxRetries - 最大重试次数，默认3次
- * @returns 包含headers和data的对象，或错误结果
- */
-declare const getHeadersAndData: <T = any>(config: AxiosRequestConfig, maxRetries?: number) => Promise<{
-  headers: RawAxiosResponseHeaders;
-  data: T;
-} | ErrorResult>;
 //#endregion
-//#region src/types/api-spec.d.ts
+//#region src/server/index.d.ts
 /**
- * Amagi v6 API 规范定义
+ * 请求配置选项接口
  *
- * 使用 TypeScript 类型系统定义 RESTful API 规范
- * 所有参数通过查询字符串传递，便于 API 文档编写
+ * 与 `contracts/request.ts` 的同名类型逐字相同（顶层导出的就是 contracts
+ * 那一份）。新代码请用 contracts 的。
+ */
+type RequestConfig = Omit<AxiosRequestConfig, 'url' | 'method' | 'data'>;
+/**
+ * Cookie配置选项接口
+ */
+type CookieConfig = {
+  /** 抖音Cookie */
+  douyin?: string;
+  /** B站Cookie */
+  bilibili?: string;
+  /** 快手Cookie */
+  kuaishou?: string;
+  /** 小红书Cookie */
+  xiaohongshu?: string;
+};
+/**
+ * 客户端配置选项接口
  *
- * @module types/api-spec
+ * 形状冻结不动。`ClientOptions` 是它的超集（多一个 `debug`），
+ * 两者赋值互通，所以 `createAmagiClient(o: Options)` 的调用点零改动。
  */
+type Options = {
+  /** Cookie配置 */
+  cookies?: CookieConfig;
+  /** 请求配置 */
+  request?: Omit<AxiosRequestConfig, 'url' | 'method' | 'data'>;
+};
 /**
- * HTTP 方法类型
+ * 创建Amagi客户端实例
+ *
+ * @deprecated 请改用 `createClient` 或默认导出。这是同一个函数对象的别名，
+ *   返回值就是 {@link createClient} 的结果：`douyin` / `bilibili` 上带 `login`
+ *   命名空间（扫码登录会话），`events` 是实例级总线（负载带 `meta`）。
+ * @param options - 客户端配置选项，包含Cookie和请求配置
+ * @returns 包含数据获取方法、服务器启动方法、绑定Cookie的平台工具集和API对象的对象
  */
-type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+declare const createAmagiClient: typeof createClient;
+//#endregion
+//#region src/platforms/kuaishou/captcha.d.ts
 /**
- * API 端点定义
+ * 快手风控（滑块验证）响应的识别与地址提取。
+ *
+ * **只做中转，不做绕过。** amagi 把滑块地址原样交给调用方，不引入任何识别、
+ * 轨迹模拟或自动过验证的代码。
+ *
+ * `JudgeVerdict` 只有 `{ ok, kind, code, retryable }` 四个槽位，装不下一个 URL，
+ * 所以单独一个模块：judge 负责**分类**（`risk` / `CAPTCHA_REQUIRED`），地址由这里取。
+ *
+ * {@link parseKuaishouCaptcha} 装在 `client/runtime.ts` 的 `PLATFORM_RUNTIME.kuaishou.challenge`
+ * 上，`runtime/execute.ts` 在 judge 判出 `kind: 'risk'` 时调用它，结果进
+ * `error.challenge` —— **不受 `debug` 开关影响**。若只从 `error.raw` 取地址，
+ * `raw` 只有 `createClient({ debug: true })` 才有、HTTP 路由那一面
+ * （`createKuaishouRoutes` 不接 `debug`）**结构上拿不到**。
+ *
+ * 两种响应格式，归一化成同一个结果：
+ *
+ * ```jsonc
+ * // PC GraphQL：result 400002，地址在 data.url 或被前端 afterware 改写成 data.captcha
+ * { "data": { "result": 400002, "url": "https://captcha.zt.kuaishou.com/iframe/index.html?captchaSession=…", "jsSdkUrl": "//static.yximgs.com/…" } }
+ *
+ * // H5 REST：result 2001，地址在 captchaConfig —— 注意它是**字符串形式的 JSON**，要二次解析
+ * { "result": 2001, "error_msg": "[2001] antispam need captcha", "captchaConfig": "{\"type\":1,\"url\":\"…\",\"captchaSession\":\"…\"}" }
+ * ```
+ *
+ * 这两种形状与业务码都来自 @OduckO 的 kuaishou-parser（GPL-3.0-only）
+ * `src/platform/kuaishou/captcha.ts`：https://github.com/OduckO
+ *
+ * 实测：`/rest/wd/photo/info` 稳定命中 `2001`，逐个变量排除后确认不是实现问题
+ * （签名 / 请求头 / did / cookie / 分享页预热 / 真 share 参数 / 数字 photoId
+ * 七条全 2001）。而快手自己的 H5 分享页 SSR 用的是 `ugH5App/photo/simple/info`
+ * —— 所以 `videoWork` 端点走那一条，完整版降级成显式的 `videoWorkFull`。
+ * 详见 `endpoints/videoWorkFull.ts`。
  */
-interface ApiEndpoint<TParams = unknown, TResponse = unknown, TQuery = unknown, TBody = unknown> {
-  /** 端点路径 */
-  path: string;
-  /** HTTP 方法 */
-  method: HttpMethod;
-  /** 端点描述 */
-  description: string;
-  /** 端点标签/分类 */
-  tags: string[];
-  /** 路径参数 schema */
-  params?: TParams;
-  /** 查询参数 schema */
-  query?: TQuery;
-  /** 请求体 schema */
-  body?: TBody;
-  /** 响应 schema */
-  response: TResponse;
+/** PC GraphQL 的风控业务码 */
+declare const KUAISHOU_PC_CAPTCHA_RESULT = 400002;
+/** H5 REST 的风控业务码 */
+declare const KUAISHOU_H5_CAPTCHA_RESULT = 2001;
+/** 交给调用方的风控挑战 */
+interface KuaishouCaptchaChallenge {
+  /** 滑块页地址（已补协议） */
+  url: string;
+  /** 前端验证 SDK 地址（已补协议），自建验证页时要它 */
+  jsSdkUrl?: string;
+  /** 验证会话票据 */
+  session?: string;
+  /** 风控业务名，如 `ANTICRAWL_DEFAULT` */
+  bizName?: string;
+  /** 命中的业务码：`400002`（PC）或 `2001`（H5） */
+  result: number;
 }
 /**
- * 平台类型
- */
-type Platform = 'douyin' | 'bilibili' | 'kuaishou' | 'xiaohongshu';
-declare const DouyinMethodMapping: {
-  readonly 视频作品数据: "fetchVideoWork";
-  readonly 图集作品数据: "fetchImageAlbumWork";
-  readonly 合辑作品数据: "fetchSlidesWork";
-  readonly 文字作品数据: "fetchTextWork";
-  readonly 聚合解析: "parseWork";
-  readonly 评论数据: "fetchWorkComments";
-  readonly 指定评论回复数据: "fetchCommentReplies";
-  readonly 用户主页数据: "fetchUserProfile";
-  readonly 用户主页视频列表数据: "fetchUserVideoList";
-  readonly 搜索数据: "searchContent";
-  readonly 热点词数据: "fetchSuggestWords";
-  readonly 音乐数据: "fetchMusicInfo";
-  readonly 直播间信息数据: "fetchLiveRoomInfo";
-  readonly 申请二维码数据: "requestLoginQrcode";
-  readonly Emoji数据: "fetchEmojiList";
-  readonly 动态表情数据: "fetchDynamicEmojiList";
-  readonly 弹幕数据: "fetchDanmakuList";
-};
-type DouyinMethodKey = keyof typeof DouyinMethodMapping;
-type DouyinMethodValue = (typeof DouyinMethodMapping)[DouyinMethodKey];
-declare const BilibiliMethodMapping: {
-  readonly 单个视频作品数据: "fetchVideoInfo";
-  readonly 单个视频下载信息数据: "fetchVideoStreamUrl";
-  readonly 实时弹幕: "fetchVideoDanmaku";
-  readonly 评论数据: "fetchComments";
-  readonly 指定评论的回复: "fetchCommentReplies";
-  readonly 用户主页数据: "fetchUserCard";
-  readonly 用户主页动态列表数据: "fetchUserDynamicList";
-  readonly 用户直播状态: "fetchUserLiveStatus";
-  readonly 用户空间详细信息: "fetchUserSpaceInfo";
-  readonly 获取UP主总播放量: "fetchUploaderTotalViews";
-  readonly 动态详情数据: "fetchDynamicDetail";
-  readonly 番剧基本信息数据: "fetchBangumiInfo";
-  readonly 番剧下载信息数据: "fetchBangumiStreamUrl";
-  readonly 直播间信息: "fetchLiveRoomInfo";
-  readonly 直播间初始化信息: "fetchLiveRoomInitInfo";
-  readonly 专栏正文内容: "fetchArticleContent";
-  readonly 专栏显示卡片信息: "fetchArticleCards";
-  readonly 专栏文章基本信息: "fetchArticleInfo";
-  readonly 文集基本信息: "fetchArticleListInfo";
-  readonly 登录基本信息: "fetchLoginStatus";
-  readonly 申请二维码: "requestLoginQrcode";
-  readonly 二维码状态: "checkQrcodeStatus";
-  readonly AV转BV: "convertAvToBv";
-  readonly BV转AV: "convertBvToAv";
-  readonly Emoji数据: "fetchEmojiList";
-  readonly 从_v_voucher_申请_captcha: "requestCaptchaFromVoucher";
-  readonly 验证验证码结果: "validateCaptchaResult";
-};
-type BilibiliMethodKey = keyof typeof BilibiliMethodMapping;
-type BilibiliMethodValue = (typeof BilibiliMethodMapping)[BilibiliMethodKey];
-declare const KuaishouMethodMapping: {
-  readonly 单个视频作品数据: "fetchVideoWork";
-  readonly 评论数据: "fetchWorkComments";
-  readonly 用户主页数据: "fetchUserProfile";
-  readonly 用户作品列表数据: "fetchUserWorkList";
-  readonly 直播间信息数据: "fetchLiveRoomInfo";
-  readonly Emoji数据: "fetchEmojiList";
-};
-type KuaishouMethodKey = keyof typeof KuaishouMethodMapping;
-type KuaishouMethodValue = (typeof KuaishouMethodMapping)[KuaishouMethodKey];
-declare const XiaohongshuMethodMapping: {
-  readonly 首页推荐数据: "fetchHomeFeed";
-  readonly 单个笔记数据: "fetchNoteDetail";
-  readonly 评论数据: "fetchNoteComments";
-  readonly 用户数据: "fetchUserProfile";
-  readonly 用户笔记数据: "fetchUserNoteList";
-  readonly 表情列表: "fetchEmojiList";
-  readonly 搜索笔记: "searchNotes";
-};
-type XiaohongshuMethodKey = keyof typeof XiaohongshuMethodMapping;
-type XiaohongshuMethodValue = (typeof XiaohongshuMethodMapping)[XiaohongshuMethodKey];
-/**
- * Douyin HTTP API 路由
+ * 从快手响应里识别风控并取出滑块地址。
  *
- * 所有参数通过查询字符串传递，例如:
- * GET /api/douyin/work?aweme_id=xxx
- * GET /api/douyin/comments?aweme_id=xxx&number=50
- */
-declare const DouyinApiRoutes: {
-  readonly parseWork: "/work";
-  readonly videoWork: "/work";
-  readonly imageAlbumWork: "/work";
-  readonly slidesWork: "/work";
-  readonly textWork: "/work";
-  readonly comments: "/comments";
-  readonly commentReplies: "/comment-replies";
-  readonly userProfile: "/user";
-  readonly userVideoList: "/user/videos";
-  readonly search: "/search";
-  readonly suggestWords: "/search/suggest";
-  readonly musicInfo: "/music";
-  readonly liveRoomInfo: "/live";
-  readonly loginQrcode: "/auth/qrcode";
-  readonly emojiList: "/emoji";
-  readonly dynamicEmojiList: "/emoji/dynamic";
-  readonly danmakuList: "/danmaku";
-};
-/**
- * Bilibili HTTP API 路由
+ * PC 与 H5 两种格式都认，归一成同一个结果。取到的地址必须落在
+ * {@link CAPTCHA_HOST} 上 —— 否则宁可返回 undefined，不把一个来路不明的 URL
+ * 当成验证页交出去。
  *
- * 所有参数通过查询字符串传递，例如:
- * GET /api/bilibili/video?bvid=xxx
- * GET /api/bilibili/comments?oid=xxx&type=1
+ * 装在 `PLATFORM_RUNTIME.kuaishou.challenge` 上由管线自动调用，所以正常路径下
+ * 调用方直接读失败信封的 `error.challenge` 就够，不必自己调这个函数。
+ * @param raw - decode 之后的原始响应体
+ * @returns 风控挑战；没命中风控返回 undefined
  */
-declare const BilibiliApiRoutes: {
-  readonly videoInfo: "/video";
-  readonly videoStream: "/video/stream";
-  readonly videoDanmaku: "/video/danmaku";
-  readonly comments: "/comments";
-  readonly commentReplies: "/comment-replies";
-  readonly userCard: "/user";
-  readonly userDynamicList: "/user/dynamics";
-  readonly userLiveStatus: "/user/live-status";
-  readonly userSpaceInfo: "/user/space";
-  readonly uploaderTotalViews: "/user/total-views";
-  readonly dynamicDetail: "/dynamic";
-  readonly bangumiInfo: "/bangumi";
-  readonly bangumiStream: "/bangumi/stream";
-  readonly liveRoomInfo: "/live";
-  readonly liveRoomInit: "/live/init";
-  readonly articleContent: "/article/content";
-  readonly articleCards: "/article/cards";
-  readonly articleInfo: "/article";
-  readonly articleListInfo: "/article-list";
-  readonly loginStatus: "/auth/status";
-  readonly loginQrcode: "/auth/qrcode";
-  readonly qrcodeStatus: "/auth/qrcode/status";
-  readonly avToBv: "/convert/av-to-bv";
-  readonly bvToAv: "/convert/bv-to-av";
-  readonly emojiList: "/emoji";
-  readonly captchaFromVoucher: "/captcha";
-  readonly validateCaptcha: "/captcha/validate";
-};
-/**
- * Kuaishou HTTP API 路由
- */
-declare const KuaishouApiRoutes: {
-  readonly videoWork: "/work";
-  readonly comments: "/comments";
-  readonly userProfile: "/user";
-  readonly userWorkList: "/user/works";
-  readonly liveRoomInfo: "/live";
-  readonly emojiList: "/emoji";
-};
-/**
- * Xiaohongshu HTTP API 路由
- */
-declare const XiaohongshuApiRoutes: {
-  readonly homeFeed: "/feed";
-  readonly noteDetail: "/note";
-  readonly noteComments: "/comments";
-  readonly userProfile: "/user";
-  readonly userNoteList: "/user/notes";
-  readonly emojiList: "/emoji";
-  readonly searchNotes: "/search";
-};
-/**
- * 根据中文方法名获取英文 fetcher 方法名
- */
-declare function getEnglishMethodName<T extends Platform>(platform: T, chineseMethod: string): string | undefined;
-/**
- * 根据 methodType 获取 HTTP API 路由路径
- */
-declare function getApiRoute<T extends Platform>(platform: T, methodType: string): string | undefined;
+declare const parseKuaishouCaptcha: (raw: unknown) => KuaishouCaptchaChallenge | undefined;
 //#endregion
 //#region src/index.d.ts
 /** amagi 的构造函数类型 */
 type AmagiConstructor = {
-  new (options?: Options): ReturnType<typeof createAmagiClient>;
-  (options?: Options): ReturnType<typeof createAmagiClient>;
+  new (options?: ClientOptions): ReturnType<typeof createClient>;
+  (options?: ClientOptions): ReturnType<typeof createClient>;
   /** 当前版本号 */
   readonly version: string;
   /** 抖音相关功能模块 (工具集) */
@@ -29505,4 +51126,480 @@ declare const CreateApp: AmagiConstructor;
 declare const Client: typeof CreateApp;
 declare const amagi: typeof Client;
 //#endregion
-export { APIErrorType, AdditionalType, AmagiEventMap, AmagiEventType, type AnonymousFetcherRequestConfig, type ApiEndpoint, ApiError, ApiErrorEventData, ApiSuccessEventData, ArticleCard, ArticleContent, ArticleInfo, ArticleWork, BaseRequestOptions, BaseResponse, BiliAv2Bv, BiliBangumiVideoInfo, BiliBangumiVideoPlayurlIsLogin, BiliBangumiVideoPlayurlNoLogin, BiliBiliVideoPlayurlNoLogin, BiliBv2AV, BiliCheckQrcode, BiliCommentReply, BiliDynamicInfo, BiliDynamicInfoUnion, BiliEmojiList, BiliLiveRoomDef, BiliLiveRoomDetail, BiliNewLoginQrcode, BiliOneWork, BiliProtobufDanmaku, BiliUserDynamic, BiliUserFullView, BiliUserLiveStatus, BiliUserProfile, BiliVideoPlayurlIsLogin, BiliWorkComments, BilibiliApiRoutes, type BilibiliApplyCaptchaOptions, BilibiliApplyCaptchaParamsSchema, type BilibiliArticleCardOptions, BilibiliArticleCardParamsSchema, BilibiliArticleInfoParamsSchema, type BilibiliArticleOptions, BilibiliArticleParamsSchema, type BilibiliAv2BvOptions, BilibiliAv2BvParamsSchema, type BilibiliBangumiInfoOptions, BilibiliBangumiInfoParamsSchema, type BilibiliBangumiStreamOptions, BilibiliBangumiStreamParamsSchema, type BilibiliBv2AvOptions, BilibiliBv2AvParamsSchema, BilibiliColumnInfoParamsSchema, BilibiliCommentParamsSchema, type BilibiliCommentRepliesOptions, BilibiliCommentReplyParamsSchema, type BilibiliCommentsOptions, type BilibiliDanmakuOptions, BilibiliDanmakuParamsSchema, BilibiliDataOptions, BilibiliDataOptionsMap, type BilibiliDynamicOptions, BilibiliDynamicParamsSchema, BilibiliEmojiParamsSchema, type BilibiliFetcher, BilibiliFetcherMethodKey, BilibiliFetcherMethods, BilibiliInternalMethodKey, BilibiliInternalMethods, BilibiliLiveParamsSchema, type BilibiliLiveRoomOptions, BilibiliLoginParamsSchema, type BilibiliMethodKey, BilibiliMethodMapping, BilibiliMethodOptMap, BilibiliMethodOptionsMap, BilibiliMethodRoutes, BilibiliMethodToFetcher, BilibiliMethodType, type BilibiliMethodValue, BilibiliQrcodeParamsSchema, type BilibiliQrcodeStatusOptions, BilibiliQrcodeStatusParamsSchema, BilibiliReturnTypeMap, type BilibiliUserOptions, BilibiliUserParamsSchema, type BilibiliValidateCaptchaOptions, BilibiliValidateCaptchaParamsSchema, BilibiliValidationSchemas, BilibiliVideoDownloadParamsSchema, type BilibiliVideoInfoOptions, BilibiliVideoParamsSchema, type BilibiliVideoStreamOptions, type BoundBilibiliFetcher, type BoundDouyinFetcher, type BoundKuaishouFetcher, type BoundXiaohongshuFetcher, ColumnInfo, CommentReply, CommentType, ConditionalReturnType, CookieConfig, CreateApp, DouyinApiRoutes, DouyinCommentParamsSchema, type DouyinCommentRepliesOptions, DouyinCommentReplyParamsSchema, type DouyinCommentsOptions, type DouyinDanmakuOptions, DouyinDanmakuParamsSchema, DouyinDataOptions, DouyinDataOptionsMap, DouyinEmojiListParamsSchema, DouyinEmojiProParamsSchema, DouyinEmojiResourceParamsSchema, type DouyinFetcher, DouyinFetcherMethodKey, DouyinFetcherMethods, type DouyinGuestMusicListOptions, DouyinGuestMusicListParamsSchema, type DouyinGuestMusicOptions, DouyinGuestMusicParamsSchema, type DouyinGuestUserOptions, DouyinGuestUserParamsSchema, DouyinHotWordsParamsSchema, DouyinInternalMethodKey, DouyinInternalMethods, type DouyinLiveRoomOptions, DouyinLiveRoomParamsSchema, type DouyinMethodKey, DouyinMethodMapping, DouyinMethodOptMap, DouyinMethodOptionsMap, DouyinMethodRoutes, DouyinMethodToFetcher, DouyinMethodType, type DouyinMethodValue, type DouyinMusicOptions, DouyinMusicParamsSchema, type PollResult as DouyinPassportPollResult, type DouyinPassportQrcode, type QrcodeInfo as DouyinPassportQrcodeInfo, type DouyinPassportQrcodeStatus, type DouyinPassportQrcodeStatusOptions, type DouyinPassportSendCode, type DouyinPassportSendCodeOptions, type SendCodeResult as DouyinPassportSendCodeResult, type DouyinPassportValidateCode, type DouyinPassportValidateCodeOptions, type ValidateCodeResult as DouyinPassportValidateCodeResult, type VerifyContext as DouyinPassportVerifyContext, type VerifyWay as DouyinPassportVerifyWay, type DouyinQrcodeOptions, DouyinQrcodeParamsSchema, DouyinReturnTypeMap, type DouyinSearchOptions, DouyinSearchParamsSchema, type DouyinSuggestWordsOptions, type DouyinUserListOptions, DouyinUserListParamsSchema, type DouyinUserOptions, DouyinUserParamsSchema, DouyinValidationSchemas, type DouyinWorkOptions, DouyinWorkParamsSchema, DyDanmakuList, DyEmojiList, DyEmojiProList, DyImageAlbumWork, DyMusicWork, DyPassportPollResult, DyPassportQrcode, DyPassportQrcodeStatus, DyPassportSendCode, DyPassportSendCodeResult, DyPassportValidateCode, DyPassportValidateCodeResult, DyPassportVerifyContext, DyPassportVerifyWay, DySearchInfo, DySlidesWork, DySuggestWords, DyUserInfo, DyUserLiveVideos, DyUserPostVideos, DyVideoWork, DyWorkComments, DynamicType, DynamicTypeAV, DynamicTypeArticle, DynamicTypeDraw, DynamicTypeForward, DynamicTypeForwardUnion, DynamicTypeLiveRcmd, DynamicTypeWord, ErrorResult, ExtractTypeMode, FetcherConfig, type FetcherCookieForRequestConfig, type FetcherRequestConfigWithCookie, type FetcherRequestConfigWithoutCookie, HomeFeed, type HttpMethod, HttpRequestEventData, HttpResponseEventData, type IBilibiliFetcher, type IBoundBilibiliFetcher, type IBoundDouyinFetcher, type IBoundKuaishouFetcher, type IBoundXiaohongshuFetcher, type IDouyinFetcher, type IKuaishouFetcher, type IXiaohongshuFetcher, type KsBannedStatus, KsEmojiList, KsLiveRoomInfo, KsOneWork, type KsUserHomeWork, KsUserProfile, type KsUserProfileCounts, type KsUserProfileGameInfo, type KsUserProfileLiveInfo, type KsUserProfileSensitiveInfo, type KsUserProfileUserInfo, KsUserWorkList, type KsVerifiedStatus, KsWorkComments, KuaishouApiRoutes, KuaishouCommentParamsSchema, type KuaishouCommentsOptions, KuaishouDataOptions, KuaishouDataOptionsMap, KuaishouEmojiParamsSchema, type KuaishouFetcher, KuaishouFetcherMethodKey, KuaishouFetcherMethods, type KuaishouGraphqlRequest, KuaishouInternalMethodKey, KuaishouInternalMethods, type KuaishouLiveApiRequest, type KuaishouLiveRoomInfoOptions, KuaishouLiveRoomInfoParamsSchema, type KuaishouMethodKey, KuaishouMethodMapping, KuaishouMethodOptMap, KuaishouMethodOptionsMap, KuaishouMethodRoutes, KuaishouMethodToFetcher, KuaishouMethodType, type KuaishouMethodValue, KuaishouReturnTypeMap, type KuaishouUserProfileOptions, KuaishouUserProfileParamsSchema, type KuaishouUserWorkListOptions, KuaishouUserWorkListParamsSchema, KuaishouValidationSchemas, KuaishouVideoParamsSchema, type KuaishouVideoWorkOptions, LogEventData, MajorType, MethodMaps, NetworkErrorEventData, NetworkRetryEventData, type NetworksConfigType, NoteComments, OmitMethodType, OneNote, Options, type Platform, RequestConfig, Result, SearchInfoGeneralData, SearchInfoUser, SearchInfoVideo, SearchNotes, SuccessResult, TypeControl, TypeMode, ValidationError, XiaohongshuApiRoutes, type XiaohongshuCommentsOptions, XiaohongshuDataOptions, XiaohongshuDataOptionsMap, XiaohongshuEmojiList, type XiaohongshuFetcher, XiaohongshuFetcherMethodKey, XiaohongshuFetcherMethods, type XiaohongshuHomeFeedOptions, XiaohongshuInternalMethodKey, XiaohongshuInternalMethods, type XiaohongshuMethodKey, XiaohongshuMethodMapping, XiaohongshuMethodOptMap, XiaohongshuMethodOptionsMap, XiaohongshuMethodRoutes, XiaohongshuMethodToFetcher, XiaohongshuMethodType, type XiaohongshuMethodValue, type XiaohongshuNoteDetailOptions, XiaohongshuReturnTypeMap, type XiaohongshuSearchNotesOptions, type XiaohongshuUserNotesOptions, XiaohongshuUserProfile, type XiaohongshuUserProfileOptions, XiaohongshuValidationSchemas, amagi, amagiEvents, av2bv, bilibiliApiUrls, bilibiliErrorCodeMap, bilibiliFetcher, bilibiliUtils, bv2av, checkPassportQrcode, createAmagiClient, createBilibiliRoutes, createBilibiliRoutes as registerBilibiliRoutes, createBoundBilibiliFetcher, createBoundDouyinFetcher, createBoundKuaishouFetcher, createBoundXiaohongshuFetcher, createDouyinRoutes, createDouyinRoutes as registerDouyinRoutes, createErrorResponse, createKuaishouRoutes, createKuaishouRoutes as registerKuaishouRoutes, createSuccessResponse, createXiaohongshuRoutes, createXiaohongshuRoutes as registerXiaohongshuRoutes, douyinApiUrls, douyinFetcher, index_d_exports as douyinPassport, douyinSign, douyinUtils, emitApiError, emitApiSuccess, emitHttpRequest, emitHttpResponse, emitLog, emitLogDebug, emitLogError, emitLogInfo, emitLogMark, emitLogWarn, emitNetworkError, emitNetworkRetry, fetchData, fetchResponse, getApiRoute, getEnglishMethodName, getHeadersAndData, handleError, isNetworkErrorResult, isSmsCodeVerifyWay, kuaishouApiUrls, kuaishouFetcher, kuaishouSign, kuaishouUtils, parseDmSegMobileReply, qtparam, requestPassportQrcode, sendPassportVerifyCode, toFetcherMethod, validateBilibiliParams, validateDouyinParams, validateKuaishouParams, validatePassportVerifyCode, validateXiaohongshuParams, wbi_sign, xiaohongshuApiUrls, xiaohongshuFetcher, xiaohongshuSign, xiaohongshuUtils };
+//#region src/platforms/douyin/endpoints/index.d.ts
+/**
+ * 抖音端点注册表。
+ *
+ * 共 23 条路由，路由唯一：5 个作品端点拆成 5 条独立路由
+ * （`parseWork` 保留 `/fetch_one_work`）。
+ *
+ * 末尾 4 条是**免鉴权**端点（`sign: false` + `dropHeaders` 去掉 cookie）。
+ * 它们与前面 19 条走同一条管线，所以事件、trace、信封形状一致。
+ */
+declare const douyinRegistry: {
+  readonly parseWork: EndpointDef<import("zod").ZodObject<{
+    aweme_id: import("zod").ZodString;
+  }, $strip>, ParseWork>;
+  readonly videoWork: EndpointDef<import("zod").ZodObject<{
+    aweme_id: import("zod").ZodString;
+  }, $strip>, VideoWork$1>;
+  readonly imageAlbumWork: EndpointDef<import("zod").ZodObject<{
+    aweme_id: import("zod").ZodString;
+  }, $strip>, ImageAlbumWork>;
+  readonly slidesWork: EndpointDef<import("zod").ZodObject<{
+    aweme_id: import("zod").ZodString;
+  }, $strip>, SlidesWork>;
+  readonly textWork: EndpointDef<import("zod").ZodObject<{
+    aweme_id: import("zod").ZodString;
+  }, $strip>, TextWork_V0>;
+  readonly comments: EndpointDef<import("zod").ZodObject<{
+    aweme_id: import("zod").ZodString;
+    number: import("zod").ZodOptional<import("zod").ZodCoercedNumber<unknown>>;
+    cursor: import("zod").ZodOptional<import("zod").ZodCoercedNumber<unknown>>;
+  }, $strip>, Comments_V0$1>;
+  readonly commentReplies: EndpointDef<import("zod").ZodObject<{
+    aweme_id: import("zod").ZodString;
+    comment_id: import("zod").ZodString;
+    number: import("zod").ZodOptional<import("zod").ZodCoercedNumber<unknown>>;
+    cursor: import("zod").ZodOptional<import("zod").ZodCoercedNumber<unknown>>;
+  }, $strip>, CommentReplies_V0>;
+  readonly userProfile: EndpointDef<import("zod").ZodObject<{
+    sec_uid: import("zod").ZodString;
+  }, $strip>, UserProfile_V0$1>;
+  readonly userVideoList: EndpointDef<import("zod").ZodObject<{
+    sec_uid: import("zod").ZodString;
+    number: import("zod").ZodOptional<import("zod").ZodCoercedNumber<unknown>>;
+    max_cursor: import("zod").ZodOptional<import("zod").ZodString>;
+  }, $strip>, UserVideoList_V0>;
+  readonly userFavoriteList: EndpointDef<import("zod").ZodObject<{
+    sec_uid: import("zod").ZodString;
+    number: import("zod").ZodOptional<import("zod").ZodCoercedNumber<unknown>>;
+    max_cursor: import("zod").ZodOptional<import("zod").ZodString>;
+  }, $strip>, UserFavoriteList_V0$1>;
+  readonly userRecommendList: EndpointDef<import("zod").ZodObject<{
+    sec_uid: import("zod").ZodString;
+    number: import("zod").ZodOptional<import("zod").ZodCoercedNumber<unknown>>;
+    max_cursor: import("zod").ZodOptional<import("zod").ZodString>;
+  }, $strip>, UserRecommendList_V0$1>;
+  readonly search: EndpointDef<import("zod").ZodObject<{
+    query: import("zod").ZodString;
+    type: import("zod").ZodOptional<import("zod").ZodDefault<import("zod").ZodEnum<{
+      user: "user";
+      general: "general";
+      video: "video";
+    }>>>;
+    number: import("zod").ZodOptional<import("zod").ZodCoercedNumber<unknown>>;
+    search_id: import("zod").ZodOptional<import("zod").ZodString>;
+  }, $strip>, Search>;
+  readonly suggestWords: EndpointDef<import("zod").ZodObject<{
+    query: import("zod").ZodString;
+  }, $strip>, SuggestWords_V0>;
+  readonly musicInfo: EndpointDef<import("zod").ZodObject<{
+    music_id: import("zod").ZodString;
+  }, $strip>, MusicInfo_V0>;
+  readonly liveRoomInfo: EndpointDef<import("zod").ZodObject<{
+    web_rid: import("zod").ZodString;
+    room_id: import("zod").ZodOptional<import("zod").ZodString>;
+  }, $strip>, LiveRoomInfo_V0>;
+  readonly loginQrcode: EndpointDef<import("zod").ZodObject<{
+    verify_fp: import("zod").ZodString;
+  }, $strip>, any>;
+  readonly emojiList: EndpointDef<import("zod").ZodObject<{}, $strip>, EmojiList_V0$2>;
+  readonly dynamicEmojiList: EndpointDef<import("zod").ZodObject<{}, $strip>, DynamicEmojiList_V0>;
+  readonly danmakuList: EndpointDef<import("zod").ZodObject<{
+    aweme_id: import("zod").ZodString;
+    start_time: import("zod").ZodOptional<import("zod").ZodCoercedNumber<unknown>>;
+    end_time: import("zod").ZodOptional<import("zod").ZodCoercedNumber<unknown>>;
+    duration: import("zod").ZodCoercedNumber<unknown>;
+  }, $strip>, DanmakuList_V0$1>;
+  readonly guestUserInfo: EndpointDef<import("zod").ZodObject<{
+    unique_id: import("zod").ZodString;
+  }, $strip>, GuestUserInfo_V0>;
+  readonly guestMusicInfo: EndpointDef<import("zod").ZodObject<{
+    music_id: import("zod").ZodString;
+  }, $strip>, GuestMusicInfo_V0>;
+  readonly guestMusicAwemeList: EndpointDef<import("zod").ZodObject<{
+    music_id: import("zod").ZodString;
+    number: import("zod").ZodOptional<import("zod").ZodCoercedNumber<unknown>>;
+    cursor: import("zod").ZodOptional<import("zod").ZodCoercedNumber<unknown>>;
+  }, $strip>, GuestMusicAwemeList_V0>;
+  readonly emojiResourceMeta: EndpointDef<import("zod").ZodObject<{}, $strip>, EmojiResourceMeta_V0>;
+};
+//#endregion
+//#region src/model/fetchers/douyin/auth.d.ts
+/** 二维码状态查询参数 */
+interface DouyinPassportQrcodeStatusOptions {
+  /** `requestPassportQrcode` 返回的令牌 */
+  token: string;
+}
+/** 发送短信验证码参数 */
+interface DouyinPassportSendCodeOptions {
+  /** 轮询返回 `status: 'verify'` 时给出的验证上下文 */
+  verify: VerifyContext;
+  /** 追踪 ID，不传则自动生成 */
+  biz_trace_id?: string;
+  /**
+   * 本次使用的验证方式
+   *
+   * 不传则从 `verify.verifyWays` 里自动挑一个能收验证码的。服务端对不同账号会给出
+   * 不同的取值（如 `mobile_sms_verify` 或辅助验证的 `assist_mobile_sms_verify`），
+   * 必须原样回传，写死会导致验证失败。
+   */
+  verify_way?: string;
+}
+/** 提交短信验证码参数 */
+interface DouyinPassportValidateCodeOptions extends DouyinPassportSendCodeOptions {
+  /** 用户收到的 6 位验证码明文 */
+  code: string;
+}
+/**
+ * 申请抖音扫码登录二维码
+ *
+ * 首次调用会自动完成环境指纹初始化（`__ac_nonce` + `ttwid`），无需额外准备。
+ * @deprecated 请用 `client.douyin.login.qrcode()`（会话抽象：
+ *   取码 / 轮询 / challenge 由引擎编排，`expire_time` 秒转 `expiresAt` 毫秒）。
+ * @param options - 请求选项 (可选)
+ * @param cookie - 已有的会话 Cookie (可选，续用同一会话时传入)
+ * @param requestConfig - 请求配置 (可选)
+ * @returns 二维码令牌、内容与会话 cookie
+ * @example
+ * ```typescript
+ * const qrcode = await requestPassportQrcode()
+ * console.log(qrcode.data.content) // 拿去生成二维码图片
+ * ```
+ */
+declare function requestPassportQrcode(options?: undefined, cookie?: string, requestConfig?: RequestConfig$1): Promise<Result<DouyinReturnTypeMap['passportQrcode']>>;
+/**
+ * 查询抖音扫码登录二维码的状态
+ *
+ * 状态为 `confirmed` 时会自动跟随 SSO 跳转领取登录凭证，返回的 `cookie` 即完整登录态。
+ * @deprecated 请用 `client.douyin.login.qrcode()`（状态归一化为
+ *   `LoginState.phase`，轮询循环在引擎里）。
+ * @param options - 二维码状态参数
+ * @param options.token - `requestPassportQrcode` 返回的令牌
+ * @param cookie - 会话 Cookie，必须是申请二维码时返回的那一份
+ * @param requestConfig - 请求配置 (可选)
+ * @returns 扫码状态与最新会话 cookie
+ * @example
+ * ```typescript
+ * const status = await checkPassportQrcode({ token }, cookie)
+ * // new 未扫码 / scanned 已扫待确认 / verify 需二次验证 / confirmed 登录成功 / expired 已过期
+ * console.log(status.data.status)
+ * ```
+ */
+declare function checkPassportQrcode(options: DouyinPassportQrcodeStatusOptions, cookie?: string, requestConfig?: RequestConfig$1): Promise<Result<DouyinReturnTypeMap['passportQrcodeStatus']>>;
+/**
+ * 向账号绑定手机发送二次验证短信验证码
+ *
+ * 用于轮询返回 `status: 'verify'`（即 `error_code=2046` / `account_flow=verify`）的场景。
+ * @deprecated 请用 `client.douyin.login.qrcode()` 的 `onChallenge` 回调
+ *   （`challenge.sendCode()`，`biz_trace_id` / `verify_way` 由引擎维护）。
+ * @param options - 发码参数
+ * @param options.verify - 轮询返回的验证上下文
+ * @param options.biz_trace_id - 追踪 ID (可选，不传自动生成)
+ * @param cookie - 会话 Cookie
+ * @param requestConfig - 请求配置 (可选)
+ * @returns 脱敏手机号、重发等待秒数与追踪 ID
+ */
+declare function sendPassportVerifyCode(options: DouyinPassportSendCodeOptions, cookie?: string, requestConfig?: RequestConfig$1): Promise<Result<DouyinReturnTypeMap['passportSendCode']>>;
+/**
+ * 提交二次验证的短信验证码
+ * @deprecated 请用 `client.douyin.login.qrcode()` 的 `onChallenge` 回调
+ *   （返回 `{ code }` 即可，`biz_trace_id` / `verify_way` 由引擎维护）。
+ * @param options - 验码参数
+ * @param options.verify - 轮询返回的验证上下文
+ * @param options.code - 用户收到的 6 位验证码明文
+ * @param options.biz_trace_id - 必须与发码时用的是同一个
+ * @param cookie - 会话 Cookie
+ * @param requestConfig - 请求配置 (可选)
+ * @returns 验证结果；`wrongCode` 为 true 表示验证码填错，可以让用户重试
+ */
+declare function validatePassportVerifyCode(options: DouyinPassportValidateCodeOptions, cookie?: string, requestConfig?: RequestConfig$1): Promise<Result<DouyinReturnTypeMap['passportValidateCode']>>;
+//#endregion
+//#region src/model/fetchers/douyin/index.d.ts
+/**
+ * 抖音数据获取器（静态）。
+ * 包含所有抖音 API 方法，调用时需要传递 cookie
+ * @example
+ * ```typescript
+ * import { douyinFetcher } from '@ikenxuan/amagi'
+ *
+ * const result = await douyinFetcher.fetchVideoWork({ aweme_id: '7123456789' }, cookie)
+ * ```
+ */
+declare const douyinFetcher: {
+  parseWork: <TData = ParseWork>(options: {
+    aweme_id: string;
+  }, cookie?: string, requestConfig?: RequestConfig$1) => Promise<AmagiResult<TData>>;
+  fetchVideoWork: <TData = VideoWork$1>(options: {
+    aweme_id: string;
+  }, cookie?: string, requestConfig?: RequestConfig$1) => Promise<AmagiResult<TData>>;
+  fetchImageAlbumWork: <TData = ImageAlbumWork>(options: {
+    aweme_id: string;
+  }, cookie?: string, requestConfig?: RequestConfig$1) => Promise<AmagiResult<TData>>;
+  fetchSlidesWork: <TData = SlidesWork>(options: {
+    aweme_id: string;
+  }, cookie?: string, requestConfig?: RequestConfig$1) => Promise<AmagiResult<TData>>;
+  fetchTextWork: <TData = TextWork_V0>(options: {
+    aweme_id: string;
+  }, cookie?: string, requestConfig?: RequestConfig$1) => Promise<AmagiResult<TData>>;
+  fetchWorkComments: <TData = Comments_V0$1>(options: {
+    aweme_id: string;
+    number?: unknown;
+    cursor?: unknown;
+  }, cookie?: string, requestConfig?: RequestConfig$1) => Promise<AmagiResult<TData>>;
+  fetchCommentReplies: <TData = CommentReplies_V0>(options: {
+    aweme_id: string;
+    comment_id: string;
+    number?: unknown;
+    cursor?: unknown;
+  }, cookie?: string, requestConfig?: RequestConfig$1) => Promise<AmagiResult<TData>>;
+  fetchUserProfile: <TData = UserProfile_V0$1>(options: {
+    sec_uid: string;
+  }, cookie?: string, requestConfig?: RequestConfig$1) => Promise<AmagiResult<TData>>;
+  fetchUserVideoList: <TData = UserVideoList_V0>(options: {
+    sec_uid: string;
+    number?: unknown;
+    max_cursor?: string | undefined;
+  }, cookie?: string, requestConfig?: RequestConfig$1) => Promise<AmagiResult<TData>>;
+  fetchUserFavoriteList: <TData = UserFavoriteList_V0$1>(options: {
+    sec_uid: string;
+    number?: unknown;
+    max_cursor?: string | undefined;
+  }, cookie?: string, requestConfig?: RequestConfig$1) => Promise<AmagiResult<TData>>;
+  fetchUserRecommendList: <TData = UserRecommendList_V0$1>(options: {
+    sec_uid: string;
+    number?: unknown;
+    max_cursor?: string | undefined;
+  }, cookie?: string, requestConfig?: RequestConfig$1) => Promise<AmagiResult<TData>>;
+  searchContent: <TData = Search>(options: {
+    query: string;
+    type?: "user" | "general" | "video" | undefined;
+    number?: unknown;
+    search_id?: string | undefined;
+  }, cookie?: string, requestConfig?: RequestConfig$1) => Promise<AmagiResult<TData>>;
+  fetchSuggestWords: <TData = SuggestWords_V0>(options: {
+    query: string;
+  }, cookie?: string, requestConfig?: RequestConfig$1) => Promise<AmagiResult<TData>>;
+  fetchMusicInfo: <TData = MusicInfo_V0>(options: {
+    music_id: string;
+  }, cookie?: string, requestConfig?: RequestConfig$1) => Promise<AmagiResult<TData>>;
+  fetchLiveRoomInfo: <TData = LiveRoomInfo_V0>(options: {
+    web_rid: string;
+    room_id?: string | undefined;
+  }, cookie?: string, requestConfig?: RequestConfig$1) => Promise<AmagiResult<TData>>;
+  requestLoginQrcode: <TData = any>(options: {
+    verify_fp: string;
+  }, cookie?: string, requestConfig?: RequestConfig$1) => Promise<AmagiResult<TData>>;
+  fetchEmojiList: <TData = EmojiList_V0$2>(options?: Record<string, never> | undefined, cookie?: string, requestConfig?: RequestConfig$1) => Promise<AmagiResult<TData>>;
+  fetchDynamicEmojiList: <TData = DynamicEmojiList_V0>(options?: Record<string, never> | undefined, cookie?: string, requestConfig?: RequestConfig$1) => Promise<AmagiResult<TData>>;
+  fetchDanmakuList: <TData = DanmakuList_V0$1>(options: {
+    aweme_id: string;
+    duration: unknown;
+    start_time?: unknown;
+    end_time?: unknown;
+  }, cookie?: string, requestConfig?: RequestConfig$1) => Promise<AmagiResult<TData>>;
+  fetchGuestUserInfo: <TData = GuestUserInfo_V0>(options: {
+    unique_id: string;
+  }, cookie?: string, requestConfig?: RequestConfig$1) => Promise<AmagiResult<TData>>;
+  fetchGuestMusicInfo: <TData = GuestMusicInfo_V0>(options: {
+    music_id: string;
+  }, cookie?: string, requestConfig?: RequestConfig$1) => Promise<AmagiResult<TData>>;
+  fetchGuestMusicAwemeList: <TData = GuestMusicAwemeList_V0>(options: {
+    music_id: string;
+    number?: unknown;
+    cursor?: unknown;
+  }, cookie?: string, requestConfig?: RequestConfig$1) => Promise<AmagiResult<TData>>;
+  fetchEmojiResourceMeta: <TData = EmojiResourceMeta_V0>(options?: Record<string, never> | undefined, cookie?: string, requestConfig?: RequestConfig$1) => Promise<AmagiResult<TData>>;
+  checkPassportQrcode: typeof checkPassportQrcode;
+  requestPassportQrcode: typeof requestPassportQrcode;
+  sendPassportVerifyCode: typeof sendPassportVerifyCode;
+  validatePassportVerifyCode: typeof validatePassportVerifyCode;
+};
+/** 抖音 Fetcher 类型（静态形态：三参签名 + 4 个 passport 方法） */
+type DouyinFetcher = typeof douyinFetcher;
+/**
+ * 创建绑定了 Cookie 和请求配置的抖音 Fetcher
+ * @param cookie - 抖音 Cookie
+ * @param requestConfig - 请求配置 (可选)
+ * @returns 绑定了 Cookie 的 Fetcher 对象，调用时无需传递 cookie
+ * @example
+ * ```typescript
+ * const fetcher = createBoundDouyinFetcher('your_cookie')
+ * const result = await fetcher.fetchVideoWork({ aweme_id: '7123456789' })
+ * ```
+ */
+declare const createBoundDouyinFetcher: (cookie: string, requestConfig?: RequestConfig$1) => FetcherOf<"douyin", typeof douyinRegistry>;
+/** 绑定 Cookie 的抖音 Fetcher 类型 */
+type BoundDouyinFetcher = ReturnType<typeof createBoundDouyinFetcher>;
+/** 抖音静态 fetcher 的类型（供类型层引用，形状 = StaticFetcherOf） */
+type DouyinStaticFetcher = StaticFetcherOf<'douyin', typeof douyinRegistry>;
+/**
+ * 只保留成功分支的抖音 fetcher 类型。
+ *
+ * 给「用一层 Proxy 把失败信封转成异常」的下游封装用：包装后的 fetcher 声明成
+ * 这个类型，`.data` 就是 `T` 而不是 `T | undefined`。
+ */
+type SuccessDouyinFetcher = SuccessFetcherOf<'douyin', typeof douyinRegistry>;
+//#endregion
+//#region src/platforms/kuaishou/endpoints/index.d.ts
+/**
+ * 快手端点注册表。
+ *
+ * 注册表含 8 条路由，前 6 条为：
+ * `/fetch_one_work` / `/fetch_work_comments` / `/fetch_user_profile` /
+ * `/fetch_user_work_list` / `/fetch_live_room_info` / `/fetch_emoji_list`。
+ *
+ * 第 7 条 `/fetch_one_work_full` 是完整版 `photo/info`。它**当前稳定撞 `2001`
+ * 风控**，所以主通道 `/fetch_one_work` 走的是免签的 `ugH5App/photo/simple/info`
+ * —— 依据是快手自己的分享页 SSR 就用那一条（详见 `videoWork.ts` /
+ * `videoWorkFull.ts` 的 JSDoc）。
+ *
+ * 第 8 条 `/fetch_danmaku_list` 是弹幕。它**完全免鉴权**（不签名、不要 cookie）。
+ */
+declare const kuaishouRegistry: {
+  readonly videoWork: EndpointDef<import("zod").ZodObject<{
+    photoId: import("zod").ZodString;
+  }, $strip>, VideoWork_V0>;
+  readonly videoWorkFull: EndpointDef<import("zod").ZodObject<{
+    photoId: import("zod").ZodString;
+  }, $strip>, any>;
+  readonly comments: EndpointDef<import("zod").ZodObject<{
+    photoId: import("zod").ZodString;
+    number: import("zod").ZodOptional<import("zod").ZodCoercedNumber<unknown>>;
+  }, $strip>, Comments_V0>;
+  readonly danmakuList: EndpointDef<import("zod").ZodObject<{
+    photoId: import("zod").ZodString;
+    from: import("zod").ZodOptional<import("zod").ZodCoercedNumber<unknown>>;
+    to: import("zod").ZodOptional<import("zod").ZodCoercedNumber<unknown>>;
+    duration: import("zod").ZodOptional<import("zod").ZodCoercedNumber<unknown>>;
+  }, $strip>, DanmakuList_V0>;
+  readonly userProfile: EndpointDef<import("zod").ZodObject<{
+    principalId: import("zod").ZodString;
+  }, $strip>, any>;
+  readonly userWorkList: EndpointDef<import("zod").ZodObject<{
+    principalId: import("zod").ZodString;
+    number: import("zod").ZodOptional<import("zod").ZodCoercedNumber<unknown>>;
+  }, $strip>, any>;
+  readonly liveRoomInfo: EndpointDef<import("zod").ZodObject<{
+    principalId: import("zod").ZodString;
+  }, $strip>, any>;
+  readonly emojiList: EndpointDef<import("zod").ZodObject<{}, $strip>, EmojiList_V0$1>;
+};
+//#endregion
+//#region src/model/fetchers/kuaishou/index.d.ts
+/**
+ * 快手数据获取器（静态）。
+ * 包含所有快手 API 方法，调用时需要传递 cookie
+ * @example
+ * ```typescript
+ * import { kuaishouFetcher } from '@ikenxuan/amagi'
+ *
+ * const result = await kuaishouFetcher.fetchVideoWork({ photoId: '3x123456789' }, cookie)
+ * ```
+ */
+declare const kuaishouFetcher: StaticFetcherOf<'kuaishou', typeof kuaishouRegistry>;
+/** 快手 Fetcher 类型（静态形态：三参签名） */
+type KuaishouFetcher = typeof kuaishouFetcher;
+/**
+ * 创建绑定了 Cookie 和请求配置的快手 Fetcher
+ * @param cookie - 快手 Cookie
+ * @param requestConfig - 请求配置 (可选)
+ * @returns 绑定了 Cookie 的 Fetcher 对象，调用时无需传递 cookie
+ * @example
+ * ```typescript
+ * const fetcher = createBoundKuaishouFetcher('your_cookie')
+ * const result = await fetcher.fetchVideoWork({ photoId: '3x123456789' })
+ * ```
+ */
+declare const createBoundKuaishouFetcher: (cookie: string, requestConfig?: RequestConfig$1) => FetcherOf<"kuaishou", typeof kuaishouRegistry>;
+/** 绑定 Cookie 的快手 Fetcher 类型 */
+type BoundKuaishouFetcher = ReturnType<typeof createBoundKuaishouFetcher>;
+/**
+ * 只保留成功分支的快手 fetcher 类型。
+ *
+ * 给「用一层 Proxy 把失败信封转成异常」的下游封装用：包装后的 fetcher 声明成
+ * 这个类型，`.data` 就是 `T` 而不是 `T | undefined`。
+ */
+type SuccessKuaishouFetcher = SuccessFetcherOf<'kuaishou', typeof kuaishouRegistry>;
+//#endregion
+//#region src/platforms/xiaohongshu/endpoints/index.d.ts
+/**
+ * 小红书端点注册表。
+ *
+ * 注册表含 7 条路由：
+ * `/fetch_home_feed` / `/fetch_one_note` / `/fetch_note_comments` /
+ * `/fetch_user_profile` / `/fetch_user_notes` / `/fetch_emoji_list` /
+ * `/fetch_search_notes`。
+ */
+declare const xiaohongshuRegistry: {
+  readonly homeFeed: EndpointDef<import("zod").ZodObject<{
+    cursor_score: import("zod").ZodOptional<import("zod").ZodString>;
+    num: import("zod").ZodOptional<import("zod").ZodCoercedNumber<unknown>>;
+    refresh_type: import("zod").ZodOptional<import("zod").ZodCoercedNumber<unknown>>;
+    note_index: import("zod").ZodOptional<import("zod").ZodCoercedNumber<unknown>>;
+    category: import("zod").ZodOptional<import("zod").ZodString>;
+    search_key: import("zod").ZodOptional<import("zod").ZodString>;
+  }, $strip>, HomeFeed_V0$1>;
+  readonly noteDetail: EndpointDef<import("zod").ZodObject<{
+    note_id: import("zod").ZodString;
+    xsec_token: import("zod").ZodString;
+  }, $strip>, NoteDetail_V0>;
+  readonly noteComments: EndpointDef<import("zod").ZodObject<{
+    note_id: import("zod").ZodString;
+    xsec_token: import("zod").ZodString;
+    number: import("zod").ZodOptional<import("zod").ZodCoercedNumber<unknown>>;
+  }, $strip>, any>;
+  readonly userProfile: EndpointDef<import("zod").ZodObject<{
+    user_id: import("zod").ZodString;
+  }, $strip>, UserProfile_V0>;
+  readonly userNoteList: EndpointDef<import("zod").ZodObject<{
+    user_id: import("zod").ZodString;
+    cursor: import("zod").ZodOptional<import("zod").ZodString>;
+    num: import("zod").ZodOptional<import("zod").ZodCoercedNumber<unknown>>;
+  }, $strip>, any>;
+  readonly emojiList: EndpointDef<import("zod").ZodObject<{}, $strip>, EmojiList_V0>;
+  readonly searchNotes: EndpointDef<import("zod").ZodObject<{
+    keyword: import("zod").ZodString;
+    page: import("zod").ZodOptional<import("zod").ZodCoercedNumber<unknown>>;
+    page_size: import("zod").ZodOptional<import("zod").ZodCoercedNumber<unknown>>;
+  }, $strip>, SearchNotes_V0$1>;
+};
+//#endregion
+//#region src/model/fetchers/xiaohongshu/index.d.ts
+/**
+ * 小红书数据获取器（静态）。
+ * 包含所有小红书 API 方法，调用时需要传递 cookie
+ * @example
+ * ```typescript
+ * import { xiaohongshuFetcher } from '@ikenxuan/amagi'
+ *
+ * const result = await xiaohongshuFetcher.fetchNoteDetail({ note_id: 'n1', xsec_token: 'tk' }, cookie)
+ * ```
+ */
+declare const xiaohongshuFetcher: StaticFetcherOf<'xiaohongshu', typeof xiaohongshuRegistry>;
+/** 小红书 Fetcher 类型（静态形态：三参签名） */
+type XiaohongshuFetcher = typeof xiaohongshuFetcher;
+/**
+ * 创建绑定了 Cookie 和请求配置的小红书 Fetcher
+ * @param cookie - 小红书 Cookie
+ * @param requestConfig - 请求配置 (可选)
+ * @returns 绑定了 Cookie 的 Fetcher 对象，调用时无需传递 cookie
+ * @example
+ * ```typescript
+ * const fetcher = createBoundXiaohongshuFetcher('your_cookie')
+ * const result = await fetcher.fetchNoteDetail({ note_id: 'n1', xsec_token: 'tk' })
+ * ```
+ */
+declare const createBoundXiaohongshuFetcher: (cookie: string, requestConfig?: RequestConfig$1) => FetcherOf<"xiaohongshu", typeof xiaohongshuRegistry>;
+/** 绑定 Cookie 的小红书 Fetcher 类型 */
+type BoundXiaohongshuFetcher = ReturnType<typeof createBoundXiaohongshuFetcher>;
+/**
+ * 只保留成功分支的小红书 fetcher 类型。
+ *
+ * 给「用一层 Proxy 把失败信封转成异常」的下游封装用：包装后的 fetcher 声明成
+ * 这个类型，`.data` 就是 `T` 而不是 `T | undefined`。
+ */
+type SuccessXiaohongshuFetcher = SuccessFetcherOf<'xiaohongshu', typeof xiaohongshuRegistry>;
+//#endregion
+export { AMAGI_BUS_EVENT_NAMES, APIErrorType, AdditionalType, type AmagiBusEventMap, type AmagiBusEventName, type AmagiError, type AmagiErrorCode, AmagiEventMap, AmagiEventType, type AmagiFailure, type AmagiMeta, type AmagiResult, type AmagiSuccess, AmagiThrownError, ApiError, ApiErrorEventData, ApiSuccessEventData, ArticleCard, ArticleContent, ArticleInfo, ArticleWork, BiliAv2Bv, BiliBangumiVideoInfo, BiliBangumiVideoPlayurlIsLogin, BiliBangumiVideoPlayurlNoLogin, BiliBiliVideoPlayurlNoLogin, BiliBv2AV, BiliCheckQrcode, BiliCommentReply, BiliDynamicInfo, BiliDynamicInfoUnion, BiliEmojiList, BiliLiveRoomDef, BiliLiveRoomDetail, BiliLoginStatus, BiliNewLoginQrcode, BiliOneWork, BiliProtobufDanmaku, BiliUserDynamic, BiliUserFullView, BiliUserLiveStatus, BiliUserProfile, BiliVideoPlayurlIsLogin, BiliWorkComments, type ArticleCards as BilibiliArticleCardsResponse, type ArticleCardsError as BilibiliArticleCardsResponseError, type ArticleCardsSuccess as BilibiliArticleCardsResponseSuccess, type ArticleContent$1 as BilibiliArticleContentResponse, type ArticleContentError as BilibiliArticleContentResponseError, type ArticleContentSuccess as BilibiliArticleContentResponseSuccess, type ArticleInfo$3 as BilibiliArticleInfoResponse, type ArticleInfoError as BilibiliArticleInfoResponseError, type ArticleInfoSuccess as BilibiliArticleInfoResponseSuccess, type ArticleListInfo as BilibiliArticleListInfoResponse, type ArticleListInfoError as BilibiliArticleListInfoResponseError, type ArticleListInfoSuccess as BilibiliArticleListInfoResponseSuccess, type BangumiInfo as BilibiliBangumiInfoResponse, type BangumiInfoError as BilibiliBangumiInfoResponseError, type BangumiInfoSuccess as BilibiliBangumiInfoResponseSuccess, type BangumiStream as BilibiliBangumiStreamResponse, type BangumiStreamError as BilibiliBangumiStreamResponseError, type BangumiStreamSuccess as BilibiliBangumiStreamResponseSuccess, type CommentReplies$1 as BilibiliCommentRepliesResponse, type CommentRepliesError$1 as BilibiliCommentRepliesResponseError, type CommentRepliesSuccess$1 as BilibiliCommentRepliesResponseSuccess, type Comments$2 as BilibiliCommentsResponse, type CommentsError$2 as BilibiliCommentsResponseError, type CommentsSuccess$2 as BilibiliCommentsResponseSuccess, BilibiliDataOptions, BilibiliDataOptionsMap, type DynamicDetail as BilibiliDynamicDetailResponse, type DynamicDetailError as BilibiliDynamicDetailResponseError, type DynamicDetailSuccess as BilibiliDynamicDetailResponseSuccess, type EmojiList$4 as BilibiliEmojiListResponse, type EmojiListError$3 as BilibiliEmojiListResponseError, type EmojiListSuccess$3 as BilibiliEmojiListResponseSuccess, type BilibiliFetcher, type LiveRoomInfo$1 as BilibiliLiveRoomInfoResponse, type LiveRoomInfoError$1 as BilibiliLiveRoomInfoResponseError, type LiveRoomInfoSuccess$1 as BilibiliLiveRoomInfoResponseSuccess, type LiveRoomInit as BilibiliLiveRoomInitResponse, type LiveRoomInitError as BilibiliLiveRoomInitResponseError, type LiveRoomInitSuccess as BilibiliLiveRoomInitResponseSuccess, type LoginQrcode as BilibiliLoginQrcodeResponse, type LoginQrcodeError as BilibiliLoginQrcodeResponseError, type LoginQrcodeSuccess as BilibiliLoginQrcodeResponseSuccess, type LoginStatus as BilibiliLoginStatusResponse, type LoginStatusError as BilibiliLoginStatusResponseError, type LoginStatusSuccess as BilibiliLoginStatusResponseSuccess, BilibiliMethodOptMap, BilibiliMethodOptionsMap, type BilibiliMethodType, type QrcodeStatus as BilibiliQrcodeStatusResponse, type QrcodeStatusError as BilibiliQrcodeStatusResponseError, type QrcodeStatusSuccess as BilibiliQrcodeStatusResponseSuccess, BilibiliReturnTypeMap, type UploaderTotalViews as BilibiliUploaderTotalViewsResponse, type UploaderTotalViewsError as BilibiliUploaderTotalViewsResponseError, type UploaderTotalViewsSuccess as BilibiliUploaderTotalViewsResponseSuccess, type UserCard as BilibiliUserCardResponse, type UserCardError as BilibiliUserCardResponseError, type UserCardSuccess as BilibiliUserCardResponseSuccess, type UserDynamicList as BilibiliUserDynamicListResponse, type UserDynamicListError as BilibiliUserDynamicListResponseError, type UserDynamicListSuccess as BilibiliUserDynamicListResponseSuccess, type UserLiveStatus as BilibiliUserLiveStatusResponse, type UserLiveStatusError as BilibiliUserLiveStatusResponseError, type UserLiveStatusSuccess as BilibiliUserLiveStatusResponseSuccess, type UserSpaceInfo$1 as BilibiliUserSpaceInfoResponse, type UserSpaceInfoError as BilibiliUserSpaceInfoResponseError, type UserSpaceInfoSuccess as BilibiliUserSpaceInfoResponseSuccess, type VideoDanmaku as BilibiliVideoDanmakuResponse, type VideoDanmakuError as BilibiliVideoDanmakuResponseError, type VideoDanmakuSuccess as BilibiliVideoDanmakuResponseSuccess, type VideoInfo as BilibiliVideoInfoResponse, type VideoInfoError as BilibiliVideoInfoResponseError, type VideoInfoSuccess as BilibiliVideoInfoResponseSuccess, type VideoStream as BilibiliVideoStreamResponse, type VideoStreamError as BilibiliVideoStreamResponseError, type VideoStreamSuccess as BilibiliVideoStreamResponseSuccess, type BoundBilibiliFetcher, type BoundDouyinFetcher, type BoundKuaishouFetcher, type BoundXiaohongshuFetcher, type CaptchaChallenge, type ChallengeAnswer, type ClientOptions, ColumnInfo, CommentReply, CommentType, CookieConfig, CreateApp, type Credential, type CommentReplies as DouyinCommentRepliesResponse, type CommentRepliesError as DouyinCommentRepliesResponseError, type CommentRepliesSuccess as DouyinCommentRepliesResponseSuccess, type Comments$1 as DouyinCommentsResponse, type CommentsError$1 as DouyinCommentsResponseError, type CommentsSuccess$1 as DouyinCommentsResponseSuccess, type DanmakuList$2 as DouyinDanmakuListResponse, type DanmakuListError$1 as DouyinDanmakuListResponseError, type DanmakuListSuccess$1 as DouyinDanmakuListResponseSuccess, DouyinDataOptions, DouyinDataOptionsMap, type DynamicEmojiList as DouyinDynamicEmojiListResponse, type DynamicEmojiListError as DouyinDynamicEmojiListResponseError, type DynamicEmojiListSuccess as DouyinDynamicEmojiListResponseSuccess, type EmojiList$2 as DouyinEmojiListResponse, type EmojiListError$2 as DouyinEmojiListResponseError, type EmojiListSuccess$2 as DouyinEmojiListResponseSuccess, type EmojiResourceMeta as DouyinEmojiResourceMetaResponse, type EmojiResourceMetaError as DouyinEmojiResourceMetaResponseError, type EmojiResourceMetaSuccess as DouyinEmojiResourceMetaResponseSuccess, type DouyinFetcher, type GuestMusicAwemeList as DouyinGuestMusicAwemeListResponse, type GuestMusicAwemeListError as DouyinGuestMusicAwemeListResponseError, type GuestMusicAwemeListSuccess as DouyinGuestMusicAwemeListResponseSuccess, type GuestMusicInfo$1 as DouyinGuestMusicInfoResponse, type GuestMusicInfoError as DouyinGuestMusicInfoResponseError, type GuestMusicInfoSuccess as DouyinGuestMusicInfoResponseSuccess, type GuestUserInfo$1 as DouyinGuestUserInfoResponse, type GuestUserInfoError as DouyinGuestUserInfoResponseError, type GuestUserInfoSuccess as DouyinGuestUserInfoResponseSuccess, type ImageAlbumWork as DouyinImageAlbumWorkResponse, type ImageAlbumWorkError as DouyinImageAlbumWorkResponseError, type ImageAlbumWorkSuccess as DouyinImageAlbumWorkResponseSuccess, type LiveRoomInfo as DouyinLiveRoomInfoResponse, type LiveRoomInfoError as DouyinLiveRoomInfoResponseError, type LiveRoomInfoSuccess as DouyinLiveRoomInfoResponseSuccess, DouyinMethodOptMap, DouyinMethodOptionsMap, type DouyinMethodType, type MusicInfo$1 as DouyinMusicInfoResponse, type MusicInfoError as DouyinMusicInfoResponseError, type MusicInfoSuccess as DouyinMusicInfoResponseSuccess, type ParseWork as DouyinParseWorkResponse, type ParseWorkError as DouyinParseWorkResponseError, type ParseWorkSuccess as DouyinParseWorkResponseSuccess, DouyinReturnTypeMap, type Search as DouyinSearchResponse, type SearchError as DouyinSearchResponseError, type SearchSuccess as DouyinSearchResponseSuccess, type SlidesWork as DouyinSlidesWorkResponse, type SlidesWorkError as DouyinSlidesWorkResponseError, type SlidesWorkSuccess as DouyinSlidesWorkResponseSuccess, type DouyinStaticFetcher, type SuggestWords$12 as DouyinSuggestWordsResponse, type SuggestWordsError as DouyinSuggestWordsResponseError, type SuggestWordsSuccess as DouyinSuggestWordsResponseSuccess, type TextWork as DouyinTextWorkResponse, type TextWorkError as DouyinTextWorkResponseError, type TextWorkSuccess as DouyinTextWorkResponseSuccess, type UserFavoriteList as DouyinUserFavoriteListResponse, type UserFavoriteListError as DouyinUserFavoriteListResponseError, type UserFavoriteListSuccess as DouyinUserFavoriteListResponseSuccess, type UserProfile$1 as DouyinUserProfileResponse, type UserProfileError$1 as DouyinUserProfileResponseError, type UserProfileSuccess$1 as DouyinUserProfileResponseSuccess, type UserRecommendList$1 as DouyinUserRecommendListResponse, type UserRecommendListError as DouyinUserRecommendListResponseError, type UserRecommendListSuccess as DouyinUserRecommendListResponseSuccess, type UserVideoList as DouyinUserVideoListResponse, type UserVideoListError as DouyinUserVideoListResponseError, type UserVideoListSuccess as DouyinUserVideoListResponseSuccess, type VideoWork$1 as DouyinVideoWorkResponse, type VideoWorkError$1 as DouyinVideoWorkResponseError, type VideoWorkSuccess$1 as DouyinVideoWorkResponseSuccess, DyDanmakuList, DyEmojiList, DyEmojiProList, DyEmojiResourceMeta, DyGuestMusicAwemeList, DyGuestMusicInfo, DyGuestUserInfo, DyImageAlbumWork, DyLoginQrcode, DyMusicWork, DyPassportPollResult, DyPassportQrcode, DyPassportQrcodeStatus, DyPassportSendCode, DyPassportSendCodeResult, DyPassportValidateCode, DyPassportValidateCodeResult, DyPassportVerifyContext, DyPassportVerifyWay, DySearchInfo, DySlidesWork, DySuggestWords, DyUserInfo, DyUserLiveVideos, DyUserPostVideos, DyVideoWork, DyWorkComments, DynamicType, DynamicTypeAV$1 as DynamicTypeAV, DynamicTypeArticle, DynamicTypeDraw$1 as DynamicTypeDraw, DynamicTypeForward, DynamicTypeForwardUnion, DynamicTypeLiveRcmd, DynamicTypeWord, type ErrorKind, type EventBus, type FacadeServerOptions, HomeFeed, HttpRequestEventData, HttpResponseEventData, KUAISHOU_H5_CAPTCHA_RESULT, KUAISHOU_PC_CAPTCHA_RESULT, type KsBannedStatus, KsDanmaku, KsEmojiList, KsLiveRoomInfo, KsOneWork, type KsUserHomeWork, KsUserProfile, type KsUserProfileCounts, type KsUserProfileGameInfo, type KsUserProfileLiveInfo, type KsUserProfileSensitiveInfo, type KsUserProfileUserInfo, KsUserWorkList, type KsVerifiedStatus, KsWorkComments, type KuaishouCaptchaChallenge, type Comments as KuaishouCommentsResponse, type CommentsError as KuaishouCommentsResponseError, type CommentsSuccess as KuaishouCommentsResponseSuccess, type DanmakuList$1 as KuaishouDanmakuListResponse, type DanmakuListError as KuaishouDanmakuListResponseError, type DanmakuListSuccess as KuaishouDanmakuListResponseSuccess, KuaishouDataOptions, KuaishouDataOptionsMap, type EmojiList$1 as KuaishouEmojiListResponse, type EmojiListError$1 as KuaishouEmojiListResponseError, type EmojiListSuccess$1 as KuaishouEmojiListResponseSuccess, type KuaishouFetcher, type KuaishouGraphqlRequest, type KuaishouLiveApiRequest, KuaishouMethodOptMap, KuaishouMethodOptionsMap, type KuaishouMethodType, KuaishouReturnTypeMap, type VideoWork as KuaishouVideoWorkResponse, type VideoWorkError as KuaishouVideoWorkResponseError, type VideoWorkSuccess as KuaishouVideoWorkResponseSuccess, LogEventData, type LoginChallenge, type LoginNamespace, type LoginSession, type LoginState, MajorType, NetworkErrorEventData, NetworkRetryEventData, type NetworksConfigType, NoteComments, OmitMethodType, OneNote, Options, type Platform, type Qrcode, type QrcodeLoginStrategy, RequestConfig, type RequestTrace, type RiskChallenge, SearchInfoGeneralData, SearchInfoUser, SearchInfoVideo, SearchNotes, type SessionCtx, type SmsChallenge, type SuccessBilibiliFetcher, type SuccessDouyinFetcher, type SuccessKuaishouFetcher, type SuccessXiaohongshuFetcher, type TraceReason, ValidationError, type ValidationIssue, type WatchHandlers, type WatchOptions, XiaohongshuDataOptions, XiaohongshuDataOptionsMap, XiaohongshuEmojiList, type EmojiList as XiaohongshuEmojiListResponse, type EmojiListError as XiaohongshuEmojiListResponseError, type EmojiListSuccess as XiaohongshuEmojiListResponseSuccess, type XiaohongshuFetcher, type HomeFeed$1 as XiaohongshuHomeFeedResponse, type HomeFeedError as XiaohongshuHomeFeedResponseError, type HomeFeedSuccess as XiaohongshuHomeFeedResponseSuccess, XiaohongshuMethodOptMap, XiaohongshuMethodOptionsMap, type NoteDetail as XiaohongshuNoteDetailResponse, type NoteDetailError as XiaohongshuNoteDetailResponseError, type NoteDetailSuccess as XiaohongshuNoteDetailResponseSuccess, XiaohongshuReturnTypeMap, type SearchNotes$1 as XiaohongshuSearchNotesResponse, type SearchNotesError as XiaohongshuSearchNotesResponseError, type SearchNotesSuccess as XiaohongshuSearchNotesResponseSuccess, XiaohongshuUserNoteList, XiaohongshuUserProfile, type UserProfile as XiaohongshuUserProfileResponse, type UserProfileError as XiaohongshuUserProfileResponseError, type UserProfileSuccess as XiaohongshuUserProfileResponseSuccess, amagi, amagiEvents, assertValidBilibiliParams, assertValidDouyinParams, assertValidKuaishouParams, assertValidXiaohongshuParams, av2bv, bilibiliApiUrls, bilibiliFetcher, bilibiliUtils, bv2av, checkPassportQrcode, createAmagiClient, createBilibiliRoutes, createBoundBilibiliFetcher, createBoundDouyinFetcher, createBoundKuaishouFetcher, createBoundXiaohongshuFetcher, createClient, createDouyinRoutes, createErrorResponse, createKuaishouRoutes, createSuccessResponse, createXiaohongshuRoutes, douyinApiUrls, douyinFetcher, index_d_exports as douyinPassport, douyinSign, douyinUtils, emitApiError, emitApiSuccess, emitHttpRequest, emitHttpResponse, emitLog, emitLogDebug, emitLogError, emitLogInfo, emitLogMark, emitLogWarn, emitNetworkError, emitNetworkRetry, fetchData, fetchResponse, handleError, isFailure, isNetworkErrorResult, isSuccess, kuaishouApiUrls, kuaishouFetcher, kuaishouSign, kuaishouUtils, parseDmSegMobileReply, parseKuaishouCaptcha, qtparam, requestPassportQrcode, sendPassportVerifyCode, unwrap, validateBilibiliParams, validateDouyinParams, validateKuaishouParams, validatePassportVerifyCode, validateXiaohongshuParams, wbi_sign, xiaohongshuApiUrls, xiaohongshuFetcher, xiaohongshuSign, xiaohongshuUtils };
