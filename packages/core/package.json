@@ -58,7 +58,7 @@
     "registry": "https://registry.npmjs.org"
   },
   "scripts": {
-    "build": "cross-env NODE_ENV=production vite build && tsdown",
+    "build": "cross-env NODE_ENV=production vite build",
     "build:check": "ktr sync && tsc --noEmit && pnpm build",
     "dev": "ktr sync && cross-env EBV_FILE=\"development.env\" node --import tsx src/app.ts --trace-deprecation",
     "template": "ktr sync && ktr dev",
@@ -106,7 +106,6 @@
     "react-markdown": "^10.1.0",
     "rehype-highlight": "^7.0.2",
     "tailwind-merge": "3.7.0",
-    "tsdown": "^0.23.0",
     "victory": "^37.3.6",
     "vite-plugin-top-level-await": "^1.6.0",
     "vite-plugin-wasm": "^3.6.0",
@@ -135,5 +134,5 @@
     "web": "./lib/web.config.js",
     "ts-web": "./src/web.config.ts"
   },
-  "timestamp": "2026-09-14T11:39:47.958Z"
+  "timestamp": "2026-09-14T11:44:19.281Z"
 }

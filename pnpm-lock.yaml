@@ -267,9 +267,6 @@ importers:
       tailwind-merge:
         specifier: 3.7.0
         version: 3.7.0
-      tsdown:
-        specifier: ^0.23.0
-        version: 0.23.0(@vitejs/devtools@0.4.10)(oxc-resolver@11.24.2)(tsx@4.23.13)(typescript@6.0.3)
       victory:
         specifier: ^37.3.6
         version: 37.3.6(react@19.3.0)

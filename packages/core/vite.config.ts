@@ -20,9 +20,6 @@ const entry: string[] = [
   'src/index.ts',
   'src/root.ts',
   'src/web.config.ts',
-  'src/export/template.ts',
-  'src/export/richtext.ts',
-  'src/export/amagi.ts',
   // ktr 约定注册表是固定入口（先跑 ktr sync 生成），生产环境按 lib/template-registry.js 发现
   '.ktr/template-registry.ts'
 ]
