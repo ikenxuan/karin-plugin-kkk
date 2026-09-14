@@ -62,8 +62,7 @@ const handleSetDouyinPush = wrapWithErrorHandler(
     // 原有的订阅逻辑
     const data = await douyinFetcher.searchContent({
       query,
-      type: 'user',
-      typeMode: 'strict'
+      type: 'user'
     })
     await new DouYinpush(e).setting(data.data)
     return true
@@ -98,8 +97,7 @@ const handleSetBilibiliPush = wrapWithErrorHandler(
     const match = /^(\d+)$/.exec(query)
     if (match && match[1]) {
       const data = await bilibiliFetcher.fetchUserCard({
-        host_mid: Number(match[1]),
-        typeMode: 'strict'
+        host_mid: Number(match[1])
       })
       await new Bilibilipush(e).setting(data.data)
     }
@@ -207,7 +205,7 @@ const handleGlobalIgnore = wrapWithErrorHandler(
       }
 
       // 获取作品详情以获取 sec_uid
-      const workInfo = await douyinFetcher.parseWork({ aweme_id: idData.aweme_id, typeMode: 'strict' })
+      const workInfo = await douyinFetcher.parseWork({ aweme_id: idData.aweme_id })
       const sec_uid = workInfo.data?.aweme_detail?.author?.sec_uid
 
       if (!sec_uid) {
@@ -244,8 +242,7 @@ const handleGlobalIgnore = wrapWithErrorHandler(
 
       // 获取动态详情以获取 host_mid
       const dynamicInfo = await bilibiliFetcher.fetchDynamicDetail({
-        dynamic_id: idData.dynamic_id,
-        typeMode: 'strict'
+        dynamic_id: idData.dynamic_id
       })
       const host_mid = dynamicInfo.data.data.item.modules.module_author.mid
 

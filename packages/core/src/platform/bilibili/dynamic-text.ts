@@ -1,4 +1,4 @@
-import { ArticleContent } from '@ikenxuan/amagi'
+import { BilibiliArticleContentResponse } from '@ikenxuan/amagi'
 import {
   createAtNode,
   createBlockquoteNode,
@@ -322,7 +322,7 @@ const extractWordStyle = (style: Record<string, any> = {}): RichTextInlineStyle 
 
 /** 解析 opus 段落中的文本节点为 RichTextNode 数组。 */
 const parseOpusTextNodes = (
-  nodes: ArticleContent['data']['opus']['content']['paragraphs'][number]['text']['nodes'],
+  nodes: NonNullable<NonNullable<BilibiliArticleContentResponse['data']>['opus']['content']['paragraphs'][number]['text']>['nodes'],
   useDarkTheme?: boolean
 ): RichTextNode[] => {
   const result: RichTextNode[] = []
@@ -378,7 +378,10 @@ const parseOpusTextNodes = (
 /**
  * 将 B 站专栏 opus 结构化数据解析为 RichTextDocument。
  */
-const parseOpusToRichText = (opus: ArticleContent['data']['opus'], useDarkTheme?: boolean): RichTextDocument => {
+const parseOpusToRichText = (
+  opus: NonNullable<BilibiliArticleContentResponse['data']>['opus'],
+  useDarkTheme?: boolean
+): RichTextDocument => {
   const nodes: RichTextNode[] = []
   const paragraphs = opus?.content?.paragraphs
   if (!Array.isArray(paragraphs)) {
@@ -725,7 +728,7 @@ const parseHtmlContentToRichText = (content: string): RichTextDocument => {
  * opus 和 content 互斥：优先 opus，其次 content，都没有返回空 document。
  */
 export const buildBilibiliArticleRichText = (
-  opus: ArticleContent['data']['opus'],
+  opus: NonNullable<BilibiliArticleContentResponse['data']>['opus'],
   content: string | undefined,
   useDarkTheme?: boolean
 ): RichTextDocument => {

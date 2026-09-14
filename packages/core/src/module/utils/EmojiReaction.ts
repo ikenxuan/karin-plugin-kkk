@@ -85,7 +85,9 @@ export type EmojiType = 'EYES' | 'PROCESSING' | 'SUCCESS' | 'ERROR'
  */
 export function getEmojiId(e: Message, type: EmojiType): string | number {
   const platform = e.bot?.adapter?.platform || 'other'
-  const platformEmojis = PLATFORM_EMOJI_IDS[platform] || PLATFORM_EMOJI_IDS.other
+  // node-karin 的 AdapterPlatform 联合里有本表未覆盖的取值（如 dingtalk），
+  // 索引前先按「表里有没有这个键」收窄，缺的一律落到 other
+  const platformEmojis = platform in PLATFORM_EMOJI_IDS ? PLATFORM_EMOJI_IDS[platform as keyof typeof PLATFORM_EMOJI_IDS] : PLATFORM_EMOJI_IDS.other
   return platformEmojis[type]
 }
 

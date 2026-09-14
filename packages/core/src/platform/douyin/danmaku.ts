@@ -9,7 +9,7 @@ import fs from 'node:fs'
 import os from 'node:os'
 import pathModule from 'node:path'
 
-import type { DyEmojiList } from '@ikenxuan/amagi'
+import type { DouyinEmojiListResponse } from '@ikenxuan/amagi'
 import { ffmpeg, ffprobe, logger, render } from 'node-karin'
 
 import { Common } from '@/module/utils'
@@ -373,8 +373,8 @@ export async function getDouyinResolution(path: string): Promise<{ width: number
  */
 async function fetchDouyinEmojiList(): Promise<DouyinEmojiInfo[]> {
   try {
-    const res = await douyinFetcher.fetchEmojiList({ typeMode: 'strict' })
-    const list: DyEmojiList['emoji_list'] = res.data?.emoji_list ?? []
+    const res = await douyinFetcher.fetchEmojiList()
+    const list: DouyinEmojiListResponse['emoji_list'] = res.data?.emoji_list ?? []
     return list
       .map((item) => ({ name: item.display_name, url: item.emoji_url?.url_list?.[0] ?? '' }))
       .filter((item) => Boolean(item.name) && Boolean(item.url))

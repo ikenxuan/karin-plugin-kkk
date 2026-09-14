@@ -1,8 +1,9 @@
 import fs from 'node:fs'
 
-import type { NoteComments, Result } from '@ikenxuan/amagi'
+import type { NoteComments, XiaohongshuEmojiListResponse } from '@ikenxuan/amagi'
+import type { RichTextEmojiDefinition } from '@kkk/richtext'
 import { format } from 'date-fns'
-import { common, type Message, segment } from 'node-karin'
+import { common, type Elements, type Message, segment } from 'node-karin'
 import { logger } from 'node-karin'
 
 import {
@@ -53,45 +54,26 @@ export class Xiaohongshu extends Base {
     this.type = iddata?.type
   }
 
-  private async fetchConfiguredNoteComments(data: XiaohongshuIdData): Promise<Result<NoteComments>> {
-    const targetCount = Math.max(1, Config.xiaohongshu.numcomment)
-    const firstPage = await this.amagi.xiaohongshu.fetcher.fetchNoteComments({
-      typeMode: 'strict',
-      note_id: data.note_id,
-      xsec_token: data.xsec_token
-    })
-
-    const comments = [...(firstPage.data.data.comments ?? [])]
-    let cursor = firstPage.data.data.cursor
-    let hasMore = firstPage.data.data.has_more
-    const seenCursors = new Set<string>()
-
-    while (comments.length < targetCount && hasMore && cursor && !seenCursors.has(cursor)) {
-      seenCursors.add(cursor)
-      const nextPage = await this.amagi.xiaohongshu.fetcher.fetchNoteComments({
-        typeMode: 'strict',
+  /**
+   * 取够配置条数的笔记评论。
+   *
+   * v7 的 `noteComments` 端点自带声明式翻页：只传目标条数 `number`，游标由管线
+   * 携带、跨页条目由端点的 `normalize` 回填到最后一页原位 —— 所以这里不再手写
+   * cursor 循环（v6 时代那 30 行）。
+   *
+   * 这条端点在 amagi 那边还没有生成响应类型（声明回退 `any`），形状仍按手写快照树的
+   * `NoteComments` 断言；等它补上样本、生成类型之后换成生成的那份。
+   * @param data - 笔记 id 与 xsec_token
+   * @returns 响应体（fetcher 失败即抛），`data.comments` 已是合并后的全部评论
+   */
+  private async fetchConfiguredNoteComments(data: XiaohongshuIdData): Promise<NoteComments> {
+    return (
+      await this.amagi.xiaohongshu.fetcher.fetchNoteComments({
         note_id: data.note_id,
-        cursor,
-        xsec_token: data.xsec_token
+        xsec_token: data.xsec_token,
+        number: Math.max(1, Config.xiaohongshu.numcomment)
       })
-
-      comments.push(...(nextPage.data.data.comments ?? []))
-      cursor = nextPage.data.data.cursor
-      hasMore = nextPage.data.data.has_more
-    }
-
-    return {
-      ...firstPage,
-      data: {
-        ...firstPage.data,
-        data: {
-          ...firstPage.data.data,
-          comments,
-          cursor,
-          has_more: hasMore
-        }
-      }
-    } as Result<NoteComments>
+    ).data
   }
 
   async XiaohongshuHandler(data: XiaohongshuIdData) {
@@ -102,12 +84,11 @@ export class Xiaohongshu extends Base {
       await this.e.reply('检测到小红书链接，开始解析')
     }
     const NoteData = await this.amagi.xiaohongshu.fetcher.fetchNoteDetail({
-      typeMode: 'strict',
       note_id: data.note_id,
       xsec_token: data.xsec_token
     })
-    const EmojiList = await this.amagi.xiaohongshu.fetcher.fetchEmojiList({ typeMode: 'strict' })
-    const formattedEmojis = XiaohongshuEmoji(EmojiList)
+    const EmojiList = await this.amagi.xiaohongshu.fetcher.fetchEmojiList()
+    const formattedEmojis = XiaohongshuEmoji(EmojiList.data)
 
     // 笔记信息
     if (Config.xiaohongshu.sendContent.some((item) => item === 'info')) {
@@ -133,11 +114,11 @@ export class Xiaohongshu extends Base {
     if (Config.xiaohongshu.sendContent.some((item) => item === 'comment')) {
       const CommentData = await this.fetchConfiguredNoteComments(data)
 
-      if (!CommentData.data.data.comments || CommentData.data.data.comments.length === 0) {
+      if (!CommentData.data.comments || CommentData.data.comments.length === 0) {
         await this.e.reply('这个笔记没有评论 ~')
       } else {
         // 使用简化的评论处理函数，直接返回评论数组
-        const processedComments = await xiaohongshuComments(CommentData.data, formattedEmojis)
+        const processedComments = await xiaohongshuComments(CommentData, formattedEmojis)
 
         const commentListImg = await Render(this.e, 'xiaohongshu/comment', {
           Type: NoteData.data.data.items[0].note_card!.video ? '视频' : '图文',
@@ -152,7 +133,7 @@ export class Xiaohongshu extends Base {
 
     // 图片笔记
     if (!NoteData.data.data.items[0].note_card!.video && Config.xiaohongshu.sendContent.includes('image')) {
-      const processedImages: any[] = []
+      const processedImages: Elements[] = []
       const title = NoteData.data.data.items[0].note_card!.title
       const temp: Array<{ filepath: string; totalBytes: number }> = []
       let hasGeneratedLivePhoto = false // 标记是否生成了实况图
@@ -165,7 +146,7 @@ export class Xiaohongshu extends Base {
       // 实况图合并配置
       const loopCount = 3 // 小红书实况图循环3次
       const mergeMode: LiveImageMergeOptions['mergeMode'] = 'continuous'
-      let bgmContext: any = undefined
+      let bgmContext: LiveImageMergeOptions['context'] | undefined = undefined
 
       for (const [index, item] of NoteData.data.data.items[0].note_card!.image_list.entries()) {
         // 检查是否为实况图
@@ -357,11 +338,26 @@ export class Xiaohongshu extends Base {
 }
 
 /**
+ * 取某个编码下的流列表。
+ *
+ * `image_list[].stream` 与 `video.media.stream` 在生成树里都只有索引签名（样本没录到编码键），
+ * 值统一在这里收成 {@link XhsVideoStream}，别让 `any` 顺着调用链传下去。
+ */
+const codecVideos = (streamData: unknown, codec: string): XhsVideoStream[] => {
+  if (!streamData || typeof streamData !== 'object') {
+    return []
+  }
+
+  const value: unknown = (streamData as Record<string, unknown>)[codec]
+  return Array.isArray(value) ? (value as XhsVideoStream[]) : []
+}
+
+/**
  * 获取小红书实况图视频流
  * @param streamData 视频流数据
  * @returns 选择的视频流
  */
-export const xiaohongshuGetLivePhotoVideo = (streamData: any): XhsVideoStream | null => {
+export const xiaohongshuGetLivePhotoVideo = (streamData: unknown): XhsVideoStream | null => {
   if (!streamData) {
     logger.warn('没有找到实况图视频流数据')
     return null
@@ -371,9 +367,10 @@ export const xiaohongshuGetLivePhotoVideo = (streamData: any): XhsVideoStream | 
   const codecPriority = ['h264', 'h265', 'av1', 'h266']
 
   for (const codec of codecPriority) {
-    if (streamData[codec] && Array.isArray(streamData[codec]) && streamData[codec].length > 0) {
+    const videos = codecVideos(streamData, codec)
+    if (videos.length > 0) {
       // 选择第一个可用的视频流（实况图通常只有一个流）
-      const video = streamData[codec][0]
+      const video = videos[0]
       logger.debug(`选择实况图视频流: 编码=${codec}, 大小=${(video.size || 0) / (1024 * 1024)}MB`)
       return video
     }
@@ -390,7 +387,7 @@ export const xiaohongshuGetLivePhotoVideo = (streamData: any): XhsVideoStream | 
  * @param maxAutoVideoSize 自动模式下的最大文件大小（MB）
  * @returns 选择的视频流
  */
-export const xiaohongshuProcessVideos = (streamData: any, videoQuality: string, maxAutoVideoSize?: number): XhsVideoStream | null => {
+export const xiaohongshuProcessVideos = (streamData: unknown, videoQuality: string, maxAutoVideoSize?: number): XhsVideoStream | null => {
   if (!streamData) {
     logger.warn('没有找到视频流数据')
     return null
@@ -401,9 +398,7 @@ export const xiaohongshuProcessVideos = (streamData: any, videoQuality: string, 
   const allVideos: XhsVideoStream[] = []
 
   for (const codec of codecPriority) {
-    if (streamData[codec] && Array.isArray(streamData[codec])) {
-      allVideos.push(...streamData[codec])
-    }
+    allVideos.push(...codecVideos(streamData, codec))
   }
 
   if (allVideos.length === 0) {
@@ -519,29 +514,19 @@ export const xiaohongshuProcessVideos = (streamData: any, videoQuality: string, 
 
 /**
  * 格式化小红书表情列表
- * @param data 小红书表情数据
+ * @param data 表情接口的响应体（`fetchEmojiList` 的 `data`）
  * @returns 格式化后的表情数组
  */
-export const XiaohongshuEmoji = (data: any) => {
-  const ListArray = []
+export const XiaohongshuEmoji = (data: XiaohongshuEmojiListResponse): RichTextEmojiDefinition[] => {
+  const list: RichTextEmojiDefinition[] = []
 
-  if (data.data.data.emoji.tabs) {
-    for (const tab of data.data.data.emoji.tabs) {
-      if (tab.collection) {
-        for (const collection of tab.collection) {
-          if (collection.emoji) {
-            for (const emoji of collection.emoji) {
-              const Objject = {
-                name: emoji.image_name,
-                url: emoji.image
-              }
-              ListArray.push(Objject)
-            }
-          }
-        }
+  for (const tab of data.data.emoji.tabs ?? []) {
+    for (const collection of tab.collection ?? []) {
+      for (const emoji of collection.emoji ?? []) {
+        list.push({ name: emoji.image_name, url: emoji.image })
       }
     }
   }
 
-  return ListArray
+  return list
 }

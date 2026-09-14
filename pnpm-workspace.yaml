@@ -1,6 +1,8 @@
 packages:
   - packages/*
   - packages/amagi/packages/core
+  - packages/amagi/packages/response-types
+  - packages/amagi/packages/typegen
 
 overrides:
   node-karin: 1.16.2

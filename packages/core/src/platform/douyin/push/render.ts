@@ -1,4 +1,4 @@
-import type { DyUserInfo, Result } from '@ikenxuan/amagi'
+import type { DouyinUserProfileResponse } from '@ikenxuan/amagi'
 import {
   createHashtagNode,
   createLineBreakNode,
@@ -19,7 +19,7 @@ import { type dyVideo, formatDouyinQualityLabel } from '@/platform/douyin/videoQ
 import { DouyinWorkMainType, type DouyinWorkTypeInfo, getWorkCoverUrl, getWorkTypeInfo } from '../workType'
 
 /** 作品作者或订阅者用户对象（aweme author 与用户主页 user 的联合） */
-type DouyinUserLike = DouyinWorkDetailData['author'] | DyUserInfo['user']
+type DouyinUserLike = DouyinWorkDetailData['author'] | DouyinUserProfileResponse['user']
 
 /**
  * 处理作品描述
@@ -325,7 +325,7 @@ async function resolveMentionTokens(
     uniqueSecUids.map(async (secUid) => {
       if (mentionCache.has(secUid)) return
       try {
-        const userInfo = await douyinFetcher.fetchUserProfile({ sec_uid: secUid, typeMode: 'strict' })
+        const userInfo = await douyinFetcher.fetchUserProfile({ sec_uid: secUid })
         const user = userInfo.data.user
         const nickname = user.nickname?.trim()
         mentionCache.set(secUid, user.sec_uid === secUid && nickname ? `@${nickname}` : null)
@@ -402,9 +402,9 @@ function extractSuggestWord(Detail_Data: DouyinWorkDetailData): { hint_text: str
  * @param images - 可能存在的多种封面对象
  * @returns 可直接渲染的图片 URL，不存在时返回 undefined
  */
-function pickImageUrl(...images: Array<{ url_list?: unknown[] } | null | undefined>): string | undefined {
+function pickImageUrl(...images: Array<{ url_list?: (string | undefined)[] } | null | undefined>): string | undefined {
   for (const image of images) {
-    const url = image?.url_list?.find((item: unknown): item is string => typeof item === 'string' && item.length > 0)
+    const url = image?.url_list?.find((item): item is string => typeof item === 'string' && item.length > 0)
     if (url) return url
   }
   return undefined
@@ -415,13 +415,24 @@ function pickImageUrl(...images: Array<{ url_list?: unknown[] } | null | undefin
  * @param extra - 抖音 music.extra 原始字符串
  * @returns 解析后的对象，解析失败时返回空对象
  */
-function parseMusicExtra(extra: unknown): Record<string, any> {
+function parseMusicExtra(extra: unknown): Record<string, unknown> {
   if (typeof extra !== 'string' || extra.length === 0) return {}
   try {
     return JSON.parse(extra)
   } catch {
     return {}
   }
+}
+
+/**
+ * 从解析出来的 `music.extra` 里取字符串字段。
+ *
+ * `extra` 是平台塞的 JSON 字符串，值的类型不可信（解析出来是 `unknown`）——
+ * 不是字符串就当没有，交给调用方的 `||` 链继续回退。
+ */
+function readExtraString(extra: Record<string, unknown>, key: string): string | undefined {
+  const value = extra[key]
+  return typeof value === 'string' && value.length > 0 ? value : undefined
 }
 
 /**
@@ -435,7 +446,7 @@ function buildMusicInfo(music: DouyinWorkDetailData['music']): { author: string;
 
   const extra = parseMusicExtra(music.extra)
   const matched = music.matched_pgc_sound
-  const title = matched?.title || matched?.mixed_title || extra.music_display_mapping_title || music.title
+  const title = matched?.title || matched?.mixed_title || readExtraString(extra, 'music_display_mapping_title') || music.title
   const author = matched?.author || matched?.mixed_author || music.author || music.owner_nickname
   const cover = pickImageUrl(
     matched?.cover_medium,
@@ -629,7 +640,7 @@ export interface RenderFavoriteRecommendOptions {
   /** Karin 消息事件 */
   e: Message
   /** 作品详情数据，必带 user_info（订阅者/推荐者）、author（作品作者），可选 author_user_info（作者主页信息） */
-  Detail_Data: DouyinWorkDetailData & { user_info: Result<DyUserInfo> }
+  Detail_Data: DouyinWorkDetailData & { user_info: DouyinUserProfileResponse }
   /** 作品创建时间（Unix 时间戳，秒） */
   create_time: number
   /** 分享链接地址 */
@@ -649,7 +660,7 @@ export async function renderFavoriteImage(options: RenderFavoriteRecommendOption
   const workTypeInfo = getWorkTypeInfo(Detail_Data)
   const coverUrl = getWorkCoverUrl(workTypeInfo, Detail_Data)
   const authorUserInfo = Detail_Data.author_user_info
-  const subscriberUser = Detail_Data.user_info.data.user
+  const subscriberUser = Detail_Data.user_info.user
 
   return await Render(e, 'douyin/favorite-list', {
     image_url: coverUrl,
@@ -681,7 +692,7 @@ export async function renderRecommendImage(options: RenderFavoriteRecommendOptio
   const workTypeInfo = getWorkTypeInfo(Detail_Data)
   const coverUrl = getWorkCoverUrl(workTypeInfo, Detail_Data)
   const authorUserInfo = Detail_Data.author_user_info
-  const recommenderUser = Detail_Data.user_info.data.user
+  const recommenderUser = Detail_Data.user_info.user
 
   return await Render(e, 'douyin/recommend-list', {
     image_url: coverUrl,
@@ -722,11 +733,11 @@ export interface RenderLiveImageOptions {
 export async function renderLiveImage(options: RenderLiveImageOptions): Promise<ImageElement[]> {
   const { e, Detail_Data } = options
   const dynamicTypeLabel = options.dynamicTypeLabel ?? '直播动态推送'
-  const user = Detail_Data.user_info.data.user
+  const user = Detail_Data.user_info.user
 
   if (!Detail_Data.room_data || !Detail_Data.live_data) return []
 
-  const liveItem = Detail_Data.live_data.data.data.data[0]
+  const liveItem = Detail_Data.live_data.data.data[0]
   const room_data = Detail_Data.room_data
   const streamExtra = liveItem.stream_url?.extra
   const resolution = streamExtra ? `${streamExtra.width}x${streamExtra.height}` : liveItem.stream_url?.default_resolution
@@ -734,7 +745,7 @@ export async function renderLiveImage(options: RenderLiveImageOptions): Promise<
   return await Render(e, 'douyin/live', {
     image_url: liveItem.cover ? liveItem.cover?.url_list[0] : '',
     text: liveItem.title ?? '',
-    partition_title: Detail_Data.live_data.data.data.partition_road_map?.partition?.title || '未知分区',
+    partition_title: Detail_Data.live_data.data.partition_road_map?.partition?.title || '未知分区',
     room_id: room_data.owner.web_rid,
     online_viewers: Count(Number(liveItem.room_view_stats?.display_value)),
     total_viewers: liveItem.stats?.total_user_str || '',

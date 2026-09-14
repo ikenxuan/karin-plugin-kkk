@@ -1,4 +1,4 @@
-import type { DyUserInfo, Result } from '@ikenxuan/amagi'
+import type { DouyinUserProfileResponse } from '@ikenxuan/amagi'
 
 import type { DouyinLiveDetailData, DouyinWorkDetailData } from '@/platform/douyin/types'
 import type { DouyinPushType } from '@/types/config/pushlist'
@@ -23,8 +23,8 @@ interface DouyinPushItemBase {
 export type DouyinWorkPushItem = DouyinPushItemBase & {
   pushType: Exclude<DouyinPushType, 'live'>
   Detail_Data: DouyinWorkDetailData & {
-    /** 博主（订阅者）主页信息，作品类推送必带 */
-    user_info: Result<DyUserInfo>
+    /** 博主（订阅者）主页信息（响应体本身，非信封），作品类推送必带 */
+    user_info: DouyinUserProfileResponse
   }
 }
 

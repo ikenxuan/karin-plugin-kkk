@@ -1,4 +1,4 @@
-import type { DyUserInfo, Result } from '@ikenxuan/amagi'
+import type { DouyinUserProfileResponse } from '@ikenxuan/amagi'
 import karin, { type ImageElement, logger } from 'node-karin'
 
 import { douyinFetcher } from '@/module/utils/amagiClient'
@@ -7,11 +7,12 @@ import { wrapWithErrorHandler } from '@/module/utils/ErrorHandler'
 import { getDouyinID } from '@/platform/douyin/getID'
 import { renderFavoriteImage, renderLiveImage, renderRecommendImage, renderWorkImage } from '@/platform/douyin/push/render'
 import { buildDouyinWorkDetail } from '@/platform/douyin/types'
+import type { DouyinWorkDetailData } from '@/platform/douyin/types'
 import { buildDouyinPlayUrl, douyinProcessVideos, type dyVideo } from '@/platform/douyin/videoQuality'
 import { getWorkTypeInfo } from '@/platform/douyin/workType'
 
 /** 构建与生产推送一致的作品二维码链接。 */
-function buildWorkShareLink(aweme: any, selectedVideo: dyVideo | null): string {
+function buildWorkShareLink(aweme: DouyinWorkDetailData, selectedVideo: dyVideo | null): string {
   const workTypeInfo = getWorkTypeInfo(aweme)
   if (workTypeInfo.isArticle) return `https://www.douyin.com/article/${aweme.aweme_id}`
   if (workTypeInfo.isImage) return `https://www.douyin.com/note/${aweme.aweme_id}`
@@ -60,14 +61,14 @@ const handleTestPush = wrapWithErrorHandler(
           return true
         }
         logger.mark(`[测试抖音推送] 开始解析作品: ${iddata.aweme_id}`)
-        const workData = await douyinFetcher.parseWork({ aweme_id: iddata.aweme_id, typeMode: 'strict' })
+        const workData = await douyinFetcher.parseWork({ aweme_id: iddata.aweme_id })
         if (!workData.data.aweme_detail) {
           e.reply('获取作品详情失败，作品可能已被删除或设为私密')
           return true
         }
         const aweme = workData.data.aweme_detail
-        const userinfo = await douyinFetcher.fetchUserProfile({ sec_uid: aweme.author.sec_uid, typeMode: 'strict' })
-        const Detail_Data = buildDouyinWorkDetail(aweme, { user_info: userinfo })
+        const userinfo = await douyinFetcher.fetchUserProfile({ sec_uid: aweme.author.sec_uid })
+        const Detail_Data = buildDouyinWorkDetail(aweme, { user_info: userinfo.data })
         // 与生产推送一致：先按画质配置选档，二维码链接和卡片清晰度都从选中那一路视频源派生
         const selectedVideo = aweme.video?.bit_rate?.length
           ? douyinProcessVideos(aweme.video.bit_rate, Config.douyin.videoQuality)[0]
@@ -94,24 +95,23 @@ const handleTestPush = wrapWithErrorHandler(
           return true
         }
         logger.mark(`[测试抖音推送] 开始获取喜欢列表: sec_uid=${iddata.sec_uid}`)
-        const userinfo = await douyinFetcher.fetchUserProfile({ sec_uid: iddata.sec_uid, typeMode: 'strict' })
+        const userinfo = await douyinFetcher.fetchUserProfile({ sec_uid: iddata.sec_uid })
         const favoriteData = await douyinFetcher.fetchUserFavoriteList({
           sec_uid: iddata.sec_uid,
-          number: 1,
-          typeMode: 'strict'
+          number: 1
         })
         if (!favoriteData.data.aweme_list?.length) {
           e.reply('该用户的喜欢列表为空或未公开')
           return true
         }
         const aweme = favoriteData.data.aweme_list[0]
-        let authorUserInfo: Result<DyUserInfo> | undefined
+        let authorUserInfo: DouyinUserProfileResponse | undefined
         try {
-          authorUserInfo = await douyinFetcher.fetchUserProfile({ sec_uid: aweme.author.sec_uid, typeMode: 'strict' })
+          authorUserInfo = (await douyinFetcher.fetchUserProfile({ sec_uid: aweme.author.sec_uid })).data
         } catch {
           /* ignore */
         }
-        const Detail_Data = buildDouyinWorkDetail(aweme, { user_info: userinfo, author_user_info: authorUserInfo })
+        const Detail_Data = buildDouyinWorkDetail(aweme, { user_info: userinfo.data, author_user_info: authorUserInfo })
         const selectedVideo = aweme.video?.bit_rate?.length
           ? douyinProcessVideos(aweme.video.bit_rate, Config.douyin.videoQuality)[0]
           : null
@@ -137,24 +137,23 @@ const handleTestPush = wrapWithErrorHandler(
           return true
         }
         logger.mark(`[测试抖音推送] 开始获取推荐列表: sec_uid=${iddata.sec_uid}`)
-        const userinfo = await douyinFetcher.fetchUserProfile({ sec_uid: iddata.sec_uid, typeMode: 'strict' })
+        const userinfo = await douyinFetcher.fetchUserProfile({ sec_uid: iddata.sec_uid })
         const recommendData = await douyinFetcher.fetchUserRecommendList({
           sec_uid: iddata.sec_uid,
-          number: 1,
-          typeMode: 'strict'
+          number: 1
         })
         if (!recommendData.data.aweme_list?.length) {
           e.reply('该用户的推荐列表为空或未公开')
           return true
         }
         const aweme = recommendData.data.aweme_list[0]
-        let authorUserInfo: Result<DyUserInfo> | undefined
+        let authorUserInfo: DouyinUserProfileResponse | undefined
         try {
-          authorUserInfo = await douyinFetcher.fetchUserProfile({ sec_uid: aweme.author.sec_uid, typeMode: 'strict' })
+          authorUserInfo = (await douyinFetcher.fetchUserProfile({ sec_uid: aweme.author.sec_uid })).data
         } catch {
           /* ignore */
         }
-        const Detail_Data = buildDouyinWorkDetail(aweme, { user_info: userinfo, author_user_info: authorUserInfo })
+        const Detail_Data = buildDouyinWorkDetail(aweme, { user_info: userinfo.data, author_user_info: authorUserInfo })
         const selectedVideo = aweme.video?.bit_rate?.length
           ? douyinProcessVideos(aweme.video.bit_rate, Config.douyin.videoQuality)[0]
           : null
@@ -181,7 +180,7 @@ const handleTestPush = wrapWithErrorHandler(
         }
         const sec_uid = iddata.sec_uid
         logger.mark(`[测试抖音推送] 开始检查直播状态: sec_uid=${sec_uid}`)
-        const userinfo = await douyinFetcher.fetchUserProfile({ sec_uid, typeMode: 'strict' })
+        const userinfo = await douyinFetcher.fetchUserProfile({ sec_uid })
         const user = userinfo.data.user
         if (user.live_status !== 1) {
           e.reply(`${user.nickname} 当前未在直播`)
@@ -194,10 +193,9 @@ const handleTestPush = wrapWithErrorHandler(
         const room_data = JSON.parse(user.room_data)
         const liveInfo = await douyinFetcher.fetchLiveRoomInfo({
           room_id: user.room_id_str,
-          web_rid: room_data.owner.web_rid,
-          typeMode: 'strict'
+          web_rid: room_data.owner.web_rid
         })
-        const Detail_Data = { user_info: userinfo, room_data, live_data: liveInfo }
+        const Detail_Data = { user_info: userinfo.data, room_data, live_data: liveInfo.data }
         images = await renderLiveImage({ e, Detail_Data })
         if (!images.length) {
           e.reply('渲染直播状态推送图片失败')

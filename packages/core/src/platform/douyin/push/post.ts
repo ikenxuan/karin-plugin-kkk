@@ -1,9 +1,9 @@
-import { DyUserInfo, Result } from '@ikenxuan/amagi'
+import { DouyinUserProfileResponse } from '@ikenxuan/amagi'
 import { format, fromUnixTime } from 'date-fns'
 import { logger } from 'node-karin'
 
 import { douyinDB } from '@/module'
-import { buildDouyinWorkDetail } from '@/platform/douyin/types'
+import { buildDouyinWorkDetail, type DouyinListItem } from '@/platform/douyin/types'
 import { douyinPushItem } from '@/types/config/pushlist'
 
 import type { DouyinWorkPushItem } from './types'
@@ -14,9 +14,9 @@ import type { DouyinWorkPushItem } from './types'
  * @returns 返回需要推送的作品项数组
  */
 export async function processPostList(
-  contentList: any[],
+  contentList: DouyinListItem[],
   sec_uid: string,
-  userinfo: Result<DyUserInfo>,
+  userinfo: DouyinUserProfileResponse,
   item: douyinPushItem,
   targets: Array<{ groupId: string; botId: string }>
 ): Promise<DouyinWorkPushItem[]> {
@@ -64,7 +64,7 @@ export async function processPostList(
           targets: validTargets,
           pushType,
           Detail_Data: buildDouyinWorkDetail(aweme, { user_info: userinfo }),
-          avatar_img: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + userinfo.data.user.avatar_larger.uri,
+          avatar_img: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + userinfo.user.avatar_larger.uri,
           living: false
         })
       }

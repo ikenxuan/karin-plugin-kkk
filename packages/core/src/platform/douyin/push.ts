@@ -1,9 +1,9 @@
 import fs from 'node:fs'
 
-import type { DySearchInfo } from '@ikenxuan/amagi'
+import type { DouyinSearchResponse } from '@ikenxuan/amagi'
 import type { DouyinUserListData } from '@template/template/douyin/userlist/components/types'
 import { format } from 'date-fns'
-import type { AdapterType, ImageElement, Message } from 'node-karin'
+import type { AdapterType, Elements, ImageElement, Message } from 'node-karin'
 import karin, { common, logger, segment } from 'node-karin'
 
 import {
@@ -17,6 +17,7 @@ import {
   downLoadFileOptions,
   downloadVideo,
   fileInfo,
+  type LiveImageMergeOptions,
   loopVideoWithTransition,
   Networks,
   processLocalImageFile,
@@ -25,6 +26,7 @@ import {
 } from '@/module'
 import { Config } from '@/module/utils/Config'
 import { DouyinIdData, buildDouyinPlayUrl, douyinProcessVideos, type dyVideo, getDouyinID } from '@/platform/douyin'
+import type { DouyinListItem } from '@/platform/douyin/types'
 import { getDouyinLiveImageSendPolicy, getWorkTypeDisplayName, getWorkTypeInfo } from '@/platform/douyin/workType'
 import type { douyinPushItem } from '@/types/config/pushlist'
 
@@ -123,8 +125,7 @@ export class DouYinpush extends Base {
           logger.info(`自动获取用户 ${item.remark || item.short_id} 的 sec_uid`)
           const searchResult = await this.amagi.douyin.fetcher.searchContent({
             query: item.short_id,
-            type: 'user',
-            typeMode: 'strict'
+            type: 'user'
           })
 
           // 在搜索结果中查找匹配的用户
@@ -413,13 +414,13 @@ export class DouYinpush extends Base {
 
               if (isSlides && Detail_Data.images) {
                 // 合辑处理逻辑
-                const images: any[] = []
+                const images: Elements[] = []
                 const temp: fileInfo[] = []
                 let hasGeneratedLivePhoto = false // 标记是否生成了实况图
 
                 /** 下载 BGM（如果存在） */
                 let liveimgbgm: fileInfo | null = null
-                let bgmContext: any = null
+                let bgmContext: LiveImageMergeOptions['context'] | null = null
                 const mergeMode = Config.douyin.liveImageMergeMode ?? 'independent'
 
                 if (Detail_Data.music) {
@@ -583,13 +584,13 @@ export class DouYinpush extends Base {
 
                 if (hasLiveImage) {
                   // 包含 live 图，需要特殊处理
-                  const processedImages: any[] = []
+                  const processedImages: Elements[] = []
                   const temp: fileInfo[] = []
                   let hasGeneratedLivePhoto = false // 标记是否生成了实况图
 
                   /** 下载 BGM（如果存在） */
                   let liveimgbgm: fileInfo | null = null
-                  let bgmContext: any = null
+                  let bgmContext: LiveImageMergeOptions['context'] | null = null
                   const mergeMode = Config.douyin.liveImageMergeMode ?? 'independent'
 
                   if (Detail_Data.music) {
@@ -807,7 +808,7 @@ export class DouYinpush extends Base {
 
         logger.debug(`开始获取用户：${item.remark}（${sec_uid}）的内容，推送类型：${pushTypes.join(', ')}`)
 
-        const userinfo = await this.amagi.douyin.fetcher.fetchUserProfile({ sec_uid, typeMode: 'strict' })
+        const userinfo = await this.amagi.douyin.fetcher.fetchUserProfile({ sec_uid })
 
         const targets = item.group_id.map((groupWithBot) => {
           const [groupId, botId] = groupWithBot.split(':')
@@ -829,14 +830,14 @@ export class DouYinpush extends Base {
 
           // 处理直播推送
           if (pushType === 'live') {
-            const liveItem = await processLiveStream(sec_uid, userinfo, item, targets, this.amagi)
+            const liveItem = await processLiveStream(sec_uid, userinfo.data, item, targets, this.amagi)
             if (liveItem) {
               willbepushlist[`live_${sec_uid}`] = liveItem
             }
             continue
           }
 
-          let contentList: any[] = []
+          let contentList: DouyinListItem[] = []
           let listName = ''
 
           // 根据推送类型获取不同的列表
@@ -845,8 +846,7 @@ export class DouYinpush extends Base {
               listName = '作品列表'
               const videolist = await this.amagi.douyin.fetcher.fetchUserVideoList({
                 sec_uid,
-                number: 15,
-                typeMode: 'strict'
+                number: 15
               })
               contentList = videolist.data.aweme_list || []
               break
@@ -854,8 +854,7 @@ export class DouYinpush extends Base {
               listName = '喜欢列表'
               const favoritelist = await this.amagi.douyin.fetcher.fetchUserFavoriteList({
                 sec_uid,
-                number: 15,
-                typeMode: 'strict'
+                number: 15
               })
               if (favoritelist.data.aweme_list.length === 0)
                 logger.warn(`${item.remark}(${item.short_id}) 获取到的喜欢列表数量为零！此博主可能未公开他/她的喜欢列表`)
@@ -865,8 +864,7 @@ export class DouYinpush extends Base {
               listName = '推荐列表'
               const recommendlist = await this.amagi.douyin.fetcher.fetchUserRecommendList({
                 sec_uid,
-                number: 15,
-                typeMode: 'strict'
+                number: 15
               })
               if (recommendlist.data.aweme_list.length === 0)
                 logger.warn(`${item.remark}(${item.short_id}) 获取到的推荐列表数量为零！此博主可能未公开他/她的推荐列表`)
@@ -881,13 +879,13 @@ export class DouYinpush extends Base {
             let pushItems: DouyinWorkPushItem[] = []
             switch (pushType) {
               case 'post':
-                pushItems = await processPostList(contentList, sec_uid, userinfo, item, targets)
+                pushItems = await processPostList(contentList, sec_uid, userinfo.data, item, targets)
                 break
               case 'favorite':
-                pushItems = await processFavoriteList(contentList, sec_uid, userinfo, item, targets, this.force)
+                pushItems = await processFavoriteList(contentList, sec_uid, userinfo.data, item, targets, this.force)
                 break
               case 'recommend':
-                pushItems = await processRecommendList(contentList, sec_uid, userinfo, item, targets, this.force)
+                pushItems = await processRecommendList(contentList, sec_uid, userinfo.data, item, targets, this.force)
                 break
             }
 
@@ -929,7 +927,7 @@ export class DouYinpush extends Base {
    * @param data 抖音的搜索结果数据。需要接口返回的原始数据
    * @returns 操作成功或失败的消息字符串。
    */
-  async setting(data: DySearchInfo): Promise<void> {
+  async setting(data: DouyinSearchResponse): Promise<void> {
     const groupInfo = await this.e.bot.getGroupInfo('groupId' in this.e && this.e.groupId ? this.e.groupId : '')
     const config = Config.pushlist // 读取配置文件
     const groupId = 'groupId' in this.e && this.e.groupId ? this.e.groupId : ''
@@ -938,6 +936,15 @@ export class DouYinpush extends Base {
     try {
       // 获取用户输入的抖音号
       const inputDouyinId = this.e.msg.replace(/^#设置抖音推送/, '').trim()
+
+      /**
+       * 搜索结果按响应形态自述（判别式 `__search_type`，由 amagi 的 normalize 按响应结构 +
+       * 请求类型写入）。订阅只认「用户搜索」那一支：抖音把 user 请求回成别的形态时在这里说清楚，
+       * 而不是拿一个 undefined 去遍历。
+       */
+      if (data.__search_type !== 'user') {
+        throw new Error(`抖音没有返回用户搜索结果（返回形态：${data.__search_type ?? '未知'}）`)
+      }
 
       // 在用户列表中查找匹配的用户
       let matchedUser = null
@@ -956,7 +963,7 @@ export class DouYinpush extends Base {
 
       // 使用匹配到的用户的 sec_uid 进行下一步请求
       const sec_uid = matchedUser.sec_uid
-      const UserInfoData = await this.amagi.douyin.fetcher.fetchUserProfile({ sec_uid, typeMode: 'strict' })
+      const UserInfoData = await this.amagi.douyin.fetcher.fetchUserProfile({ sec_uid })
 
       /** 处理抖音号 */
       let user_shortid
@@ -1079,7 +1086,7 @@ export class DouYinpush extends Base {
 
     for (const subscription of subscriptions) {
       const sec_uid = subscription.sec_uid
-      const userInfo = await this.amagi.douyin.fetcher.fetchUserProfile({ sec_uid, typeMode: 'strict' })
+      const userInfo = await this.amagi.douyin.fetcher.fetchUserProfile({ sec_uid })
 
       // 查找配置文件中对应的全局开关状态
       const configItem = Config.pushlist.douyin?.find((item: douyinPushItem) => item.sec_uid === sec_uid)
@@ -1173,7 +1180,7 @@ export class DouYinpush extends Base {
     if (updateList.length > 0) {
       for (const i of updateList) {
         // 从外部数据源获取用户备注信息
-        const userinfo = await this.amagi.douyin.fetcher.fetchUserProfile({ sec_uid: i.sec_uid, typeMode: 'strict' })
+        const userinfo = await this.amagi.douyin.fetcher.fetchUserProfile({ sec_uid: i.sec_uid })
         const remark = userinfo.data.user.nickname
 
         // 在配置文件中找到对应的用户，并更新其备注信息
