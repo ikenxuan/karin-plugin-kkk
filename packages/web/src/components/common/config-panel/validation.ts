@@ -45,7 +45,8 @@ const validatePushList = (errors: Record<string, string>, key: 'douyin' | 'bilib
       return true
     }
 
-    return !Array.isArray(groupId) || groupId.length === 0 || groupId.some((value) => !isValidGroupBinding(value))
+    // 允许 group_id 为空数组：删掉最后一个推送目标是合法中间状态，不应阻塞整份配置的保存
+    return !Array.isArray(groupId) || groupId.some((value) => !isValidGroupBinding(value))
   })
 
   if (invalidIndex >= 0) {
