@@ -193,6 +193,8 @@ export class Bilibili extends Base {
           })
           /** 替换原始的视频信息对象 */
           playUrlData.data.data.dash.video = simplify
+          /** 没有音频流（如纯视频稿件）时拿不到音频地址，按只统计视频流大小处理 */
+          const audioUrl = playUrlData.data.data.dash.audio?.[0]?.base_url
           /** 给视频信息对象删除不符合条件的视频流 */
           correctList = await bilibiliProcessVideos(
             {
@@ -201,16 +203,12 @@ export class Bilibili extends Base {
               qn: Config.bilibili.videoQuality
             },
             simplify,
-            playUrlData.data.data.dash.audio[0].base_url
+            audioUrl
           )
           playUrlData.data.data.dash.video = correctList.videoList
           playUrlData.data.data.accept_description = correctList.accept_description
           /** 获取第一个视频流的大小 */
-          videoSize = await getvideosize(
-            correctList.videoList[0].base_url,
-            playUrlData.data.data.dash.audio[0].base_url,
-            infoData.data.data.bvid
-          )
+          videoSize = await getvideosize(correctList.videoList[0].base_url, audioUrl, infoData.data.data.bvid)
         } else {
           videoSize = (nockData.data.durl[0].size / (1024 * 1024)).toFixed(2)
         }
@@ -396,7 +394,7 @@ export class Bilibili extends Base {
               qn: Config.bilibili.videoQuality
             },
             simplify,
-            playUrlData.result.dash.audio[0].base_url
+            playUrlData.result.dash.audio?.[0]?.base_url
           )
           playUrlData.result.dash.video = correctList.videoList
           playUrlData.result.cept_description = correctList.accept_description
@@ -1182,41 +1180,58 @@ export class Bilibili extends Base {
         // 删除原始 m4s 文件
         await Common.removeFile(bmp4Raw.filepath, true)
 
-        logger.debug(
-          '音频 URL:',
-          this.Type === 'one_video' ? playUrlData.data?.dash?.audio[0].base_url : playUrlData.result.dash.audio[0].base_url
-        )
-        const bmp3Raw = await downloadFile(
-          this.Type === 'one_video' ? playUrlData.data?.dash?.audio[0].base_url : playUrlData.result.dash.audio[0].base_url,
-          {
+        const audioUrl =
+          this.Type === 'one_video' ? playUrlData.data?.dash?.audio?.[0]?.base_url : playUrlData.result.dash.audio?.[0]?.base_url
+        logger.debug('音频 URL:', audioUrl)
+
+        /** 没有音频流（如纯视频稿件）时为 undefined，此时无从合成，直接发视频流 */
+        let bmp3: { filepath: string; totalBytes: number } | undefined
+        if (audioUrl) {
+          const bmp3Raw = await downloadFile(audioUrl, {
             title: `Bil_A_${this.Type === 'one_video' ? infoData && infoData.data.bvid : infoData && infoData.result.season_id}.m4s`,
             headers: downloadHeaders
-          }
-        )
+          })
 
-        // 修复音频 m4s 文件为 m4a（AAC 音频不能直接转为 MP3 容器）
-        const audioPath =
-          Common.tempDri.video +
-          `Bil_A_${this.Type === 'one_video' ? infoData && infoData.data.bvid : infoData && infoData.result.season_id}.m4a`
-        const audioFixed = await fixM4sFile(bmp3Raw.filepath, audioPath)
-        if (!audioFixed) {
-          logger.error('音频文件修复失败')
-          return false
+          // 修复音频 m4s 文件为 m4a（AAC 音频不能直接转为 MP3 容器）
+          const audioPath =
+            Common.tempDri.video +
+            `Bil_A_${this.Type === 'one_video' ? infoData && infoData.data.bvid : infoData && infoData.result.season_id}.m4a`
+          const audioFixed = await fixM4sFile(bmp3Raw.filepath, audioPath)
+          if (!audioFixed) {
+            logger.error('音频文件修复失败')
+            return false
+          }
+          // 删除原始 m4s 文件
+          await Common.removeFile(bmp3Raw.filepath, true)
+          bmp3 = { filepath: audioPath, totalBytes: bmp3Raw.totalBytes }
         }
-        // 删除原始 m4s 文件
-        await Common.removeFile(bmp3Raw.filepath, true)
 
         const bmp4 = { filepath: videoPath, totalBytes: bmp4Raw.totalBytes }
-        const bmp3 = { filepath: audioPath, totalBytes: bmp3Raw.totalBytes }
 
-        if (bmp4.filepath && bmp3.filepath) {
+        if (bmp4.filepath) {
           // 根据是否有弹幕数据选择合成方式
           const hasDanmaku = (this.forceBurnDanmaku || Config.bilibili.burnDanmaku) && danmakuList.length > 0
           const resultPath =
             Common.tempDri.video +
             `Bil_Result_${this.Type === 'one_video' ? infoData && infoData.data.bvid : infoData && infoData.result.season_id}.mp4`
           let success: boolean
-          if (hasDanmaku) {
+          /** 最终要上传的文件：合成/烧录的产物，或没有音频流时直接用的视频流 */
+          let sourcePath = bmp4.filepath
+          if (!bmp3) {
+            if (hasDanmaku) {
+              logger.debug(`开始烧录 ${danmakuList.length} 条弹幕...`)
+              success = await burnBiliDanmaku(bmp4.filepath, danmakuList, resultPath, {
+                danmakuArea: Config.bilibili.danmakuArea,
+                verticalMode: Config.bilibili.verticalMode,
+                videoCodec: Config.bilibili.videoCodec,
+                danmakuFontSize: Config.bilibili.danmakuFontSize,
+                danmakuOpacity: Config.bilibili.danmakuOpacity
+              })
+              sourcePath = resultPath
+            } else {
+              success = true
+            }
+          } else if (hasDanmaku) {
             logger.debug(`开始合成视频并烧录 ${danmakuList.length} 条弹幕...`)
             success = await mergeAndBurnBili(bmp4.filepath, bmp3.filepath, danmakuList, resultPath, {
               danmakuArea: Config.bilibili.danmakuArea,
@@ -1225,17 +1240,19 @@ export class Bilibili extends Base {
               danmakuFontSize: Config.bilibili.danmakuFontSize,
               danmakuOpacity: Config.bilibili.danmakuOpacity
             })
+            sourcePath = resultPath
           } else {
             success = await mergeVideoAudio(bmp4.filepath, bmp3.filepath, resultPath)
+            sourcePath = resultPath
           }
 
           if (success) {
             const filePath = Common.tempDri.video + `${Config.app.removeCache ? 'tmp_' + Date.now() : this.downloadfilename}.mp4`
-            fs.renameSync(resultPath, filePath)
-            logger.mark(`视频文件重命名完成: ${resultPath.split('/').pop()} -> ${filePath.split('/').pop()}`)
+            fs.renameSync(sourcePath, filePath)
+            logger.mark(`视频文件重命名完成: ${sourcePath.split('/').pop()} -> ${filePath.split('/').pop()}`)
             logger.mark('正在尝试删除缓存文件')
-            await Common.removeFile(bmp4.filepath, true)
-            await Common.removeFile(bmp3.filepath, true)
+            if (fs.existsSync(bmp4.filepath)) await Common.removeFile(bmp4.filepath, true)
+            if (bmp3 && fs.existsSync(bmp3.filepath)) await Common.removeFile(bmp3.filepath, true)
 
             const stats = fs.statSync(filePath)
             const fileSizeInMB = Number((stats.size / (1024 * 1024)).toFixed(2))
@@ -1250,7 +1267,7 @@ export class Bilibili extends Base {
             }
           } else {
             await Common.removeFile(bmp4.filepath, true)
-            await Common.removeFile(bmp3.filepath, true)
+            if (bmp3) await Common.removeFile(bmp3.filepath, true)
           }
         }
         break
@@ -1568,7 +1585,11 @@ type qualityOptions = {
  * @param bvid 视频bvid（BV号）
  * @returns
  */
-export const bilibiliProcessVideos = async (qualityOptions: qualityOptions, videoList: videoDownloadUrlList, audioUrl: string) => {
+export const bilibiliProcessVideos = async (
+  qualityOptions: qualityOptions,
+  videoList: videoDownloadUrlList,
+  audioUrl: string | undefined
+) => {
   // 如果不是自动选择模式，直接根据配置的清晰度选择视频
   if (qualityOptions.qn !== 0 || Config.bilibili.videoQuality !== 0) {
     const targetQuality = qualityOptions.qn ?? Config.bilibili.videoQuality
@@ -1658,11 +1679,11 @@ export const bilibiliProcessVideos = async (qualityOptions: qualityOptions, vide
 /**
  * [bilibili] 获取视频和音频的总大小
  * @param videourl - 视频流URL
- * @param audiourl - 音频流URL
+ * @param audiourl - 音频流URL，没有音频流（如纯视频稿件）时传 undefined，此时只统计视频流大小
  * @param bvid - 视频BV号
  * @returns  返回视频和音频总大小(MB),保留2位小数
  */
-export const getvideosize = async (videourl: string, audiourl: string, bvid: string) => {
+export const getvideosize = async (videourl: string, audiourl: string | undefined, bvid: string) => {
   try {
     const videoheaders = await new Networks({
       url: videourl,
@@ -1672,17 +1693,19 @@ export const getvideosize = async (videourl: string, audiourl: string, bvid: str
         Cookie: Config.amagi.cookies.bilibili
       }
     }).getHeaders()
-    const audioheaders = await new Networks({
-      url: audiourl,
-      headers: {
-        ...baseHeaders,
-        Referer: `https://www.bilibili.com/video/${bvid}`,
-        Cookie: Config.amagi.cookies.bilibili
-      }
-    }).getHeaders()
+    const audioheaders = audiourl
+      ? await new Networks({
+          url: audiourl,
+          headers: {
+            ...baseHeaders,
+            Referer: `https://www.bilibili.com/video/${bvid}`,
+            Cookie: Config.amagi.cookies.bilibili
+          }
+        }).getHeaders()
+      : undefined
 
     const videoSize = extractTotalBytesFromHeaders(videoheaders)
-    const audioSize = extractTotalBytesFromHeaders(audioheaders)
+    const audioSize = audioheaders ? extractTotalBytesFromHeaders(audioheaders) : 0
 
     const videoSizeInMB = (videoSize / (1024 * 1024)).toFixed(2)
     const audioSizeInMB = (audioSize / (1024 * 1024)).toFixed(2)

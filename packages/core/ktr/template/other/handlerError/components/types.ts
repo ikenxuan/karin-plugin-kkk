@@ -8,8 +8,18 @@ interface BusinessError {
   message: string
   /** 错误名称 */
   name: string
-  /** 调用栈信息 */
+  /**
+   * 调用栈信息，纯文本（amagi 的 `error.stack`，或调用方显式覆盖的文本）。
+   * 模板按「有没有 ANSI」挑高亮方式：没有的按结构上色，有的走 ANSI 解析。
+   */
   stack: string
+  /**
+   * 非 amagi 异常的自有属性转储（`util.inspect`，带 ANSI）。
+   *
+   * 调用帧已经在上面单独印了，这里只有 message 与调用点挂的属性 —— 那种情况下
+   * 它们往往是唯一线索。amagi 异常与显式覆盖堆栈的情况都没有这一块。
+   */
+  dump?: string
   /** 业务名称 */
   businessName: string
 }

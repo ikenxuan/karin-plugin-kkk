@@ -860,6 +860,8 @@ export class Bilibilipush extends Base {
                   })
                   /** 替换原始的视频信息对象 */
                   playUrlData.data.data.dash.video = simplify
+                  /** 没有音频流（如纯视频稿件）时拿不到音频地址，按只统计视频流大小处理 */
+                  const audioUrl = playUrlData.data.data.dash.audio?.[0]?.base_url
                   /** 给视频信息对象删除不符合条件的视频流 */
                   correctList = await bilibiliProcessVideos(
                     {
@@ -869,14 +871,14 @@ export class Bilibilipush extends Base {
                       maxAutoVideoSize: Config.bilibili.push.pushMaxAutoVideoSize
                     },
                     simplify,
-                    playUrlData.data.data.dash.audio[0].base_url
+                    audioUrl
                   )
                   playUrlData.data.data.dash.video = correctList.videoList
                   playUrlData.data.data.accept_description = correctList.accept_description
                   /** 获取第一个视频流的大小 */
                   videoSize = await getvideosize(
                     correctList.videoList[0].base_url,
-                    playUrlData.data.data.dash.audio[0].base_url,
+                    audioUrl,
                     data[dynamicId].Dynamic_Data.modules.module_dynamic.major.archive.bvid
                   )
                   if (Config.app.usefilelimit && Number(videoSize) > Number(Config.app.filelimit) && !Config.app.compress) {
@@ -896,22 +898,25 @@ export class Bilibilipush extends Base {
                     title: `Bil_V_${infoData.data.data.bvid}.mp4`,
                     headers: bilibiliBaseHeaders
                   })
-                  const mp3File = await downloadFile(playUrlData.data?.data?.dash?.audio[0].base_url, {
-                    title: `Bil_A_${infoData.data.data.bvid}.mp3`,
-                    headers: bilibiliBaseHeaders
-                  })
+                  const mp3File = audioUrl
+                    ? await downloadFile(audioUrl, {
+                        title: `Bil_A_${infoData.data.data.bvid}.mp3`,
+                        headers: bilibiliBaseHeaders
+                      })
+                    : undefined
 
-                  if (mp4File.filepath && mp3File.filepath) {
-                    const resultPath = Common.tempDri.video + `Bil_Result_${infoData.data.data.bvid}.mp4`
-                    const success = await mergeVideoAudio(mp4File.filepath, mp3File.filepath, resultPath)
+                  if (mp4File.filepath && (!mp3File || mp3File.filepath)) {
+                    /** 没有音频流时无从合成，直接发送视频流 */
+                    const resultPath = mp3File ? Common.tempDri.video + `Bil_Result_${infoData.data.data.bvid}.mp4` : mp4File.filepath
+                    const success = mp3File ? await mergeVideoAudio(mp4File.filepath, mp3File.filepath, resultPath) : true
 
                     if (success) {
                       const filePath = Common.tempDri.video + `tmp_${Date.now()}.mp4`
                       fs.renameSync(resultPath, filePath)
                       logger.mark(`视频文件重命名完成: ${resultPath.split('/').pop()} -> ${filePath.split('/').pop()}`)
                       logger.mark('正在尝试删除缓存文件')
-                      await Common.removeFile(mp4File.filepath, true)
-                      await Common.removeFile(mp3File.filepath, true)
+                      if (fs.existsSync(mp4File.filepath)) await Common.removeFile(mp4File.filepath, true)
+                      if (mp3File) await Common.removeFile(mp3File.filepath, true)
 
                       const stats = fs.statSync(filePath)
                       const fileSizeInMB = Number((stats.size / (1024 * 1024)).toFixed(2))
@@ -936,7 +941,7 @@ export class Bilibilipush extends Base {
                       }
                     } else {
                       await Common.removeFile(mp4File.filepath, true)
-                      await Common.removeFile(mp3File.filepath, true)
+                      if (mp3File) await Common.removeFile(mp3File.filepath, true)
                     }
                   }
                 }

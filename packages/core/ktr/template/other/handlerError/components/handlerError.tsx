@@ -3,6 +3,7 @@ import { formatDistanceToNow, parse } from 'date-fns'
 import { zhCN } from 'date-fns/locale'
 import {
   AlertCircle,
+  Braces,
   Clock,
   FileText,
   Fingerprint,
@@ -332,6 +333,11 @@ export const handlerError: React.FC<PosterProps<ApiErrorData>> = (props) => {
   const isBusinessError = data.type === 'business_error'
   const businessError = isBusinessError ? (data.error as BusinessError) : null
   const displayMethod = businessError?.businessName || data.method
+
+  // 高亮方式看文本本身有没有 ANSI，而不是看错误来源：amagi 与非 amagi 现在都只印
+  // 纯文本调用帧，走结构上色；只有调用方显式覆盖进来的 util.inspect 转储仍走 ANSI 那条。
+  const stackText = String(businessError?.stack || data.error?.stack || '')
+  const stackHtml = stackText.includes(String.fromCharCode(27)) ? convertAnsiToHtml(stackText) : highlightStack(stackText, dark)
 
   // 631 配色 - 红/珊瑚色系
   const bgColor = dark ? '#0f0a0a' : '#faf5f5'
@@ -797,7 +803,7 @@ export const handlerError: React.FC<PosterProps<ApiErrorData>> = (props) => {
           <SectionTitle
             icon={<AlertCircle size={36} style={{ color: mutedColor }} />}
             en="Stack Trace"
-            zh={data.amagi ? '调用栈（结构化上下文见上）' : '错误堆栈'}
+            zh={data.amagi ? '调用栈（结构化上下文见上）' : data.error?.dump ? '调用栈（对象转储见下）' : '错误堆栈'}
             color={mutedColor}
           />
           <div
@@ -810,16 +816,24 @@ export const handlerError: React.FC<PosterProps<ApiErrorData>> = (props) => {
             <pre
               className="text-2xl leading-relaxed whitespace-pre-wrap break-all font-mono"
               style={{ color: dark ? 'rgba(255,255,255,0.85)' : 'rgba(127,29,29,0.9)' }}
-              dangerouslySetInnerHTML={{
-                // amagi 的错误只有纯文本调用栈（没有 ANSI），按结构上色；
-                // 其余异常仍是 util.inspect 的彩色转储，走 ANSI 那条
-                __html: data.amagi
-                  ? highlightStack(String(businessError?.stack || data.error?.stack || ''), dark)
-                  : convertAnsiToHtml(String(businessError?.stack || data.error?.stack || ''))
-              }}
+              dangerouslySetInnerHTML={{ __html: stackHtml }}
             />
           </div>
         </div>
+
+        {/* 对象转储：非 amagi 异常的自有属性，帧已经在上面单独高亮了 */}
+        {data.error?.dump && (
+          <div className="mb-14">
+            <SectionTitle icon={<Braces size={36} style={{ color: mutedColor }} />} en="Object Dump" zh="对象转储" color={mutedColor} />
+            <div className="p-10 rounded-[36px]" style={{ backgroundColor: dark ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.5)' }}>
+              <pre
+                className="text-2xl leading-relaxed whitespace-pre-wrap break-all font-mono"
+                style={{ color: dark ? 'rgba(255,255,255,0.85)' : 'rgba(127,29,29,0.9)' }}
+                dangerouslySetInnerHTML={{ __html: convertAnsiToHtml(data.error.dump) }}
+              />
+            </div>
+          </div>
+        )}
 
         {/* 执行日志 */}
         {data.logs && data.logs.length > 0 && (
