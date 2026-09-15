@@ -675,8 +675,8 @@ export async function renderFavoriteImage(options: RenderFavoriteRecommendOption
     liker_avatar: cdnAvatar(subscriberUser.avatar_larger.uri),
     liker_douyin_id: douyinId(subscriberUser),
     author_username: Detail_Data.author.nickname,
-    author_avatar: authorUserInfo ? cdnAvatar(authorUserInfo.data.user.avatar_larger.uri) : Detail_Data.author.avatar_thumb.url_list[0],
-    author_douyin_id: authorUserInfo ? douyinId(authorUserInfo.data.user) : douyinId(Detail_Data.author),
+    author_avatar: authorUserInfo ? cdnAvatar(authorUserInfo.user.avatar_larger.uri) : Detail_Data.author.avatar_thumb.url_list[0],
+    author_douyin_id: authorUserInfo ? douyinId(authorUserInfo.user) : douyinId(Detail_Data.author),
     share_url: shareLink
   })
 }
@@ -707,8 +707,8 @@ export async function renderRecommendImage(options: RenderFavoriteRecommendOptio
     recommender_avatar: cdnAvatar(recommenderUser.avatar_larger.uri),
     recommender_douyin_id: douyinId(recommenderUser),
     author_username: Detail_Data.author.nickname,
-    author_avatar: authorUserInfo ? cdnAvatar(authorUserInfo.data.user.avatar_larger.uri) : Detail_Data.author.avatar_thumb.url_list[0],
-    author_douyin_id: authorUserInfo ? douyinId(authorUserInfo.data.user) : douyinId(Detail_Data.author),
+    author_avatar: authorUserInfo ? cdnAvatar(authorUserInfo.user.avatar_larger.uri) : Detail_Data.author.avatar_thumb.url_list[0],
+    author_douyin_id: authorUserInfo ? douyinId(authorUserInfo.user) : douyinId(Detail_Data.author),
     share_url: shareLink
   })
 }

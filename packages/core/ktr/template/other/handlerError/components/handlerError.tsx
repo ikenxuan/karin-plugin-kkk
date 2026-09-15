@@ -27,6 +27,7 @@ import { DefaultLayout } from '../../../components/DefaultLayout'
 import type { PosterProps } from '../../../types/ctx'
 import { generateQRCode } from '../../../../utils/QRcode'
 import { isDark } from '../../../../utils/theme'
+
 import { getRandomErrorTitle } from './errorTitles'
 import { highlightStack } from './stackHighlight'
 import type { AmagiErrorDetail, ApiErrorData } from './types'
@@ -35,6 +36,50 @@ import type { AmagiErrorDetail, ApiErrorData } from './types'
 type BusinessError = ApiErrorData['error']
 /** 日志等级：从总数据类型里逐步取。 */
 type LogLevel = NonNullable<ApiErrorData['logs']>[number]['level']
+
+/**
+ * 取「最后一次 `node_modules/` 之后的那一段」——包名，供调用栈的归属判定使用。
+ *
+ * 不能只看帧的路径里有没有 `node_modules`：发布后插件**自己**就装在 `node_modules` 里，
+ * 帧形如 `…/node_modules/.pnpm/karin-plugin-kkk@…/node_modules/karin-plugin-kkk/lib/core_chunk/main.js:…`，
+ * `node_modules` 出现两次 —— 只看文本特征会把每一帧都当成依赖压暗，整块图失去分层。
+ * 所以改问「这一帧和本模块是不是同一个包」：模块自身的位置就是包根的答案，两边各取包名比对即可。
+ * 源码树（开发态）里取不到包名，返回 `undefined`，此时凡进了 `node_modules` 的帧一律算外部帧。
+ *
+ * 只做字符串切分，**不做 URL→路径转换**：模板在 ktr dev 的 iframe 沙箱里由浏览器求值，
+ * `import.meta.url` 是 `http://localhost:5174/@fs/D:/…`，生产 bundle 里是 `file:///…`，
+ * 折算成文件系统路径要同时处理协议、主机、`/@fs` 与前导斜杠四种差异，漏一样就会把所有帧
+ * 都判成外部帧、整块压暗；而这两种形态都原样带着 `node_modules` 这一段，直接切更稳。
+ * 也**不能**为图省事引入 `node:*` 内置模块：模板会被 vite 当浏览器代码打包，`node:url`
+ * 这类会被 externalize 成空壳，模块求值期直接抛错，整个判定失效。
+ * @param input - 模块 URL 或帧里的路径原文
+ * @returns 包名，形如 `karin-plugin-kkk`；不在 `node_modules` 里时返回 `undefined`
+ */
+const packageSegmentOf = (input: string): string | undefined => {
+  const path = input.replace(/\\/g, '/')
+  const marker = '/node_modules/'
+  const at = path.lastIndexOf(marker)
+  if (at < 0) return undefined
+  return path.slice(at + marker.length).split('/')[0]
+}
+
+/** 本模块所在的包名；开发态跑源码树时为 `undefined`。 */
+const selfPackageSegment = packageSegmentOf(import.meta.url)
+
+/**
+ * 判断一个调用帧的位置是否属于本插件自己的代码。
+ * @param location - 帧里的位置原文，形如 `路径:行:列` 或 `node:internal/…`
+ * @returns 是否属于本插件自己的代码
+ */
+const isOwnFrameLocation = (location: string): boolean => {
+  const path = location.replace(/\\/g, '/')
+  // node 内部帧没有包名可言，直接算外部帧（与 stackHighlight 的兜底判定同款）
+  if (/^node:|\(node:/.test(path)) return false
+  // 没进 node_modules 的帧就是源码树里的自己（开发态）
+  if (!path.includes('/node_modules/')) return true
+  // 进了 node_modules：只有和本模块同属一个包才算自己的代码
+  return packageSegmentOf(path) === selfPackageSegment
+}
 
 /**
  * ANSI 颜色代码映射
@@ -336,8 +381,12 @@ export const handlerError: React.FC<PosterProps<ApiErrorData>> = (props) => {
 
   // 高亮方式看文本本身有没有 ANSI，而不是看错误来源：amagi 与非 amagi 现在都只印
   // 纯文本调用帧，走结构上色；只有调用方显式覆盖进来的 util.inspect 转储仍走 ANSI 那条。
+  // 归属判定必须由本包给出：插件发布后自己就装在 node_modules 里，只看路径特征会把
+  // 每一帧都当成依赖压暗（构建产物整块图失去分层）。
   const stackText = String(businessError?.stack || data.error?.stack || '')
-  const stackHtml = stackText.includes(String.fromCharCode(27)) ? convertAnsiToHtml(stackText) : highlightStack(stackText, dark)
+  const stackHtml = stackText.includes(String.fromCharCode(27))
+    ? convertAnsiToHtml(stackText)
+    : highlightStack(stackText, dark, { isOwnFrame: isOwnFrameLocation })
 
   // 631 配色 - 红/珊瑚色系
   const bgColor = dark ? '#0f0a0a' : '#faf5f5'
@@ -604,7 +653,7 @@ export const handlerError: React.FC<PosterProps<ApiErrorData>> = (props) => {
 
               {/* 平台返回的原文：与堆栈里那份 inspect 转储不同，这里是干净的一句话 */}
               <div
-                className="p-8 rounded-[28px] mb-10"
+                className="p-8 rounded-7xl mb-10"
                 style={{ backgroundColor: dark ? 'rgba(220,38,38,0.12)' : 'rgba(254,202,202,0.35)' }}
               >
                 <div className="text-xl font-semibold tracking-[0.12em] opacity-70 mb-3" style={{ color: mutedColor }}>
@@ -699,7 +748,7 @@ export const handlerError: React.FC<PosterProps<ApiErrorData>> = (props) => {
                       return (
                         <div
                           key={`${entry.url}-${index}`}
-                          className="p-8 rounded-[28px]"
+                          className="p-8 rounded-7xl"
                           style={{ backgroundColor: dark ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.5)' }}
                         >
                           <div className="flex items-center gap-4 flex-wrap mb-4">
