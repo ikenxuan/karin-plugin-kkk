@@ -2,6 +2,7 @@ import type { KuaishouVideoWorkResponse } from '@ikenxuan/amagi'
 import { type Message } from 'node-karin'
 
 import { Base, downloadVideo, extractTotalBytesFromHeaders, Networks, Render } from '@/module'
+import type { ParseWorkType } from '@/module/db'
 import { Config } from '@/module/utils/Config'
 import { kuaishouComments, type KuaishouDataResult, type KuaishouOneWorkPayload } from '@/platform/kuaishou'
 import type { ExtendedKuaishouOptionsType, KuaishouDataTypes } from '@/types'
@@ -28,6 +29,11 @@ const pickVideoUrl = (work: KuaishouVideoWorkResponse): string => {
 export class Kuaishou extends Base {
   e: Message
   type: KuaishouDataTypes[keyof KuaishouDataTypes]
+  /**
+   * 本次解析的内容形态，供统计埋点读取。
+   * 本插件只解析视频，图集/单图会在下面提前返回，那时保持 undefined。
+   */
+  workType?: ParseWorkType
   constructor(e: Message, iddata: ExtendedKuaishouOptionsType) {
     super(e)
     this.e = e
@@ -48,6 +54,7 @@ export class Kuaishou extends Base {
       await this.e.reply('不支持解析的视频')
       return true
     }
+    this.workType = 'video'
     if (Config.app.parseTip) {
       this.e.reply('检测到快手链接，开始解析')
     }

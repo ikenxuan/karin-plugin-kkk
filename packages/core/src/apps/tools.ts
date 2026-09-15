@@ -1,7 +1,7 @@
-import karin, { logger } from 'node-karin'
+import karin, { logger, type Message } from 'node-karin'
 
 import { Common, downloadVideo } from '@/module'
-import { getStatisticsDB } from '@/module/db'
+import { getStatisticsDB, type ParsePlatform, type ParseWorkType } from '@/module/db'
 import { Config } from '@/module/utils/Config'
 import { wrapWithErrorHandler } from '@/module/utils/ErrorHandler'
 import { Bilibili, getBilibiliID } from '@/platform/bilibili'
@@ -21,6 +21,35 @@ const reg = {
 // 否则会被「默认解析」(videoTool 开启时优先级为 -Infinity) 的解析器抢先消费
 const passthroughCommandReg = /^#kkk推送全局忽略/
 
+/**
+ * 记录一次解析统计。
+ *
+ * 只统计群聊（私聊没有 groupId），且统计写失败不能影响解析结果投递，所以整体兜住只记日志。
+ *
+ * **`durationMs` 的口径**：从「链接解析开始」到「handler 返回」的整段墙钟时间，
+ * 也就是用户感知的「发链接到收到回复」。它包含接口请求、下载、渲染、发送 —— 不是单纯的接口延迟。
+ * 另外它只统计**成功**的解析：handler 抛错时走不到这里（失败率是另一个维度，本次没做）。
+ * @param e 消息事件
+ * @param platform 平台
+ * @param stats 本次解析采到的统计维度；取不到的留空，对应维度不计数，总量照常累计
+ */
+const recordParseStat = async (
+  e: Message,
+  platform: ParsePlatform,
+  stats: { workType?: ParseWorkType; durationMs?: number } = {}
+): Promise<void> => {
+  const groupId = e.isGroup ? e.contact?.peer || '' : ''
+  const userId = e.userId || ''
+  if (!groupId || !userId) return
+
+  try {
+    const statisticsDB = await getStatisticsDB()
+    await statisticsDB.recordParse(groupId, userId, platform, stats)
+  } catch (error) {
+    logger.debug(`[统计] 记录${platform}解析统计失败:`, error)
+  }
+}
+
 // 包装抖音处理函数
 const handleDouyin = wrapWithErrorHandler(
   async (e, next) => {
@@ -37,20 +66,13 @@ const handleDouyin = wrapWithErrorHandler(
       return next()
     }
     const url = String(urlMatch[0])
+    const startedAt = Date.now()
     const iddata = await getDouyinID(e, url)
-    await new DouYin(e, iddata, { forceBurnDanmaku }).DouyinHandler(iddata)
+    const douyin = new DouYin(e, iddata, { forceBurnDanmaku })
+    await douyin.DouyinHandler(iddata)
 
     // 记录解析统计
-    const groupId = e.isGroup ? e.contact?.peer || '' : ''
-    const userId = e.userId || ''
-    if (groupId && userId) {
-      try {
-        const statisticsDB = await getStatisticsDB()
-        await statisticsDB.recordParse(groupId, userId, 'douyin')
-      } catch (error) {
-        logger.debug('[统计] 记录抖音解析统计失败:', error)
-      }
-    }
+    await recordParseStat(e, 'douyin', { workType: douyin.workType, durationMs: Date.now() - startedAt })
 
     return
   },
@@ -89,20 +111,13 @@ const handleBilibili = wrapWithErrorHandler(
       logger.warn(`未能在消息中找到有效的B站分享链接、BV号或AV号: ${e.msg}`)
       return next()
     }
+    const startedAt = Date.now()
     const iddata = await getBilibiliID(url)
-    await new Bilibili(e, iddata, { forceBurnDanmaku }).BilibiliHandler(iddata)
+    const bilibili = new Bilibili(e, iddata, { forceBurnDanmaku })
+    await bilibili.BilibiliHandler(iddata)
 
     // 记录解析统计
-    const groupId = e.isGroup ? e.contact?.peer || '' : ''
-    const userId = e.userId || ''
-    if (groupId && userId) {
-      try {
-        const statisticsDB = await getStatisticsDB()
-        await statisticsDB.recordParse(groupId, userId, 'bilibili')
-      } catch (error) {
-        logger.debug('[统计] 记录B站解析统计失败:', error)
-      }
-    }
+    await recordParseStat(e, 'bilibili', { workType: bilibili.workType, durationMs: Date.now() - startedAt })
 
     return
   },
@@ -115,21 +130,14 @@ const handleBilibili = wrapWithErrorHandler(
 const handleKuaishou = wrapWithErrorHandler(
   async (e) => {
     const kuaishouUrl = e.msg.replaceAll('\\', '').match(/(https:\/\/v\.kuaishou\.com\/\w+|https:\/\/www\.kuaishou\.com\/f\/[a-zA-Z0-9]+)/g)
+    const startedAt = Date.now()
     const iddata = await getKuaishouID(String(kuaishouUrl))
     const WorkData = await fetchKuaishouData(iddata.type, iddata)
-    await new Kuaishou(e, iddata).KuaishouHandler(WorkData)
+    const kuaishou = new Kuaishou(e, iddata)
+    await kuaishou.KuaishouHandler(WorkData)
 
     // 记录解析统计
-    const groupId = e.isGroup ? e.contact?.peer || '' : ''
-    const userId = e.userId || ''
-    if (groupId && userId) {
-      try {
-        const statisticsDB = await getStatisticsDB()
-        await statisticsDB.recordParse(groupId, userId, 'kuaishou')
-      } catch (error) {
-        logger.debug('[统计] 记录快手解析统计失败:', error)
-      }
-    }
+    await recordParseStat(e, 'kuaishou', { workType: kuaishou.workType, durationMs: Date.now() - startedAt })
   },
   {
     businessName: '快手视频解析'
@@ -146,20 +154,13 @@ const handleXiaohongshu = wrapWithErrorHandler(
       logger.warn(`未能在消息中找到有效链接: ${e.msg}`)
       return next()
     }
+    const startedAt = Date.now()
     const iddata = await getXiaohongshuID(url)
-    await new Xiaohongshu(e, iddata).XiaohongshuHandler(iddata)
+    const xiaohongshu = new Xiaohongshu(e, iddata)
+    await xiaohongshu.XiaohongshuHandler(iddata)
 
     // 记录解析统计
-    const groupId = e.isGroup ? e.contact?.peer || '' : ''
-    const userId = e.userId || ''
-    if (groupId && userId) {
-      try {
-        const statisticsDB = await getStatisticsDB()
-        await statisticsDB.recordParse(groupId, userId, 'xiaohongshu')
-      } catch (error) {
-        logger.debug('[统计] 记录小红书解析统计失败:', error)
-      }
-    }
+    await recordParseStat(e, 'xiaohongshu', { workType: xiaohongshu.workType, durationMs: Date.now() - startedAt })
 
     return
   },

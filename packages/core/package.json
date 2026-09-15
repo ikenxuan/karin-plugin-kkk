@@ -82,6 +82,7 @@
     "@karinjs/plugin-shotium": "^0.3.2",
     "@karinjs/template-react": "0.1.2",
     "@kkk/richtext": "workspace:*",
+    "@outpacelabs/avatars": "^0.6.0",
     "@phosphor-icons/react": "^2.1.10",
     "@thesvg/icons": "^3.3.7",
     "@types/cors": "^2.8.19",
@@ -91,6 +92,7 @@
     "clsx": "^2.1.1",
     "cors": "^2.8.6",
     "date-fns": "^4.4.0",
+    "echarts": "^6.1.0",
     "heic-decode": "^2.1.0",
     "highlight.js": "^11.12.0",
     "http-proxy-middleware": "4.2.0",
@@ -102,7 +104,6 @@
     "react-markdown": "^10.1.0",
     "rehype-highlight": "^7.0.2",
     "tailwind-merge": "3.7.0",
-    "victory": "^37.3.6",
     "vitest": "^5.0.1"
   },
   "engines": {
@@ -128,5 +129,5 @@
     "web": "./lib/web.config.js",
     "ts-web": "./src/web.config.ts"
   },
-  "timestamp": "2026-09-15T14:16:27.546Z"
+  "timestamp": "2026-09-15T19:29:04.097Z"
 }

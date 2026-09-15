@@ -20,6 +20,7 @@ import {
   processImageUrl,
   Render
 } from '@/module'
+import type { ParseWorkType } from '@/module/db'
 import { Config } from '@/module/utils/Config'
 
 import { buildXiaohongshuRichText, xiaohongshuComments } from './comments'
@@ -47,6 +48,11 @@ export type XhsVideoStream = {
 export class Xiaohongshu extends Base {
   e: Message
   type: XiaohongshuIdData['type']
+  /**
+   * 本次解析的内容形态，供统计埋点读取。
+   * 笔记详情拿到之前无法判定，所以留到 `XiaohongshuHandler` 里赋值。
+   */
+  workType?: ParseWorkType
 
   constructor(e: Message, iddata: XiaohongshuIdData) {
     super(e)
@@ -87,6 +93,8 @@ export class Xiaohongshu extends Base {
       note_id: data.note_id,
       xsec_token: data.xsec_token
     })
+    // 统计用的内容形态：有视频流算视频笔记，否则算图文（与 noteInfo/comment 模板里的判定一致）
+    this.workType = NoteData.data.data.items[0].note_card!.video ? 'video' : 'gallery'
     const EmojiList = await this.amagi.xiaohongshu.fetcher.fetchEmojiList()
     const formattedEmojis = XiaohongshuEmoji(EmojiList.data)
 

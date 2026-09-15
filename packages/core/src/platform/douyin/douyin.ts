@@ -7,6 +7,7 @@ import { format } from 'date-fns'
 import karin, { type Elements, Message, SendMessage } from 'node-karin'
 import { common, logger, mkdirSync, segment } from 'node-karin'
 
+import type { ParseWorkType } from '@/module/db'
 import {
   Base,
   baseHeaders,
@@ -44,6 +45,11 @@ export class DouYin extends Base {
   forceBurnDanmaku: boolean
   /** 标记是否已处理 live 图（用于判断是否需要发送音频） */
   hasProcessedLiveImage: boolean
+  /**
+   * 本次解析的内容形态，供统计埋点读取。
+   * 取不到时只是不记「内容形态」这个维度，解析总次数照常累计。
+   */
+  workType?: ParseWorkType
   get botadapter(): string {
     return this.e.bot?.adapter?.name
   }
@@ -81,6 +87,8 @@ export class DouYin extends Base {
           number: Config.douyin.numcomment
         })
         this.is_slides = VideoData.data.aweme_detail.is_slides === true
+        // 统计用的内容形态，与下面渲染 `Type` 用的是同一套判定，保证统计口径和用户看到的一致
+        this.workType = isArticle ? 'article' : isVideo ? 'video' : this.is_slides ? 'collection' : 'gallery'
         let g_video_url = ''
         let g_title
 
@@ -752,6 +760,7 @@ export class DouYin extends Base {
       }
 
       case 'user_dynamic': {
+        this.workType = 'dynamic'
         const rawData = await this.amagi.douyin.fetcher.fetchUserVideoList({
           sec_uid: data.sec_uid
         })
@@ -864,6 +873,7 @@ export class DouYin extends Base {
         return true
       }
       case 'music_work': {
+        this.workType = 'music'
         const MusicData = await this.amagi.douyin.fetcher.fetchMusicInfo({
           music_id: data.music_id
         })
@@ -919,6 +929,7 @@ export class DouYin extends Base {
         return true
       }
       case 'live_room_detail': {
+        this.workType = 'live'
         const UserInfoData = await this.amagi.douyin.fetcher.fetchUserProfile({
           sec_uid: data.sec_uid
         })

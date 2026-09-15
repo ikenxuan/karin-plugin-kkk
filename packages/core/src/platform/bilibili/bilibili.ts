@@ -19,6 +19,7 @@ import { format, formatDistanceToNow, fromUnixTime } from 'date-fns'
 import { zhCN } from 'date-fns/locale'
 import karin, { common, ElementTypes, logger, Message, segment, SendMessage } from 'node-karin'
 
+import type { ParseWorkType } from '@/module/db'
 import {
   Base,
   baseHeaders,
@@ -61,6 +62,18 @@ const bilibiliAnonymousRequestConfig = {
   }
 }
 
+/**
+ * 链接解析出的类型 → 统计用的内容形态。
+ * B站这边类型在构造时就定了（`data.type`），不像抖音要等作品详情回来才知道，
+ * 所以直接查表，命中不了说明不是可解析的类型，留空让调用方跳过计数。
+ */
+const BILIBILI_WORK_TYPES: Record<string, ParseWorkType> = {
+  one_video: 'video',
+  bangumi_video_info: 'bangumi',
+  dynamic_info: 'dynamic',
+  live_room_detail: 'live'
+}
+
 export class Bilibili extends Base {
   e: Message
   type: any
@@ -71,6 +84,8 @@ export class Bilibili extends Base {
   downloadfilename: string
   /** 强制烧录弹幕（用于 #弹幕解析 命令） */
   forceBurnDanmaku: boolean
+  /** 本次解析的内容形态，供统计埋点读取 */
+  workType?: ParseWorkType
   get botadapter(): string {
     return this.e.bot?.adapter?.name
   }
@@ -80,6 +95,7 @@ export class Bilibili extends Base {
     this.e = e
     this.isVIP = false
     this.Type = data?.type
+    this.workType = BILIBILI_WORK_TYPES[data?.type as string]
     this.islogin = data?.USER?.STATUS === 'isLogin'
     this.downloadfilename = ''
     this.forceBurnDanmaku = options?.forceBurnDanmaku ?? false

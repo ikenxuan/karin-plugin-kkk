@@ -124,7 +124,9 @@ export default defineConfig({
     }
   },
   resolve: {
-    conditions: ['node'],
+    // 默认条件列表被覆盖成只有 node，会让带 exports 映射的包（如 tslib）落到 CJS 入口，
+    // 再被 commonjs 互操作处理成取不到 default 的形态。补回 import/module 让这类包走 ESM 入口。
+    conditions: ['node', 'import', 'module'],
     // link: 本地 ktr 时它 node_modules 里的 react 会被当成独立副本打进产物，
     // SSR 时组件读到的 React dispatcher 是 null（Cannot read 'useContext' of null），强制去重到本包。
     dedupe: ['react', 'react-dom'],
