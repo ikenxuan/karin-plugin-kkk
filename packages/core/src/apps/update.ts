@@ -218,7 +218,7 @@ const handleKkkUpdate = wrapWithErrorHandler(
   }
 )
 
-export const kkkUpdateCommand = karin.command(/^#?kkk更新$/, handleKkkUpdate, { name: 'kkk-更新' })
+export const kkkUpdateCommand = karin.command(/^#?kkk更新$/, handleKkkUpdate, { name: 'kkk-更新', perm: 'master' })
 
 export const kkkUpdateTest =
   process.env.NODE_ENV === 'development' &&
