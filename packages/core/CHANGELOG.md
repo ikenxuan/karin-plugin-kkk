@@ -2,6 +2,35 @@
 
 # Changelog
 
+## [2.43.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.42.5...v2.43.0) (2026-09-15)
+
+
+### ✨ 新功能
+
+* **ui:** 重写两个统计模板并新增更多统计信息。 ([e0f9212](https://github.com/ikenxuan/karin-plugin-kkk/commit/e0f9212e17ccd157a732b3ccfad02a400086f399))
+* 使用新版接口库 V7 ([#359](https://github.com/ikenxuan/karin-plugin-kkk/issues/359)) ([d05a625](https://github.com/ikenxuan/karin-plugin-kkk/commit/d05a625dc2460903beb58beea5074bdd0c33312c))
+* 增强错误处理和调用栈高亮功能，优化包名判定逻辑 ([6b7a955](https://github.com/ikenxuan/karin-plugin-kkk/commit/6b7a9555125a547e65194ad458fe15fafdc3d318))
+
+
+### 🐛 错误修复
+
+* **web:** 允许推送目标为空数组，避免校验静默锁死配置保存按钮 ([1f94d49](https://github.com/ikenxuan/karin-plugin-kkk/commit/1f94d496ed0af9137f02c26853182aecc1c0d48d))
+* 修复kkk更新未判断权限的问题 ([#361](https://github.com/ikenxuan/karin-plugin-kkk/issues/361)) ([506fe7a](https://github.com/ikenxuan/karin-plugin-kkk/commit/506fe7a166e5e60081a39a1f24721eee73b4e74f))
+* 抖音部分接口失效 ([#356](https://github.com/ikenxuan/karin-plugin-kkk/issues/356)) ([ac5d3c2](https://github.com/ikenxuan/karin-plugin-kkk/commit/ac5d3c29b42081f7f7878371adf6b3ecba798c64))
+* 更新依赖版本，修复作者信息提取错误 ([6b7a955](https://github.com/ikenxuan/karin-plugin-kkk/commit/6b7a9555125a547e65194ad458fe15fafdc3d318))
+* 移除多余的二次导出 ([3395ccc](https://github.com/ikenxuan/karin-plugin-kkk/commit/3395ccc57fe81dcbdf68f5e8ad468ab21ec543d7))
+
+
+### 🧰 其他更新
+
+* **main:** release  2.42.5 ([#355](https://github.com/ikenxuan/karin-plugin-kkk/issues/355)) ([6b64a9c](https://github.com/ikenxuan/karin-plugin-kkk/commit/6b64a9c1bf36069bcd01bf71541d1aba44554b6c))
+* 删除无用依赖，完整迁移至ts7 ([2362a4b](https://github.com/ikenxuan/karin-plugin-kkk/commit/2362a4ba93b02933f72e9b6a697c7081da242da6))
+
+
+### 📦 依赖更新
+
+* 更新依赖 ([d5b272b](https://github.com/ikenxuan/karin-plugin-kkk/commit/d5b272b4f1122eb1403ccccb7255f1e2236cad9b))
+
 ## [2.42.5](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.42.4...v2.42.5) (2026-09-05)
 
 
