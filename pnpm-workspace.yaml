@@ -12,6 +12,8 @@ overrides:
 publicHoistPattern:
   - '*sqlite3*'
   - '*express*'
+  - '@types/react'
+  - '@types/react-dom'
 
 minimumReleaseAge: 0
 
