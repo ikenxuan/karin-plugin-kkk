@@ -11,7 +11,6 @@
   "dependencies": {
     "@heroui/react": "^3.2.5",
     "@heroui/styles": "^3.2.5",
-    "@iconify/react": "^6.0.2",
     "ahooks": "^3.10.0",
     "axios": "^1.20.0",
     "fast-deep-equal": "^3.1.3",

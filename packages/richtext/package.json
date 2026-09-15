@@ -30,10 +30,10 @@
   },
   "dependencies": {
     "clsx": "^2.1.1",
-    "react": "^19.2.8",
-    "tailwind-merge": "^3.6.0"
+    "react": "^19.3.0",
+    "tailwind-merge": "^3.7.0"
   },
   "devDependencies": {
-    "@types/react": "19.2.18"
+    "@types/react": "19.3.0"
   }
 }
