@@ -193,8 +193,8 @@ importers:
         specifier: ^0.3.2
         version: 0.3.2
       '@karinjs/template-react':
-        specifier: https://pkg.pr.new/@karinjs/template-react@4bdf055
-        version: https://pkg.pr.new/@karinjs/template-react@4bdf055(@types/node@24.13.4)(esbuild@0.28.2)(jiti@2.7.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(tailwind-merge@3.7.0)(yaml@2.9.0)
+        specifier: ^0.2.0
+        version: 0.2.0(@types/node@24.13.4)(esbuild@0.28.2)(jiti@2.7.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(tailwind-merge@3.7.0)(yaml@2.9.0)
       '@kkk/richtext':
         specifier: workspace:*
         version: link:../richtext
@@ -1343,9 +1343,8 @@ packages:
     resolution: {integrity: sha512-8BapqiKlyh2AS7FVQa6TNNEyVc2fBFjMpPIrtJZUHlGZLDNGJTAJFePdAxSwrKuR6dEyoMZPzr48uzRfoRnqHQ==}
     engines: {node: '>=18'}
 
-  '@karinjs/template-react@https://pkg.pr.new/@karinjs/template-react@4bdf055':
-    resolution: {integrity: sha512-TEiB0KvTQavbAaCx4wUsXHYtNtjEtmYDmabLLEsfOJfrSEDM2ghE7Lukj757IOm6nh0P+59AMVS7+3mfyIu5xw==, tarball: https://pkg.pr.new/@karinjs/template-react@4bdf055}
-    version: 0.2.0-alpha.13.20260916042141.2a4700e
+  '@karinjs/template-react@0.2.0':
+    resolution: {integrity: sha512-6O/4OnubjvgFeWOeWj/nSA8ZgYRWWHepnrwGiFMQ0UwYRshv4kxacXdlM5iXZYO2CXwHd/pvp8Pg0WSfFVY0gA==}
     engines: {node: '>=18.0.0'}
     hasBin: true
     peerDependencies:
@@ -8006,11 +8005,11 @@ snapshots:
       conventional-commits-filter: 5.0.0
       conventional-commits-parser: 6.4.0
 
-  '@devframes/hub@0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))':
+  '@devframes/hub@0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))':
     dependencies:
       birpc: 4.0.0
       destr: 2.0.5
-      devframe: 0.7.15(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)
+      devframe: 0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)
       nostics: 1.2.0
       pathe: 2.0.3
       perfect-debounce: 2.1.0
@@ -8018,21 +8017,21 @@ snapshots:
       zigpty: 0.2.1
     optional: true
 
-  '@devframes/json-render@0.7.15(@devframes/hub@0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)))(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))':
+  '@devframes/json-render@0.7.15(@devframes/hub@0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)))(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))':
     dependencies:
       '@json-render/core': 0.19.0(zod@4.4.3)
-      devframe: 0.7.15(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)
+      devframe: 0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)
       nostics: 1.2.0
       zod: 4.4.3
     optionalDependencies:
-      '@devframes/hub': 0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))
+      '@devframes/hub': 0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))
     optional: true
 
-  '@devframes/plugin-inspect@0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))(valibot@1.4.2(typescript@7.0.2))(vite@8.1.4)':
+  '@devframes/plugin-inspect@0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))(valibot@1.4.2(typescript@7.0.2))(vite@8.1.4)':
     dependencies:
       '@valibot/to-json-schema': 1.7.1(valibot@1.4.2(typescript@7.0.2))
       cac: 7.0.0
-      devframe: 0.7.15(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)
+      devframe: 0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)
       nostics: 1.2.0
     optionalDependencies:
       vite: 8.1.4(@types/node@24.13.4)(@vitejs/devtools@0.4.10)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.13)(yaml@2.9.0)
@@ -8040,20 +8039,20 @@ snapshots:
       - valibot
     optional: true
 
-  '@devframes/plugin-messages@0.7.15(@devframes/hub@0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)))(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))(vite@8.1.4)':
+  '@devframes/plugin-messages@0.7.15(@devframes/hub@0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)))(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))(vite@8.1.4)':
     dependencies:
-      '@devframes/hub': 0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))
+      '@devframes/hub': 0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))
       cac: 7.0.0
-      devframe: 0.7.15(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)
+      devframe: 0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)
       nostics: 1.2.0
     optionalDependencies:
       vite: 8.1.4(@types/node@24.13.4)(@vitejs/devtools@0.4.10)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.13)(yaml@2.9.0)
     optional: true
 
-  '@devframes/plugin-terminals@0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))(typescript@7.0.2)(vite@8.1.4)':
+  '@devframes/plugin-terminals@0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))(typescript@7.0.2)(vite@8.1.4)':
     dependencies:
       cac: 7.0.0
-      devframe: 0.7.15(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)
+      devframe: 0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)
       nostics: 1.2.0
       pathe: 2.0.3
       valibot: 1.4.2(typescript@7.0.2)
@@ -8589,7 +8588,7 @@ snapshots:
       '@karinjs/sqlite3-napi-v6-win32-ia32': 0.4.3
       '@karinjs/sqlite3-napi-v6-win32-x64': 0.4.3
 
-  '@karinjs/template-react@https://pkg.pr.new/@karinjs/template-react@4bdf055(@types/node@24.13.4)(esbuild@0.28.2)(jiti@2.7.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(tailwind-merge@3.7.0)(yaml@2.9.0)':
+  '@karinjs/template-react@0.2.0(@types/node@24.13.4)(esbuild@0.28.2)(jiti@2.7.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(tailwind-merge@3.7.0)(yaml@2.9.0)':
     dependencies:
       '@heroui/styles': 3.2.4(tailwind-merge@3.7.0)(tailwindcss@4.3.3)
       '@tailwindcss/vite': 4.3.3(vite@8.1.4(@types/node@24.13.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.13)(yaml@2.9.0))
@@ -10263,11 +10262,11 @@ snapshots:
       valibot: 1.4.2(typescript@7.0.2)
     optional: true
 
-  '@vitejs/devtools-kit@0.4.10(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)(vite@8.1.4)':
+  '@vitejs/devtools-kit@0.4.10(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)(vite@8.1.4)':
     dependencies:
-      '@devframes/hub': 0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))
-      '@devframes/json-render': 0.7.15(@devframes/hub@0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)))(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))
-      devframe: 0.7.15(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)
+      '@devframes/hub': 0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))
+      '@devframes/json-render': 0.7.15(@devframes/hub@0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)))(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))
+      devframe: 0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)
       local-pkg: 1.2.1
       mlly: 1.8.2
       nostics: 1.2.0
@@ -10280,16 +10279,16 @@ snapshots:
       - typescript
     optional: true
 
-  '@vitejs/devtools@0.4.10(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(crossws@0.4.10(srvx@0.12.4))(srvx@0.12.4)(typescript@7.0.2)(valibot@1.4.2(typescript@7.0.2))(vite@8.1.4)':
+  '@vitejs/devtools@0.4.10(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(crossws@0.4.10(srvx@0.12.4))(srvx@0.12.4)(typescript@7.0.2)(valibot@1.4.2(typescript@7.0.2))(vite@8.1.4)':
     dependencies:
-      '@devframes/hub': 0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))
-      '@devframes/plugin-inspect': 0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))(valibot@1.4.2(typescript@7.0.2))(vite@8.1.4)
-      '@devframes/plugin-messages': 0.7.15(@devframes/hub@0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)))(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))(vite@8.1.4)
-      '@devframes/plugin-terminals': 0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))(typescript@7.0.2)(vite@8.1.4)
-      '@vitejs/devtools-kit': 0.4.10(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)(vite@8.1.4)
+      '@devframes/hub': 0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))
+      '@devframes/plugin-inspect': 0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))(valibot@1.4.2(typescript@7.0.2))(vite@8.1.4)
+      '@devframes/plugin-messages': 0.7.15(@devframes/hub@0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)))(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))(vite@8.1.4)
+      '@devframes/plugin-terminals': 0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))(typescript@7.0.2)(vite@8.1.4)
+      '@vitejs/devtools-kit': 0.4.10(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)(vite@8.1.4)
       birpc: 4.0.0
       cac: 7.0.0
-      devframe: 0.7.15(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)
+      devframe: 0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)
       h3: 2.0.1-rc.22(crossws@0.4.10(srvx@0.12.4))
       local-pkg: 1.2.1
       mlly: 1.8.2
@@ -11277,7 +11276,7 @@ snapshots:
 
   detect-node-es@1.1.0: {}
 
-  devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2):
+  devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2):
     dependencies:
       '@valibot/to-json-schema': 1.7.1(valibot@1.4.2(typescript@7.0.2))
       birpc: 4.0.0
@@ -14366,7 +14365,7 @@ snapshots:
       unconfig-core: 7.5.0
       verkit: 0.3.1
     optionalDependencies:
-      '@vitejs/devtools': 0.4.10(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(crossws@0.4.10(srvx@0.12.4))(srvx@0.12.4)(typescript@7.0.2)(valibot@1.4.2(typescript@7.0.2))(vite@8.1.4)
+      '@vitejs/devtools': 0.4.10(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(crossws@0.4.10(srvx@0.12.4))(srvx@0.12.4)(typescript@7.0.2)(valibot@1.4.2(typescript@7.0.2))(vite@8.1.4)
       tsx: 4.23.13
       typescript: 7.0.2
     transitivePeerDependencies:
@@ -14392,7 +14391,7 @@ snapshots:
       unconfig-core: 7.5.0
       verkit: 0.4.0
     optionalDependencies:
-      '@vitejs/devtools': 0.4.10(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(crossws@0.4.10(srvx@0.12.4))(srvx@0.12.4)(typescript@7.0.2)(valibot@1.4.2(typescript@7.0.2))(vite@8.1.4)
+      '@vitejs/devtools': 0.4.10(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(crossws@0.4.10(srvx@0.12.4))(srvx@0.12.4)(typescript@7.0.2)(valibot@1.4.2(typescript@7.0.2))(vite@8.1.4)
       tsx: 4.23.13
       typescript: 7.0.2
     transitivePeerDependencies:
@@ -14607,7 +14606,7 @@ snapshots:
       tinyglobby: 0.2.17
     optionalDependencies:
       '@types/node': 24.13.4
-      '@vitejs/devtools': 0.4.10(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(crossws@0.4.10(srvx@0.12.4))(srvx@0.12.4)(typescript@7.0.2)(valibot@1.4.2(typescript@7.0.2))(vite@8.1.4)
+      '@vitejs/devtools': 0.4.10(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(crossws@0.4.10(srvx@0.12.4))(srvx@0.12.4)(typescript@7.0.2)(valibot@1.4.2(typescript@7.0.2))(vite@8.1.4)
       esbuild: 0.28.2
       fsevents: 2.3.3
       jiti: 2.7.0
