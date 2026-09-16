@@ -1,10 +1,10 @@
-import { AlertTriangle, CheckCircle, CircleFadingArrowUp, Info, Zap } from 'lucide-react'
+import { AlertTriangle, CheckCircle, CircleFadingArrowUp, Info, Palette, Zap } from 'lucide-react'
 import React from 'react'
 
 import { cn } from '../../utils/cn'
 import { isDark } from '../../utils/theme'
 import type { PosterContext } from '../types/ctx'
-import { GlowImage } from './GlowImage'
+import { GlowIcon, GlowImage, GlowText } from './GlowImage'
 import { RolldownLogo } from './RolldownLogo'
 import { ViteLogo } from './ViteLogo'
 
@@ -117,7 +117,7 @@ export const DefaultLayout: React.FC<DefaultLayoutProps> = ({ children, ctx, cla
               </span>
             </div>
 
-            <div className="w-1 h-14 opacity-90 bg-foreground" />
+            <div className="w-1 h-14 opacity-90 bg-foreground/70" />
 
             {/* 框架信息 */}
             <div className="flex items-end space-x-8">
@@ -140,20 +140,54 @@ export const DefaultLayout: React.FC<DefaultLayoutProps> = ({ children, ctx, cla
               </div>
             </div>
 
-            {/* 构建工具信息 */}
+            {/* 设计署名与构建工具：只在正式版出现（预览版页脚保持只有版本信息）；署名在前、构建工具并入同一组，
+                构建工具按署名的「标签行 + 名字行」分行，小头像跟在 BY 后面，深色下整组发光 */}
             {version.releaseType === 'Stable' && (
               <>
                 <div className="w-1 h-14 opacity-90 bg-foreground/70" />
 
-                <div className="flex flex-col items-start space-y-4">
-                  <div className="flex items-end space-x-2">
-                    <GlowImage glowStrength={useDarkTheme ? 1 : 0} blurRadius={6}>
-                      <RolldownLogo className="w-auto h-4" />
-                    </GlowImage>
+                <div className="flex items-center space-x-6">
+                  <div className="flex flex-col items-start">
+                    <div className="flex items-center mb-4 space-x-2 text-sm font-bold tracking-widest uppercase text-foreground/80">
+                      <GlowIcon
+                        Icon={Palette}
+                        iconProps={{ strokeWidth: 3, className: 'w-4 h-4 opacity-90' }}
+                        glowRadius={8}
+                        glowStrength={useDarkTheme ? 0.7 : 0}
+                      />
+                      <GlowText className="opacity-90" blurRadius={8} glowStrength={useDarkTheme ? 0.55 : 0}>
+                        Design By
+                      </GlowText>
+                      <GlowImage
+                        blurRadius={12}
+                        glowStrength={useDarkTheme ? 1 : 0}
+                        imgClassName="object-cover rounded-full w-5 h-5"
+                      >
+                        <img src="https://unavatar.io/github/ikenxuan" alt="ikenxuan" className="object-cover rounded-full w-5 h-5" />
+                      </GlowImage>
+                    </div>
+                    <GlowText
+                      className="text-4xl font-bold leading-none opacity-90"
+                      blurRadius={14}
+                      glowStrength={useDarkTheme ? 0.6 : 0}
+                    >
+                      ikenxuan
+                    </GlowText>
                   </div>
-                  <GlowImage glowStrength={useDarkTheme ? 1 : 0} blurRadius={12}>
-                    <ViteLogo className="w-auto h-8" />
-                  </GlowImage>
+
+                  {/* 行高与署名两行一一对应：h-5 对齐标签行（20），h-9 对齐名字行（36），中间同用 mb-4 */}
+                  <div className="flex flex-col items-start opacity-90">
+                    <div className="flex items-center h-5 mb-4">
+                      <GlowImage glowStrength={useDarkTheme ? 1 : 0} blurRadius={6}>
+                        <RolldownLogo className="w-auto h-3" />
+                      </GlowImage>
+                    </div>
+                    <div className="flex items-center h-9">
+                      <GlowImage glowStrength={useDarkTheme ? 1 : 0} blurRadius={12}>
+                        <ViteLogo className="w-auto h-6" />
+                      </GlowImage>
+                    </div>
+                  </div>
                 </div>
               </>
             )}
