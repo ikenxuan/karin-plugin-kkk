@@ -140,12 +140,12 @@ export const BilibiliLiveDynamic: React.FC<PosterProps<BilibiliLiveDynamicData>>
             {/* 底部直播状态：压在封面溶解区上，靠重投影保持可读 */}
             <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-10 px-16 pb-4" style={onCoverTextShadow}>
               <div className="min-w-0">
-                <div className="inline-flex items-center gap-3 text-[20px] font-black tracking-[0.26em] uppercase text-white/85">
+                <div className="inline-flex items-center gap-3 text-[20px] font-bold tracking-[0.26em] uppercase text-white/85">
                   <span className="h-3 w-3 animate-pulse rounded-full" style={{ backgroundColor: LIVE_PINK }} />
                   <span>Now Live</span>
                 </div>
                 <div className="mt-2 flex items-end gap-7">
-                  <span className="text-[92px] leading-none font-black tracking-[-0.03em] whitespace-nowrap text-white select-text">
+                  <span className="text-[92px] leading-none font-bold tracking-[-0.03em] whitespace-nowrap text-white select-text">
                     正在开播
                   </span>
                   <LiveEqualizer />
@@ -171,13 +171,13 @@ export const BilibiliLiveDynamic: React.FC<PosterProps<BilibiliLiveDynamicData>>
         <section className="relative flex flex-col px-16 pt-14">
           {/* 背景气氛字 */}
           <div className="pointer-events-none absolute top-24 right-0 z-0 opacity-[0.05] select-none">
-            <div className="text-[190px] leading-[0.88] font-black tracking-tighter text-foreground">ON</div>
-            <div className="text-[190px] leading-[0.88] font-black tracking-tighter text-foreground">AIR</div>
+            <div className="text-[190px] leading-[0.88] font-bold tracking-tighter text-foreground">ON</div>
+            <div className="text-[190px] leading-[0.88] font-bold tracking-tighter text-foreground">AIR</div>
           </div>
 
           {/* 直播标题：主视觉文本 */}
           <h1
-            className="relative z-10 leading-[1.18] font-black tracking-[-0.02em] whitespace-pre-wrap text-foreground select-text"
+            className="relative z-10 leading-[1.18] font-bold tracking-[-0.02em] whitespace-pre-wrap text-foreground select-text"
             style={{ fontSize: `${liveTitleFontSize}px`, wordBreak: 'break-word', overflowWrap: 'break-word' }}
           >
             {data.text &&
@@ -199,9 +199,9 @@ export const BilibiliLiveDynamic: React.FC<PosterProps<BilibiliLiveDynamicData>>
                 {data.frame && <EnhancedImage src={data.frame} alt="头像框" className="absolute inset-0 scale-160" />}
               </div>
               <div className="min-w-0">
-                <div className="text-[20px] font-black tracking-[0.28em] uppercase text-muted">Live Streamer</div>
+                <div className="text-[20px] font-bold tracking-[0.28em] uppercase text-muted">Live Streamer</div>
                 <div
-                  className="mt-3 truncate leading-none font-black tracking-[-0.03em] text-foreground select-text"
+                  className="mt-3 truncate leading-none font-bold tracking-[-0.03em] text-foreground select-text"
                   style={{ fontSize: `${streamerFontSize}px` }}
                 >
                   <UsernameDisplay metadata={usernameMeta} />
@@ -216,7 +216,7 @@ export const BilibiliLiveDynamic: React.FC<PosterProps<BilibiliLiveDynamicData>>
             </div>
 
             <div className="shrink-0 text-right">
-              <div className="text-[20px] font-black tracking-[0.26em] uppercase text-muted">Signal Time</div>
+              <div className="text-[20px] font-bold tracking-[0.26em] uppercase text-muted">Signal Time</div>
               <div className="mt-3 font-mono text-[30px] font-bold text-foreground/75 select-text">{data.now_time}</div>
             </div>
           </div>
@@ -234,8 +234,8 @@ export const BilibiliLiveDynamic: React.FC<PosterProps<BilibiliLiveDynamicData>>
             </div>
 
             <div className="shrink-0 text-right">
-              <div className="text-[20px] font-black tracking-[0.24em] uppercase text-muted">Scan To Watch</div>
-              <div className="mt-2 text-[40px] leading-none font-black tracking-[-0.02em] text-foreground select-text">扫码进入直播间</div>
+              <div className="text-[20px] font-bold tracking-[0.24em] uppercase text-muted">Scan To Watch</div>
+              <div className="mt-2 text-[40px] leading-none font-bold tracking-[-0.02em] text-foreground select-text">扫码进入直播间</div>
               <div className="mt-6 flex justify-end">
                 {data.share_url ? (
                   <QRCodeWithAvatar

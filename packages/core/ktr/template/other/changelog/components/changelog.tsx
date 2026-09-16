@@ -258,7 +258,7 @@ export const Changelog: React.FC<PosterProps<ChangelogData>> = React.memo((props
                 </ol>
               ),
               li: ({ children, ...props }) => (
-                <li className="text-[2.6em] leading-[1.6] text-foreground font-black" {...props}>
+                <li className="text-[2.6em] leading-[1.6] text-foreground font-bold" {...props}>
                   {children}
                 </li>
               ),
@@ -341,7 +341,7 @@ export const Changelog: React.FC<PosterProps<ChangelogData>> = React.memo((props
                       <div className="flex items-end justify-between gap-8">
                         <div>
                           <div className="text-[1.65em] font-semibold tracking-[0.22em] text-foreground/45">PROJECT STACK</div>
-                          <div className="mt-2 text-[3.3em] font-black leading-none text-foreground/85">技术栈</div>
+                          <div className="mt-2 text-[3.3em] font-bold leading-none text-foreground/85">技术栈</div>
                         </div>
                         <div className="h-16 w-px bg-border/80" />
                       </div>

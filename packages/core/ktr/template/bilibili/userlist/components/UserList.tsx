@@ -80,7 +80,7 @@ const BilibiliUserItem: React.FC<BilibiliUserListData['renderOpt'][number]> = (p
           <div className="flex-1 min-w-0">
             {/* 名字 */}
             <div>
-              <h3 className="text-[1.75rem] font-black tracking-tight text-foreground truncate drop-shadow-sm leading-none">
+              <h3 className="text-[1.75rem] font-bold tracking-tight text-foreground truncate drop-shadow-sm leading-none">
                 {props.username}
               </h3>
               <div className="flex items-center gap-2 mt-1">
@@ -215,7 +215,7 @@ const BilibiliUserList: React.FC<PosterProps<BilibiliUserListData>> = (props) =>
               </div>
               <span className="font-mono text-sm font-bold tracking-widest uppercase opacity-50 text-foreground">Subscriber List</span>
             </div>
-            <h1 className="text-7xl font-black text-foreground tracking-tighter mb-2">{props.data.groupInfo.groupName}</h1>
+            <h1 className="text-7xl font-bold text-foreground tracking-tighter mb-2">{props.data.groupInfo.groupName}</h1>
             <p className="font-mono text-xl opacity-40 text-foreground flex items-center gap-2">
               <span>GROUP_ID</span>
               <span className="w-12 h-px bg-current opacity-50" />
@@ -225,7 +225,7 @@ const BilibiliUserList: React.FC<PosterProps<BilibiliUserListData>> = (props) =>
 
           <div className="text-right">
             {/* 字体黑白灰渐变 */}
-            <div className="text-8xl font-black text-transparent bg-clip-text bg-linear-to-b from-foreground to-muted leading-none">
+            <div className="text-8xl font-bold text-transparent bg-clip-text bg-linear-to-b from-foreground to-muted leading-none">
               {String(props.data.renderOpt.length).padStart(2, '0')}
             </div>
             <div className="text-sm font-bold tracking-[0.3em] uppercase opacity-40 mt-2 text-foreground">Total Users</div>

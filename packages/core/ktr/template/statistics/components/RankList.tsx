@@ -90,7 +90,7 @@ export const RankList: React.FC<RankListProps> = ({ rows, dark }) => {
               {/* 第一行：名字 + 次数 */}
               <div className="flex items-baseline justify-between gap-4 mb-3">
                 <span className="text-3xl leading-none text-foreground/90 truncate">{row.name}</span>
-                <span className="text-2xl leading-none font-black text-foreground/80 shrink-0">{row.label}</span>
+                <span className="text-2xl leading-none font-bold text-foreground/80 shrink-0">{row.label}</span>
               </div>
 
               {/* 第二行：进度条。条高刻意压扁，让视觉重心落在名字和数字上 */}

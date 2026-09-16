@@ -29,7 +29,7 @@ export const ChartCard: React.FC<ChartCardProps> = ({ title, subtitle, accentCla
   <div className={cn('relative flex flex-col rounded-2xl bg-surface/40 backdrop-blur-md border-2 border-border/40 p-6', className)}>
     <div className="flex items-center gap-4 mb-4">
       <div className={cn('w-3 h-10 rounded-full shrink-0', accentClassName)} />
-      <h3 className="text-4xl font-black tracking-tight leading-none text-foreground/90">{title}</h3>
+      <h3 className="text-4xl font-bold tracking-tight leading-none text-foreground/90">{title}</h3>
       <span className="text-xl font-medium tracking-[0.15em] uppercase text-muted/60 leading-none">{subtitle}</span>
     </div>
     {children}

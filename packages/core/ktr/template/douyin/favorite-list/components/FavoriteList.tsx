@@ -57,8 +57,8 @@ export const DouyinFavoriteList: React.FC<PosterProps<DouyinFavoriteListData>> =
         <div className="col-span-4 flex flex-col justify-between py-8">
           {/* 顶部 Branding */}
           <div className="flex flex-col gap-1 select-none">
-            <span className="text-6xl font-black text-foreground/10 tracking-tighter leading-none">LIKE</span>
-            <span className="text-6xl font-black text-rose-500/20 tracking-tighter leading-none">FAVORITE</span>
+            <span className="text-6xl font-bold text-foreground/10 tracking-tighter leading-none">LIKE</span>
+            <span className="text-6xl font-bold text-rose-500/20 tracking-tighter leading-none">FAVORITE</span>
             <div className="flex items-center gap-3 mt-2">
               <div className="h-1.5 w-16 bg-rose-500 rounded-full"></div>
               <span className="text-base text-muted font-mono tracking-widest uppercase">Push Notification</span>
@@ -90,7 +90,7 @@ export const DouyinFavoriteList: React.FC<PosterProps<DouyinFavoriteListData>> =
             </div>
 
             <div className="flex flex-col items-center text-center">
-              <span className="text-6xl font-black text-foreground leading-tight relative">
+              <span className="text-6xl font-bold text-foreground leading-tight relative">
                 {props.data.liker_username}
                 {/* 装饰图形 */}
                 <svg className="absolute -right-8 -top-2 text-orange-400 w-8 h-8 opacity-60" viewBox="0 0 24 24" fill="currentColor">

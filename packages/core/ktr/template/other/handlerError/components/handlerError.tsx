@@ -452,7 +452,7 @@ export const handlerError: React.FC<PosterProps<ApiErrorData>> = (props) => {
       {/* 背景大字装饰 */}
       <div className="absolute bottom-20 right-15 pointer-events-none select-none opacity-[0.03]">
         <span
-          className="text-[180px] font-black tracking-tighter leading-none block text-right"
+          className="text-[180px] font-bold tracking-tighter leading-none block text-right"
           style={{ color: dark ? '#fff' : '#7f1d1d' }}
         >
           ERROR
@@ -545,7 +545,7 @@ export const handlerError: React.FC<PosterProps<ApiErrorData>> = (props) => {
                   >
                     System Alert
                   </span>
-                  <span className="text-2xl font-black tracking-[0.25em] uppercase" style={{ color: primaryColor }}>
+                  <span className="text-2xl font-bold tracking-[0.25em] uppercase" style={{ color: primaryColor }}>
                     Runtime Exception
                   </span>
                 </div>
@@ -563,12 +563,12 @@ export const handlerError: React.FC<PosterProps<ApiErrorData>> = (props) => {
             {/* 时间数字显示 */}
             <div className="text-right">
               <div className="flex items-center justify-end gap-3 mb-1">
-                <span className="text-xs font-black tracking-[0.3em] uppercase opacity-60" style={{ color: mutedColor }}>
+                <span className="text-xs font-bold tracking-[0.3em] uppercase opacity-60" style={{ color: mutedColor }}>
                   System Time
                 </span>
                 <span className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: primaryColor }} />
               </div>
-              <div className="font-mono text-5xl font-black tracking-widest leading-none" style={{ color: mutedColor }}>
+              <div className="font-mono text-5xl font-bold tracking-widest leading-none" style={{ color: mutedColor }}>
                 {new Date(data.timestamp).toLocaleTimeString('en-GB', { hour12: false })}
               </div>
             </div>
@@ -578,7 +578,7 @@ export const handlerError: React.FC<PosterProps<ApiErrorData>> = (props) => {
 
             {/* 日期显示 */}
             <div className="text-right">
-              <div className="text-xs font-black tracking-[0.3em] uppercase opacity-60 mb-1" style={{ color: mutedColor }}>
+              <div className="text-xs font-bold tracking-[0.3em] uppercase opacity-60 mb-1" style={{ color: mutedColor }}>
                 Date
               </div>
               <div className="font-mono text-3xl font-bold tracking-[0.2em]" style={{ color: secondaryColor }}>
@@ -592,7 +592,7 @@ export const handlerError: React.FC<PosterProps<ApiErrorData>> = (props) => {
 
         {/* 主标题 */}
         <div className="mb-20">
-          <h1 className="text-[120px] font-black leading-none tracking-tight mb-10" style={{ color: accentColor }}>
+          <h1 className="text-[120px] font-bold leading-none tracking-tight mb-10" style={{ color: accentColor }}>
             {getRandomErrorTitle()}
           </h1>
           <p className="text-5xl font-semibold" style={{ color: primaryColor }}>
@@ -619,7 +619,7 @@ export const handlerError: React.FC<PosterProps<ApiErrorData>> = (props) => {
               {/* 第一行：错误大类 + 是否可重试。这两个决定「现在该做什么」 */}
               <div className="flex items-center gap-6 flex-wrap mb-4">
                 <span
-                  className="px-8 py-3 rounded-full text-3xl font-black tracking-wide"
+                  className="px-8 py-3 rounded-full text-3xl font-bold tracking-wide"
                   style={{
                     backgroundColor: dark ? 'rgba(248,113,113,0.18)' : 'rgba(220,38,38,0.12)',
                     color: primaryColor
@@ -912,7 +912,7 @@ export const handlerError: React.FC<PosterProps<ApiErrorData>> = (props) => {
 
                     {/* 日志等级 */}
                     <div className="absolute bottom-2 right-6 pointer-events-none">
-                      <span className={`text-6xl font-black uppercase leading-none tracking-tight ${theme.levelClass}`}>{log.level}」</span>
+                      <span className={`text-6xl font-bold uppercase leading-none tracking-tight ${theme.levelClass}`}>{log.level}」</span>
                     </div>
 
                     {/* 日志内容 */}
@@ -1104,7 +1104,7 @@ export const handlerError: React.FC<PosterProps<ApiErrorData>> = (props) => {
                 </p>
               </div>
               <span
-                className="text-xs font-black tracking-[0.2em] uppercase px-3 py-1 rounded-full"
+                className="text-xs font-bold tracking-[0.2em] uppercase px-3 py-1 rounded-full"
                 style={{
                   color: primaryColor,
                   backgroundColor: dark ? 'rgba(248,113,113,0.12)' : 'rgba(220,38,38,0.08)'

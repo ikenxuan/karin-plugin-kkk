@@ -64,7 +64,7 @@ const CoverSection: React.FC<{ imageUrl: string }> = ({ imageUrl }) => {
         <img className="object-cover w-full" src={imageUrl} alt="直播封面" />
       </div>
       <div className="absolute right-20 top-20 pointer-events-none select-none">
-        <span className="text-7xl font-black tracking-[0.15em] uppercase text-white/20">直播中</span>
+        <span className="text-7xl font-bold tracking-[0.15em] uppercase text-white/20">直播中</span>
       </div>
     </div>
   )
@@ -77,11 +77,11 @@ const InfoSection: React.FC<{ data: DouyinLiveData }> = ({ data }) => {
   return (
     <div className="flex flex-col gap-8 px-16 pt-12">
       {/* 直播标题 - 视觉锚点 */}
-      <h1 className="text-[80px] font-black leading-tight text-foreground tracking-tight select-text">{data.text}</h1>
+      <h1 className="text-[80px] font-bold leading-tight text-foreground tracking-tight select-text">{data.text}</h1>
 
       {/* 直播中 + 分区 + 房间号 */}
       <div className="flex items-center gap-4 text-3xl text-foreground/30">
-        <span className="text-danger/60 font-black tracking-wider text-[32px]">直播中</span>
+        <span className="text-danger/60 font-bold tracking-wider text-[32px]">直播中</span>
         <span>/</span>
         <span>{data.partition_title}</span>
         <span>/</span>
@@ -147,7 +147,7 @@ const BottomSection: React.FC<PosterProps<DouyinLiveData>> = ({ data, ctx }) => 
           <div className="flex flex-col gap-3">
             <div className="text-7xl font-bold text-foreground select-text">@{data.username}</div>
             <div className="flex items-center gap-3 text-4xl text-foreground/50">
-              <span className="text-foreground/50 font-black tracking-wider text-3xl">直播中</span>
+              <span className="text-foreground/50 font-bold tracking-wider text-3xl">直播中</span>
               <span className="text-foreground/40">·</span>
               <Users size={32} />
               <span className="select-text">{data.fans}粉丝</span>

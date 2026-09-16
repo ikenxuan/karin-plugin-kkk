@@ -87,7 +87,7 @@ const DouyinPosterHeader: React.FC<PosterProps<DouyinVideoWorkData>> = ({ data, 
           crossOrigin="anonymous"
         />
         <div className="min-w-0">
-          <div className="max-w-165 truncate text-[44px] font-black leading-tight text-foreground select-text">{username}</div>
+          <div className="max-w-165 truncate text-[44px] font-bold leading-tight text-foreground select-text">{username}</div>
           <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-[30px] text-muted">
             <span className="inline-flex items-center gap-2">
               <Clock3 size={28} />
@@ -144,12 +144,12 @@ const DouyinVideoCover: React.FC<PosterProps<DouyinVideoWorkData>> = (props) => 
       />
       {/* 顶部信息行：时长（左）与分辨率（右）同一水平线对齐 */}
       <div className="absolute inset-x-24 top-10 z-30 flex items-start justify-between text-foreground/85">
-        {durationText && <span className="text-4xl font-black leading-none tabular-nums">时长: {durationText}</span>}
+        {durationText && <span className="text-4xl font-semibold leading-none tabular-nums">时长: {durationText}</span>}
 
         {props.data.resolution && (
           <div className="ml-auto flex flex-col items-end gap-1.5">
             {/* 第一行：分辨率名称 + (如果有 HDR 则追加 " · HDR"，深色模式下发光) */}
-            <span className="text-3xl font-black leading-none tracking-[0.08em] select-text">
+            <span className="text-3xl font-semibold leading-none tracking-[0.08em] select-text">
               {props.data.resolution.name}
               {props.data.is_HDR &&
                 (isDark(props.ctx) ? (
@@ -162,8 +162,8 @@ const DouyinVideoCover: React.FC<PosterProps<DouyinVideoWorkData>> = (props) => 
             </span>
 
             {/* 第二行：宽 x 高 px */}
-            <span className="text-2xl font-bold tracking-[0.08em] text-foreground/60 tabular-nums select-text">
-              {props.data.resolution.width} × {props.data.resolution.height} px
+            <span className="text-2xl font-semibold tracking-[0.08em] text-foreground/60 tabular-nums select-text">
+              {props.data.resolution.width} × {props.data.resolution.height}
             </span>
           </div>
         )}
@@ -189,7 +189,7 @@ const DouyinVideoCover: React.FC<PosterProps<DouyinVideoWorkData>> = (props) => 
             <MusicNoteIcon size={44} weight="fill" className="shrink-0" />
           )}
           <div className="min-w-0">
-            <div className="truncate text-[36px] font-black leading-tight select-text">{props.data.music.title}</div>
+            <div className="truncate text-[36px] font-bold leading-tight select-text">{props.data.music.title}</div>
             <div className="truncate text-[27px] font-semibold text-foreground/60 select-text">{props.data.music.author}</div>
           </div>
         </div>
@@ -214,7 +214,7 @@ const DouyinPosterTitle: React.FC<PosterProps<DouyinVideoWorkData>> = ({ data })
   }
 
   if (!hasTitle && !hasDesc) {
-    return <h1 className="mt-14 text-[68px] font-black leading-[1.16] text-foreground select-text">抖音视频作品</h1>
+    return <h1 className="mt-14 text-[68px] font-bold leading-[1.16] text-foreground select-text">抖音视频作品</h1>
   }
 
   return (
@@ -260,7 +260,7 @@ const DouyinSignalLine: React.FC<PosterProps<DouyinVideoWorkData>> = ({ data }) 
                 <Icon size={36} weight="fill" className="text-foreground/80" />
                 <span>{stat.label}</span>
               </div>
-              <div className="mt-2 text-[64px] font-black leading-none text-foreground tabular-nums select-text">{stat.value}</div>
+              <div className="mt-2 text-[64px] font-semibold leading-none text-foreground tabular-nums select-text">{stat.value}</div>
             </div>
           )
         })}
@@ -269,7 +269,7 @@ const DouyinSignalLine: React.FC<PosterProps<DouyinVideoWorkData>> = ({ data }) 
         {suggest_word && (
           <div className="min-w-0 truncate select-text">
             <span>{suggest_word.hint_text}</span>
-            <span className="ml-2 font-black text-foreground">{suggest_word.word}</span>
+            <span className="ml-2 font-bold text-foreground">{suggest_word.word}</span>
           </div>
         )}
         <div className="flex items-center gap-3">
@@ -291,7 +291,7 @@ const DouyinCoCreatorList: React.FC<PosterProps<DouyinVideoWorkData> & { coCreat
 
   return (
     <section className="mt-16">
-      <div className="flex items-center gap-3 text-[34px] font-black text-foreground">
+      <div className="flex items-center gap-3 text-[34px] font-bold text-foreground">
         <UsersIcon size={42} weight="fill" className="text-foreground/80" />
         <span>共 {coCreatorCount} 人共创</span>
       </div>
@@ -306,14 +306,14 @@ const DouyinCoCreatorList: React.FC<PosterProps<DouyinVideoWorkData> & { coCreat
               crossOrigin="anonymous"
             />
             <div className="min-w-0">
-              <div className="truncate text-[28px] font-black leading-tight text-foreground select-text">
+              <div className="truncate text-[28px] font-bold leading-tight text-foreground select-text">
                 {creator.nickname || '未提供'}
               </div>
               <div className="mt-1 truncate text-[23px] font-semibold text-muted select-text">{creator.role_title || '共创者'}</div>
             </div>
           </div>
         ))}
-        {remainingCount > 0 && <div className="text-[32px] font-black text-muted">剩余 {remainingCount} 个...</div>}
+        {remainingCount > 0 && <div className="text-[32px] font-bold text-muted">剩余 {remainingCount} 个...</div>}
       </div>
     </section>
   )
@@ -339,7 +339,7 @@ const DouyinPosterFooter: React.FC<PosterProps<DouyinVideoWorkData>> = ({ data, 
             crossOrigin="anonymous"
           />
           <div className="min-w-0">
-            <div className="max-w-162.5 truncate text-[48px] font-black leading-tight text-foreground select-text">{username}</div>
+            <div className="max-w-162.5 truncate text-[48px] font-bold leading-tight text-foreground select-text">{username}</div>
             <div className="mt-3 flex items-center gap-2 text-[30px] text-muted">
               <Hash size={28} />
               <span className="truncate select-text">抖音号: {抖音号}</span>
@@ -356,7 +356,7 @@ const DouyinPosterFooter: React.FC<PosterProps<DouyinVideoWorkData>> = ({ data, 
                   <Icon size={stat.iconSize} weight="fill" className="text-foreground/80" />
                   <span>{stat.label}</span>
                 </div>
-                <div className="mt-2 text-[32px] font-black leading-none text-foreground select-text">{stat.value}</div>
+                <div className="mt-2 text-[32px] font-bold leading-none text-foreground select-text">{stat.value}</div>
               </div>
             )
           })}
@@ -367,7 +367,7 @@ const DouyinPosterFooter: React.FC<PosterProps<DouyinVideoWorkData>> = ({ data, 
         <div className="drop-shadow-2xl">
           <QRCodeWithAvatar value={share_url} avatarUrl={avater_url} useDarkTheme={isDark(ctx)} alt="二维码" className="h-75 w-75" />
         </div>
-        <div className="mt-2 text-[28px] font-black text-foreground/80">扫码查看作品详情</div>
+        <div className="mt-2 text-[28px] font-semibold text-foreground/80">扫码查看作品详情</div>
       </div>
     </footer>
   )

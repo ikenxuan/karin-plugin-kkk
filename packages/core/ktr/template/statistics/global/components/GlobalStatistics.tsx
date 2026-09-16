@@ -291,7 +291,7 @@ export const GlobalStatistics: React.FC<PosterProps<GlobalStatisticsData>> = (pr
 
       {/* 背景大字装饰 */}
       <div className="absolute top-24 right-15 pointer-events-none select-none opacity-[0.03] z-0">
-        <span className="text-[180px] font-black tracking-tighter leading-none block text-right text-foreground">GLOBAL</span>
+        <span className="text-[180px] font-bold tracking-tighter leading-none block text-right text-foreground">GLOBAL</span>
       </div>
 
       {/* 主要内容区域 */}
@@ -303,7 +303,7 @@ export const GlobalStatistics: React.FC<PosterProps<GlobalStatisticsData>> = (pr
             <span className="text-2xl font-mono tracking-widest text-muted/80">GLOBAL_ANALYTICS</span>
           </div>
           <div className="flex items-baseline justify-between gap-4">
-            <h1 className="text-[5rem] font-black leading-none tracking-tighter text-foreground/90">全局解析统计</h1>
+            <h1 className="text-[5rem] font-bold leading-none tracking-tighter text-foreground/90">全局解析统计</h1>
             <div className="shrink-0 whitespace-nowrap text-2xl text-muted/70 font-mono">
               {data.statsSince ? `统计自 ${data.statsSince} · ` : ''}数据截止 {data.generatedAt}
             </div>
@@ -584,8 +584,8 @@ export const GlobalStatistics: React.FC<PosterProps<GlobalStatisticsData>> = (pr
           <div className="text-center">
             <div className="text-2xl font-mono tracking-widest text-muted mb-2">TOTAL SERVICE</div>
             <div className="text-3xl font-medium text-foreground/70">
-              累计服务 <span className="font-black text-foreground">{formatWithCommas(data.totalGroups)}</span> 个群组 · 解析{' '}
-              <span className="font-black text-foreground">{formatWithCommas(data.totalParses)}</span> 次
+              累计服务 <span className="font-bold text-foreground">{formatWithCommas(data.totalGroups)}</span> 个群组 · 解析{' '}
+              <span className="font-bold text-foreground">{formatWithCommas(data.totalParses)}</span> 次
             </div>
           </div>
         </div>

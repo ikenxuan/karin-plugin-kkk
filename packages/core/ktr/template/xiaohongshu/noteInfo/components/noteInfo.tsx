@@ -121,7 +121,7 @@ const NoteCover: React.FC<PosterProps<XiaohongshuNoteInfoData>> = ({ data }) => 
             />
           ))}
           {remainingPreviewCount > 0 && (
-            <div className="flex h-28 w-28 items-center justify-center rounded-3xl bg-black/50 px-5 text-[32px] font-black text-white ring-2 ring-white/25 backdrop-blur-xs">
+            <div className="flex h-28 w-28 items-center justify-center rounded-3xl bg-black/50 px-5 text-[32px] font-bold text-white ring-2 ring-white/25 backdrop-blur-xs">
               +{remainingPreviewCount}
             </div>
           )}
@@ -145,7 +145,7 @@ const NoteAuthorRow: React.FC<PosterProps<XiaohongshuNoteInfoData>> = ({ data })
       crossOrigin="anonymous"
     />
     <div className="min-w-0">
-      <div className="max-w-200 truncate text-[52px] font-black leading-tight text-foreground select-text">{data.author.nickname}</div>
+      <div className="max-w-200 truncate text-[52px] font-bold leading-tight text-foreground select-text">{data.author.nickname}</div>
       <div className="mt-3 flex flex-wrap items-center gap-x-6 gap-y-2 text-[30px] text-muted">
         <span className="inline-flex items-center gap-2">
           <Calendar size={28} />
@@ -169,7 +169,7 @@ const NoteContent: React.FC<PosterProps<XiaohongshuNoteInfoData>> = ({ data }) =
   <section className="mt-10">
     {data.title && (
       <h1
-        className="text-[68px] font-black leading-[1.2] tracking-tight text-foreground select-text"
+        className="text-[68px] font-bold leading-[1.2] tracking-tight text-foreground select-text"
         style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}
       >
         {data.title}
@@ -212,7 +212,7 @@ const NoteStatsRow: React.FC<PosterProps<XiaohongshuNoteInfoData>> = ({ data }) 
               />
               <span>{stat.label}</span>
             </div>
-            <div className="mt-3 text-[64px] font-black leading-none text-foreground tabular-nums select-text">
+            <div className="mt-3 text-[64px] font-bold leading-none text-foreground tabular-nums select-text">
               {formatNumber(stat.value)}
             </div>
           </div>
@@ -232,7 +232,7 @@ const NoteFooter: React.FC<PosterProps<XiaohongshuNoteInfoData>> = ({ data, ctx 
       {data.share_url && (
         <div className="flex items-center gap-8">
           <div className="text-right">
-            <div className="text-[32px] font-black text-foreground">扫码查看原笔记</div>
+            <div className="text-[32px] font-bold text-foreground">扫码查看原笔记</div>
             <div className="mt-2 text-[26px] text-muted">长按识别二维码</div>
           </div>
           <div className="shrink-0 drop-shadow-2xl">

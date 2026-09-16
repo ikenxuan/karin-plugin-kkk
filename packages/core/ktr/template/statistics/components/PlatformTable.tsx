@@ -69,7 +69,7 @@ export const PlatformTable: React.FC<PlatformTableProps> = ({ columns, rows, cla
               CELL_WIDTH,
               'shrink-0 text-right text-2xl tabular-nums',
               // 第一列是主数值，加粗；其余列弱一档，读起来有主次
-              index === 0 ? 'font-black text-foreground/90' : 'text-foreground/70'
+              index === 0 ? 'font-bold text-foreground/90' : 'text-foreground/70'
             )}
           >
             {cell}

@@ -41,7 +41,7 @@ const MenuItemComponent: React.FC<{
         <IconComponent className="w-16 h-16 relative z-10 text-foreground" style={{ color: iconColor }} />
       </div>
       <div className="flex-1 min-w-0">
-        <h3 className="mb-3 text-4xl font-black leading-tight tracking-wide text-foreground">{item.title}</h3>
+        <h3 className="mb-3 text-4xl font-bold leading-tight tracking-wide text-foreground">{item.title}</h3>
         <p className="text-2xl font-medium leading-relaxed whitespace-pre-line text-muted">{item.description}</p>
       </div>
     </div>
@@ -62,7 +62,7 @@ const MenuGroupComponent: React.FC<{
       {/* 分组标题 */}
       <div className="flex items-center gap-6 mb-16">
         <div className="w-3 h-16 rounded-full" style={{ backgroundColor: themeColor }} />
-        <h2 className="m-0 text-[4rem] font-black tracking-tight uppercase leading-none text-foreground">{group.title}</h2>
+        <h2 className="m-0 text-[4rem] font-bold tracking-tight uppercase leading-none text-foreground">{group.title}</h2>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-24 gap-y-16">
@@ -157,7 +157,7 @@ export const Help: React.FC<PosterProps<HelpData>> = React.memo((props) => {
       {/* 3. 背景大字装饰 */}
       <div className="absolute top-30 right-15 pointer-events-none select-none opacity-[0.03] z-0">
         <span
-          className="text-[200px] font-black tracking-tighter leading-none block text-right text-foreground"
+          className="text-[200px] font-bold tracking-tighter leading-none block text-right text-foreground"
           style={{
             writingMode: 'vertical-rl',
             textOrientation: 'mixed'
@@ -221,7 +221,7 @@ export const Help: React.FC<PosterProps<HelpData>> = React.memo((props) => {
               <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
               <span className="text-sm font-mono tracking-widest text-muted">SYSTEM_READY</span>
             </div>
-            <h1 className="text-[5rem] font-black leading-none tracking-tighter text-foreground">COMMANDS</h1>
+            <h1 className="text-[5rem] font-bold leading-none tracking-tighter text-foreground">COMMANDS</h1>
           </div>
 
           <div className="text-right pb-2 opacity-80">

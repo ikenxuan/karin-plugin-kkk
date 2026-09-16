@@ -74,13 +74,13 @@ export const VersionWarning: React.FC<PosterProps<VersionWarningData>> = (props)
       {/* 背景大字 */}
       <div className="absolute bottom-25 right-18 pointer-events-none select-none opacity-[0.03]">
         <span
-          className="text-[200px] font-black tracking-tighter leading-none block text-right"
+          className="text-[200px] font-bold tracking-tighter leading-none block text-right"
           style={{ color: dark ? '#fff' : '#78350f' }}
         >
           VERSION
         </span>
         <span
-          className="text-[200px] font-black tracking-tighter leading-none block text-right"
+          className="text-[200px] font-bold tracking-tighter leading-none block text-right"
           style={{ color: dark ? '#fff' : '#78350f' }}
         >
           WARNING
@@ -95,10 +95,10 @@ export const VersionWarning: React.FC<PosterProps<VersionWarningData>> = (props)
             <p className="text-[28px] font-medium tracking-[0.3em] uppercase" style={{ color: mutedColor }}>
               karin-plugin-kkk
             </p>
-            <h1 className="text-[180px] font-black leading-none" style={{ color: accentColor }}>
+            <h1 className="text-[180px] font-bold leading-none" style={{ color: accentColor }}>
               请升级你的
             </h1>
-            <h1 className="text-[120px] font-black leading-none" style={{ color: accentColor }}>
+            <h1 className="text-[120px] font-bold leading-none" style={{ color: accentColor }}>
               <span className="font-mono">node-karin</span>
             </h1>
           </div>
@@ -137,7 +137,7 @@ export const VersionWarning: React.FC<PosterProps<VersionWarningData>> = (props)
                   </span>
                 </div>
                 <div className="relative inline-block">
-                  <span className="text-[56px] font-black font-mono leading-tight opacity-50 break-all" style={{ color: primaryColor }}>
+                  <span className="text-[56px] font-bold font-mono leading-tight opacity-50 break-all" style={{ color: primaryColor }}>
                     v{props.data.currentVersion}
                   </span>
                   <div
@@ -168,7 +168,7 @@ export const VersionWarning: React.FC<PosterProps<VersionWarningData>> = (props)
                     推荐
                   </Chip>
                 </div>
-                <span className="text-[56px] font-black font-mono leading-tight break-all" style={{ color: accentColor }}>
+                <span className="text-[56px] font-bold font-mono leading-tight break-all" style={{ color: accentColor }}>
                   v{props.data.requireVersion}
                 </span>
               </div>
@@ -186,7 +186,7 @@ export const VersionWarning: React.FC<PosterProps<VersionWarningData>> = (props)
                     className="flex items-center justify-center w-10 h-10 rounded-xl"
                     style={{ backgroundColor: dark ? 'rgba(251,146,60,0.15)' : 'rgba(194,65,12,0.1)' }}
                   >
-                    <span className="text-[28px] font-black" style={{ color: accentColor }}>
+                    <span className="text-[28px] font-bold" style={{ color: accentColor }}>
                       1
                     </span>
                   </div>
@@ -224,7 +224,7 @@ export const VersionWarning: React.FC<PosterProps<VersionWarningData>> = (props)
                   <div className="flex items-start space-x-4">
                     <div className="w-3 h-3 rounded-full mt-3 shrink-0" style={{ backgroundColor: mutedColor }} />
                     <span className="text-[28px] leading-relaxed" style={{ color: secondaryColor }}>
-                      点击<span className="font-mono font-black">「更新」</span>按钮，系统将自动完成更新并重启
+                      点击<span className="font-mono font-bold">「更新」</span>按钮，系统将自动完成更新并重启
                     </span>
                   </div>
                 </div>
@@ -237,7 +237,7 @@ export const VersionWarning: React.FC<PosterProps<VersionWarningData>> = (props)
                     className="flex items-center justify-center w-10 h-10 rounded-xl"
                     style={{ backgroundColor: dark ? 'rgba(251,146,60,0.15)' : 'rgba(194,65,12,0.1)' }}
                   >
-                    <span className="text-[28px] font-black" style={{ color: accentColor }}>
+                    <span className="text-[28px] font-bold" style={{ color: accentColor }}>
                       2
                     </span>
                   </div>
@@ -260,13 +260,13 @@ export const VersionWarning: React.FC<PosterProps<VersionWarningData>> = (props)
                   <div className="flex items-start space-x-4">
                     <div className="w-3 h-3 rounded-full mt-3 shrink-0" style={{ backgroundColor: mutedColor }} />
                     <span className="text-[28px] leading-relaxed" style={{ color: secondaryColor }}>
-                      插件市场搜索<span className="font-mono font-black">「karin-plugin-basic」</span>插件并安装
+                      插件市场搜索<span className="font-mono font-bold">「karin-plugin-basic」</span>插件并安装
                     </span>
                   </div>
                   <div className="flex items-start space-x-4">
                     <div className="w-3 h-3 rounded-full mt-3 shrink-0" style={{ backgroundColor: mutedColor }} />
                     <span className="text-[28px] leading-relaxed" style={{ color: secondaryColor }}>
-                      安装完成后发送 <span className="font-mono font-black">「#更新」</span>
+                      安装完成后发送 <span className="font-mono font-bold">「#更新」</span>
                     </span>
                   </div>
                   <div className="flex items-start space-x-4">
@@ -285,7 +285,7 @@ export const VersionWarning: React.FC<PosterProps<VersionWarningData>> = (props)
                     className="flex items-center justify-center w-10 h-10 rounded-xl"
                     style={{ backgroundColor: dark ? 'rgba(251,146,60,0.15)' : 'rgba(194,65,12,0.1)' }}
                   >
-                    <span className="text-[28px] font-black" style={{ color: accentColor }}>
+                    <span className="text-[28px] font-bold" style={{ color: accentColor }}>
                       3
                     </span>
                   </div>
@@ -364,7 +364,7 @@ export const VersionWarning: React.FC<PosterProps<VersionWarningData>> = (props)
               <span className="text-[22px] font-bold tracking-widest uppercase" style={{ color: mutedColor }}>
                 KARIN-PLUGIN
               </span>
-              <span className="text-[54px] font-black leading-none" style={{ color: accentColor }}>
+              <span className="text-[54px] font-bold leading-none" style={{ color: accentColor }}>
                 kkk
               </span>
             </div>

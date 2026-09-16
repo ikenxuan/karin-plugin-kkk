@@ -200,7 +200,7 @@ export function HeroSection() {
           //   width: "100%",
           // }}
         >
-          <span className="font-mono font-black" style={{ fontSize: 'clamp(1.5rem, 4vw, 6rem)' }}>
+          <span className="font-mono font-bold" style={{ fontSize: 'clamp(1.5rem, 4vw, 6rem)' }}>
             向下滑动，探索 karin-plugin-kkk 的全部功能
           </span>
         </motion.div>

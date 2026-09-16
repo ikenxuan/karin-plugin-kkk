@@ -87,7 +87,7 @@ const DouyinPosterHeader: React.FC<PosterProps<DouyinArticleWorkData>> = ({ data
           crossOrigin="anonymous"
         />
         <div className="min-w-0">
-          <div className="max-w-165 truncate text-[44px] font-black leading-tight text-foreground select-text">{username}</div>
+          <div className="max-w-165 truncate text-[44px] font-bold leading-tight text-foreground select-text">{username}</div>
           <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-[30px] text-muted">
             <span className="inline-flex items-center gap-2">
               <Clock3 size={28} />
@@ -131,9 +131,9 @@ const DouyinArticleContent: React.FC<PosterProps<DouyinArticleWorkData>> = ({ da
     <section className="mt-12 select-text">
       <ReactMarkdown
         components={{
-          h1: ({ children }) => <h2 className="mt-14 text-[56px] font-black leading-tight text-foreground">{children}</h2>,
-          h2: ({ children }) => <h2 className="mt-12 text-[50px] font-black leading-tight text-foreground">{children}</h2>,
-          h3: ({ children }) => <h3 className="mt-10 text-[44px] font-black leading-snug text-foreground">{children}</h3>,
+          h1: ({ children }) => <h2 className="mt-14 text-[56px] font-bold leading-tight text-foreground">{children}</h2>,
+          h2: ({ children }) => <h2 className="mt-12 text-[50px] font-bold leading-tight text-foreground">{children}</h2>,
+          h3: ({ children }) => <h3 className="mt-10 text-[44px] font-bold leading-snug text-foreground">{children}</h3>,
           h4: ({ children }) => <h4 className="mt-9 text-[40px] font-bold leading-snug text-foreground">{children}</h4>,
           p: ({ children }) => <p className="mb-7 text-[42px] font-medium leading-[1.62] text-foreground/90">{children}</p>,
           ul: ({ children }) => (
@@ -143,7 +143,7 @@ const DouyinArticleContent: React.FC<PosterProps<DouyinArticleWorkData>> = ({ da
             <ol className="mb-8 list-inside list-decimal text-[42px] font-medium leading-[1.6] text-foreground/90">{children}</ol>
           ),
           li: ({ children }) => <li className="mb-3">{children}</li>,
-          strong: ({ children }) => <strong className="font-black text-foreground">{children}</strong>,
+          strong: ({ children }) => <strong className="font-bold text-foreground">{children}</strong>,
           em: ({ children }) => <em className="italic text-foreground/80">{children}</em>,
           blockquote: ({ children }) => (
             <blockquote className="my-10 pl-7 text-[40px] font-medium leading-[1.62] text-muted">{children}</blockquote>
@@ -216,7 +216,7 @@ const DouyinSignalLine: React.FC<PosterProps<DouyinArticleWorkData>> = ({ data }
                 <Icon size={36} weight="fill" className="text-foreground/80" />
                 <span>{stat.label}</span>
               </div>
-              <div className="mt-2 text-[64px] font-black leading-none text-foreground tabular-nums select-text">{stat.value}</div>
+              <div className="mt-2 text-[64px] font-bold leading-none text-foreground tabular-nums select-text">{stat.value}</div>
             </div>
           )
         })}
@@ -248,7 +248,7 @@ const DouyinPosterFooter: React.FC<PosterProps<DouyinArticleWorkData>> = ({ data
             crossOrigin="anonymous"
           />
           <div className="min-w-0">
-            <div className="max-w-162.5 truncate text-[48px] font-black leading-tight text-foreground select-text">{username}</div>
+            <div className="max-w-162.5 truncate text-[48px] font-bold leading-tight text-foreground select-text">{username}</div>
             <div className="mt-3 flex items-center gap-2 text-[30px] text-muted">
               <Hash size={28} />
               <span className="truncate select-text">抖音号: {抖音号}</span>
@@ -265,7 +265,7 @@ const DouyinPosterFooter: React.FC<PosterProps<DouyinArticleWorkData>> = ({ data
                   <Icon size={stat.iconSize} weight="fill" className="text-foreground/80" />
                   <span>{stat.label}</span>
                 </div>
-                <div className="mt-2 text-[32px] font-black leading-none text-foreground select-text">{stat.value}</div>
+                <div className="mt-2 text-[32px] font-bold leading-none text-foreground select-text">{stat.value}</div>
               </div>
             )
           })}
@@ -276,7 +276,7 @@ const DouyinPosterFooter: React.FC<PosterProps<DouyinArticleWorkData>> = ({ data
         <div className="drop-shadow-2xl">
           <QRCodeWithAvatar value={share_url} avatarUrl={avater_url} useDarkTheme={isDark(ctx)} alt="二维码" className="h-75 w-75" />
         </div>
-        <div className="mt-2 text-[28px] font-black text-foreground/80">扫码查看作品详情</div>
+        <div className="mt-2 text-[28px] font-bold text-foreground/80">扫码查看作品详情</div>
       </div>
     </footer>
   )

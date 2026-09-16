@@ -276,7 +276,7 @@ export const LivePhotoTip: React.FC<PosterProps<LivePhotoTipData>> = React.memo(
               <span className="text-xl font-bold tracking-[0.15em] uppercase" style={{ color: mutedColor }}>
                 KARIN-PLUGIN
               </span>
-              <span className="text-5xl font-black" style={{ color: accentColor }}>
+              <span className="text-5xl font-bold" style={{ color: accentColor }}>
                 kkk
               </span>
             </div>

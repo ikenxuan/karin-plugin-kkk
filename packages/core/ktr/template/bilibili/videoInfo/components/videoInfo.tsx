@@ -87,7 +87,7 @@ const DanmakuOverlay: React.FC<{ items: BilibiliHotDanmaku[] }> = React.memo(({ 
         {items.map((item, index) => (
           <span
             key={`${item.content}-${index}`}
-            className="mr-20 inline-block shrink-0 whitespace-nowrap align-top text-4xl font-black leading-16 text-white"
+            className="mr-20 inline-block shrink-0 whitespace-nowrap align-top text-4xl font-bold leading-16 text-white"
             style={{
               marginLeft: index === 0 ? undefined : `${((index * 5 + item.content.length * 3) % 5) * 2}rem`,
               opacity: Math.max(0.2, 1 - index * 0.025),
@@ -122,7 +122,7 @@ export const BilibiliVideoInfo: React.FC<PosterProps<BilibiliVideoInfoData>> = R
         <div className="flex flex-col gap-10 px-16 pt-20">
           {/* 标题区 */}
           <div className="flex flex-col gap-5">
-            <h1 className="text-[80px] font-black leading-tight text-foreground tracking-tight">{props.data.title}</h1>
+            <h1 className="text-[80px] font-bold leading-tight text-foreground tracking-tight">{props.data.title}</h1>
             <div className="flex justify-between items-center gap-4">
               <div className="flex items-center gap-6 text-3xl text-foreground/30">
                 {/* 时间 */}

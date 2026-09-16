@@ -222,7 +222,7 @@ export const GroupStatistics: React.FC<PosterProps<GroupStatisticsData>> = (prop
 
       {/* 背景大字装饰 */}
       <div className="absolute top-24 right-15 pointer-events-none select-none opacity-[0.03] z-0">
-        <span className="text-[180px] font-black tracking-tighter leading-none block text-right text-foreground">STATS</span>
+        <span className="text-[180px] font-bold tracking-tighter leading-none block text-right text-foreground">STATS</span>
       </div>
 
       {/* 主要内容区域 */}
@@ -237,7 +237,7 @@ export const GroupStatistics: React.FC<PosterProps<GroupStatisticsData>> = (prop
               <span className="w-3 h-3 rounded-full bg-pink-500 animate-pulse" />
               <span className="text-2xl font-mono tracking-widest text-muted/80">GROUP_ANALYTICS</span>
             </div>
-            <h1 className="text-[5rem] font-black leading-none tracking-tighter text-foreground/90">解析统计</h1>
+            <h1 className="text-[5rem] font-bold leading-none tracking-tighter text-foreground/90">解析统计</h1>
           </div>
           <div className="text-right shrink-0">
             <div className="text-3xl font-bold text-foreground/80 max-w-140 truncate">{data.groupName}({data.groupId})</div>
@@ -455,8 +455,8 @@ export const GroupStatistics: React.FC<PosterProps<GroupStatisticsData>> = (prop
           <div className="text-center">
             <div className="text-2xl font-mono tracking-widest text-muted mb-2">TOTAL SERVICE</div>
             <div className="text-3xl font-medium text-foreground/70">
-              累计服务 <span className="font-black text-foreground">{formatWithCommas(data.globalTotalGroups)}</span> 个群组 · 解析{' '}
-              <span className="font-black text-foreground">{formatWithCommas(data.globalTotalParses)}</span> 次
+              累计服务 <span className="font-bold text-foreground">{formatWithCommas(data.globalTotalGroups)}</span> 个群组 · 解析{' '}
+              <span className="font-bold text-foreground">{formatWithCommas(data.globalTotalParses)}</span> 次
             </div>
           </div>
         </div>

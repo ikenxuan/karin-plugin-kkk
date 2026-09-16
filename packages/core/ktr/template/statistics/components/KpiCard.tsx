@@ -26,10 +26,10 @@ export interface KpiCardProps {
  */
 export const KpiCard: React.FC<KpiCardProps> = ({ title, titleEn, value, unit, hint, className }) => (
   <div className={cn('relative flex flex-col rounded-2xl bg-surface/40 backdrop-blur-md border-2 border-border/40 px-5 py-4', className)}>
-    <div className="text-2xl font-black leading-tight text-foreground/90">{title}</div>
+    <div className="text-2xl font-bold leading-tight text-foreground/90">{title}</div>
     <div className="text-base font-medium tracking-widest uppercase text-muted/60 leading-tight mt-1">{titleEn}</div>
     <div className="flex items-baseline gap-1 mt-3">
-      <span className="text-5xl font-black leading-none text-foreground/90">{value}</span>
+      <span className="text-5xl font-bold leading-none text-foreground/90">{value}</span>
       {unit ? <span className="text-2xl font-medium text-foreground/70">{unit}</span> : null}
     </div>
     {hint ? <div className="mt-2 text-lg leading-tight text-muted/70">{hint}</div> : null}

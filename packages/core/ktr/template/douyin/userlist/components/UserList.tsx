@@ -57,7 +57,7 @@ const DouyinUserItem: React.FC<DouyinUserListData['renderOpt'][number]> = (props
           </div>
 
           <div className="flex-1 min-w-0">
-            <h3 className="text-3xl font-black tracking-tight text-foreground truncate drop-shadow-sm mb-1.5">{props.username}</h3>
+            <h3 className="text-3xl font-bold tracking-tight text-foreground truncate drop-shadow-sm mb-1.5">{props.username}</h3>
             <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-surface/50 border border-border/50 text-xs font-mono font-bold text-muted">
               <Hash size={12} className="opacity-70" />
               {props.short_id}
@@ -198,7 +198,7 @@ const DouyinUserList: React.FC<PosterProps<DouyinUserListData>> = (props) => {
               </div>
               <span className="font-mono text-sm font-bold tracking-widest uppercase opacity-50 text-foreground">Douyin Monitor</span>
             </div>
-            <h1 className="text-7xl font-black text-foreground tracking-tighter mb-2">{props.data.groupInfo.groupName}</h1>
+            <h1 className="text-7xl font-bold text-foreground tracking-tighter mb-2">{props.data.groupInfo.groupName}</h1>
             <p className="font-mono text-xl opacity-40 text-foreground flex items-center gap-2">
               <span>GROUP_ID</span>
               <span className="w-12 h-px bg-current opacity-50" />
@@ -208,7 +208,7 @@ const DouyinUserList: React.FC<PosterProps<DouyinUserListData>> = (props) => {
 
           <div className="text-right">
             {/* 字体黑白灰渐变 */}
-            <div className="text-8xl font-black text-transparent bg-clip-text bg-linear-to-b from-foreground to-muted leading-none">
+            <div className="text-8xl font-bold text-transparent bg-clip-text bg-linear-to-b from-foreground to-muted leading-none">
               {String(props.data.renderOpt.length).padStart(2, '0')}
             </div>
             <div className="text-sm font-bold tracking-[0.3em] uppercase opacity-40 mt-2 text-foreground">Monitoring</div>

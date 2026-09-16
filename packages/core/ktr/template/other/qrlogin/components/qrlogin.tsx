@@ -88,7 +88,7 @@ export const QrLogin: React.FC<PosterProps<QrLoginData>> = React.memo((props) =>
             <GlowImage glowStrength={0.8} blurRadius={25}>
               <Smartphone className="w-20 h-20" style={{ color: accentColor }} />
             </GlowImage>
-            <h1 className="text-[90px] font-black leading-none" style={{ color: accentColor }}>
+            <h1 className="text-[90px] font-bold leading-none" style={{ color: accentColor }}>
               扫码登录
             </h1>
           </div>
@@ -129,7 +129,7 @@ export const QrLogin: React.FC<PosterProps<QrLoginData>> = React.memo((props) =>
             {/* 警告内容 */}
             <div className="flex flex-col gap-6 mt-8">
               <div className="text-center">
-                <h3 className="text-6xl font-black tracking-wider mb-4" style={{ color: warningColor }}>
+                <h3 className="text-6xl font-bold tracking-wider mb-4" style={{ color: warningColor }}>
                   ⚠ 安全警告 ⚠
                 </h3>
                 <div className="space-y-3">
@@ -263,7 +263,7 @@ export const QrLogin: React.FC<PosterProps<QrLoginData>> = React.memo((props) =>
               <span className="text-3xl font-bold tracking-widest uppercase leading-tight mb-1" style={{ color: mutedColor }}>
                 KARIN-PLUGIN
               </span>
-              <span className="text-8xl font-black leading-none" style={{ color: accentColor }}>
+              <span className="text-8xl font-bold leading-none" style={{ color: accentColor }}>
                 kkk
               </span>
             </div>

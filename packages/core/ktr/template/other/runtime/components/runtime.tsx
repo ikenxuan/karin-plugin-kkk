@@ -106,7 +106,7 @@ export const RuntimeReport: React.FC<PosterProps<RuntimeReportData>> = React.mem
           style={{ background: `radial-gradient(ellipse at center, ${palette.glowPrimary} 0%, transparent 72%)` }}
         />
         <div
-          className="absolute left-115 top-200 select-none text-[400px] -rotate-90 font-black leading-none tracking-[-0.06em] opacity-[0.03]"
+          className="absolute left-115 top-200 select-none text-[400px] -rotate-90 font-bold leading-none tracking-[-0.06em] opacity-[0.03]"
           style={{ color: palette.bgWord }}
         >
           RUNTIME
@@ -137,7 +137,7 @@ export const RuntimeReport: React.FC<PosterProps<RuntimeReportData>> = React.mem
               <span className="text-[24px] font-bold tracking-[0.28em] text-foreground/44">运行诊断 · RUNTIME REPORT</span>
             </div>
             <span
-              className="whitespace-nowrap rounded-full border px-6 py-2 text-[22px] font-black tracking-[0.14em]"
+              className="whitespace-nowrap rounded-full border px-6 py-2 text-[22px] font-bold tracking-[0.14em]"
               style={{ borderColor: palette.pillBorder, background: palette.pillBg, color: palette.pillText }}
             >
               {releaseLabel}
@@ -145,7 +145,7 @@ export const RuntimeReport: React.FC<PosterProps<RuntimeReportData>> = React.mem
           </div>
 
           <div className="mt-19">
-            <h1 className="whitespace-nowrap text-[136px] font-black leading-none tracking-[-0.05em] text-foreground">运行环境</h1>
+            <h1 className="whitespace-nowrap text-[136px] font-bold leading-none tracking-[-0.05em] text-foreground">运行环境</h1>
             <p className="mt-8 whitespace-nowrap text-[32px] font-semibold text-foreground/48">插件、框架与本地宿主的精简诊断快照</p>
           </div>
 
@@ -155,7 +155,7 @@ export const RuntimeReport: React.FC<PosterProps<RuntimeReportData>> = React.mem
               style={{ background: palette.versionGlow }}
             />
             <div className="relative text-[24px] font-bold tracking-[0.2em] text-foreground/36">插件版本</div>
-            <div className="relative mt-5 whitespace-nowrap font-mono text-[200px] font-black leading-none tracking-[-0.08em]">
+            <div className="relative mt-5 whitespace-nowrap font-mono text-[200px] font-bold leading-none tracking-[-0.08em]">
               <span className="mr-4 text-[64px]" style={{ color: palette.versionAccent }}>
                 v
               </span>
@@ -180,7 +180,7 @@ export const RuntimeReport: React.FC<PosterProps<RuntimeReportData>> = React.mem
         <section className="relative mt-30">
           <div className="relative flex items-center gap-5">
             <span className="h-3 w-3 rounded-full" style={{ background: palette.statusDot }} />
-            <span className="text-[24px] font-black tracking-[0.28em]" style={{ color: palette.accentText }}>
+            <span className="text-[24px] font-bold tracking-[0.28em]" style={{ color: palette.accentText }}>
               环境摘要
             </span>
             <span className="ml-2 h-2 w-22 rounded-full" style={{ background: palette.barAccent }} />
@@ -189,7 +189,7 @@ export const RuntimeReport: React.FC<PosterProps<RuntimeReportData>> = React.mem
           <div className="relative mt-16 grid grid-cols-2 gap-x-18 gap-y-16">
             <div>
               <div className="text-[22px] font-bold tracking-[0.18em] text-foreground/36">操作系统</div>
-              <div className="mt-3 truncate whitespace-nowrap text-[48px] font-black tracking-[-0.02em] text-foreground">
+              <div className="mt-3 truncate whitespace-nowrap text-[48px] font-bold tracking-[-0.02em] text-foreground">
                 {data.runtime.os}
               </div>
               <div className="mt-4 whitespace-nowrap font-mono text-[26px] font-bold text-foreground/42">
@@ -199,17 +199,17 @@ export const RuntimeReport: React.FC<PosterProps<RuntimeReportData>> = React.mem
 
             <div>
               <div className="text-[22px] font-bold tracking-[0.18em] text-foreground/36">当前适配器</div>
-              <div className="mt-3 truncate whitespace-nowrap text-[48px] font-black tracking-[-0.02em] text-foreground">
+              <div className="mt-3 truncate whitespace-nowrap text-[48px] font-bold tracking-[-0.02em] text-foreground">
                 {data.adapter.name}
               </div>
-              <div className="mt-4 whitespace-nowrap font-mono text-[27px] font-black" style={{ color: palette.accentText }}>
+              <div className="mt-4 whitespace-nowrap font-mono text-[27px] font-bold" style={{ color: palette.accentText }}>
                 v{data.adapter.version}
               </div>
             </div>
 
             <div>
               <div className="text-[22px] font-bold tracking-[0.18em] text-foreground/36">Karin 版本</div>
-              <div className="mt-3 whitespace-nowrap font-mono text-[48px] font-black leading-none tracking-[-0.02em] text-foreground">
+              <div className="mt-3 whitespace-nowrap font-mono text-[48px] font-bold leading-none tracking-[-0.02em] text-foreground">
                 v{data.identity.karinVersion}
               </div>
             </div>
@@ -217,7 +217,7 @@ export const RuntimeReport: React.FC<PosterProps<RuntimeReportData>> = React.mem
             <div>
               <div className="text-[22px] font-bold tracking-[0.18em] text-foreground/36">Node.js 版本</div>
               <div
-                className="mt-3 whitespace-nowrap font-mono text-[48px] font-black leading-none tracking-[-0.02em]"
+                className="mt-3 whitespace-nowrap font-mono text-[48px] font-bold leading-none tracking-[-0.02em]"
                 style={{ color: palette.accentText }}
               >
                 {data.runtime.nodeVersion}
@@ -227,7 +227,7 @@ export const RuntimeReport: React.FC<PosterProps<RuntimeReportData>> = React.mem
             <div>
               <div className="text-[22px] font-bold tracking-[0.18em] text-foreground/36">内存占用</div>
               <div className="mt-3 flex items-end gap-5">
-                <span className="whitespace-nowrap font-mono text-[72px] font-black leading-none tracking-[-0.04em] text-foreground">
+                <span className="whitespace-nowrap font-mono text-[72px] font-bold leading-none tracking-[-0.04em] text-foreground">
                   {data.resources.memoryUsagePercent}
                 </span>
                 <span className="whitespace-nowrap pb-2 font-mono text-[24px] font-bold text-foreground/40">
@@ -244,7 +244,7 @@ export const RuntimeReport: React.FC<PosterProps<RuntimeReportData>> = React.mem
 
             <div>
               <div className="text-[22px] font-bold tracking-[0.18em] text-foreground/36">处理器</div>
-              <div className="mt-3 line-clamp-2 wrap-break-word text-[32px] font-black leading-[1.4] text-foreground/78">
+              <div className="mt-3 line-clamp-2 wrap-break-word text-[32px] font-bold leading-[1.4] text-foreground/78">
                 {data.resources.cpuModel}
               </div>
               <div className="mt-4 whitespace-nowrap font-mono text-[24px] font-bold text-foreground/40">
@@ -257,12 +257,12 @@ export const RuntimeReport: React.FC<PosterProps<RuntimeReportData>> = React.mem
         <section className="relative mt-32.5">
           <div className="relative flex items-center gap-5">
             <span className="h-3 w-3 rounded-full" style={{ background: palette.statusDot }} />
-            <span className="text-[24px] font-black tracking-[0.28em]" style={{ color: palette.accentText }}>
+            <span className="text-[24px] font-bold tracking-[0.28em]" style={{ color: palette.accentText }}>
               仅展示当前版本
             </span>
             <span className="ml-2 h-2 w-22 rounded-full" style={{ background: palette.barAccent }} />
           </div>
-          <h2 className="mt-7 text-[76px] font-black leading-none" style={{ color: palette.noteStrong }}>
+          <h2 className="mt-7 text-[76px] font-bold leading-none" style={{ color: palette.noteStrong }}>
             本版变更
           </h2>
 
@@ -271,13 +271,13 @@ export const RuntimeReport: React.FC<PosterProps<RuntimeReportData>> = React.mem
               <ReactMarkdown
                 components={{
                   h2: ({ children }) => (
-                    <h2 className="mb-11 whitespace-nowrap text-[48px] font-black leading-tight" style={{ color: palette.noteStrong }}>
+                    <h2 className="mb-11 whitespace-nowrap text-[48px] font-bold leading-tight" style={{ color: palette.noteStrong }}>
                       {children}
                     </h2>
                   ),
                   h3: ({ children }) => (
                     <h3
-                      className="mb-5 mt-10 flex items-center gap-5 whitespace-nowrap text-[36px] font-black leading-tight"
+                      className="mb-5 mt-10 flex items-center gap-5 whitespace-nowrap text-[36px] font-bold leading-tight"
                       style={{ color: palette.noteHeading }}
                     >
                       <span className="h-2.5 w-12 shrink-0 rounded-full" style={{ background: palette.barAccent }} />
@@ -300,7 +300,7 @@ export const RuntimeReport: React.FC<PosterProps<RuntimeReportData>> = React.mem
                     </li>
                   ),
                   strong: ({ children }) => (
-                    <strong className="font-black" style={{ color: palette.noteStrong }}>
+                    <strong className="font-bold" style={{ color: palette.noteStrong }}>
                       {children}
                     </strong>
                   ),
@@ -326,7 +326,7 @@ export const RuntimeReport: React.FC<PosterProps<RuntimeReportData>> = React.mem
             <div className="relative mt-15 flex items-start gap-6" style={{ color: palette.warnText }}>
               <TriangleAlert className="mt-1 h-11 w-11 shrink-0" />
               <div>
-                <div className="text-[34px] font-black">当前构建没有可用的变更日志</div>
+                <div className="text-[34px] font-bold">当前构建没有可用的变更日志</div>
                 <div className="mt-3 text-[27px] font-semibold leading-[1.55] opacity-70">环境摘要仍可正常用于问题定位。</div>
               </div>
             </div>
