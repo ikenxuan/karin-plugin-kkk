@@ -17,6 +17,8 @@ type VideoPreviewRenderOptions = {
   createdAt: number
   expireAt?: number
   eventsUrl?: string
+  /** 模板字体样式表地址（同源），由调用方按运行时环境给出 */
+  fontStylesheetUrls: string[]
 }
 
 type VideoPreviewState = PreviewState & {
@@ -89,6 +91,8 @@ export const renderVideoPreviewPage = (options: VideoPreviewRenderOptions): stri
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>临时预览</title>
+${options.fontStylesheetUrls.map((url) => `
+  <link rel="stylesheet" href="${url}" />`).join('')}
   <style>
     * { box-sizing: border-box; }
     :root { --preview-bg: #ffffff; --preview-fg: #0f172a; --preview-muted: #64748b; }

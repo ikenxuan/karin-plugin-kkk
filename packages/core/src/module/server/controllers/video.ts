@@ -8,6 +8,7 @@ import { renderVideoPreviewPage } from '@template/template/_preview/render'
 import { createNotFoundResponse, logger } from 'node-karin'
 import type { RequestHandler } from 'node-karin/express'
 
+import { templateFonts } from '@/module/utils/templateFonts'
 import { Common } from '@/module/utils'
 import { Config } from '@/module/utils/Config'
 
@@ -127,7 +128,8 @@ export const getVideoPage: RequestHandler = (req, res) => {
     removeCache,
     createdAt,
     expireAt,
-    eventsUrl: `/kkk/v1/video/${encodeURIComponent(filename)}/events`
+    eventsUrl: `/kkk/v1/video/${encodeURIComponent(filename)}/events`,
+    fontStylesheetUrls: templateFonts.map((font) => font.stylesheetUrl)
   })
 
   res.setHeader('Cache-Control', 'no-cache')

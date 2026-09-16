@@ -50,7 +50,7 @@ const FansMedal: React.FC<{ detail: FansDetail }> = ({ detail }) => {
         <span className="font-medium whitespace-nowrap text-3xl" style={{ color: nameColor }}>
           {detail.medal_name}
         </span>
-        <span className="whitespace-nowrap ml-2 mb-1 text-4xl font-[fansmedal-num]" style={{ color: levelColor }}>
+        <span className="whitespace-nowrap ml-2 mb-1 text-4xl font-fansmedal-num" style={{ color: levelColor }}>
           {detail.level}
         </span>
       </div>
@@ -348,7 +348,7 @@ const CommentItemComponent: React.FC<BilibiliCommentData['CommentsData'][number]
                   referrerPolicy="no-referrer"
                   crossOrigin="anonymous"
                 />
-                <div className="absolute bottom-15 right-8 w-[14%] h-full flex flex-col items-start justify-end leading-10 font-[bilifont]">
+                <div className="absolute bottom-15 right-8 w-[14%] h-full flex flex-col items-start justify-end leading-10 font-bilifont">
                   <span
                     className="text-4xl font-bold whitespace-nowrap"
                     style={{
@@ -520,7 +520,7 @@ const CommentItemComponent: React.FC<BilibiliCommentData['CommentsData'][number]
                               referrerPolicy="no-referrer"
                               crossOrigin="anonymous"
                             />
-                            <div className="absolute bottom-15 right-8 w-[14%] h-full flex flex-col items-start justify-end leading-10 font-[bilifont]">
+                            <div className="absolute bottom-15 right-8 w-[14%] h-full flex flex-col items-start justify-end leading-10 font-bilifont">
                               <span
                                 className="text-4xl font-bold whitespace-nowrap"
                                 style={{

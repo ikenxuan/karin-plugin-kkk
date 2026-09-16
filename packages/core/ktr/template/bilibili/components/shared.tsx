@@ -134,7 +134,7 @@ export const DecorationCard: React.FC<{ data: DecorationCardData | undefined }> 
 
   return (
     <div
-      className="flex items-center justify-end font-[bilifont]"
+      className="flex items-center justify-end font-bilifont"
       style={{
         width: '500px',
         height: '150px',

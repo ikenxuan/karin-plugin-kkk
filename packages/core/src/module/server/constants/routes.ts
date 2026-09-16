@@ -51,3 +51,7 @@ export const ROUTES = {
   /** 视频播放页面 */
   VIDEO_PAGE: '/video/:filename'
 } as const
+
+/** 模板字体静态资源挂载前缀，包根原样挂载（见 routes/index.ts） */
+export const FONT_ASSETS_PREFIX = `${ASSETS_PREFIX}/fonts`
+

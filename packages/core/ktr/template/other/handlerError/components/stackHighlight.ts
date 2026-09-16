@@ -33,7 +33,7 @@ const escapeHtmlText = (str: string) =>
 
 /** 转义 + 给 CJK 段落套字体，与 convertAnsiToHtml 的 formatLogContent 同款 */
 const withCjkFont = (str: string) =>
-  escapeHtmlText(str).replace(/([㐀-鿿豈-﫿　-〿＀-￯]+)/g, '<span class="font-[HarmonyOSHans-Regular]">$1</span>')
+  escapeHtmlText(str).replace(/([㐀-鿿豈-﫿　-〿＀-￯]+)/g, '<span class="font-[HarmonyOS Sans SC]">$1</span>')
 
 /**
  * 兜底的外部帧判定：只看文本特征，认不出路径。

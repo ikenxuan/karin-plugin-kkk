@@ -9,6 +9,7 @@ import { Root } from '@/module'
 import { Config } from '@/module/utils/Config'
 
 import { isSemverGreater } from '../semver'
+import { templateFonts } from '../templateFonts'
 import { resolveUseDarkTheme } from './coverTheme'
 
 type ImageMetadata = {
@@ -29,6 +30,7 @@ const renderTemplate = createTemplateRenderer(import.meta.url, {
   renderer: {
     outputDir: pathModule.join(karinPathHtml, Root.pluginName),
     htmlFileName: 'timestamp',
+    extraStylePaths: templateFonts.map((font) => font.stylesheetPath),
     ...(isDevRuntime ? {} : { captureDir: undefined })
   }
 })

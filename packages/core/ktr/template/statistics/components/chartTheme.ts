@@ -122,12 +122,10 @@ export const PLATFORM_META: Record<StatisticsPlatform, PlatformMeta> = {
 export const PLATFORM_ORDER: StatisticsPlatform[] = ['douyin', 'bilibili', 'kuaishou', 'xiaohongshu']
 
 /** 取平台品牌色 */
-export const platformColor = (platform: StatisticsPlatform, dark: boolean): string =>
-  PLATFORM_META[platform].color[dark ? 'dark' : 'light']
+export const platformColor = (platform: StatisticsPlatform, dark: boolean): string => PLATFORM_META[platform].color[dark ? 'dark' : 'light']
 
 /** 取平台 logo 路径 */
-export const platformLogo = (platform: StatisticsPlatform, dark: boolean): string =>
-  PLATFORM_META[platform].logo[dark ? 'dark' : 'light']
+export const platformLogo = (platform: StatisticsPlatform, dark: boolean): string => PLATFORM_META[platform].logo[dark ? 'dark' : 'light']
 
 /**
  * 内容形态展示信息。
@@ -185,7 +183,7 @@ export const renderChartToSVG = (option: EChartsCoreOption, width: number, heigh
 }
 
 /** 图表内文字统一走海报字体，否则 SVG 会退回浏览器默认字体 */
-export const CHART_FONT_FAMILY = 'HarmonyOSHans-Regular'
+export const CHART_FONT_FAMILY = 'HarmonyOS Sans SC'
 
 /**
  * hex 转 `rgba()`。

@@ -1,12 +1,11 @@
 /**
  * 主路由注册
  */
-import * as cors from 'cors'
-import * as httpProxy from 'http-proxy-middleware'
-import { app as karinApp, checkPort, logger } from 'node-karin'
+import { app as karinApp, logger } from 'node-karin'
 import express from 'node-karin/express'
 
 import { Config } from '@/module/utils/Config'
+import { templateFonts } from '@/module/utils/templateFonts'
 
 import { API_V1_PREFIX, ASSETS_PREFIX, KKK_PREFIX, SSR_PREFIX } from '../constants/routes'
 import { createReloadableAmagiRouter } from './amagi'
@@ -14,31 +13,17 @@ import { apiRouter } from './api'
 import { ssrRouter } from './ssr'
 import { staticRouter } from './static'
 
-const server = express()
-const proxyOptions: httpProxy.Options = {
-  target: 'https://developer.huawei.com',
-  changeOrigin: true
-}
-
-server.use(cors.default())
-server.use('/', httpProxy.createProxyMiddleware(proxyOptions))
-
-if (process.env.NODE_ENV !== 'test') {
-  checkPort(3780).then((isOpen) => {
-    if (isOpen) {
-      const s = server.listen(3780)
-      s.on('error', (err) => {
-        logger.error(`[karin-plugin-kkk] 字体代理服务器启动失败: ${err.message}`)
-      })
-      return s
-    }
-    return logger.error('端口 3780 被占用，字体代理服务器将不会启动。')
-  })
-}
-
 const app = express.Router()
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
+
+// 模板字体：字体文件留在 node_modules 里，这里只服务 HTTP 页面。
+// 截图渲染走 Render/index.ts 的 extraStylePaths（file:// 直读包内文件），
+// 临时预览页是 karin 同源页面、加载不了 file://，只能走同源静态资源。
+for (const font of templateFonts) {
+  // 必须排在 static 路由之前：/assets 的 SPA 兜底会把没命中的路径都回成 index.html
+  app.use(font.mountPath, express.static(font.root, { maxAge: '1d' }))
+}
 
 // Amagi API Server
 if (Config.amagi.APIServer && Config.amagi.APIServerMount) {
