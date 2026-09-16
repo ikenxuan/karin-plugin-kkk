@@ -2,6 +2,19 @@
 
 # Changelog
 
+## [2.43.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.43.0...v2.43.1) (2026-09-16)
+
+
+### 💄 UI 优化
+
+* 优化部分字体粗细 ([2fa299a](https://github.com/ikenxuan/karin-plugin-kkk/commit/2fa299a3f7be4a3b3f1e6327a60590eff3eef996))
+* 重写live phtot tip ([ee22474](https://github.com/ikenxuan/karin-plugin-kkk/commit/ee224747e70f22ce0de312b467efd62e57ec9cde))
+
+
+### 🧰 其他更新
+
+* 打印的日志增加使用插件名作为前缀 ([8d871bf](https://github.com/ikenxuan/karin-plugin-kkk/commit/8d871bf8cef31722641b5cbcb71175e4571582ea))
+
 ## [2.43.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.42.5...v2.43.0) (2026-09-16)
 
 
