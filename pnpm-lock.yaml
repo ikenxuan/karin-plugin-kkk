@@ -161,6 +161,12 @@ importers:
       '@ikenxuan/qrcode':
         specifier: 1.5.0
         version: 1.5.0
+      '@lobehub/webfont-geist-mono':
+        specifier: ^1.0.0
+        version: 1.0.0
+      '@lobehub/webfont-harmony-sans-sc':
+        specifier: ^1.0.0
+        version: 1.0.0
     devDependencies:
       '@heroui/react':
         specifier: 3.2.5
@@ -187,8 +193,8 @@ importers:
         specifier: ^0.3.2
         version: 0.3.2
       '@karinjs/template-react':
-        specifier: 0.1.2
-        version: 0.1.2(@types/node@24.13.4)(esbuild@0.28.2)(jiti@2.7.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(supports-color@7.2.0)(tailwind-merge@3.7.0)(yaml@2.9.0)
+        specifier: https://pkg.pr.new/@karinjs/template-react@4bdf055
+        version: https://pkg.pr.new/@karinjs/template-react@4bdf055(@types/node@24.13.4)(esbuild@0.28.2)(jiti@2.7.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(tailwind-merge@3.7.0)(yaml@2.9.0)
       '@kkk/richtext':
         specifier: workspace:*
         version: link:../richtext
@@ -201,9 +207,6 @@ importers:
       '@thesvg/icons':
         specifier: ^3.3.7
         version: 3.3.7
-      '@types/cors':
-        specifier: ^2.8.19
-        version: 2.8.19
       '@types/heic-decode':
         specifier: ^2.0.0
         version: 2.0.0
@@ -216,9 +219,6 @@ importers:
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
-      cors:
-        specifier: ^2.8.6
-        version: 2.8.6
       date-fns:
         specifier: ^4.4.0
         version: 4.4.0
@@ -231,9 +231,6 @@ importers:
       highlight.js:
         specifier: ^11.12.0
         version: 11.12.0
-      http-proxy-middleware:
-        specifier: 4.2.0
-        version: 4.2.0(supports-color@7.2.0)
       jpeg-js:
         specifier: ^0.4.4
         version: 0.4.4
@@ -1346,8 +1343,9 @@ packages:
     resolution: {integrity: sha512-8BapqiKlyh2AS7FVQa6TNNEyVc2fBFjMpPIrtJZUHlGZLDNGJTAJFePdAxSwrKuR6dEyoMZPzr48uzRfoRnqHQ==}
     engines: {node: '>=18'}
 
-  '@karinjs/template-react@0.1.2':
-    resolution: {integrity: sha512-1Zs0hSLhWfES5omOxAsicXRNqqB05QJ9Ff5eFRsIwvr7WByza/MUU+j+o0Ier1nu98Ta1UeiRGHkMDHvPz5lwA==}
+  '@karinjs/template-react@https://pkg.pr.new/@karinjs/template-react@4bdf055':
+    resolution: {integrity: sha512-TEiB0KvTQavbAaCx4wUsXHYtNtjEtmYDmabLLEsfOJfrSEDM2ghE7Lukj757IOm6nh0P+59AMVS7+3mfyIu5xw==, tarball: https://pkg.pr.new/@karinjs/template-react@4bdf055}
+    version: 0.2.0-alpha.13.20260916042141.2a4700e
     engines: {node: '>=18.0.0'}
     hasBin: true
     peerDependencies:
@@ -1357,6 +1355,12 @@ packages:
   '@karinjs/ws@1.0.4':
     resolution: {integrity: sha512-RbaNNTd5wAH6sqwGaetoNyPVMydZu+9db4MxFxrKpzdRo3wMiR8eijdVo7S/jnWnoMHSZ5GJ5wTymrIsVCf9pw==}
     engines: {node: '>=18.0.0'}
+
+  '@lobehub/webfont-geist-mono@1.0.0':
+    resolution: {integrity: sha512-1mX/gf6qlyHsbXTrRTupYtYaimo88ijsk4GyoH136/RZLwlMQG1Sf9d0Pbd54y+R9OK0Ah9y6TPpGOn5j5jXQw==}
+
+  '@lobehub/webfont-harmony-sans-sc@1.0.0':
+    resolution: {integrity: sha512-9WVr2nytwv2J5gVlZHjj716x+9+1U/jn2W+VpuszkTLDQQEQR8v5ElBmj8AkBFpR6z09gAvQYkiChCsB78tYHA==}
 
   '@mdx-js/mdx@3.1.1':
     resolution: {integrity: sha512-f6ZO2ifpwAQIpzGWaBQT2TXxPv6z3RBzQKpVftEWN78Vl/YweF1uwussDx8ECAXVtr3Rs89fKyG9YlzUs9DyGQ==}
@@ -3178,9 +3182,6 @@ packages:
 
   '@types/connect@3.4.38':
     resolution: {integrity: sha512-K6uROf1LD88uDQqJCktA4yzL1YYAK6NgfsI0v/mTgyPKWsX1CnJ0XPSDhViejru1GcRkLWb8RlzFYJRqGUbaug==}
-
-  '@types/cors@2.8.19':
-    resolution: {integrity: sha512-mFNylyeyqN93lfe/9CSxOGREz8cpzAhH+E93xJ4xWQf62V8sQ/24reV2nyzUWM6H6Xji+GGHpkbLe7pVoUEskg==}
 
   '@types/d3-array@3.2.2':
     resolution: {integrity: sha512-hOLWVbm7uRza0BYXpIIW5pxfrKe0W+D5lrFiAEYR+pb6w3N2SwSMaJbXdUfSEv+dT4MfHBLtn5js0LAWaO6otw==}
@@ -5305,16 +5306,9 @@ packages:
     resolution: {integrity: sha512-4FbRdAX+bSdmo4AUFuS0WNiPz8NgFt+r8ThgNWmlrjQjt1Q7ZR9+zTlce2859x4KSXrwIsaeTqDoKQmtP8pLmQ==}
     engines: {node: '>= 0.8'}
 
-  http-proxy-middleware@4.2.0:
-    resolution: {integrity: sha512-ZA+oNOoM+GLoFTIzhkJptVQov73Srep2LBqhF8hG8CIPKO3nam1jonXVQ/QUH8RbwsmaaVz2SOJdzBNBHNtKbw==}
-    engines: {node: ^22.15.0 || ^24.0.0 || >=26.0.0}
-
   https-proxy-agent@5.0.1:
     resolution: {integrity: sha512-dFcAjpTQFgoLMzC2VwU+C/CbS7uRL0lWmxDITmqm7C+7F0Odmj6s9l6alZc6AELXhrnggM2CeWSXHGOdX2YtwA==}
     engines: {node: '>= 6'}
-
-  httpxy@0.5.5:
-    resolution: {integrity: sha512-uDjmnPyp1q4Sgzf3w+J/Fc6UqcCEj0x4Wjp7OqK5dGhNeDgpyrAmnS6ey8QWrX3SWDon2DMKf9sBa5X9+CVyMA==}
 
   human-signals@2.1.0:
     resolution: {integrity: sha512-B4FFZ6q/T2jhhksgkbEW3HBvWIfDW85snkQgawt07S7J5QXTk6BkNV+0yAeZrM5QpMAdYlocGoljn0sJ/WQkFw==}
@@ -8595,7 +8589,7 @@ snapshots:
       '@karinjs/sqlite3-napi-v6-win32-ia32': 0.4.3
       '@karinjs/sqlite3-napi-v6-win32-x64': 0.4.3
 
-  '@karinjs/template-react@0.1.2(@types/node@24.13.4)(esbuild@0.28.2)(jiti@2.7.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(supports-color@7.2.0)(tailwind-merge@3.7.0)(yaml@2.9.0)':
+  '@karinjs/template-react@https://pkg.pr.new/@karinjs/template-react@4bdf055(@types/node@24.13.4)(esbuild@0.28.2)(jiti@2.7.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(tailwind-merge@3.7.0)(yaml@2.9.0)':
     dependencies:
       '@heroui/styles': 3.2.4(tailwind-merge@3.7.0)(tailwindcss@4.3.3)
       '@tailwindcss/vite': 4.3.3(vite@8.1.4(@types/node@24.13.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.13)(yaml@2.9.0))
@@ -8621,6 +8615,10 @@ snapshots:
       - yaml
 
   '@karinjs/ws@1.0.4': {}
+
+  '@lobehub/webfont-geist-mono@1.0.0': {}
+
+  '@lobehub/webfont-harmony-sans-sc@1.0.0': {}
 
   '@mdx-js/mdx@3.1.1(supports-color@7.2.0)':
     dependencies:
@@ -9981,10 +9979,6 @@ snapshots:
       assertion-error: 2.0.1
 
   '@types/connect@3.4.38':
-    dependencies:
-      '@types/node': 24.13.4
-
-  '@types/cors@2.8.19':
     dependencies:
       '@types/node': 24.13.4
 
@@ -12083,24 +12077,12 @@ snapshots:
       statuses: 2.0.2
       toidentifier: 1.0.1
 
-  http-proxy-middleware@4.2.0(supports-color@7.2.0):
-    dependencies:
-      debug: 4.4.3(supports-color@7.2.0)
-      httpxy: 0.5.5
-      is-glob: 4.0.3
-      is-plain-obj: 4.1.0
-      micromatch: 4.0.8
-    transitivePeerDependencies:
-      - supports-color
-
   https-proxy-agent@5.0.1(supports-color@7.2.0):
     dependencies:
       agent-base: 6.0.2(supports-color@7.2.0)
       debug: 4.4.3(supports-color@7.2.0)
     transitivePeerDependencies:
       - supports-color
-
-  httpxy@0.5.5: {}
 
   human-signals@2.1.0: {}
 

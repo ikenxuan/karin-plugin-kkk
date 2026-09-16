@@ -150,7 +150,7 @@ export const DouyinRecommendList: React.FC<PosterProps<DouyinRecommendListData>>
                   <span className="text-4xl font-bold text-foreground/90 truncate" title={props.data.author_username}>
                     {props.data.author_username}
                   </span>
-                  <span className="text-xl text-muted font-mono truncate">抖音号: {props.data.author_douyin_id}</span>
+                  <span className="text-xl text-muted truncate">抖音号: {props.data.author_douyin_id}</span>
                 </div>
               </div>
               <div className="px-6 py-3 bg-surface/80 backdrop-blur-md rounded-full text-muted font-medium text-lg shrink-0">

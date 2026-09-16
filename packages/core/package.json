@@ -69,7 +69,9 @@
     "watch": "ktr sync && cross-env EBV_FILE=\"development.env\" tsx watch --include \"src/**/*.ts\" --include \"ktr/**/*.ts\" --include \"ktr/**/*.tsx\" src/app.ts --trace-deprecation"
   },
   "dependencies": {
-    "@ikenxuan/qrcode": "1.5.0"
+    "@ikenxuan/qrcode": "1.5.0",
+    "@lobehub/webfont-geist-mono": "^1.0.0",
+    "@lobehub/webfont-harmony-sans-sc": "^1.0.0"
   },
   "devDependencies": {
     "@heroui/react": "3.2.5",
@@ -80,22 +82,19 @@
     "@karinjs/plugin-basic": "1.4.13",
     "@karinjs/plugin-ffmpeg": "^0.1.3",
     "@karinjs/plugin-shotium": "^0.3.2",
-    "@karinjs/template-react": "0.1.2",
+    "@karinjs/template-react": "https://pkg.pr.new/@karinjs/template-react@4bdf055",
     "@kkk/richtext": "workspace:*",
     "@outpacelabs/avatars": "^0.6.0",
     "@phosphor-icons/react": "^2.1.10",
     "@thesvg/icons": "^3.3.7",
-    "@types/cors": "^2.8.19",
     "@types/heic-decode": "^2.0.0",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
     "clsx": "^2.1.1",
-    "cors": "^2.8.6",
     "date-fns": "^4.4.0",
     "echarts": "^6.1.0",
     "heic-decode": "^2.1.0",
     "highlight.js": "^11.12.0",
-    "http-proxy-middleware": "4.2.0",
     "jpeg-js": "^0.4.4",
     "lucide-react": "^1.46.0",
     "react": "^19.3.0",
@@ -129,5 +128,5 @@
     "web": "./lib/web.config.js",
     "ts-web": "./src/web.config.ts"
   },
-  "timestamp": "2026-09-15T19:29:04.097Z"
+  "timestamp": "2026-09-16T05:32:01.178Z"
 }

@@ -150,7 +150,7 @@ const convertAnsiToHtml = (text: string): string => {
   const formatLogContent = (content: string) =>
     escapeHtml(content).replace(
       /([\u3400-\u9fff\uf900-\ufaff\u3000-\u303f\uff00-\uffef]+)/g,
-      '<span class="font-[HarmonyOSHans-Regular]">$1</span>'
+      '<span class="font-[HarmonyOS Sans SC]">$1</span>'
     )
   const makeSpan = (content: string) => {
     const hasClass = currentStyles.classes.length > 0,

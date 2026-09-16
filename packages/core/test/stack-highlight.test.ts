@@ -63,7 +63,7 @@ describe('highlightStack', () => {
   })
 
   it('CJK 段落套上模板用的字体', () => {
-    expect(dark).toContain('font-[HarmonyOSHans-Regular]')
+    expect(dark).toContain('font-[HarmonyOS Sans SC]')
   })
 
   it('行数与输入一致（逐行处理，不吞行）', () => {

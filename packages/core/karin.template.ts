@@ -5,26 +5,9 @@ import { defineConfig } from '@karinjs/template-react'
 import type { ViteDevServer } from 'vite'
 
 import { AVATAR_PROXY_PATH, isProxyableAvatarUrl } from './ktr/utils/avatarProxy'
+import { templateFonts } from './src/module/utils/templateFonts'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
-
-/**
- * 复刻旧 template dev 的字体代理插件：
- * 开发态把 font.css 里的 http://localhost:3780 前缀剥掉，走面板自己的代理（见 server.proxy）。
- * 只在 serve 生效；生产构建保留绝对地址（3780 字体代理由 core 在运行时启动）。
- */
-const fontProxyPlugin = () => {
-  return {
-    name: 'kkk-font-proxy-plugin',
-    enforce: 'pre' as const,
-    transform(code: string, id: string) {
-      const cleanId = id.split('?')[0]
-      if ((cleanId.endsWith('.css') || cleanId.endsWith('.scss') || cleanId.endsWith('.less')) && code.includes('http://localhost:3780')) {
-        return code.replace(/http:\/\/localhost:3780/g, '')
-      }
-    }
-  }
-}
 
 /** 代理上游的超时，比模板侧 loadQRCodeAvatar 的 5s 略宽，让超时判定落在模板侧 */
 const AVATAR_PROXY_TIMEOUT_MS = 8000
@@ -75,6 +58,21 @@ const avatarProxyPlugin = () => {
   }
 }
 
+/**
+ * 开发面板的模板字体：
+ * 面板预览跑在浏览器里（/__ktr/sandbox），模板 CSS 里只有字体家族名——
+ * 生产由 Render/index.ts 以 extraStylePaths 读字体包，这里用 vite 的 /@fs 把同一份包内 CSS
+ * 交给面板，包内 ../fonts/* 的相对引用由 vite 接着解析，预览和实际渲染字体一致。
+ */
+const fontLinkPlugin = () => ({
+  name: 'kkk-font-link-plugin',
+  transformIndexHtml: () => templateFonts.map((font) => ({
+    tag: 'link',
+    attrs: { rel: 'stylesheet', href: `/@fs/${font.stylesheetPath.split(path.sep).join('/')}` },
+    injectTo: 'head' as const
+  }))
+})
+
 export default defineConfig({
   dir: {
     assets: 'resources',
@@ -86,26 +84,9 @@ export default defineConfig({
     open: false
   },
   vite: ({ command }) => ({
-    plugins: command === 'serve' ? [fontProxyPlugin(), avatarProxyPlugin()] : [],
+    plugins: command === 'serve' ? [avatarProxyPlugin(), fontLinkPlugin()] : [],
     resolve: {
       alias: [{ find: '@kkk/richtext', replacement: path.resolve(__dirname, '../richtext/src/index.ts') }]
-    },
-    server: {
-      proxy: {
-        // HarmonyOS 字体：面板单独运行时反代到华为开发者站（与旧 template dev 行为一致）
-        '/config/commonResource/font': {
-          target: 'https://developer.huawei.com',
-          changeOrigin: true,
-          secure: false,
-          headers: {
-            Referer: 'https://developer.huawei.com/'
-          }
-        }
-      }
-    },
-    build: {
-      // 字体等 CSS 引用资源全部内联进 style.css，与旧构建（assetsInlineLimit 10MB）一致
-      assetsInlineLimit: 10 * 1024 * 1024
     }
   })
 })
