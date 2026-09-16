@@ -1,7 +1,7 @@
-import { logger } from 'node-karin'
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, ResponseType } from 'node-karin/axios'
 import axios, { AxiosError } from 'node-karin/axios'
 
+import { logger } from '@/module/utils/logger'
 import { NetworksConfigType } from '@/types'
 
 import { BASE_HEADERS } from './constants'
@@ -81,9 +81,7 @@ export class Network {
       config.__retryCount += 1
 
       const nextDelay = Math.max(1000, Math.min(2 ** (config.__retryCount - 1) * 1000, 8000))
-      logger.warn(
-        `[karin-plugin-kkk] axios 实例请求失败，正在重试... (${config.__retryCount}/${this.maxRetries})，将在 ${nextDelay / 1000} 秒后重试`
-      )
+      logger.warn(`axios 实例请求失败，正在重试... (${config.__retryCount}/${this.maxRetries})，将在 ${nextDelay / 1000} 秒后重试`)
 
       await new Promise((resolve) => setTimeout(resolve, nextDelay))
       return this.axiosInstance(config)

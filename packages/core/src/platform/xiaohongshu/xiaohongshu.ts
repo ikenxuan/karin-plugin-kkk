@@ -3,8 +3,7 @@ import fs from 'node:fs'
 import type { NoteComments, XiaohongshuEmojiListResponse } from '@ikenxuan/amagi'
 import type { RichTextEmojiDefinition } from '@kkk/richtext'
 import { format } from 'date-fns'
-import { common, type Elements, type Message, segment } from 'node-karin'
-import { logger } from 'node-karin'
+import { common, type Elements, type Message, logger, segment } from 'node-karin'
 
 import {
   Base,

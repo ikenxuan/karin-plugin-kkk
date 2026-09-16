@@ -1,10 +1,11 @@
 import '@/module/server'
 import '@/platform/bilibili/riskControl'
-import karin, { AdapterType, BOT_CONNECT, config, ImageElement, logger, Message, mkdirSync, SendMessage } from 'node-karin'
+import karin, { AdapterType, BOT_CONNECT, config, ImageElement, Message, mkdirSync, SendMessage } from 'node-karin'
 import { karinPathBase } from 'node-karin/root'
 
 import { Common, Render, Root } from '@/module'
 import { initAllDatabases } from '@/module/db'
+import { logger } from '@/module/utils/logger'
 
 import { isSemverGreater } from './module/utils/semver'
 
@@ -14,7 +15,7 @@ declare const __REQUIRE_KARIN_VERSION__: string
 const requireVersion = typeof __REQUIRE_KARIN_VERSION__ !== 'undefined' ? __REQUIRE_KARIN_VERSION__ : '1.1145.14'
 // const requireVersion = '1.14514.1'
 if (process.env.NODE_ENV !== 'development' && isSemverGreater(requireVersion, Root.karinVersion)) {
-  const msg = `[karin-plugin-kkk] 插件构建时的 karin 版本 (${requireVersion}) 高于当前运行版本 (${Root.karinVersion})，可能会出现兼容性问题！`
+  const msg = `插件构建时的 karin 版本 (${requireVersion}) 高于当前运行版本 (${Root.karinVersion})，可能会出现兼容性问题！`
   logger.warn(msg)
 
   /** 已发送通知的 Bot ID 和主人 ID 组合，格式：`${botId}:${master}` */
@@ -30,7 +31,7 @@ if (process.env.NODE_ENV !== 'development' && isSemverGreater(requireVersion, Ro
     await new Promise((resolve) => setTimeout(resolve, 2000))
     const masters = config.master()
 
-    logger.info(`[karin-plugin-kkk] 监测到 Bot 连接: ${botId}, 准备发送版本警告`)
+    logger.info(`监测到 Bot 连接: ${botId}, 准备发送版本警告`)
 
     // 生成警告图片
     let warningImage: ImageElement[] | null = null
@@ -44,7 +45,7 @@ if (process.env.NODE_ENV !== 'development' && isSemverGreater(requireVersion, Ro
           currentVersion: Root.karinVersion
         })
       } catch (error) {
-        logger.error(`[karin-plugin-kkk] 生成版本警告图片失败: ${error}`)
+        logger.error(`生成版本警告图片失败: ${error}`)
       }
 
       const key = `${botId}:${master}`
@@ -58,9 +59,9 @@ if (process.env.NODE_ENV !== 'development' && isSemverGreater(requireVersion, Ro
 
         await karin.sendMaster(botId, master, elements)
         notifiedSet.add(key)
-        logger.info(`[karin-plugin-kkk] 已发送版本警告给主人: ${master} (via ${botId})`)
+        logger.info(`已发送版本警告给主人: ${master} (via ${botId})`)
       } catch (error) {
-        logger.error(`[karin-plugin-kkk] 发送版本警告给主人 (${master}) 失败: ${error}`)
+        logger.error(`发送版本警告给主人 (${master}) 失败: ${error}`)
       }
     }
   })
@@ -68,7 +69,7 @@ if (process.env.NODE_ENV !== 'development' && isSemverGreater(requireVersion, Ro
 
 // ----------------- DATABASE INIT -----------------
 await initAllDatabases().catch((err) => {
-  logger.error(`[karin-plugin-kkk] 数据库初始化失败: ${err.message}`)
+  logger.error(`数据库初始化失败: ${err.message}`)
 })
 
 // ------------------- MAIN INIT -------------------

@@ -10,10 +10,11 @@ import os from 'node:os'
 import pathModule from 'node:path'
 
 import type { DouyinEmojiListResponse } from '@ikenxuan/amagi'
-import { ffmpeg, ffprobe, logger, render } from 'node-karin'
+import { ffmpeg, ffprobe, render } from 'node-karin'
 
 import { Common } from '@/module/utils'
 import { douyinFetcher } from '@/module/utils/amagiClient'
+import { logger } from '@/module/utils/logger'
 
 // ==================== 类型定义 ====================
 

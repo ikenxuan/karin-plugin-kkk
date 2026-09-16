@@ -2,12 +2,12 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 import { DynamicType } from '@ikenxuan/amagi'
-import { logger } from 'node-karin'
 import { karinPathBase } from 'node-karin/root'
 import sqlite3, { sqlite3 as sqlite3Types } from 'node-karin/sqlite3'
 
 import { Root } from '@/module/utils'
 import { Config } from '@/module/utils/Config'
+import { logger } from '@/module/utils/logger'
 import { BilibiliPushItem } from '@/platform/bilibili/push'
 import { bilibiliPushItem } from '@/types/config/pushlist'
 

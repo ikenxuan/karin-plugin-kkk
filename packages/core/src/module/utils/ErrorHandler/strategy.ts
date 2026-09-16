@@ -1,4 +1,4 @@
-import { logger } from 'node-karin'
+import { logger } from '@/module/utils/logger'
 
 import type { ErrorStrategy } from './types'
 

@@ -1,6 +1,7 @@
-import { logger, type Message } from 'node-karin'
+import { type Message } from 'node-karin'
 import axios from 'node-karin/axios'
 
+import { logger } from '@/module/utils/logger'
 import type { DouyinDataTypes } from '@/types'
 
 import { DouyinWorkMainType } from './workType'
@@ -95,7 +96,7 @@ export const getDouyinID = async (event: Message, url: string, log = true): Prom
   }
 
   if (log) {
-    console.log(result)
+    logger.debug(result)
   }
   return result
 }

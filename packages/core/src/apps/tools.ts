@@ -1,9 +1,10 @@
-import karin, { logger, type Message } from 'node-karin'
+import karin, { type Message } from 'node-karin'
 
 import { Common, downloadVideo } from '@/module'
 import { getStatisticsDB, type ParsePlatform, type ParseWorkType } from '@/module/db'
 import { Config } from '@/module/utils/Config'
 import { wrapWithErrorHandler } from '@/module/utils/ErrorHandler'
+import { logger } from '@/module/utils/logger'
 import { Bilibili, getBilibiliID } from '@/platform/bilibili'
 import { DouYin, getDouyinID } from '@/platform/douyin'
 import { fetchKuaishouData, getKuaishouID, Kuaishou } from '@/platform/kuaishou'

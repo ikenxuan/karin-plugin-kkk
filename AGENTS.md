@@ -124,6 +124,12 @@ pnpm sort
 - `oxlint`：TypeScript/React 插件，`no-unused-vars` 为 error；未使用参数/变量用 `_` 前缀。
 - 默认不要手改生成产物，例如 `packages/core/lib`、`packages/core/.ktr`、`packages/web` 构建输出、`.next`。
 - 保持 ESM 写法，路径别名常见为 `@`、`@kkk/richtext`、`template`、`@ikenxuan/amagi`。
+- core 日志统一从 `@/module/utils/logger` 取 `logger`，不要再从 `node-karin` 直接导入，也不要写 `console.*`：
+  该 logger 与 Karin 的 `logger` 同形，每条日志自动带 `[karin-plugin-kkk]` 前缀（取 package.json 的 name），
+  颜色方法（`logger.green`/`logger.chalk` 等）照常可用。同时被构建配置引用的模块（`templateFonts.ts`）
+  在构建进程里没有 Karin，只能把信息交回运行时再打日志（`templateFonts.missing` + `Render/index.ts`）。
+  这类模块对 node-karin 必须零依赖：一旦间接 import 到，它的顶层会拉起常驻句柄，`vite build` 跑完
+  进程不退出，构建直接挂到超时。
 - 不要把 cookie、token、代理认证等敏感信息写进提交或文档。
 
 ## 常见任务定位

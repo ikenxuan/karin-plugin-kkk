@@ -4,7 +4,7 @@ import type { DouyinSearchResponse } from '@ikenxuan/amagi'
 import type { DouyinUserListData } from '@template/template/douyin/userlist/components/types'
 import { format } from 'date-fns'
 import type { AdapterType, Elements, ImageElement, Message } from 'node-karin'
-import karin, { common, logger, segment } from 'node-karin'
+import karin, { common, segment } from 'node-karin'
 
 import {
   Base,
@@ -25,6 +25,7 @@ import {
   Render
 } from '@/module'
 import { Config } from '@/module/utils/Config'
+import { logger } from '@/module/utils/logger'
 import { DouyinIdData, buildDouyinPlayUrl, douyinProcessVideos, type dyVideo, getDouyinID } from '@/platform/douyin'
 import type { DouyinListItem } from '@/platform/douyin/types'
 import { getDouyinLiveImageSendPolicy, getWorkTypeDisplayName, getWorkTypeInfo } from '@/platform/douyin/workType'

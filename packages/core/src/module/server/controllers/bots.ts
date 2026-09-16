@@ -1,8 +1,10 @@
 /**
  * Bot 管理 API
  */
-import { createServerErrorResponse, createSuccessResponse, karin, logger } from 'node-karin'
+import { createServerErrorResponse, createSuccessResponse, karin } from 'node-karin'
 import type { RequestHandler } from 'node-karin/express'
+
+import { logger } from '@/module/utils/logger'
 
 /**
  * Bot 信息接口

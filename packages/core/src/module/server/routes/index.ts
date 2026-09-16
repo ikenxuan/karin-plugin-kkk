@@ -1,10 +1,11 @@
 /**
  * 主路由注册
  */
-import { app as karinApp, logger } from 'node-karin'
+import { app as karinApp } from 'node-karin'
 import express from 'node-karin/express'
 
 import { Config } from '@/module/utils/Config'
+import { logger } from '@/module/utils/logger'
 import { templateFonts } from '@/module/utils/templateFonts'
 
 import { API_V1_PREFIX, ASSETS_PREFIX, KKK_PREFIX, SSR_PREFIX } from '../constants/routes'
@@ -37,10 +38,10 @@ if (Config.amagi.APIServer && Config.amagi.APIServerMount) {
   amagiServer.use('/api', createReloadableAmagiRouter())
 
   const listener = amagiServer.listen(Config.amagi.APIServerPort, '::', () => {
-    logger.mark(`[karin-plugin-kkk] Amagi server listening on http://localhost:${Config.amagi.APIServerPort}`)
+    logger.mark(`Amagi server listening on http://localhost:${Config.amagi.APIServerPort}`)
   })
   listener.on('error', (error) => {
-    logger.error(`[karin-plugin-kkk] Amagi API Server 启动失败: ${error.message}`)
+    logger.error(`Amagi API Server 启动失败: ${error.message}`)
   })
 }
 

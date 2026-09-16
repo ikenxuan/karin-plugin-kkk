@@ -1,9 +1,10 @@
-import karin, { logger } from 'node-karin'
+import karin from 'node-karin'
 
 import { bilibiliDB, douyinDB } from '@/module/db'
 import { bilibiliFetcher, douyinFetcher } from '@/module/utils/amagiClient'
 import { Config } from '@/module/utils/Config'
 import { wrapWithErrorHandler } from '@/module/utils/ErrorHandler'
+import { logger } from '@/module/utils/logger'
 import { Bilibilipush, DouYinpush, getBilibiliID, getDouyinID } from '@/platform'
 
 // 包装抖音推送任务

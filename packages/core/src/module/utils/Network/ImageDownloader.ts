@@ -1,8 +1,9 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import { logger } from 'node-karin'
 import type { AxiosInstance } from 'node-karin/axios'
+
+import { logger } from '@/module/utils/logger'
 
 import { Config } from '../Config'
 import { sanitizeFilename } from './helpers'

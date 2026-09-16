@@ -5,9 +5,10 @@
 import fs from 'node:fs'
 import os from 'node:os'
 
-import { ffmpeg, ffprobe, logger } from 'node-karin'
+import { ffmpeg, ffprobe } from 'node-karin'
 
 import { Common } from '@/module/utils'
+import { logger } from '@/module/utils/logger'
 
 // ==================== 类型定义 ====================
 

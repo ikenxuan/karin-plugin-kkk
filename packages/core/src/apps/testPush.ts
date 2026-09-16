@@ -1,9 +1,10 @@
 import type { DouyinUserProfileResponse } from '@ikenxuan/amagi'
-import karin, { type ImageElement, logger } from 'node-karin'
+import karin, { type ImageElement } from 'node-karin'
 
 import { douyinFetcher } from '@/module/utils/amagiClient'
 import { Config } from '@/module/utils/Config'
 import { wrapWithErrorHandler } from '@/module/utils/ErrorHandler'
+import { logger } from '@/module/utils/logger'
 import { getDouyinID } from '@/platform/douyin/getID'
 import { renderFavoriteImage, renderLiveImage, renderRecommendImage, renderWorkImage } from '@/platform/douyin/push/render'
 import { buildDouyinWorkDetail } from '@/platform/douyin/types'

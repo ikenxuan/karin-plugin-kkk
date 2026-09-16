@@ -1,8 +1,8 @@
 import { deflateSync } from 'node:zlib'
 
 import { drawDither } from '@outpacelabs/avatars'
-import { logger } from 'node-karin'
 
+import { logger } from '@/module/utils/logger'
 /**
  * 头像解析：优先用平台给的真实头像，拿不到就**实时生成**一个 dither 头像。
  *

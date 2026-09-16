@@ -1,8 +1,8 @@
 import { DouyinUserProfileResponse } from '@ikenxuan/amagi'
 import { format, fromUnixTime } from 'date-fns'
-import { logger } from 'node-karin'
 
 import { douyinDB } from '@/module'
+import { logger } from '@/module/utils/logger'
 import { buildDouyinWorkDetail, type DouyinListItem } from '@/platform/douyin/types'
 import { douyinPushItem } from '@/types/config/pushlist'
 

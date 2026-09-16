@@ -7,7 +7,8 @@ import Client, {
   type SuccessKuaishouFetcher,
   type SuccessXiaohongshuFetcher
 } from '@ikenxuan/amagi'
-import { logger } from 'node-karin'
+
+import { logger } from '@/module/utils/logger'
 
 import { Config } from './Config'
 

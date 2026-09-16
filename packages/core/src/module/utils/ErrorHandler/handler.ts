@@ -1,8 +1,9 @@
 import type { ApiErrorData } from '@template/template/other/handlerError/components/types'
-import { logger, type Message } from 'node-karin'
+import { type Message } from 'node-karin'
 
 import { getBuildMetadata } from '@/module'
 import { EmojiReactionManager } from '@/module/utils/EmojiReaction'
+import { logger } from '@/module/utils/logger'
 
 import { renderErrorImage } from './render'
 import { sendErrorToAllMasters, sendErrorToMaster, sendErrorToTrigger } from './sender'

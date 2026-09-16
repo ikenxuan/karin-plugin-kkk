@@ -1,5 +1,7 @@
 import axios from 'node-karin/axios'
 
+import { logger } from '@/module/utils/logger'
+
 export interface XiaohongshuIdData {
   type: 'note' | 'unknown'
   [x: string]: any
@@ -121,7 +123,7 @@ export const getXiaohongshuID = async (url: string, log = true): Promise<Xiaohon
   }
 
   if (log) {
-    console.log(result)
+    logger.debug(result)
   }
   return result
 }

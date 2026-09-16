@@ -1,10 +1,10 @@
 import { inflateSync } from 'node:zlib'
 
-import { logger } from 'node-karin'
 import axios from 'node-karin/axios'
 
 import { Common } from '@/module'
 import { Config } from '@/module/utils/Config'
+import { logger } from '@/module/utils/logger'
 
 /**
  * 智能主题（Config.app.Theme === 3）目前只对这几个模板生效：

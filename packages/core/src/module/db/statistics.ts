@@ -1,10 +1,10 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import { logger } from 'node-karin'
 import { karinPathBase } from 'node-karin/root'
 import sqlite3, { sqlite3 as sqlite3Types } from 'node-karin/sqlite3'
 
+import { logger } from '@/module/utils/logger'
 // 直接吃 @/root 而不是 @/module/utils 桶：桶会把 ./Common 拖进来，
 // 而 Common 又回头 import @/module（含本文件），形成环。
 import { Root } from '@/root'
@@ -669,10 +669,9 @@ export class StatisticsDBBase {
    * @param groupId 群组ID
    */
   async getGroupActiveDays(groupId: string): Promise<number> {
-    const result = await this.getQuery<{ count: number }>(
-      'SELECT COUNT(DISTINCT date) as count FROM GroupParseHistory WHERE groupId = ?',
-      [groupId]
-    )
+    const result = await this.getQuery<{ count: number }>('SELECT COUNT(DISTINCT date) as count FROM GroupParseHistory WHERE groupId = ?', [
+      groupId
+    ])
     return result?.count || 0
   }
 
@@ -689,10 +688,7 @@ export class StatisticsDBBase {
    * @param groupId 群组ID
    */
   async getGroupWorkTypeStats(groupId: string): Promise<ParseWorkTypeStats[]> {
-    return await this.allQuery<ParseWorkTypeStats>(
-      'SELECT * FROM ParseWorkTypeStats WHERE groupId = ? ORDER BY parseCount DESC',
-      [groupId]
-    )
+    return await this.allQuery<ParseWorkTypeStats>('SELECT * FROM ParseWorkTypeStats WHERE groupId = ? ORDER BY parseCount DESC', [groupId])
   }
 
   /**
@@ -729,7 +725,8 @@ export class StatisticsDBBase {
    * 取全局日粒度趋势里「数据可信」的起始日期。
    * @returns 可信起始日（YYYY-MM-DD）；一行可信数据都没有时返回 undefined
    */
-  async getHistoryCompleteFrom(): Promise<string | undefined> {    // 老库回填（syncHistoryFromStats）会把用户的历史总次数全记在他首次解析那天，
+  async getHistoryCompleteFrom(): Promise<string | undefined> {
+    // 老库回填（syncHistoryFromStats）会把用户的历史总次数全记在他首次解析那天，
     // 那批行的特征是 date 与写入时间 createdAt 不在同一天；
     // 增量写入的行两者必然同天（都取 UTC）。据此切出可信区间的起点。
     const result = await this.getQuery<{ date: string | null }>(

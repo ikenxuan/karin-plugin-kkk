@@ -1,6 +1,6 @@
 import util from 'node:util'
 
-import karin, { logger, segment } from 'node-karin'
+import karin, { segment } from 'node-karin'
 
 import { AmagiError, bilibiliFetcher } from '@/module/utils/amagiClient'
 import {
@@ -10,6 +10,7 @@ import {
   sendErrorToAllMasters,
   sendErrorToMaster
 } from '@/module/utils/ErrorHandler'
+import { logger } from '@/module/utils/logger'
 
 /**
  * B站风控验证策略

@@ -1,5 +1,6 @@
-import { logger } from 'node-karin'
 import { sqlite3 as sqlite3Types } from 'node-karin/sqlite3'
+
+import { logger } from '@/module/utils/logger'
 
 /**
  * 迁移记录接口

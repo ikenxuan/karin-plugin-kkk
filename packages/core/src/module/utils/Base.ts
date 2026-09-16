@@ -1,10 +1,11 @@
 import fs from 'node:fs'
 
-import karin, { type Contact, logger, Message, segment } from 'node-karin'
+import karin, { type Contact, Message, segment } from 'node-karin'
 import type { AxiosHeaders, AxiosRequestConfig, Method, RawAxiosRequestHeaders } from 'node-karin/axios'
 
 import { baseHeaders, Common, compressVideo, extractTotalBytesFromHeaders, getMediaDuration, Networks } from '@/module/utils'
 import { Config } from '@/module/utils/Config'
+import { logger } from '@/module/utils/logger'
 import type { pushlistConfig } from '@/types/config/pushlist'
 
 import { AmagiBase } from './amagiClient'
@@ -413,8 +414,8 @@ export const downloadFile = async (videoUrl: string, opt: downLoadFileOptions): 
       const downloadedSizeMB = (downloadedBytes / 1048576).toFixed(1)
       const totalSizeMB = (totalBytes / 1048576).toFixed(1)
 
-      // 打印下载进度、速度和剩余时间
-      console.log(
+      // 打印下载进度、速度和剩余时间（行尾回到行首，终端里原地刷新同一行）
+      logger.mark(
         `⬇️  ${opt.title ?? (opt.filepath && opt.filepath.split('/').pop()) ?? '未知文件'} ${generateProgressBar(progressPercentage)} ${coloredPercentage} ${downloadedSizeMB}/${totalSizeMB} MB | ${formattedSpeed} 剩余: ${formattedRemainingTime}\r`
       )
     })

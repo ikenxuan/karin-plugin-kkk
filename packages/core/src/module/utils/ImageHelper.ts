@@ -1,7 +1,8 @@
 import fs from 'node:fs'
 
-import { logger } from 'node-karin'
 import axios from 'node-karin/axios'
+
+import { logger } from '@/module/utils/logger'
 
 import { Common } from './Common'
 import { Config } from './Config'

@@ -12,7 +12,7 @@ import {
 import type { BilibiliForwardOriginalContentProps } from '@template/template/bilibili/dynamic/types'
 import type { BilibiliUserListData } from '@template/template/bilibili/userlist/components/types'
 import type { AdapterType, ImageElement, Message, SendMsgResults } from 'node-karin'
-import karin, { common, logger, segment } from 'node-karin'
+import karin, { common, segment } from 'node-karin'
 
 import {
   Base,
@@ -34,6 +34,7 @@ import {
 } from '@/module'
 import { bilibiliFetcher } from '@/module/utils/amagiClient'
 import { Config } from '@/module/utils/Config'
+import { logger } from '@/module/utils/logger'
 import { bilibiliProcessVideos, generateDecorationCard, getvideosize, parseAdditionalCard, TimeFormatter } from '@/platform/bilibili'
 import {
   buildBilibiliArticleRichText,
@@ -134,7 +135,7 @@ export class Bilibilipush extends Base {
         item.pushTypes = [...allBilibiliPushTypes]
         hasChanges = true
         logger.info(
-          `[karin-plugin-kkk][v2.28.0] 为UP主 ${item.remark ?? item.host_mid} 自动补全推送类型：投稿视频、图文动态、纯文动态、直播动态、转发动态、投稿专栏`
+          `[v2.28.0] 为UP主 ${item.remark ?? item.host_mid} 自动补全推送类型：投稿视频、图文动态、纯文动态、直播动态、转发动态、投稿专栏`
         )
       }
 

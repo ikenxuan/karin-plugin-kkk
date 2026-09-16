@@ -5,12 +5,13 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 import { renderVideoPreviewPage } from '@template/template/_preview/render'
-import { createNotFoundResponse, logger } from 'node-karin'
+import { createNotFoundResponse } from 'node-karin'
 import type { RequestHandler } from 'node-karin/express'
 
-import { templateFonts } from '@/module/utils/templateFonts'
 import { Common } from '@/module/utils'
 import { Config } from '@/module/utils/Config'
+import { logger } from '@/module/utils/logger'
+import { templateFonts } from '@/module/utils/templateFonts'
 
 /**
  * 视频文件流传输

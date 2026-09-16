@@ -1,4 +1,6 @@
-import karin, { config, logger, segment } from 'node-karin'
+import karin, { config, segment } from 'node-karin'
+
+import { logger } from '@/module/utils/logger'
 
 import { getReachableMasterBots } from '../bot'
 import { Config } from '../Config'

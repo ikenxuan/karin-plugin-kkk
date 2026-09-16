@@ -4,8 +4,7 @@ import { type DouyinEmojiListResponse, DouyinVideoWorkResponse } from '@ikenxuan
 import type { RichTextEmojiDefinition } from '@kkk/richtext'
 import type { DouyinUserVideoListData } from '@template/template/douyin/user_profile/components/types'
 import { format } from 'date-fns'
-import karin, { type Elements, Message, SendMessage } from 'node-karin'
-import { common, logger, mkdirSync, segment } from 'node-karin'
+import karin, { type Elements, common, logger, Message, mkdirSync, segment, SendMessage } from 'node-karin'
 
 import type { ParseWorkType } from '@/module/db'
 import {
@@ -510,7 +509,7 @@ export class DouYin extends Base {
               const path = Common.tempDri.images + `${title}.mp3`
               await downloadFile(music_url, { title, filepath: path })
             } catch (error) {
-              console.log(error)
+              logger.debug('BGM 下载失败:', error)
             }
           }
           // 图集、合辑、文章都发送BGM

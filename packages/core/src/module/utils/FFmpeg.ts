@@ -1,8 +1,9 @@
 import fs from 'node:fs'
 
-import { ffmpeg, ffprobe, logger } from 'node-karin'
+import { ffmpeg, ffprobe } from 'node-karin'
 
 import { Common } from '@/module/utils'
+import { logger } from '@/module/utils/logger'
 export type { GoogleMotionPhotoOptions } from './MotionPhoto'
 export { buildGoogleMotionPhoto } from './MotionPhoto'
 

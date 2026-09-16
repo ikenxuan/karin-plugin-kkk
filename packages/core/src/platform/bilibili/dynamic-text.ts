@@ -24,7 +24,9 @@ import {
   type RichTextInlineStyle,
   type RichTextNode
 } from '@kkk/richtext'
-import { logger, segment, type ElementTypes } from 'node-karin'
+import { segment, type ElementTypes } from 'node-karin'
+
+import { logger } from '@/module/utils/logger'
 
 /**
  * 用户名元数据，用于传递 VIP 状态和颜色信息

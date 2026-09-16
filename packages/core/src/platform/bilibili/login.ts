@@ -1,12 +1,13 @@
 import fs from 'node:fs'
 
 import type { AmagiError, Qrcode } from '@ikenxuan/amagi'
-import { logger, type Message } from 'node-karin'
+import { type Message } from 'node-karin'
 
 import { Common, Render } from '@/module/utils'
 import { getAmagiClient, reloadAmagiConfig } from '@/module/utils/amagiClient'
 import { resolveTriggerAvatarUrl } from '@/module/utils/bot'
 import { Config } from '@/module/utils/Config'
+import { logger } from '@/module/utils/logger'
 
 /**
  * 登录过程中发出的消息统一登记，结束时一起撤回，避免二维码留在群里
@@ -32,14 +33,14 @@ const createMessageTracker = (e: Message) => {
      * @param message - 消息内容
      * @returns 这条消息的 id
      */
-    async send (message: Parameters<Message['reply']>[0]) {
+    async send(message: Parameters<Message['reply']>[0]) {
       const sent = await e.reply(message, { reply: true })
       if (sent.messageId) messageIds.push(sent.messageId)
       return sent.messageId
     },
     recall,
     /** 撤回目前登记的全部消息 */
-    async recallAll () {
+    async recallAll() {
       await Promise.all(messageIds.splice(0, messageIds.length).map(recall))
     }
   }

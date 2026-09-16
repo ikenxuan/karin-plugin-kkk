@@ -2,7 +2,8 @@
  * Emoji 表情回复工具模块
  */
 import type { Message } from 'node-karin'
-import { logger } from 'node-karin'
+
+import { logger } from '@/module/utils/logger'
 
 import { Config } from './Config'
 
@@ -87,7 +88,8 @@ export function getEmojiId(e: Message, type: EmojiType): string | number {
   const platform = e.bot?.adapter?.platform || 'other'
   // node-karin 的 AdapterPlatform 联合里有本表未覆盖的取值（如 dingtalk），
   // 索引前先按「表里有没有这个键」收窄，缺的一律落到 other
-  const platformEmojis = platform in PLATFORM_EMOJI_IDS ? PLATFORM_EMOJI_IDS[platform as keyof typeof PLATFORM_EMOJI_IDS] : PLATFORM_EMOJI_IDS.other
+  const platformEmojis =
+    platform in PLATFORM_EMOJI_IDS ? PLATFORM_EMOJI_IDS[platform as keyof typeof PLATFORM_EMOJI_IDS] : PLATFORM_EMOJI_IDS.other
   return platformEmojis[type]
 }
 

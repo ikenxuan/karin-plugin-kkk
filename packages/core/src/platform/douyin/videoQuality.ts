@@ -1,7 +1,7 @@
 import type { DouyinVideoWorkResponse } from '@ikenxuan/amagi'
-import { logger } from 'node-karin'
 
 import { Config } from '@/module/utils/Config'
+import { logger } from '@/module/utils/logger'
 
 /** 抖音视频源对象，对应 `aweme_detail.video.bit_rate` 数组项（直接复用 amagi 生成类型，避免手写漂移） */
 export type dyVideo = NonNullable<DouyinVideoWorkResponse['aweme_detail']>['video']['bit_rate'][number]

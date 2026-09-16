@@ -1,11 +1,12 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import karin, { logger } from 'node-karin'
+import karin from 'node-karin'
 
 import { Common } from '@/module'
 import { Config } from '@/module/utils/Config'
 import { wrapWithErrorHandler } from '@/module/utils/ErrorHandler'
+import { logger } from '@/module/utils/logger'
 import { bilibiliLogin } from '@/platform'
 import { douyinLogin } from '@/platform/douyin/login'
 

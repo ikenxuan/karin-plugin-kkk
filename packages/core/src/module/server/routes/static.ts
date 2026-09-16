@@ -4,9 +4,10 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import { createServerErrorResponse, logger } from 'node-karin'
+import { createServerErrorResponse } from 'node-karin'
 import express from 'node-karin/express'
 
+import { logger } from '@/module/utils/logger'
 import { Root } from '@/root'
 
 const webDistPath = path.join(Root.pluginPath, 'lib', 'web')
@@ -18,7 +19,7 @@ const sendWebIndex = (res: express.Response) => {
     res.setHeader('Cache-Control', 'no-cache')
     res.type('html').send(html)
   } catch (error) {
-    logger.error('[karin-plugin-kkk] 读取 Web UI 入口文件失败:', error)
+    logger.error('读取 Web UI 入口文件失败:', error)
     createServerErrorResponse(res, '加载 Web UI 失败')
   }
 }

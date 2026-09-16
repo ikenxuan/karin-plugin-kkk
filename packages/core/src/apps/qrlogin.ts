@@ -1,10 +1,11 @@
 import os from 'node:os'
 
-import karin, { logger } from 'node-karin'
+import karin from 'node-karin'
 
 import { resolveTriggerAvatarUrl } from '@/module/utils/bot'
 import { Config } from '@/module/utils/Config'
 import { wrapWithErrorHandler } from '@/module/utils/ErrorHandler'
+import { logger } from '@/module/utils/logger'
 import { Render } from '@/module/utils/Render'
 
 /**

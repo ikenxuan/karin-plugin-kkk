@@ -17,7 +17,7 @@ import type { BilibiliForwardOriginalContentProps } from '@template/template/bil
 import { DecorationCardData } from '@template/template/bilibili/dynamic/types'
 import { format, formatDistanceToNow, fromUnixTime } from 'date-fns'
 import { zhCN } from 'date-fns/locale'
-import karin, { common, ElementTypes, logger, Message, segment, SendMessage } from 'node-karin'
+import karin, { common, ElementTypes, Message, segment, SendMessage } from 'node-karin'
 
 import type { ParseWorkType } from '@/module/db'
 import {
@@ -41,6 +41,7 @@ import {
 } from '@/module/utils'
 import { bilibiliFetcher, isSoftFailure, SOFT_ERROR_CODES, softFetch } from '@/module/utils/amagiClient'
 import { Config } from '@/module/utils/Config'
+import { logger } from '@/module/utils/logger'
 import { bilibiliComments, BilibiliId, checkCk, genParams } from '@/platform/bilibili'
 import { type BiliDanmakuElem, burnBiliDanmaku, getHotDanmaku, mergeAndBurnBili } from '@/platform/bilibili/danmaku'
 import {
@@ -1729,7 +1730,7 @@ export const getvideosize = async (videourl: string, audiourl: string | undefine
     const totalSizeInMB = parseFloat(videoSizeInMB) + parseFloat(audioSizeInMB)
     return totalSizeInMB.toFixed(2)
   } catch (error) {
-    logger.warn(`[karin-plugin-kkk] 获取视频大小失败: ${error instanceof Error ? error.message : String(error)}`)
+    logger.warn(`获取视频大小失败: ${error instanceof Error ? error.message : String(error)}`)
     return '0.00'
   }
 }

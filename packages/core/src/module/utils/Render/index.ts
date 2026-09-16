@@ -3,10 +3,11 @@ import { fileURLToPath } from 'node:url'
 
 import { createTemplateRenderer, type DataOf, type LoadedRegistry } from '@karinjs/template-react'
 import type { ImageElement, Message } from 'node-karin'
-import { db, karinPathHtml, logger, render, segment } from 'node-karin'
+import { db, karinPathHtml, render, segment } from 'node-karin'
 
 import { Root } from '@/module'
 import { Config } from '@/module/utils/Config'
+import { logger } from '@/module/utils/logger'
 
 import { isSemverGreater } from '../semver'
 import { templateFonts } from '../templateFonts'
@@ -22,6 +23,11 @@ type ImageMetadata = {
 const isDevRuntime = !fileURLToPath(import.meta.url)
   .replace(/\\/g, '/')
   .includes('/lib/')
+
+// 字体包解析也发生在构建进程里（那时不能碰 Karin），缺失告警统一挪到运行时的这里输出
+if (templateFonts.missing.length > 0) {
+  logger.warn(`未找到字体包 ${templateFonts.missing.join('、')}，对应字体将回退到系统字体`)
+}
 
 // ktr 侧按约定装配（包根定位、karin.template.ts、.ktr 注册表、CSS 定位、捕获目录）；
 // outputDir 与 htmlFileName 是 karin 领域的位置与命名，由插件显式指定。

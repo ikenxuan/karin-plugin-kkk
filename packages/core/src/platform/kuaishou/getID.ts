@@ -1,6 +1,5 @@
-import { logger } from 'node-karin'
-
 import { Networks } from '@/module'
+import { logger } from '@/module/utils/logger'
 import type { KuaishouDataTypes } from '@/types'
 
 export interface ExtendedKuaishouOptionsType {
@@ -42,7 +41,7 @@ export const getKuaishouID = async (url: string, log = true) => {
   }
 
   if (log) {
-    console.log(result)
+    logger.debug(result)
   }
   return result
 }

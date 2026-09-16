@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 import { resolve } from 'node:path'
 
-import { logger } from 'node-karin'
+import { logger } from '@/module/utils/logger'
 
 import { Root } from '../../root'
 

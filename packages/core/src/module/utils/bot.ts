@@ -1,7 +1,8 @@
 import type { AdapterType, Message } from 'node-karin'
-import karin, { config, logger } from 'node-karin'
+import karin, { config } from 'node-karin'
 
 import { Config } from '@/module/utils/Config'
+import { logger } from '@/module/utils/logger'
 
 import { statBotId } from './Base'
 
@@ -109,7 +110,7 @@ export const resolveTriggerAvatarUrl = async (e: Message): Promise<string | unde
     const url = await e.bot.getAvatarUrl(userId)
     return url || undefined
   } catch (error) {
-    logger.debug('[karin-plugin-kkk] 获取触发者头像失败，二维码将不嵌入头像:', error)
+    logger.debug('获取触发者头像失败，二维码将不嵌入头像:', error)
     return undefined
   }
 }

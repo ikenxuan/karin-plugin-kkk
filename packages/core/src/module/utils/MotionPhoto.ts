@@ -4,7 +4,9 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import { ffmpeg, logger } from 'node-karin'
+import { ffmpeg } from 'node-karin'
+
+import { logger } from '@/module/utils/logger'
 
 import { Common } from './Common'
 import { Config } from './Config'

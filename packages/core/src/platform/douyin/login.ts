@@ -1,12 +1,13 @@
 import fs from 'node:fs'
 
 import type { AmagiError, LoginChallenge, Qrcode, SmsChallenge } from '@ikenxuan/amagi'
-import { karin, logger, type Message } from 'node-karin'
+import { karin, type Message } from 'node-karin'
 
 import { Common, Render } from '@/module'
 import { getAmagiClient, reloadAmagiConfig } from '@/module/utils/amagiClient'
 import { resolveTriggerAvatarUrl } from '@/module/utils/bot'
 import { Config } from '@/module/utils/Config'
+import { logger } from '@/module/utils/logger'
 
 /** 等待用户扫码的时限上限，与消息可撤回窗口（2 分钟）对齐 */
 const SCAN_TIMEOUT = 120_000
@@ -34,7 +35,7 @@ const REQUIRED_COOKIES = ['sessionid', 'sessionid_ss', 'sid_guard', 'uid_tt', 'u
  * 用一个专门的异常带上要发给用户的话，外层认出它就正常收尾。
  */
 class LoginAborted extends Error {
-  constructor (readonly notice: string) {
+  constructor(readonly notice: string) {
     super(notice)
     this.name = 'LoginAborted'
   }
@@ -54,14 +55,14 @@ const createMessageTracker = (e: Message) => {
      * @param message - 消息内容
      * @returns 发送结果
      */
-    async send (message: Parameters<Message['reply']>[0]) {
+    async send(message: Parameters<Message['reply']>[0]) {
       const sent = await e.reply(message, { reply: true })
       if (sent.messageId) messageIds.push(sent.messageId)
       return sent
     },
 
     /** 撤回目前登记的全部消息 */
-    async recallAll () {
+    async recallAll() {
       const pending = messageIds.splice(0, messageIds.length)
       await Promise.all(
         pending.map(async (id) => {
@@ -106,11 +107,7 @@ const sendQrcode = async (e: Message, qrcode: Qrcode, tracker: ReturnType<typeof
  * @returns 用户回填的 6 位验证码
  * @throws {LoginAborted} 用户超时、格式错误用尽次数或发码失败
  */
-const collectSmsCode = async (
-  e: Message,
-  challenge: SmsChallenge,
-  tracker: ReturnType<typeof createMessageTracker>
-): Promise<string> => {
+const collectSmsCode = async (e: Message, challenge: SmsChallenge, tracker: ReturnType<typeof createMessageTracker>): Promise<string> => {
   const sent = await challenge.sendCode()
   if (!sent.ok) {
     logger.warn(`[抖音登录] 短信验证码发送失败: ${sent.error.message}`)

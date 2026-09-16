@@ -1,9 +1,9 @@
 import { createBilibiliRoutes, createDouyinRoutes, createKuaishouRoutes, createXiaohongshuRoutes } from '@ikenxuan/amagi'
-import { logger } from 'node-karin'
 import express from 'node-karin/express'
 
 import { registerAmagiReloadListener } from '@/module/utils/amagiClient'
 import { Config } from '@/module/utils/Config'
+import { logger } from '@/module/utils/logger'
 
 /**
  * 平台 Router 的请求配置。

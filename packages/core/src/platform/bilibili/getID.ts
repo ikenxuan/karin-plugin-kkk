@@ -1,7 +1,7 @@
-import { logger } from 'node-karin'
 import axios from 'node-karin/axios'
 
 import { bilibiliFetcher } from '@/module/utils/amagiClient'
+import { logger } from '@/module/utils/logger'
 import type { BilibiliDataTypes } from '@/types'
 
 export interface BilibiliId {
@@ -142,6 +142,6 @@ export const getBilibiliID = async (url: string) => {
       break
   }
 
-  console.log(result)
+  logger.debug(result)
   return result
 }

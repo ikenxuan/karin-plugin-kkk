@@ -2,9 +2,10 @@ import fs from 'node:fs'
 import { Transform } from 'node:stream'
 import { pipeline } from 'node:stream/promises'
 
-import { logger } from 'node-karin'
 import type { AxiosInstance } from 'node-karin/axios'
 import { AxiosError } from 'node-karin/axios'
+
+import { logger } from '@/module/utils/logger'
 
 import {
   calculateBackoffDelay,

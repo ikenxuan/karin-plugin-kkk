@@ -1,8 +1,8 @@
 import type { DouyinUserProfileResponse } from '@ikenxuan/amagi'
-import { logger } from 'node-karin'
 
 import { douyinDB } from '@/module'
 import type { douyinFetcher } from '@/module/utils/amagiClient'
+import { logger } from '@/module/utils/logger'
 import type { douyinPushItem } from '@/types/config/pushlist'
 
 import type { DouyinLivePushItem } from './types'

@@ -2,12 +2,13 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 import { scanSync } from '@ikenxuan/qrcode'
-import { createNotFoundResponse, logger, type Message } from 'node-karin'
+import { createNotFoundResponse, type Message } from 'node-karin'
 import axios from 'node-karin/axios'
 import type { Response } from 'node-karin/express'
 import { karinPathTemp } from 'node-karin/root'
 
 import { Config } from '@/module/utils/Config'
+import { logger } from '@/module/utils/logger'
 
 import { Count } from '..'
 import { Root } from '../../root'
@@ -225,7 +226,7 @@ class Tools {
       const fileSizeInMB = fileSizeInBytes / (1024 * 1024) // 转换为MB
       return fileSizeInMB
     } catch (error) {
-      console.error('获取文件大小时发生错误:', error)
+      logger.error('获取文件大小时发生错误:', error)
       throw error
     }
   }

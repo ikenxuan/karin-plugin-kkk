@@ -1,10 +1,11 @@
 import { format } from 'date-fns'
-import karin, { logger } from 'node-karin'
+import karin from 'node-karin'
 
 import { Render } from '@/module'
 import { getStatisticsDB } from '@/module/db'
 import { resolveAvatar } from '@/module/utils/avatar'
 import { wrapWithErrorHandler } from '@/module/utils/ErrorHandler'
+import { logger } from '@/module/utils/logger'
 import { aggregateGlobal, aggregateGroup, TREND_DAYS } from '@/module/utils/statisticsAggregate'
 
 /** 向 bot 索取头像时用的尺寸档；接口只接受 0/40/100/140 四档 */
@@ -61,7 +62,10 @@ const handleGroupStatistics = wrapWithErrorHandler(
     }
     // 群头像：优先问 bot 要（`getGroupAvatarUrl` 比 `groupInfo.avatar` 更可靠，
     // 部分适配器的群信息里不带头像），拿不到就现场生成一个，保证头部不会空着
-    const groupAvatar = await resolveAvatar(groupId, await getAvatarUrl(() => e.bot.getGroupAvatarUrl(groupId, AVATAR_FETCH_SIZE)) ?? groupAvatarUrl)
+    const groupAvatar = await resolveAvatar(
+      groupId,
+      (await getAvatarUrl(() => e.bot.getGroupAvatarUrl(groupId, AVATAR_FETCH_SIZE))) ?? groupAvatarUrl
+    )
 
     // 获取统计数据库实例
     const statisticsDB = await getStatisticsDB()
