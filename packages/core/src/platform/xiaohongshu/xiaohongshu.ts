@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 
-import type { NoteComments, XiaohongshuEmojiListResponse } from '@ikenxuan/amagi'
+import type { XiaohongshuNoteCommentsResponse, XiaohongshuEmojiListResponse } from '@ikenxuan/amagi'
 import type { RichTextEmojiDefinition } from '@kkk/richtext'
 import { format } from 'date-fns'
 import { common, type Elements, type Message, logger, segment } from 'node-karin'
@@ -71,7 +71,7 @@ export class Xiaohongshu extends Base {
    * @param data - 笔记 id 与 xsec_token
    * @returns 响应体（fetcher 失败即抛），`data.comments` 已是合并后的全部评论
    */
-  private async fetchConfiguredNoteComments(data: XiaohongshuIdData): Promise<NoteComments> {
+  private async fetchConfiguredNoteComments(data: XiaohongshuIdData): Promise<XiaohongshuNoteCommentsResponse> {
     return (
       await this.amagi.xiaohongshu.fetcher.fetchNoteComments({
         note_id: data.note_id,
@@ -125,7 +125,7 @@ export class Xiaohongshu extends Base {
         await this.e.reply('这个笔记没有评论 ~')
       } else {
         // 使用简化的评论处理函数，直接返回评论数组
-        const processedComments = await xiaohongshuComments(CommentData, formattedEmojis)
+        const processedComments = xiaohongshuComments(CommentData, formattedEmojis)
 
         const commentListImg = await Render(this.e, 'xiaohongshu/comment', {
           Type: NoteData.data.data.items[0].note_card!.video ? '视频' : '图文',

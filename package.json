@@ -24,7 +24,6 @@
     "watch": "pnpm --filter karin-plugin-kkk run watch"
   },
   "dependencies": {
-    "@ikenxuan/amagi": "workspace:*",
     "node-karin": "1.16.3"
   },
   "devDependencies": {

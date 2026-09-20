@@ -93,7 +93,16 @@ interface XiaohongshuSubComment {
   /** 是否已点赞 */
   liked: boolean
   /** 评论图片 */
-  pictures: string[]
+  pictures: Array<{
+    height: number
+    width: number
+    url_pre: string
+    url_default: string
+    info_list: Array<{
+      image_scene: string
+      url: string
+    }>
+  }>
   /** 显示标签 */
   show_tags: string[]
   /** @用户列表 */

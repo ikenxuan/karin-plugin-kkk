@@ -1,4 +1,4 @@
-import type { NoteComments } from '@ikenxuan/amagi'
+import type { XiaohongshuNoteCommentsResponse } from '@ikenxuan/amagi'
 import {
   createEmojiNode,
   createLineBreakNode,
@@ -35,7 +35,10 @@ type NoteTag = string | { name?: string; tag?: string }
  *
  * 这里直接输出结构化评论 JSON，正文部分使用 richtext 文档，避免后端拼接 HTML。
  */
-export const xiaohongshuComments = (data: NoteComments, emojiData: RichTextEmojiDefinition[]): XiaohongshuCommentItem[] => {
+export const xiaohongshuComments = (
+  data: XiaohongshuNoteCommentsResponse,
+  emojiData: RichTextEmojiDefinition[]
+): XiaohongshuCommentItem[] => {
   const rawComments = data?.data?.comments
   if (!Array.isArray(rawComments) || rawComments.length === 0) {
     return []
@@ -68,7 +71,7 @@ export const xiaohongshuComments = (data: NoteComments, emojiData: RichTextEmoji
 }
 
 const buildXiaohongshuSubComments = (
-  subComments: NoteComments['data']['comments'][number]['sub_comments'],
+  subComments: XiaohongshuNoteCommentsResponse['data']['comments'][number]['sub_comments'],
   emojiData: RichTextEmojiDefinition[]
 ): XiaohongshuSubComment[] => {
   if (!Array.isArray(subComments)) {

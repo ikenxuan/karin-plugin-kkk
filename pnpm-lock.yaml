@@ -13,9 +13,6 @@ importers:
 
   .:
     dependencies:
-      '@ikenxuan/amagi':
-        specifier: workspace:*
-        version: link:packages/amagi/packages/core
       node-karin:
         specifier: 1.16.2
         version: 1.16.2
@@ -175,8 +172,8 @@ importers:
         specifier: ^13.15.1
         version: 13.15.1(react@19.3.0)
       '@ikenxuan/amagi':
-        specifier: workspace:*
-        version: link:../amagi/packages/core
+        specifier: https://pkg.pr.new/@ikenxuan/amagi@2286fea
+        version: https://pkg.pr.new/@ikenxuan/amagi@2286fea
       '@karinjs/adapter-qqbot':
         specifier: 3.3.0
         version: 3.3.0
@@ -1029,11 +1026,18 @@ packages:
     peerDependencies:
       react: ^16.13 || ^17 || ^18 || ^19
 
+  '@ikenxuan/amagi@https://pkg.pr.new/@ikenxuan/amagi@2286fea':
+    resolution: {integrity: sha512-9FWarOy+IgoMsnGD75fYzUWYl8IpMqbR4RR2YoKS6H58k6RWbvLuP4JQr7rAawUESvGnyxO5SEsBBRzctOSQBA==, tarball: https://pkg.pr.new/@ikenxuan/amagi@2286fea}
+    version: 7.0.1-beta.20260920043127.2286fea
+
   '@ikenxuan/qrcode@1.5.0':
     resolution: {integrity: sha512-tF7q9LVVWGlG9KJQx1AiY313lrR2uFjTzkQGpmTC2msZ+vArgnjgSIFvUjv7WMl2nPR9hySl6/NkAU2Wwn1iZg==}
 
   '@ikenxuan/xhshow-ts@1.0.6':
     resolution: {integrity: sha512-2Qo2tWzU6grC7bsTwohnp9KJA9wqDTAb2bbhaBOqBdAlM44zp9qlSAe2+UTYqDZaxrpne8SCT11biizVUJuosQ==}
+
+  '@ikenxuan/xhshow-ts@1.1.0':
+    resolution: {integrity: sha512-wvWgHMr86qBMneGg3VWNj/MyTM1YI2KfgueBpp+ajfNVxX98r9hVVUoDHYcadPlk9aKWWFcpa/P6Rj5aESBHew==}
 
   '@img/colour@1.1.0':
     resolution: {integrity: sha512-Td76q7j57o/tLVdgS746cYARfSyxk8iEfRxewL9h4OMzYhbW4TAcppl0mT4eyqXddh6L/jwoM75mo7ixa/pCeQ==}
@@ -7681,6 +7685,9 @@ packages:
   zod@4.4.3:
     resolution: {integrity: sha512-ytENFjIJFl2UwYglde2jchW2Hwm4GJFLDiSXWdTrJQBIN9Fcyp7n4DhxJEiWNAJMV1/BqWfW/kkg71UDcHJyTQ==}
 
+  zod@4.6.5:
+    resolution: {integrity: sha512-v5l/aFXZQeai4awLbOpSoHecE9UiMrnfx75tEXLjNonXVARxQ5mOeipTjROUchszUNCqnE+hqAMujRsRHsut2Q==}
+
   zrender@6.1.0:
     resolution: {integrity: sha512-oEGMDB6pOP2S6OwRR4PdVv610zrjnA3Bh+JnSG12fYJlBKjtNAoEb5fSUoCOOINlH96I2fU38/A2UpRKs67xYQ==}
 
@@ -8005,11 +8012,11 @@ snapshots:
       conventional-commits-filter: 5.0.0
       conventional-commits-parser: 6.4.0
 
-  '@devframes/hub@0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))':
+  '@devframes/hub@0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))':
     dependencies:
       birpc: 4.0.0
       destr: 2.0.5
-      devframe: 0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)
+      devframe: 0.7.15(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)
       nostics: 1.2.0
       pathe: 2.0.3
       perfect-debounce: 2.1.0
@@ -8017,21 +8024,43 @@ snapshots:
       zigpty: 0.2.1
     optional: true
 
-  '@devframes/json-render@0.7.15(@devframes/hub@0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)))(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))':
+  '@devframes/hub@0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.6.5))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))':
+    dependencies:
+      birpc: 4.0.0
+      destr: 2.0.5
+      devframe: 0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.6.5))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)
+      nostics: 1.2.0
+      pathe: 2.0.3
+      perfect-debounce: 2.1.0
+      tinyexec: 1.3.1
+      zigpty: 0.2.1
+    optional: true
+
+  '@devframes/json-render@0.7.15(@devframes/hub@0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)))(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))':
     dependencies:
       '@json-render/core': 0.19.0(zod@4.4.3)
-      devframe: 0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)
+      devframe: 0.7.15(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)
       nostics: 1.2.0
       zod: 4.4.3
     optionalDependencies:
-      '@devframes/hub': 0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))
+      '@devframes/hub': 0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))
     optional: true
 
-  '@devframes/plugin-inspect@0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))(valibot@1.4.2(typescript@7.0.2))(vite@8.1.4)':
+  '@devframes/json-render@0.7.15(@devframes/hub@0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.6.5))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)))(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.6.5))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))':
+    dependencies:
+      '@json-render/core': 0.19.0(zod@4.4.3)
+      devframe: 0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.6.5))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)
+      nostics: 1.2.0
+      zod: 4.4.3
+    optionalDependencies:
+      '@devframes/hub': 0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.6.5))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))
+    optional: true
+
+  '@devframes/plugin-inspect@0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))(valibot@1.4.2(typescript@7.0.2))(vite@8.1.4)':
     dependencies:
       '@valibot/to-json-schema': 1.7.1(valibot@1.4.2(typescript@7.0.2))
       cac: 7.0.0
-      devframe: 0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)
+      devframe: 0.7.15(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)
       nostics: 1.2.0
     optionalDependencies:
       vite: 8.1.4(@types/node@24.13.4)(@vitejs/devtools@0.4.10)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.13)(yaml@2.9.0)
@@ -8039,20 +8068,56 @@ snapshots:
       - valibot
     optional: true
 
-  '@devframes/plugin-messages@0.7.15(@devframes/hub@0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)))(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))(vite@8.1.4)':
+  '@devframes/plugin-inspect@0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.6.5))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))(valibot@1.4.2(typescript@7.0.2))(vite@8.1.4)':
     dependencies:
-      '@devframes/hub': 0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))
+      '@valibot/to-json-schema': 1.7.1(valibot@1.4.2(typescript@7.0.2))
       cac: 7.0.0
-      devframe: 0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)
+      devframe: 0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.6.5))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)
+      nostics: 1.2.0
+    optionalDependencies:
+      vite: 8.1.4(@types/node@24.13.4)(@vitejs/devtools@0.4.10)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.13)(yaml@2.9.0)
+    transitivePeerDependencies:
+      - valibot
+    optional: true
+
+  '@devframes/plugin-messages@0.7.15(@devframes/hub@0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)))(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))(vite@8.1.4)':
+    dependencies:
+      '@devframes/hub': 0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))
+      cac: 7.0.0
+      devframe: 0.7.15(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)
       nostics: 1.2.0
     optionalDependencies:
       vite: 8.1.4(@types/node@24.13.4)(@vitejs/devtools@0.4.10)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.13)(yaml@2.9.0)
     optional: true
 
-  '@devframes/plugin-terminals@0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))(typescript@7.0.2)(vite@8.1.4)':
+  '@devframes/plugin-messages@0.7.15(@devframes/hub@0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.6.5))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)))(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.6.5))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))(vite@8.1.4)':
+    dependencies:
+      '@devframes/hub': 0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.6.5))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))
+      cac: 7.0.0
+      devframe: 0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.6.5))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)
+      nostics: 1.2.0
+    optionalDependencies:
+      vite: 8.1.4(@types/node@24.13.4)(@vitejs/devtools@0.4.10)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.13)(yaml@2.9.0)
+    optional: true
+
+  '@devframes/plugin-terminals@0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))(typescript@7.0.2)(vite@8.1.4)':
     dependencies:
       cac: 7.0.0
-      devframe: 0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)
+      devframe: 0.7.15(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)
+      nostics: 1.2.0
+      pathe: 2.0.3
+      valibot: 1.4.2(typescript@7.0.2)
+      zigpty: 0.2.1
+    optionalDependencies:
+      vite: 8.1.4(@types/node@24.13.4)(@vitejs/devtools@0.4.10)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.13)(yaml@2.9.0)
+    transitivePeerDependencies:
+      - typescript
+    optional: true
+
+  '@devframes/plugin-terminals@0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.6.5))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))(typescript@7.0.2)(vite@8.1.4)':
+    dependencies:
+      cac: 7.0.0
+      devframe: 0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.6.5))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)
       nostics: 1.2.0
       pathe: 2.0.3
       valibot: 1.4.2(typescript@7.0.2)
@@ -8340,11 +8405,27 @@ snapshots:
     dependencies:
       react: 19.3.0
 
+  '@ikenxuan/amagi@https://pkg.pr.new/@ikenxuan/amagi@2286fea':
+    dependencies:
+      '@ikenxuan/xhshow-ts': 1.1.0
+      axios: 1.20.0(debug@4.4.3(supports-color@7.2.0))(supports-color@7.2.0)
+      chalk: 6.0.0
+      express: 5.2.1(supports-color@7.2.0)
+      protobufjs: 8.7.1
+      zod: 4.4.3
+    transitivePeerDependencies:
+      - debug
+      - supports-color
+
   '@ikenxuan/qrcode@1.5.0': {}
 
   '@ikenxuan/xhshow-ts@1.0.6':
     dependencies:
       zod: 4.4.3
+
+  '@ikenxuan/xhshow-ts@1.1.0':
+    dependencies:
+      zod: 4.6.5
 
   '@img/colour@1.1.0':
     optional: true
@@ -8694,6 +8775,29 @@ snapshots:
       raw-body: 3.0.2
       zod: 4.4.3
       zod-to-json-schema: 3.25.2(zod@4.4.3)
+    transitivePeerDependencies:
+      - supports-color
+    optional: true
+
+  '@modelcontextprotocol/sdk@1.30.0(zod@4.6.5)':
+    dependencies:
+      '@hono/node-server': 2.0.12(hono@4.12.32)
+      ajv: 8.20.0
+      ajv-formats: 3.0.1(ajv@8.20.0)
+      content-type: 1.0.5
+      cors: 2.8.6
+      cross-spawn: 7.0.6
+      eventsource: 3.0.7
+      eventsource-parser: 3.1.0
+      express: 5.2.1(supports-color@7.2.0)
+      express-rate-limit: 8.6.1(express@5.2.1(supports-color@7.2.0))(supports-color@7.2.0)
+      hono: 4.12.32
+      jose: 6.2.5
+      json-schema-typed: 8.0.2
+      pkce-challenge: 5.0.1
+      raw-body: 3.0.2
+      zod: 4.6.5
+      zod-to-json-schema: 3.25.2(zod@4.6.5)
     transitivePeerDependencies:
       - supports-color
     optional: true
@@ -10262,11 +10366,11 @@ snapshots:
       valibot: 1.4.2(typescript@7.0.2)
     optional: true
 
-  '@vitejs/devtools-kit@0.4.10(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)(vite@8.1.4)':
+  '@vitejs/devtools-kit@0.4.10(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)(vite@8.1.4)':
     dependencies:
-      '@devframes/hub': 0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))
-      '@devframes/json-render': 0.7.15(@devframes/hub@0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)))(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))
-      devframe: 0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)
+      '@devframes/hub': 0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))
+      '@devframes/json-render': 0.7.15(@devframes/hub@0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)))(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))
+      devframe: 0.7.15(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)
       local-pkg: 1.2.1
       mlly: 1.8.2
       nostics: 1.2.0
@@ -10279,16 +10383,59 @@ snapshots:
       - typescript
     optional: true
 
-  '@vitejs/devtools@0.4.10(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(crossws@0.4.10(srvx@0.12.4))(srvx@0.12.4)(typescript@7.0.2)(valibot@1.4.2(typescript@7.0.2))(vite@8.1.4)':
+  '@vitejs/devtools-kit@0.4.10(@modelcontextprotocol/sdk@1.30.0(zod@4.6.5))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)(vite@8.1.4)':
     dependencies:
-      '@devframes/hub': 0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))
-      '@devframes/plugin-inspect': 0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))(valibot@1.4.2(typescript@7.0.2))(vite@8.1.4)
-      '@devframes/plugin-messages': 0.7.15(@devframes/hub@0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)))(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))(vite@8.1.4)
-      '@devframes/plugin-terminals': 0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))(typescript@7.0.2)(vite@8.1.4)
-      '@vitejs/devtools-kit': 0.4.10(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)(vite@8.1.4)
+      '@devframes/hub': 0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.6.5))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))
+      '@devframes/json-render': 0.7.15(@devframes/hub@0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.6.5))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)))(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.6.5))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))
+      devframe: 0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.6.5))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)
+      local-pkg: 1.2.1
+      mlly: 1.8.2
+      nostics: 1.2.0
+      nypm: 0.6.9
+      vite: 8.1.4(@types/node@24.13.4)(@vitejs/devtools@0.4.10)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.13)(yaml@2.9.0)
+    transitivePeerDependencies:
+      - '@modelcontextprotocol/sdk'
+      - cac
+      - srvx
+      - typescript
+    optional: true
+
+  '@vitejs/devtools@0.4.10(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(crossws@0.4.10(srvx@0.12.4))(srvx@0.12.4)(typescript@7.0.2)(valibot@1.4.2(typescript@7.0.2))(vite@8.1.4)':
+    dependencies:
+      '@devframes/hub': 0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))
+      '@devframes/plugin-inspect': 0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))(valibot@1.4.2(typescript@7.0.2))(vite@8.1.4)
+      '@devframes/plugin-messages': 0.7.15(@devframes/hub@0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)))(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))(vite@8.1.4)
+      '@devframes/plugin-terminals': 0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))(typescript@7.0.2)(vite@8.1.4)
+      '@vitejs/devtools-kit': 0.4.10(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)(vite@8.1.4)
       birpc: 4.0.0
       cac: 7.0.0
-      devframe: 0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)
+      devframe: 0.7.15(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)
+      h3: 2.0.1-rc.22(crossws@0.4.10(srvx@0.12.4))
+      local-pkg: 1.2.1
+      mlly: 1.8.2
+      nostics: 1.2.0
+      obug: 2.1.4
+      pathe: 2.0.3
+      vite: 8.1.4(@types/node@24.13.4)(@vitejs/devtools@0.4.10)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.13)(yaml@2.9.0)
+      vue: 3.5.40(typescript@7.0.2)
+    transitivePeerDependencies:
+      - '@modelcontextprotocol/sdk'
+      - crossws
+      - srvx
+      - typescript
+      - valibot
+    optional: true
+
+  '@vitejs/devtools@0.4.10(@modelcontextprotocol/sdk@1.30.0(zod@4.6.5))(crossws@0.4.10(srvx@0.12.4))(srvx@0.12.4)(typescript@7.0.2)(valibot@1.4.2(typescript@7.0.2))(vite@8.1.4)':
+    dependencies:
+      '@devframes/hub': 0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.6.5))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))
+      '@devframes/plugin-inspect': 0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.6.5))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))(valibot@1.4.2(typescript@7.0.2))(vite@8.1.4)
+      '@devframes/plugin-messages': 0.7.15(@devframes/hub@0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.6.5))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)))(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.6.5))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))(vite@8.1.4)
+      '@devframes/plugin-terminals': 0.7.15(devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.6.5))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2))(typescript@7.0.2)(vite@8.1.4)
+      '@vitejs/devtools-kit': 0.4.10(@modelcontextprotocol/sdk@1.30.0(zod@4.6.5))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)(vite@8.1.4)
+      birpc: 4.0.0
+      cac: 7.0.0
+      devframe: 0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.6.5))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2)
       h3: 2.0.1-rc.22(crossws@0.4.10(srvx@0.12.4))
       local-pkg: 1.2.1
       mlly: 1.8.2
@@ -11276,7 +11423,7 @@ snapshots:
 
   detect-node-es@1.1.0: {}
 
-  devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2):
+  devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2):
     dependencies:
       '@valibot/to-json-schema': 1.7.1(valibot@1.4.2(typescript@7.0.2))
       birpc: 4.0.0
@@ -11290,6 +11437,26 @@ snapshots:
       valibot: 1.4.2(typescript@7.0.2)
     optionalDependencies:
       '@modelcontextprotocol/sdk': 1.30.0(supports-color@7.2.0)(zod@4.4.3)
+      cac: 7.0.0
+    transitivePeerDependencies:
+      - srvx
+      - typescript
+    optional: true
+
+  devframe@0.7.15(@modelcontextprotocol/sdk@1.30.0(zod@4.6.5))(cac@7.0.0)(srvx@0.12.4)(typescript@7.0.2):
+    dependencies:
+      '@valibot/to-json-schema': 1.7.1(valibot@1.4.2(typescript@7.0.2))
+      birpc: 4.0.0
+      crossws: 0.4.10(srvx@0.12.4)
+      destr: 2.0.5
+      h3: 2.0.1-rc.26(crossws@0.4.10(srvx@0.12.4))
+      mrmime: 2.0.1
+      nostics: 1.2.0
+      pathe: 2.0.3
+      ufo: 1.6.4
+      valibot: 1.4.2(typescript@7.0.2)
+    optionalDependencies:
+      '@modelcontextprotocol/sdk': 1.30.0(zod@4.6.5)
       cac: 7.0.0
     transitivePeerDependencies:
       - srvx
@@ -14365,7 +14532,7 @@ snapshots:
       unconfig-core: 7.5.0
       verkit: 0.3.1
     optionalDependencies:
-      '@vitejs/devtools': 0.4.10(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(crossws@0.4.10(srvx@0.12.4))(srvx@0.12.4)(typescript@7.0.2)(valibot@1.4.2(typescript@7.0.2))(vite@8.1.4)
+      '@vitejs/devtools': 0.4.10(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(crossws@0.4.10(srvx@0.12.4))(srvx@0.12.4)(typescript@7.0.2)(valibot@1.4.2(typescript@7.0.2))(vite@8.1.4)
       tsx: 4.23.13
       typescript: 7.0.2
     transitivePeerDependencies:
@@ -14391,7 +14558,7 @@ snapshots:
       unconfig-core: 7.5.0
       verkit: 0.4.0
     optionalDependencies:
-      '@vitejs/devtools': 0.4.10(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(crossws@0.4.10(srvx@0.12.4))(srvx@0.12.4)(typescript@7.0.2)(valibot@1.4.2(typescript@7.0.2))(vite@8.1.4)
+      '@vitejs/devtools': 0.4.10(@modelcontextprotocol/sdk@1.30.0(zod@4.6.5))(crossws@0.4.10(srvx@0.12.4))(srvx@0.12.4)(typescript@7.0.2)(valibot@1.4.2(typescript@7.0.2))(vite@8.1.4)
       tsx: 4.23.13
       typescript: 7.0.2
     transitivePeerDependencies:
@@ -14606,7 +14773,7 @@ snapshots:
       tinyglobby: 0.2.17
     optionalDependencies:
       '@types/node': 24.13.4
-      '@vitejs/devtools': 0.4.10(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(crossws@0.4.10(srvx@0.12.4))(srvx@0.12.4)(typescript@7.0.2)(valibot@1.4.2(typescript@7.0.2))(vite@8.1.4)
+      '@vitejs/devtools': 0.4.10(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(crossws@0.4.10(srvx@0.12.4))(srvx@0.12.4)(typescript@7.0.2)(valibot@1.4.2(typescript@7.0.2))(vite@8.1.4)
       esbuild: 0.28.2
       fsevents: 2.3.3
       jiti: 2.7.0
@@ -14865,9 +15032,16 @@ snapshots:
       zod: 4.4.3
     optional: true
 
+  zod-to-json-schema@3.25.2(zod@4.6.5):
+    dependencies:
+      zod: 4.6.5
+    optional: true
+
   zod@3.25.76: {}
 
   zod@4.4.3: {}
+
+  zod@4.6.5: {}
 
   zrender@6.1.0:
     dependencies:
