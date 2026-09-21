@@ -236,7 +236,7 @@ const NoteFooter: React.FC<PosterProps<XiaohongshuNoteInfoData>> = ({ data, ctx 
             <div className="mt-2 text-[26px] text-muted">长按识别二维码</div>
           </div>
           <div className="shrink-0 drop-shadow-2xl">
-            <QRCodeWithAvatar value={data.share_url} useDarkTheme={isDark(ctx)} alt="笔记二维码" className="h-60 w-60" />
+            <QRCodeWithAvatar value={data.share_url} avatarUrl={data.author.avatar} useDarkTheme={isDark(ctx)} alt="笔记二维码" className="h-60 w-60" />
           </div>
         </div>
       )}

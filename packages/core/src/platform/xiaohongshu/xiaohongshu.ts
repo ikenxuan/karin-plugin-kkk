@@ -132,7 +132,8 @@ export class Xiaohongshu extends Base {
           CommentsData: processedComments,
           CommentLength: processedComments.length,
           ImageLength: NoteData.data.data.items[0].note_card!.image_list?.length || 0,
-          share_url: `https://www.xiaohongshu.com/discovery/item/${data.note_id}?source=webshare&xhsshare=pc_web&xsec_token=${data.xsec_token}&xsec_source=pc_share`
+          share_url: `https://www.xiaohongshu.com/discovery/item/${data.note_id}?source=webshare&xhsshare=pc_web&xsec_token=${data.xsec_token}&xsec_source=pc_share`,
+          AuthorAvatar: NoteData.data.data.items[0].note_card.user.avatar
         })
         this.e.reply(commentListImg)
       }

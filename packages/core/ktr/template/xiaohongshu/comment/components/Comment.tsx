@@ -4,9 +4,9 @@ import { zhCN } from 'date-fns/locale'
 import { Heart, MessageCircle } from 'lucide-react'
 import React from 'react'
 
-import { generateQRCode } from '../../../../utils/QRcode'
 import { isDark } from '../../../../utils/theme'
 import { DefaultLayout } from '../../../components/DefaultLayout'
+import { QRCodeWithAvatar } from '../../../components/QRCodeWithAvatar'
 import type { PosterProps } from '../../../types/ctx'
 import type { XiaohongshuCommentData } from './types'
 
@@ -85,8 +85,14 @@ const NoteInfoHeader: React.FC<XiaohongshuCommentData & { useDarkTheme: boolean 
         </div>
       </div>
       <div className="flex flex-col justify-center items-center p-5">
-        <div className="flex overflow-hidden justify-center items-center bg-white w-110 h-110">
-          <img src={generateQRCode(props.share_url, props.useDarkTheme)} alt="二维码" className="object-contain" />
+        <div className="flex justify-center items-center w-110 h-110 p-4">
+          <QRCodeWithAvatar
+            value={props.share_url}
+            avatarUrl={props.AuthorAvatar}
+            useDarkTheme={props.useDarkTheme}
+            alt="二维码"
+            className="object-contain w-full h-full"
+          />
         </div>
         <p className="mt-5 text-[40px] text-muted text-center">扫码查看原笔记</p>
       </div>

@@ -21,6 +21,8 @@ export interface BilibiliCommentData {
   share_url: string
   /** 视频分辨率 */
   Resolution: string | null
+  /** UP主头像（用于二维码中心） */
+  AuthorAvatar?: string
   /** 评论数据 */
   CommentsData: CommentItem[]
 }

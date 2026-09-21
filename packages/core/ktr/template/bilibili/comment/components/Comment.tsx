@@ -4,9 +4,9 @@ import { zhCN } from 'date-fns/locale'
 import React, { type ReactNode, useEffect, useState } from 'react'
 
 import { cn } from '../../../../utils/cn'
-import { generateQRCode } from '../../../../utils/QRcode'
 import { isDark } from '../../../../utils/theme'
 import { DefaultLayout } from '../../../components/DefaultLayout'
+import { QRCodeWithAvatar } from '../../../components/QRCodeWithAvatar'
 import type { PosterProps } from '../../../types/ctx'
 import { ThumbUpIcon } from '../../components/Icons'
 import type { FansDetail, QRCodeSectionProps } from '../../components/types'
@@ -203,11 +203,17 @@ const BilibiliLogo: React.FC = () => {
  * @param props 组件属性
  * @returns JSX元素
  */
-const QRCodeSection: React.FC<QRCodeSectionProps & { useDarkTheme: boolean }> = ({ share_url, useDarkTheme }) => {
+const QRCodeSection: React.FC<QRCodeSectionProps & { useDarkTheme: boolean; avatarUrl?: string }> = ({ share_url, useDarkTheme, avatarUrl }) => {
   return (
     <div className="flex flex-col items-center">
       <div className="flex justify-center items-center w-100 h-100 p-4">
-        <img src={generateQRCode(share_url, useDarkTheme)} alt="二维码" className="object-contain w-full h-full rounded-lg" />
+        <QRCodeWithAvatar
+          value={share_url}
+          avatarUrl={avatarUrl}
+          useDarkTheme={useDarkTheme}
+          alt="二维码"
+          className="object-contain w-full h-full rounded-lg"
+        />
       </div>
     </div>
   )
@@ -273,7 +279,7 @@ const VideoInfoHeader: React.FC<Omit<BilibiliCommentData, 'CommentsData'> & { us
 
         {/* 右侧二维码区域 */}
         <div className="shrink-0">
-          <QRCodeSection share_url={props.share_url} useDarkTheme={props.useDarkTheme} />
+          <QRCodeSection share_url={props.share_url} avatarUrl={props.AuthorAvatar} useDarkTheme={props.useDarkTheme} />
         </div>
       </div>
     </div>

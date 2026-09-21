@@ -74,7 +74,8 @@ export class Kuaishou extends Base {
       CommentLength: CommentsData?.length ?? 0,
       share_url: video_url,
       VideoSize: fileSizeInMB,
-      likeCount: work.photo.likeCount
+      likeCount: work.photo.likeCount,
+      AuthorAvatar: work.photo.headUrl
     })
     await this.e.reply(img)
     await downloadVideo(this.e, {

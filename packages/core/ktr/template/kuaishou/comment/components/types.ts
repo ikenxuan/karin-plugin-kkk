@@ -19,6 +19,8 @@ export interface KuaishouCommentData {
   ImageLength?: number
   /** 分享链接 */
   share_url: string
+  /** 作品作者头像（用于二维码中心） */
+  AuthorAvatar?: string
   /** 评论数据 */
   CommentsData: {
     /** 评论ID */

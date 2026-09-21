@@ -12,6 +12,8 @@ export interface XiaohongshuCommentData {
   ImageLength?: number
   /** 分享链接 */
   share_url: string
+  /** 笔记作者头像（用于二维码中心） */
+  AuthorAvatar?: string
   /** 评论数据 - 简化为直接的评论数组 */
   CommentsData: XiaohongshuCommentItem[]
 }

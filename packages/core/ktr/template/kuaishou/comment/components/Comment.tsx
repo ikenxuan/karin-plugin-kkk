@@ -4,9 +4,9 @@ import { zhCN } from 'date-fns/locale'
 import { Heart, MessageCircle } from 'lucide-react'
 import React from 'react'
 
-import { generateQRCode } from '../../../../utils/QRcode'
 import { isDark } from '../../../../utils/theme'
 import { DefaultLayout } from '../../../components/DefaultLayout'
+import { QRCodeWithAvatar } from '../../../components/QRCodeWithAvatar'
 import type { PosterProps } from '../../../types/ctx'
 import type { KuaishouCommentData } from './types'
 
@@ -56,8 +56,14 @@ const formatKuaishouLikeCount = (count: number): string => {
 const KuaishouQRCodeSection: React.FC<KuaishouCommentData & { useDarkTheme: boolean }> = (props) => {
   return (
     <div className="flex flex-col items-center -mr-10">
-      <div className="mt-20 flex items-center justify-center w-150 h-150 bg-surface rounded-lg shadow-medium">
-        <img src={generateQRCode(props.share_url, props.useDarkTheme)} alt="二维码" className="object-contain w-full h-full" />
+      <div className="mt-20 flex items-center justify-center w-150 h-150 bg-surface rounded-lg shadow-medium p-4">
+        <QRCodeWithAvatar
+          value={props.share_url}
+          avatarUrl={props.AuthorAvatar}
+          useDarkTheme={props.useDarkTheme}
+          alt="二维码"
+          className="object-contain w-full h-full"
+        />
       </div>
       <div className="mt-5 text-[45px] text-center text-foreground">
         {props.Type === '视频' ? '视频直链(永久)' : props.Type === '图集' ? `图集分享链接 共${props.ImageLength}张` : '分享链接'}

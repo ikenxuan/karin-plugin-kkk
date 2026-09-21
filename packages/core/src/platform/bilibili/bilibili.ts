@@ -287,7 +287,8 @@ export class Bilibili extends Base {
                 Resolution:
                   Config.bilibili.videoQuality !== 0 && Config.bilibili.videoQuality < 64
                     ? null
-                    : `${playUrlData.data.data.dash.video[0].width} x ${playUrlData.data.data.dash.video[0].height}`
+                    : `${playUrlData.data.data.dash.video[0].width} x ${playUrlData.data.data.dash.video[0].height}`,
+                AuthorAvatar: infoData.data.data.owner.face
               })
               this.e.reply(img)
             }
@@ -1080,7 +1081,8 @@ export class Bilibili extends Base {
                     : `https://t.bilibili.com/${dynamicInfo.data.data.item.id_str}`,
                 ImageLength: dynamicInfo.data.data.item.modules?.module_dynamic?.major?.draw?.items?.length ?? 0,
                 shareurl: '动态分享链接',
-                Resolution: null
+                Resolution: null,
+                AuthorAvatar: dynamicInfo.data.data.item.modules.module_author.face
               })
               this.e.reply(img)
             } else {
