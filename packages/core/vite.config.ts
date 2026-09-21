@@ -137,7 +137,6 @@ export default defineConfig({
       { find: '@', replacement: resolve(__dirname, './src') },
       { find: '@kkk/richtext', replacement: resolve(__dirname, '../richtext/src/index.ts') },
       { find: '@template', replacement: resolve(__dirname, './ktr') },
-      { find: '@ikenxuan/amagi', replacement: resolve(__dirname, '../amagi/packages/core/src/index.ts') },
       { find: 'amagi', replacement: resolve(__dirname, '../amagi/packages/core/src') }
     ]
   },

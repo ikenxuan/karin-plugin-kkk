@@ -5,7 +5,7 @@ packages:
   - packages/amagi/packages/typegen
 
 overrides:
-  node-karin: 1.16.2
+  node-karin: 1.16.3
   typescript: 7.0.2
   vite: 8.1.4
 
