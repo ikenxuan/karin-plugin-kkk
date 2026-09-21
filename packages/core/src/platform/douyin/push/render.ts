@@ -524,7 +524,7 @@ export async function renderWorkImage(options: RenderWorkImageOptions): Promise<
   const dynamicTypeLabel = options.dynamicTypeLabel ?? getDefaultPushLabel(workTypeInfo)
   const coverUrl = getWorkCoverUrl(workTypeInfo, Detail_Data)
   const formatTime = format(fromUnixTime(create_time), 'yyyy-MM-dd HH:mm')
-  const user = Detail_Data.user_info?.data?.user ?? Detail_Data.author
+  const user = Detail_Data.user_info?.user ?? Detail_Data.author
   if (!user) return []
   const userDouyinId = douyinId(user)
   const avatarUrl = getUserAvatar(user) || getUserAvatar(Detail_Data.author)
