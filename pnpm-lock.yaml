@@ -172,8 +172,8 @@ importers:
         specifier: ^13.15.1
         version: 13.15.1(react@19.3.0)
       '@ikenxuan/amagi':
-        specifier: https://pkg.pr.new/@ikenxuan/amagi@2286fea
-        version: https://pkg.pr.new/@ikenxuan/amagi@2286fea
+        specifier: 7.0.0-beta.4
+        version: 7.0.0-beta.4
       '@karinjs/adapter-qqbot':
         specifier: 3.3.0
         version: 3.3.0
@@ -1026,9 +1026,8 @@ packages:
     peerDependencies:
       react: ^16.13 || ^17 || ^18 || ^19
 
-  '@ikenxuan/amagi@https://pkg.pr.new/@ikenxuan/amagi@2286fea':
-    resolution: {integrity: sha512-9FWarOy+IgoMsnGD75fYzUWYl8IpMqbR4RR2YoKS6H58k6RWbvLuP4JQr7rAawUESvGnyxO5SEsBBRzctOSQBA==, tarball: https://pkg.pr.new/@ikenxuan/amagi@2286fea}
-    version: 7.0.1-beta.20260920043127.2286fea
+  '@ikenxuan/amagi@7.0.0-beta.4':
+    resolution: {integrity: sha512-BFl1IfFVgarmhn0e0qXBNWcCoANXu6eoOjERhJK2wltyBn9mOEcTmClTq+fzr/tKOprV4AkDxYjXLrOPI3ZIMA==}
 
   '@ikenxuan/qrcode@1.5.0':
     resolution: {integrity: sha512-tF7q9LVVWGlG9KJQx1AiY313lrR2uFjTzkQGpmTC2msZ+vArgnjgSIFvUjv7WMl2nPR9hySl6/NkAU2Wwn1iZg==}
@@ -8405,7 +8404,7 @@ snapshots:
     dependencies:
       react: 19.3.0
 
-  '@ikenxuan/amagi@https://pkg.pr.new/@ikenxuan/amagi@2286fea':
+  '@ikenxuan/amagi@7.0.0-beta.4':
     dependencies:
       '@ikenxuan/xhshow-ts': 1.1.0
       axios: 1.20.0(debug@4.4.3(supports-color@7.2.0))(supports-color@7.2.0)
