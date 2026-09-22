@@ -86,8 +86,8 @@ export async function processFavoriteList(
     logger.debug(`发现新${listName}作品：${aweme.aweme_id}`)
   }
 
-  // 更新列表快照
-  await douyinDB.updateListSnapshot(
+  // 为仍在列表中的作品续期去重记录（滑动 TTL）：掉出列表的记录才会被定时清理回收
+  await douyinDB.touchAwemeCache(
     sec_uid,
     pushType,
     contentList.map((a) => a.aweme_id)

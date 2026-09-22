@@ -81,12 +81,6 @@ export class DouYinpush extends Base {
   async action() {
     await this.syncConfigToDatabase()
 
-    // 清理旧的作品缓存记录
-    const deletedCount = await cleanOldDynamicCache('douyin')
-    if (deletedCount > 0) {
-      logger.info(`已清理 ${deletedCount} 条过期的抖音作品缓存记录`)
-    }
-
     // 检查备注信息
     if (await this.checkremark()) return true
 
@@ -103,6 +97,14 @@ export class DouYinpush extends Base {
     }
 
     const data = await this.getDynamicList(filteredPushList)
+
+    // 清理过期作品缓存：必须放在 getDynamicList（内部会为仍在列表中的作品 touch 续期）之后。
+    // 若放在续期之前，升级后旧记录的 updatedAt 偏早，会在续期前被按 updatedAt 清理掉，导致仍在
+    // 列表中的历史作品被当作新作品重推一次。
+    const deletedCount = await cleanOldDynamicCache('douyin')
+    if (deletedCount > 0) {
+      logger.info(`已清理 ${deletedCount} 条过期的抖音作品缓存记录`)
+    }
 
     if (Object.keys(data).length === 0) return true
 
