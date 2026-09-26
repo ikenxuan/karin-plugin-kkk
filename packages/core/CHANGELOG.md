@@ -2,6 +2,22 @@
 
 # Changelog
 
+## [2.43.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.43.1...v2.43.2) (2026-09-22)
+
+
+### 🐛 错误修复
+
+* alias ([85088c7](https://github.com/ikenxuan/karin-plugin-kkk/commit/85088c783afa213095e41daed0ad1bd45600fc54))
+* **dy:** 修复推送图片获取用户信息的逻辑 ([f4b5312](https://github.com/ikenxuan/karin-plugin-kkk/commit/f4b531258e6d10a11b2b0f51353f78779f4eb478))
+* xhs comments ([0659c2b](https://github.com/ikenxuan/karin-plugin-kkk/commit/0659c2be05005b37435800244d3eeba41165140d))
+* 优化作品缓存管理，新增续期去重记录功能并调整清理逻辑 ([ff54ba5](https://github.com/ikenxuan/karin-plugin-kkk/commit/ff54ba57ba19a8130ee098a559e2630f89f133fa))
+* 评论/笔记二维码统一补作者头像并修复深色模式 ([677e213](https://github.com/ikenxuan/karin-plugin-kkk/commit/677e2133920fe8b72e3b4770331a3b5fd5d6c5ad))
+
+
+### 📦 依赖更新
+
+* update amagi ([049eb2f](https://github.com/ikenxuan/karin-plugin-kkk/commit/049eb2f37655625c88bf0696e2a398c6dd3c6c9c))
+
 ## [2.43.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.43.0...v2.43.1) (2026-09-16)
 
 
