@@ -76,10 +76,17 @@ export class DouYin extends Base {
           throw new Error('获取作品详情失败，可能是因为该作品已被删除或设置为私密。')
         }
         // 根据 API 返回的数据判断作品类型，而不是依赖 URL
-        // aweme_type: 0=视频, 68=图集, 163=文章
+        // aweme_type: 0,4,55=视频, 68=图集, 163=文章
+
+        /**
+         * 根据 aweme_type 判断作品类型
+         * - `0`、`4`、`55`：视频作品；`4` 是剧集合集
+         * - `163`：文章作品
+         * - `68`：图文作品（含图集、合辑等）
+         */
         const aweme_type = VideoData.data.aweme_detail.aweme_type
         const isArticle = aweme_type === 163
-        const isVideo = aweme_type === 0 || aweme_type === 55
+        const isVideo = aweme_type === 0 || aweme_type === 4 || aweme_type === 55
 
         const CommentsData = await this.amagi.douyin.fetcher.fetchWorkComments({
           aweme_id: data.aweme_id,
