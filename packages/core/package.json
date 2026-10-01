@@ -76,7 +76,7 @@
   "devDependencies": {
     "@heroui/react": "3.2.5",
     "@icons-pack/react-simple-icons": "^13.15.1",
-    "@ikenxuan/amagi": "7.0.0-beta.4",
+    "@ikenxuan/amagi": "7.0.0-beta.6",
     "@karinjs/adapter-qqbot": "3.3.0",
     "@karinjs/plugin-adapter-milky": "^1.3.3",
     "@karinjs/plugin-basic": "1.4.13",
@@ -128,5 +128,5 @@
     "web": "./lib/web.config.js",
     "ts-web": "./src/web.config.ts"
   },
-  "timestamp": "2026-09-27T17:39:26.523Z"
+  "timestamp": "2026-10-01T06:53:08.668Z"
 }

@@ -172,8 +172,8 @@ importers:
         specifier: ^13.15.1
         version: 13.15.1(react@19.3.0)
       '@ikenxuan/amagi':
-        specifier: 7.0.0-beta.4
-        version: 7.0.0-beta.4
+        specifier: 7.0.0-beta.6
+        version: 7.0.0-beta.6
       '@karinjs/adapter-qqbot':
         specifier: 3.3.0
         version: 3.3.0
@@ -971,8 +971,8 @@ packages:
     peerDependencies:
       react: ^16.13 || ^17 || ^18 || ^19
 
-  '@ikenxuan/amagi@7.0.0-beta.4':
-    resolution: {integrity: sha512-BFl1IfFVgarmhn0e0qXBNWcCoANXu6eoOjERhJK2wltyBn9mOEcTmClTq+fzr/tKOprV4AkDxYjXLrOPI3ZIMA==}
+  '@ikenxuan/amagi@7.0.0-beta.6':
+    resolution: {integrity: sha512-ctsgyMBc1oHERyQQiChGTs3IwaUhTRRki15mAxOu5Eg65JeBUt/81vm4s7RqdhsRFQBJeHDxsg4iuNGAyq2cew==}
 
   '@ikenxuan/qrcode@1.5.0':
     resolution: {integrity: sha512-tF7q9LVVWGlG9KJQx1AiY313lrR2uFjTzkQGpmTC2msZ+vArgnjgSIFvUjv7WMl2nPR9hySl6/NkAU2Wwn1iZg==}
@@ -5843,6 +5843,10 @@ packages:
     resolution: {integrity: sha512-agdGHrXNTv0IrYscJPDou/PlEJk1c/hBZ9o/B5NH2i/nSPtPqacNxzgwf1CebXxFMjMrZH5sqv9uQuw96aGt/A==}
     engines: {node: '>=12.0.0'}
 
+  protobufjs@8.8.0:
+    resolution: {integrity: sha512-N3xhQ5yyBx3vQq4gubBfASzYhJGNzeDbjqBpu61g7UVylsN/qyffU96TKWD3GbbLOKF82VGNRNvv1+BFgE31Eg==}
+    engines: {node: '>=12.0.0'}
+
   proxy-addr@2.0.8:
     resolution: {integrity: sha512-5nnx0yGyVUcY6t9RnWcARWtwT9F1D8O9rt08htPvnd49W1IgZtmLkhu9WfMzQj1cFxjHIO6connUNVW5k7AVyQ==}
     engines: {node: '>= 0.10'}
@@ -7515,14 +7519,13 @@ snapshots:
     dependencies:
       react: 19.3.0
 
-  '@ikenxuan/amagi@7.0.0-beta.4':
+  '@ikenxuan/amagi@7.0.0-beta.6':
     dependencies:
       '@ikenxuan/xhshow-ts': 1.1.0
       axios: 1.20.0(debug@4.4.3(supports-color@7.2.0))(supports-color@7.2.0)
-      chalk: 6.0.0
       express: 5.2.1(supports-color@7.2.0)
-      protobufjs: 8.7.1
-      zod: 4.4.3
+      protobufjs: 8.8.0
+      zod: 4.6.5
     transitivePeerDependencies:
       - debug
       - supports-color
@@ -12095,6 +12098,10 @@ snapshots:
   property-information@7.2.0: {}
 
   protobufjs@8.7.1:
+    dependencies:
+      long: 5.3.2
+
+  protobufjs@8.8.0:
     dependencies:
       long: 5.3.2
 
