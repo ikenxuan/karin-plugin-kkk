@@ -1,10 +1,10 @@
+import crypto from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
 
 import { scanSync } from '@ikenxuan/qrcode'
-import { createNotFoundResponse, type Message } from 'node-karin'
+import type { Message } from 'node-karin'
 import axios from 'node-karin/axios'
-import type { Response } from 'node-karin/express'
 import { karinPathTemp } from 'node-karin/root'
 
 import { Config } from '@/module/utils/Config'
@@ -14,6 +14,8 @@ import { Count } from '..'
 import { Root } from '../../root'
 
 type VideoPreviewInfo = {
+  /** 对外访问令牌：预览页 / 视频流 / SSE 都用它寻址，不暴露磁盘文件名 */
+  token: string
   filename: string
   filePath: string
   createdAt: number
@@ -21,6 +23,51 @@ type VideoPreviewInfo = {
   removeCache: boolean
   removedAt?: number
   cleanupAt?: number
+}
+
+/**
+ * 判断 URL 是否可安全拉取：仅允许 http(s)，且主机不是本机/内网地址。
+ * 用于拦截引用消息里伪装成图片地址的内网探测（localhost、私网 IP 字面量等）。
+ * @remarks 不校验域名解析结果 —— 攻击者若控制 DNS 直接用自己的服务器即可，此处只挡内网字面量。
+ */
+const isSafePublicHttpUrl = (url: string): boolean => {
+  let parsed: URL
+  try {
+    parsed = new URL(url)
+  } catch {
+    return false
+  }
+  if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') return false
+
+  const host = parsed.hostname.toLowerCase()
+  if (host === 'localhost' || host.endsWith('.localhost') || host.endsWith('.local') || host.endsWith('.internal')) {
+    return false
+  }
+
+  // IPv4 字面量：拒绝未分配、回环、私网、链路本地、CGNAT 段
+  const ipv4 = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/.exec(host)
+  if (ipv4) {
+    const octets = ipv4.slice(1).map(Number)
+    if (octets.some((value) => value > 255)) return false
+    const [first, second] = octets
+    if (first === 0 || first === 10 || first === 127) return false
+    if (first === 169 && second === 254) return false
+    if (first === 172 && second >= 16 && second <= 31) return false
+    if (first === 192 && second === 168) return false
+    if (first === 100 && second >= 64 && second <= 127) return false
+    return true
+  }
+
+  // IPv6 字面量（URL.hostname 保留方括号）：拒绝回环与链路本地/唯一本地段
+  if (host.startsWith('[') && host.endsWith(']')) {
+    const value = host.slice(1, -1)
+    if (value === '::' || value === '::1') return false
+    const firstGroup = value.split(':')[0] ?? ''
+    if (/^fe[89ab]/i.test(firstGroup)) return false
+    if (/^f[cd]/i.test(firstGroup)) return false
+  }
+
+  return true
 }
 
 /** 常用工具合集 */
@@ -71,6 +118,10 @@ class Tools {
    * @returns 识别到的平台链接，或 null
    */
   private async tryScanImageQrCode(imageUrl: string, source: string): Promise<string | null> {
+    if (!isSafePublicHttpUrl(imageUrl)) {
+      logger.warn(`图片地址不是公网 http(s) 链接，跳过二维码识别: ${imageUrl}`)
+      return null
+    }
     try {
       logger.debug(`检测到${source}为图片，尝试识别二维码...`)
       const response = await axios.get(imageUrl, { responseType: 'arraybuffer' })
@@ -266,44 +317,57 @@ class Tools {
    * @param filePath 视频文件绝对路径。
    * @param removeCache 预览文件是否会在 TTL 到期后自动删除。
    * @param ttlMs 预览状态的生存时间，单位为毫秒。
-   * @returns 当前注册后的预览状态对象。
+   * @returns 当前注册后的预览状态对象（`token` 为对外寻址句柄）。
    */
   registerVideoPreview(filePath: string, removeCache: boolean, ttlMs: number): VideoPreviewInfo {
     this.pruneVideoPreviewState()
     const filename = path.basename(filePath)
     const createdAt = Date.now()
     const expireAt = removeCache ? createdAt + ttlMs : undefined
+    // 同名文件重复注册时复用原令牌，只刷新生存期，避免同一文件出现多个访问入口
+    const existing = this.findPreviewByFilename(filename)
+    const token = existing?.token ?? crypto.randomBytes(8).toString('hex')
     const info: VideoPreviewInfo = {
+      token,
       filename,
       filePath,
       createdAt,
       expireAt,
       removeCache
     }
-    this.videoPreviewState.set(filename, info)
+    this.videoPreviewState.set(token, info)
     return info
   }
 
   /**
-   * 按文件名获取视频预览状态。
-   * @param filename 预览文件名。
+   * 按访问令牌获取视频预览状态。
+   * @param token 预览令牌。
    * @returns 命中的预览状态；未命中时返回 `null`。
    */
-  getVideoPreview(filename: string): VideoPreviewInfo | null {
+  getVideoPreview(token: string): VideoPreviewInfo | null {
     this.pruneVideoPreviewState()
-    return this.videoPreviewState.get(filename) ?? null
+    return this.videoPreviewState.get(token) ?? null
+  }
+
+  /** 按磁盘文件名查找预览状态（仅内部标记/复用用途，不作为对外寻址句柄）。 */
+  private findPreviewByFilename(filename: string): VideoPreviewInfo | null {
+    for (const info of this.videoPreviewState.values()) {
+      if (info.filename === filename) return info
+    }
+    return null
   }
 
   /**
    * 将视频预览状态标记为已移除，并安排延迟回收。
-   * @param filePathOrFilename 视频绝对路径或文件名。
+   * @param filePathOrToken 视频绝对路径或预览令牌。
    * @returns 更新后的预览状态；若不存在则返回 `null`。
    */
-  markVideoPreviewRemoved(filePathOrFilename: string): VideoPreviewInfo | null {
+  markVideoPreviewRemoved(filePathOrToken: string): VideoPreviewInfo | null {
     this.pruneVideoPreviewState()
-    const filename =
-      filePathOrFilename.includes('/') || filePathOrFilename.includes('\\') ? path.basename(filePathOrFilename) : filePathOrFilename
-    const info = this.videoPreviewState.get(filename)
+    const info =
+      filePathOrToken.includes('/') || filePathOrToken.includes('\\')
+        ? this.findPreviewByFilename(path.basename(filePathOrToken))
+        : (this.videoPreviewState.get(filePathOrToken) ?? null)
     if (!info) {
       return null
     }
@@ -312,7 +376,7 @@ class Tools {
       removedAt: Date.now(),
       cleanupAt: Date.now() + Tools.VIDEO_PREVIEW_REMOVED_RETENTION_MS
     }
-    this.videoPreviewState.set(filename, updated)
+    this.videoPreviewState.set(info.token, updated)
     return updated
   }
 
@@ -321,7 +385,7 @@ class Tools {
    * @param now 当前时间戳，默认使用 `Date.now()`。
    */
   private pruneVideoPreviewState(now = Date.now()) {
-    for (const [filename, info] of this.videoPreviewState) {
+    for (const [token, info] of this.videoPreviewState) {
       const fileMissing = !fs.existsSync(info.filePath)
       const shouldMarkRemoved =
         !info.removedAt &&
@@ -330,7 +394,7 @@ class Tools {
 
       if (shouldMarkRemoved) {
         const removedAt = now
-        this.videoPreviewState.set(filename, {
+        this.videoPreviewState.set(token, {
           ...info,
           removedAt,
           cleanupAt: removedAt + Tools.VIDEO_PREVIEW_REMOVED_RETENTION_MS
@@ -339,7 +403,7 @@ class Tools {
       }
 
       if (info.cleanupAt && now >= info.cleanupAt) {
-        this.videoPreviewState.delete(filename)
+        this.videoPreviewState.delete(token)
       }
     }
   }
@@ -363,47 +427,6 @@ class Tools {
       dark = true
     }
     return dark
-  }
-
-  /**
-   * 验证视频请求
-   * @param filename 文件名
-   * @param res 响应对象
-   * @returns 返回安全解析后的路径
-   */
-  validateVideoRequest(filename: string | undefined, res: Response): string | null {
-    // 1. 基础校验
-    if (!filename) {
-      createNotFoundResponse(res, '无效的文件名')
-      return null
-    }
-
-    // 2. 规范化并解析路径
-    const intendedBaseDir = path.resolve(Common.tempDri.video)
-    const requestedPath = path.join(intendedBaseDir, filename) // 先拼接
-    const resolvedPath = path.normalize(requestedPath) // 规范化
-
-    // 3. 安全性检查：防止路径穿越
-    if (!resolvedPath.startsWith(intendedBaseDir + path.sep) || filename.includes('/') || filename.includes('\\')) {
-      logger.warn(`潜在的路径穿越尝试或无效文件名: ${filename}, 解析路径: ${resolvedPath}`)
-      createNotFoundResponse(res, '无效的文件名或路径')
-      return null
-    }
-
-    // 确保文件名本身不包含路径分隔符
-    if (path.basename(filename) !== filename) {
-      logger.warn(`文件名包含路径分隔符: ${filename}`)
-      createNotFoundResponse(res, '无效的文件名')
-      return null
-    }
-
-    // 检查文件是否存在
-    if (!fs.existsSync(resolvedPath)) {
-      createNotFoundResponse(res, '视频文件未找到')
-      return null
-    }
-
-    return resolvedPath // 返回安全解析后的路径
   }
 
   /**

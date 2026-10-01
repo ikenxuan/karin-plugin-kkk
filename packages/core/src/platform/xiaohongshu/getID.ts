@@ -8,17 +8,38 @@ export interface XiaohongshuIdData {
 }
 
 /**
+ * 小红书分享链接的合法主域。
+ * 展开短链前先校验输入域名，避免把消息里伪装成小红书链接的任意 URL 交给请求器（SSRF）。
+ */
+const XIAOHONGSHU_HOST_SUFFIXES = ['xiaohongshu.com', 'xhslink.com', 'xhslink.cn']
+
+const isXiaohongshuUrl = (url: string): boolean => {
+  try {
+    const { hostname } = new URL(url)
+    return XIAOHONGSHU_HOST_SUFFIXES.some((suffix) => hostname === suffix || hostname.endsWith(`.${suffix}`))
+  } catch {
+    return false
+  }
+}
+
+/**
  * 解析小红书分享链接，提取作品ID
  * - 典型长链接: https://www.xiaohongshu.com/explore/<note_id>
  * - 短链: https://xhslink.com/<code>、https://xhslink.cn/o/<code>（会重定向到长链接）
  */
 export const getXiaohongshuID = async (url: string, log = true): Promise<XiaohongshuIdData> => {
-  const resp = await axios.get(url, {
-    headers: {
-      'User-Agent': 'Apifox/1.0.0 (https://apifox.com)'
-    }
-  })
-  const longLink = resp?.request?.res?.responseUrl ?? url
+  // 非小红书域名的链接不发起请求，按原样进入下方识别，走既有「无法提取笔记ID」兜底
+  let longLink = url
+  if (isXiaohongshuUrl(url)) {
+    const resp = await axios.get(url, {
+      headers: {
+        'User-Agent': 'Apifox/1.0.0 (https://apifox.com)'
+      }
+    })
+    longLink = resp?.request?.res?.responseUrl ?? url
+  } else {
+    logger.warn(`链接不是小红书域名，跳过短链展开: ${url}`)
+  }
   // 安全解码：如果最终地址里包含百分号编码的真实链接，解码后才能命中正则
   const normalizedLink = (() => {
     try {

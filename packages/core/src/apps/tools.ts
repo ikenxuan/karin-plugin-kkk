@@ -12,7 +12,6 @@ import { getXiaohongshuID, Xiaohongshu } from '@/platform/xiaohongshu'
 
 const reg = {
   douyin: /(https?:\/\/)?(www|v|jx|m|jingxuan)\.(douyin|iesdouyin)\.com/i,
-  douyinCDN: /https:\/\/aweme\.snssdk\.com\/aweme\/v1\/play/i, // 抖音 CDN 下载链接
   bilibili: /(bilibili\.com|b23\.tv|t\.bilibili\.com|bili2233\.cn|\bBV[1-9a-zA-Z]{10}\b|\bav\d+\b)/i,
   kuaishou: /(快手.*快手|v\.kuaishou\.com|kuaishou\.com)/,
   xiaohongshu: /(xiaohongshu\.com|xhslink\.(?:com|cn))/
@@ -21,6 +20,29 @@ const reg = {
 // 管理类命令本身内嵌平台链接（如 #kkk推送全局忽略{url}），需放行给对应命令处理，
 // 否则会被「默认解析」(videoTool 开启时优先级为 -Infinity) 的解析器抢先消费
 const passthroughCommandReg = /^#kkk推送全局忽略/
+
+/**
+ * 从消息中提取并校验抖音 CDN 播放直链。
+ *
+ * 旧实现用非锚定正则 test 整条消息、再把整条消息当 URL 交给下载器：只要消息里混入
+ * `https://aweme.snssdk.com/aweme/v1/play` 子串（例如放在片段里），就能让 bot 从任意
+ * URL 拉取内容。这里改为逐个解析候选 URL，严格校验主机与路径后再放行。
+ * @param msg 消息文本
+ * @returns 校验通过的规范 URL；不匹配返回 null
+ */
+const parseDouyinPlayUrl = (msg: string): string | null => {
+  for (const urlMatch of msg.matchAll(/https?:\/\/[^\s]+/gi)) {
+    try {
+      const parsed = new URL(urlMatch[0])
+      if (parsed.hostname === 'aweme.snssdk.com' && parsed.pathname.toLowerCase().startsWith('/aweme/v1/play')) {
+        return parsed.href
+      }
+    } catch {
+      // 无法解析的候选 URL 直接跳过
+    }
+  }
+  return null
+}
 
 /**
  * 记录一次解析统计。
@@ -185,14 +207,15 @@ const handlePrefix = wrapWithErrorHandler(
     }
 
     // 检查是否是抖音 CDN 下载链接（推送配置中渲染的二维码）
-    if (reg.douyinCDN.test(e.msg)) {
+    const cdnPlayUrl = parseDouyinPlayUrl(e.msg)
+    if (cdnPlayUrl) {
       // 这是一个 CDN 下载链接，需要直接下载而不是解析
       logger.debug('检测到抖音 CDN 下载链接，直接下载视频')
-      const videoIdMatch = e.msg.match(/video_id=([^&]+)/)
+      const videoIdMatch = cdnPlayUrl.match(/video_id=([^&]+)/)
       const videoId = videoIdMatch ? videoIdMatch[1] : Date.now().toString()
 
       await downloadVideo(e, {
-        video_url: e.msg,
+        video_url: cdnPlayUrl,
         title: {
           timestampTitle: `tmp_${Date.now()}.mp4`,
           originTitle: `抖音视频_${videoId}.mp4`
