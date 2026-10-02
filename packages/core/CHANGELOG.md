@@ -2,6 +2,20 @@
 
 # Changelog
 
+## [2.43.3](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.43.2...v2.43.3) (2026-10-02)
+
+
+### 🐛 错误修复
+
+* **douyin:** 剧集视频类型 ([3e13d29](https://github.com/ikenxuan/karin-plugin-kkk/commit/3e13d29f806a56b56900002557034ed14723f927))
+* **douyin:** 评论图二维码改用 www.douyin.com 规范短链 ([840ce1a](https://github.com/ikenxuan/karin-plugin-kkk/commit/840ce1a93bbe72113d8af75dabdd2258c74b5b52))
+* 修复链接解析 SSRF 并将视频预览改为令牌寻址 ([9a83c49](https://github.com/ikenxuan/karin-plugin-kkk/commit/9a83c49318edf7b9475d199d8494408a5eb95e94))
+
+
+### 📦 依赖更新
+
+* update amagi ([a10a50d](https://github.com/ikenxuan/karin-plugin-kkk/commit/a10a50d37bba0d188f718f661d0c1143e6f9ebdd))
+
 ## [2.43.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.43.1...v2.43.2) (2026-09-22)
 
 
