@@ -63,6 +63,7 @@
     "dev": "ktr sync && cross-env EBV_FILE=\"development.env\" node --import tsx src/app.ts --trace-deprecation",
     "template": "ktr sync && ktr dev",
     "typecheck": "ktr sync && tsc --noEmit",
+    "gen:emoji": "node scripts/gen-emoji-assets.mjs",
     "pub": "npm publish --access public",
     "sort": "sort-package-json",
     "sync": "curl -X PUT \"https://registry-direct.npmmirror.com/-/package/karin-plugin-kkk/syncs\"",
@@ -71,7 +72,8 @@
   "dependencies": {
     "@ikenxuan/qrcode": "1.5.0",
     "@lobehub/webfont-geist-mono": "^1.0.0",
-    "@lobehub/webfont-harmony-sans-sc": "^1.0.0"
+    "@lobehub/webfont-harmony-sans-sc": "^1.0.0",
+    "emoji-datasource-apple": "16.0.0"
   },
   "devDependencies": {
     "@heroui/react": "3.2.5",
@@ -128,5 +130,5 @@
     "web": "./lib/web.config.js",
     "ts-web": "./src/web.config.ts"
   },
-  "timestamp": "2026-10-04T13:12:03.987Z"
+  "timestamp": "2026-10-04T23:23:59.737Z"
 }

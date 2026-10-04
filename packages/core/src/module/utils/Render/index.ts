@@ -8,6 +8,8 @@ import { db, karinPathHtml, render, segment } from 'node-karin'
 import { Root } from '@/module'
 import { Config } from '@/module/utils/Config'
 import { logger } from '@/module/utils/logger'
+// 注册 Unicode emoji 图源解析器（emoji-datasource-apple，见 utils/emojiAssets.ts）
+import '@/module/utils/emojiAssets'
 
 import { isSemverGreater } from '../semver'
 import { templateFonts } from '../templateFonts'

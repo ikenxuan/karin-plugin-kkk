@@ -267,5 +267,24 @@ export const extractRichTextPlainText = (document: RichTextDocument): string => 
 export const createRichTextDocument = (nodes: RichTextNode[], options: { platform?: string } = {}): RichTextDocument => ({
   version: 1,
   platform: options.platform,
-  nodes: normalizeRichTextNodes(nodes)
+  // 文本节点内的 Unicode emoji 图片化：宿主注册了解析器（setUnicodeEmojiSrcResolver）才生效，
+  // 未命中国内图源的序列保持文本。注册与文件清单的对应关系见 parse/unicodeEmoji.ts。
+  nodes: normalizeRichTextNodes(nodes.flatMap((node) => (node.type === 'text' ? applyUnicodeEmoji(node) : [node])))
 })
+
+/** 把单个文本节点按 emoji 序列切分为文本/表情节点；未启用解析器或无 emoji 时原样返回。 */
+const applyUnicodeEmoji = (node: RichTextNode & { type: 'text' }): RichTextNode[] => {
+  const parts = splitUnicodeEmoji(node.text)
+  if (parts.every((part) => part.kind === 'text')) {
+    return [node]
+  }
+
+  return parts.map((part) =>
+    part.kind === 'emoji' ? createEmojiNode(part.sequence, part.src, { scale: 0.8 }) : createTextNode(part.text, node.style)
+  )
+}
+
+import { splitUnicodeEmoji } from './unicodeEmoji'
+
+export * from './unicodeEmoji'
+export { APPLE_EMOJI_64_FILES } from './emojiAssets.generated'
