@@ -37,7 +37,7 @@ export const BilibiliQrcodeImg: React.FC<PosterProps<BilibiliQrcodeImgData>> = R
   return (
     <DefaultLayout
       {...props}
-      className="relative overflow-hidden font-sans"
+      className="relative overflow-hidden"
       style={{
         background: theme.bg,
         color: theme.text
