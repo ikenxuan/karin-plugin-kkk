@@ -57,14 +57,6 @@
     "access": "public",
     "registry": "https://registry.npmjs.org"
   },
-  "dependencies": {
-    "@ikenxuan/qrcode": "1.5.0",
-    "@lobehub/webfont-geist-mono": "^1.0.0",
-    "@lobehub/webfont-harmony-sans-sc": "^1.0.0"
-  },
-  "engines": {
-    "node": ">=18.0.0"
-  },
   "karin": {
     "engines": ">=1.14.0",
     "main": "src/index.ts",
@@ -85,5 +77,14 @@
     "web": "./lib/web.config.js",
     "ts-web": "./src/web.config.ts"
   },
-  "timestamp": "2026-10-04T13:12:03.987Z"
+  "dependencies": {
+    "@ikenxuan/qrcode": "1.5.0",
+    "@lobehub/webfont-geist-mono": "^1.0.0",
+    "@lobehub/webfont-harmony-sans-sc": "^1.0.0",
+    "emoji-datasource-apple": "16.0.0"
+  },
+  "timestamp": "2026-10-04T23:23:59.737Z",
+  "engines": {
+    "node": ">=18.0.0"
+  }
 }
