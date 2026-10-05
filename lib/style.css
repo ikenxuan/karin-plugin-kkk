@@ -16453,13 +16453,33 @@
     }
   }
 
-  .bg-foreground, .bg-foreground\/8 {
+  .bg-foreground, .bg-foreground\/5 {
+    background-color: var(--foreground);
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .bg-foreground\/5 {
+      background-color: color-mix(in oklab, var(--foreground) 5%, transparent);
+    }
+  }
+
+  .bg-foreground\/8 {
     background-color: var(--foreground);
   }
 
   @supports (color: color-mix(in lab, red, red)) {
     .bg-foreground\/8 {
       background-color: color-mix(in oklab, var(--foreground) 8%, transparent);
+    }
+  }
+
+  .bg-foreground\/10 {
+    background-color: var(--foreground);
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .bg-foreground\/10 {
+      background-color: color-mix(in oklab, var(--foreground) 10%, transparent);
     }
   }
 
@@ -17181,6 +17201,10 @@
 
   .px-12 {
     padding-inline: calc(var(--spacing) * 12);
+  }
+
+  .px-14 {
+    padding-inline: calc(var(--spacing) * 14);
   }
 
   .px-15 {
@@ -18801,6 +18825,10 @@
 
   .underline {
     text-decoration-line: underline;
+  }
+
+  .opacity-0 {
+    opacity: 0;
   }
 
   .opacity-10 {
