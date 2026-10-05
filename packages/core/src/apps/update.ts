@@ -235,22 +235,29 @@ const installAndRestart = async (e: Message, version: string) => {
 
 /** 渲染 #kkk更新 用法面板（含各渠道可用版本） */
 const getUpdateHelpImage = async (e: Message) => {
-  const channelDefs = [
+  // 单次查询全部 dist-tags：既能拿到各渠道版本，也能区分「渠道不存在」与「查询失败」
+  const { status, stdout } = await exec(`npm view ${Root.pluginName} dist-tags --json`)
+  let distTags: Record<string, string> = {}
+  if (status) {
+    try {
+      distTags = JSON.parse(stdout.toString())
+    } catch {}
+  }
+
+  const channels: UpdateHelpData['channels'] = [
     { label: '正式版', tag: 'latest', command: '#kkk更新' },
     { label: '测试版', tag: 'beta', command: '#kkk更新beta' },
     { label: '预览版', tag: 'rc', command: '#kkk更新rc' }
-  ]
-  const channels = await Promise.all(
-    channelDefs.map(async (def) => {
-      const version = await getRemotePkgVersion(Root.pluginName, def.tag).catch(() => '')
-      return {
-        ...def,
-        version,
-        available: !!version,
-        hasUpdate: !!version && isSemverGreater(version, Root.pluginVersion)
-      }
-    })
-  )
+  ].map((def) => {
+    if (!status) return { ...def, status: 'error' as const }
+    const version = distTags[def.tag]
+    if (!version) return { ...def, status: 'missing' as const }
+    return { ...def, status: 'ok' as const, version, hasUpdate: isSemverGreater(version, Root.pluginVersion) }
+  })
+
+  // 金丝雀：pkg.pr.new 分发，无 dist-tag 可订阅
+  channels.push({ label: '金丝雀', tag: 'pkg.pr.new', status: 'skipped' })
+
   const data: UpdateHelpData = {
     currentVersion: Root.pluginVersion,
     currentChannel: RELEASE_CHANNEL_LABEL[parseReleaseChannel(Root.pluginVersion)],
