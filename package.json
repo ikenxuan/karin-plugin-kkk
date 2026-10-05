@@ -38,5 +38,5 @@
     "typescript": "7.0.2",
     "vite": "8.3.0"
   },
-  "packageManager": "pnpm@11.18.0"
+  "packageManager": "pnpm@12.9.1"
 }

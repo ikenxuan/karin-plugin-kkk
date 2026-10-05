@@ -16,6 +16,21 @@ export interface DouyinIdData {
 }
 
 /**
+ * 抖音分享链接的合法主域。
+ * 展开短链前先校验输入域名，避免把消息里伪装成抖音链接的任意 URL 交给请求器（SSRF）。
+ */
+const DOUYIN_HOST_SUFFIXES = ['douyin.com', 'iesdouyin.com']
+
+const isDouyinUrl = (url: string): boolean => {
+  try {
+    const { hostname } = new URL(url)
+    return DOUYIN_HOST_SUFFIXES.some((suffix) => hostname === suffix || hostname.endsWith(`.${suffix}`))
+  } catch {
+    return false
+  }
+}
+
+/**
  * 获取抖音作品ID
  * @param event 消息事件
  * @param url 分享链接
@@ -23,14 +38,20 @@ export interface DouyinIdData {
  * @returns
  */
 export const getDouyinID = async (event: Message, url: string, log = true): Promise<DouyinIdData> => {
-  const resp = await axios.get(url, {
-    headers: {
-      'User-Agent': 'Apifox/1.0.0 (https://apifox.com)'
-    },
-    maxRedirects: 10 // 确保跟随所有重定向
-  })
-  // 使用 responseUrl 或 request.res.responseUrl 获取最终 URL
-  const longLink = resp.request?.res?.responseUrl || resp.request?.responseURL || url
+  // 非抖音域名的链接不发起请求，按原样进入下方识别，走既有「无法获取作品ID」兜底
+  let longLink = url
+  if (isDouyinUrl(url)) {
+    const resp = await axios.get(url, {
+      headers: {
+        'User-Agent': 'Apifox/1.0.0 (https://apifox.com)'
+      },
+      maxRedirects: 10 // 确保跟随所有重定向
+    })
+    // 使用 responseUrl 或 request.res.responseUrl 获取最终 URL
+    longLink = resp.request?.res?.responseUrl || resp.request?.responseURL || url
+  } else {
+    logger.warn(`链接不是抖音域名，跳过短链展开: ${url}`)
+  }
   let result = {} as DouyinIdData
   switch (true) {
     case longLink.includes('webcast.amemv.com'):

@@ -29,7 +29,7 @@ export const DouyinQrcodeImg: React.FC<PosterProps<DouyinQrcodeImgData>> = React
   return (
     <DefaultLayout
       {...props}
-      className="relative overflow-hidden font-sans"
+      className="relative overflow-hidden"
       style={{
         background: theme.bg,
         color: theme.text

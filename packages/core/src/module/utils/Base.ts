@@ -294,10 +294,9 @@ export const uploadFile = async (event: Message, file: fileInfo, videoUrl: strin
     throw error // 重新抛出错误，让 wrapWithErrorHandler 能够捕获
   } finally {
     const filePath = file.filepath
-    Common.registerVideoPreview(filePath, Config.app.removeCache, 30 * 60 * 1000)
-    logger.mark(
-      `临时预览地址：http://localhost:${process.env.HTTP_PORT!}/kkk/ssr/video/${encodeURIComponent(filePath.split('/').pop() ?? '')}`
-    )
+    const previewInfo = Common.registerVideoPreview(filePath, Config.app.removeCache, 30 * 60 * 1000)
+    // 预览地址用随机令牌寻址，不暴露磁盘文件名
+    logger.mark(`临时预览地址：http://localhost:${process.env.HTTP_PORT!}/kkk/ssr/video/${previewInfo.token}`)
     if (Config.app.removeCache) {
       logger.info(`文件 ${filePath} 将在 30 分钟后删除`)
     }

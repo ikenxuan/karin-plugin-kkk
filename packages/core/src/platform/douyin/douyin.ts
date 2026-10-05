@@ -647,7 +647,9 @@ export class DouYin extends Base {
               Type: isArticle ? '文章' : isVideo ? '视频' : this.is_slides ? '合辑' : '图集',
               CommentsData: douyinCommentsRes.CommentsData,
               CommentLength: douyinCommentsRes.CommentsData.length ?? 0,
-              share_url: isVideo && selectedVideo ? buildDouyinPlayUrl(selectedVideo.play_addr) : aweme.share_url,
+              // 非视频作品没有直链，二维码用 www.douyin.com 的 PC 访问地址；
+              // iesdouyin 超长分享链接字节过多，会降低二维码的鲁棒性。
+              share_url: isVideo && selectedVideo ? buildDouyinPlayUrl(selectedVideo.play_addr) : `https://www.douyin.com/${isArticle ? 'article' : 'note'}/${aweme.aweme_id}`,
               VideoSize: mp4size,
               VideoFPS: FPS,
               ImageLength: imagenum,

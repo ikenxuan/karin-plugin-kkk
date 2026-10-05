@@ -42,14 +42,14 @@ export const ROUTES = {
   CONFIG: '/config',
 
   // 视频流
-  /** 获取视频流 */
-  VIDEO_STREAM: '/stream/:filename',
+  /** 获取视频流（:token 为 registerVideoPreview 签发的预览令牌） */
+  VIDEO_STREAM: '/stream/:token',
   /** 获取视频事件 */
-  VIDEO_EVENTS: '/video/:filename/events',
+  VIDEO_EVENTS: '/video/:token/events',
 
   // SSR 页面
   /** 视频播放页面 */
-  VIDEO_PAGE: '/video/:filename'
+  VIDEO_PAGE: '/video/:token'
 } as const
 
 /** 模板字体静态资源挂载前缀，包根原样挂载（见 routes/index.ts） */

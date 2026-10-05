@@ -1,33 +1,40 @@
 /**
  * 视频控制器
+ *
+ * 预览页 / 视频流 / SSE 都以 `Common.registerVideoPreview` 签发的随机令牌寻址，
+ * 不再接受磁盘文件名：令牌不可枚举，拿到令牌即视作持有了这次预览的访问权。
  */
 import fs from 'node:fs'
-import path from 'node:path'
 
 import { renderVideoPreviewPage } from '@template/template/_preview/render'
 import { createNotFoundResponse } from 'node-karin'
 import type { RequestHandler } from 'node-karin/express'
 
 import { Common } from '@/module/utils'
-import { Config } from '@/module/utils/Config'
 import { logger } from '@/module/utils/logger'
 import { templateFonts } from '@/module/utils/templateFonts'
+
+/** 从路由参数取出预览令牌，并按令牌查找预览状态；未命中时返回 404。 */
+const resolvePreviewByParam = (req: Parameters<RequestHandler>[0], res: Parameters<RequestHandler>[1]) => {
+  const tokenParam = req.params.token
+  const token = Array.isArray(tokenParam) ? tokenParam[0] : tokenParam
+  const previewInfo = token ? Common.getVideoPreview(token) : null
+  if (!previewInfo) {
+    createNotFoundResponse(res, '预览信息不存在')
+    return null
+  }
+  return previewInfo
+}
 
 /**
  * 视频文件流传输
  */
 export const getVideoStream: RequestHandler = (req, res) => {
-  const filenameParam = req.params.filename
-  const filename = Array.isArray(filenameParam) ? filenameParam[0] : filenameParam
-  if (!filename) {
-    createNotFoundResponse(res, '无效的文件名')
+  const previewInfo = resolvePreviewByParam(req, res)
+  if (!previewInfo) {
     return
   }
-  const videoPath = Common.validateVideoRequest(filename, res)
-
-  if (!videoPath) {
-    return
-  }
+  const videoPath = previewInfo.filePath
 
   try {
     const stats = fs.statSync(videoPath)
@@ -105,31 +112,24 @@ export const getVideoStream: RequestHandler = (req, res) => {
  * 视频播放页面（SSR）
  */
 export const getVideoPage: RequestHandler = (req, res) => {
-  const filenameParam = req.params.filename
-  const filename = Array.isArray(filenameParam) ? filenameParam[0] : filenameParam
-  if (!filename) {
-    createNotFoundResponse(res, '无效的文件名')
+  const previewInfo = resolvePreviewByParam(req, res)
+  if (!previewInfo) {
     return
   }
-  const videoPath = Common.validateVideoRequest(filename, res)
+  const { token } = previewInfo
 
-  if (!videoPath) {
-    return
-  }
-
-  const videoDataUrl = `/kkk/v1/stream/${encodeURIComponent(filename)}`
-  const previewInfo = Common.getVideoPreview(filename)
-  const removeCache = previewInfo?.removeCache ?? Config.app.removeCache
-  const createdAt = previewInfo?.createdAt ?? Date.now()
-  const expireAt = previewInfo?.expireAt ?? (removeCache ? createdAt + 10 * 60 * 1000 : undefined)
+  const videoDataUrl = `/kkk/v1/stream/${encodeURIComponent(token)}`
+  const removeCache = previewInfo.removeCache
+  const createdAt = previewInfo.createdAt
+  const expireAt = previewInfo.expireAt ?? (removeCache ? createdAt + 10 * 60 * 1000 : undefined)
   const htmlContent = renderVideoPreviewPage({
-    filename,
-    filePath: previewInfo?.filePath ?? videoPath,
+    filename: previewInfo.filename,
+    filePath: previewInfo.filePath,
     videoUrl: videoDataUrl,
     removeCache,
     createdAt,
     expireAt,
-    eventsUrl: `/kkk/v1/video/${encodeURIComponent(filename)}/events`,
+    eventsUrl: `/kkk/v1/video/${encodeURIComponent(token)}/events`,
     fontStylesheetUrls: templateFonts.map((font) => font.stylesheetUrl)
   })
 
@@ -142,23 +142,11 @@ export const getVideoPage: RequestHandler = (req, res) => {
  * 视频预览状态事件流（SSE）
  */
 export const getVideoEvents: RequestHandler = (req, res) => {
-  const filenameParam = req.params.filename
-  const filename = Array.isArray(filenameParam) ? filenameParam[0] : filenameParam
-  if (!filename) {
-    createNotFoundResponse(res, '无效的文件名')
-    return
-  }
-  const safeName = path.basename(filename)
-  if (safeName !== filename || filename.includes('/') || filename.includes('\\')) {
-    createNotFoundResponse(res, '无效的文件名')
-    return
-  }
-
-  const previewInfo = Common.getVideoPreview(filename)
+  const previewInfo = resolvePreviewByParam(req, res)
   if (!previewInfo) {
-    createNotFoundResponse(res, '预览信息不存在')
     return
   }
+  const { token } = previewInfo
 
   res.setHeader('Content-Type', 'text/event-stream')
   res.setHeader('Cache-Control', 'no-cache')
@@ -167,17 +155,17 @@ export const getVideoEvents: RequestHandler = (req, res) => {
 
   let timer: NodeJS.Timeout | null = null
   const sendPayload = () => {
-    const currentInfo = Common.getVideoPreview(filename) ?? previewInfo
+    const currentInfo = Common.getVideoPreview(token) ?? previewInfo
     const now = Date.now()
     const remainingMs = currentInfo.expireAt ? Math.max(currentInfo.expireAt - now, 0) : null
     const fileMissing = currentInfo.filePath ? !fs.existsSync(currentInfo.filePath) : false
     const removed = Boolean(currentInfo.removedAt) || (currentInfo.removeCache && remainingMs === 0 && fileMissing)
     if (removed && !currentInfo.removedAt) {
-      Common.markVideoPreviewRemoved(currentInfo.filename)
+      Common.markVideoPreviewRemoved(token)
     }
+    // 注意：payload 不下发 filePath —— 服务器本地路径不对外暴露
     const payload = {
       filename: currentInfo.filename,
-      filePath: currentInfo.filePath,
       removeCache: currentInfo.removeCache,
       createdAt: currentInfo.createdAt,
       expireAt: currentInfo.expireAt,

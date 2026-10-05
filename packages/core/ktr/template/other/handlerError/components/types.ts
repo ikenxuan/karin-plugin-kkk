@@ -40,8 +40,16 @@ export interface AmagiErrorDetail {
   kind: ErrorKind
   /** amagi 自己的字符串错误码，22 个之一 */
   code: AmagiErrorCode
-  /** 平台返回的原文（未经 inspect 包装） */
+  /** 错误说明：平台原文优先，平台没给文案时是 amagi 的兜底句 */
   reason: string
+  /**
+   * 响应体原文，已截断。只在响应体是纯文本 / HTML 时才有（反爬页、Argus 拦截）。
+   *
+   * 这种响应下 {@link AmagiErrorDetail.reason} 必然是 amagi 的兜底文案
+   * （「平台返回了反爬页面」）而不是平台说的话 —— 平台究竟回了什么只在这里。
+   * 所以它在场时，上面那句要按「错误说明」印，不能叫「平台原文」。
+   */
+  raw?: string
   /** 是否值得重试 */
   retryable: boolean
   /** 平台业务码，如 B站的 -352（风控）/ 12061（评论区关闭） */
