@@ -6,6 +6,7 @@ import {
   Braces,
   Clock,
   FileText,
+  FileWarning,
   Fingerprint,
   Gauge,
   GitBranch,
@@ -651,18 +652,42 @@ export const handlerError: React.FC<PosterProps<ApiErrorData>> = (props) => {
                 {ERROR_KIND_META[data.amagi.kind].hint}
               </p>
 
-              {/* 平台返回的原文：与堆栈里那份 inspect 转储不同，这里是干净的一句话 */}
+              {/* 错误说明：与堆栈里那份 inspect 转储不同，这里是干净的一句话。
+                  标签随 `raw` 在场与否切换 —— 响应体是纯文本时 amagi 提不出平台文案，
+                  这一句必然是它自己的兜底句，继续印「平台原文」会让看图的人以为那是平台说的 */}
               <div
                 className="p-8 rounded-7xl mb-10"
                 style={{ backgroundColor: dark ? 'rgba(220,38,38,0.12)' : 'rgba(254,202,202,0.35)' }}
               >
                 <div className="text-xl font-semibold tracking-[0.12em] opacity-70 mb-3" style={{ color: mutedColor }}>
-                  平台原文
+                  {data.amagi.raw ? '错误说明' : '平台原文'}
                 </div>
                 <p className="text-3xl leading-relaxed break-all" style={{ color: accentColor }}>
                   {data.amagi.reason || '(平台未给出说明)'}
                 </p>
               </div>
+
+              {/* 响应体原文：只有反爬页 / 拦截文本那一类才有（amagi 判 ANTIBOT_PAGE 的情形）。
+                  上面那句是兜底文案，平台究竟回了什么只在这里，所以单独一块 */}
+              {data.amagi.raw && (
+                <div
+                  className="p-8 rounded-7xl mb-10"
+                  style={{
+                    backgroundColor: dark ? 'rgba(0,0,0,0.25)' : 'rgba(255,255,255,0.55)',
+                    border: `1px solid ${dark ? 'rgba(248,113,113,0.2)' : 'rgba(220,38,38,0.14)'}`
+                  }}
+                >
+                  <div className="flex items-center gap-3 mb-3 opacity-70">
+                    <FileWarning size={26} style={{ color: mutedColor }} />
+                    <span className="text-xl font-semibold tracking-[0.12em]" style={{ color: mutedColor }}>
+                      响应体原文
+                    </span>
+                  </div>
+                  <pre className="text-2xl leading-relaxed whitespace-pre-wrap break-all font-mono" style={{ color: accentColor }}>
+                    {data.amagi.raw}
+                  </pre>
+                </div>
+              )}
 
               {/* 分层错误码与请求归因 */}
               <div className="grid grid-cols-3 gap-x-12 gap-y-10">

@@ -5,6 +5,30 @@ import { AmagiError } from '@/module/utils/amagiClient'
 
 import type { ErrorContext, RenderErrorOptions } from './types'
 
+/** 响应体原文的印字上限：反爬页可能是整份 HTML，全印会把图撑到几十屏 */
+const RAW_TEXT_LIMIT = 500
+
+/**
+ * 取响应体原文。
+ *
+ * **只收字符串 body** —— 那正是 judge 判 `ANTIBOT_PAGE` 的情形（反爬页、Argus
+ * 拦截）。这种响应下 `error.message` 必然是 amagi 的兜底文案「平台返回了反爬页面」，
+ * 因为 amagi 的 `extractPlatformMessage` 只认对象、拿字符串 body 一律返回
+ * `undefined`；平台究竟说了什么，只有这里能看到。
+ *
+ * 对象 body 不收：那份信息已由 `platformCode` 与 `trace` 覆盖，整份 JSON 印进图里
+ * 既撑爆版面、又可能带出令牌 —— 这张图是要发到群里的。
+ *
+ * amagi 只在 `createClient({ debug: true })` 时填 `error.raw`，本封装层常开着。
+ * @param error - amagi 失败异常
+ * @returns 截断后的响应体原文；body 不是字符串时为 `undefined`
+ */
+const rawTextOf = (error: AmagiError): string | undefined => {
+  const raw = error.rawError.raw
+  if (typeof raw !== 'string' || raw.trim() === '') return undefined
+  return raw.length > RAW_TEXT_LIMIT ? `${raw.slice(0, RAW_TEXT_LIMIT)}…（共 ${raw.length} 字符）` : raw
+}
+
 /**
  * 把 amagi 的 v7 错误摊成模板能直接印的一块。
  *
@@ -19,6 +43,7 @@ const amagiDetailOf = (error: Error) => {
     kind: error.kind,
     code: error.amagiCode,
     reason: error.reason,
+    raw: rawTextOf(error),
     retryable: error.retryable,
     platformCode: error.rawError.platform?.code,
     httpStatus: error.httpStatus,
