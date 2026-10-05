@@ -13,7 +13,7 @@ import { changelogSections } from './changelog-types'
  * `packages/core/package.json` → 从上个 v* tag 起收集提交，按 changelog 类型
  * 分组，以既有 release-please 风格 prepend 进 `packages/core/CHANGELOG.md`
  * → 全量提交 `chore: release vX.Y.Z` → 打 v* tag。**推送交给人工**：审计提交
- * 与 CHANGELOG 无误后 `git push origin main --follow-tags`，tag 一推即触发
+ * 与 CHANGELOG 无误后 `git push origin main` + `git push origin v<版本>`，tag 一推即触发
  * `.github/workflows/release.yml` 发布。
  *
  * 为什么 CHANGELOG.md 在本地写而不是 CI 里补：插件的更新日志渲染会同时从
@@ -169,5 +169,5 @@ execFileSync('git', ['commit', '-m', `chore: release v${version}`], { stdio: 'in
 execFileSync('git', ['tag', `v${version}`], { stdio: 'inherit' })
 
 console.log(`\n✅ 发版就绪：${version}（commit + tag 已就位，尚未推送）`)
-console.log('   审计后手动推送：git push origin main --follow-tags')
+console.log('   审计后手动推送：git push origin main && git push origin v${version}')
 console.log('   tag 推上去即触发 release.yml：changelogithub 建 GitHub Release → build → npm 发布')
