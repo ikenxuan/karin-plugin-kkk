@@ -2,6 +2,28 @@
 
 # Changelog
 
+## [2.44.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.43.2...v2.44.0) (2026-10-05)
+
+
+### ✨ 新功能
+
+* **ktr:** 评论与动态正文 Unicode emoji 使用 Apple 图源渲染 ([0e8f479](https://github.com/ikenxuan/karin-plugin-kkk/commit/0e8f479825f4f2793966bbc5c1cf10c32e0573a7))
+
+
+### 🐛 错误修复
+
+* **douyin:** 剧集视频类型 ([3e13d29](https://github.com/ikenxuan/karin-plugin-kkk/commit/3e13d29f806a56b56900002557034ed14723f927))
+* **douyin:** 尝试缓解部分场景下接口响应code 403, uifid not found ([01d3f72](https://github.com/ikenxuan/karin-plugin-kkk/commit/01d3f7240fbf77a324821ed5977d16ef9d438ccd))
+* **douyin:** 评论图二维码改用 www.douyin.com 规范短链 ([840ce1a](https://github.com/ikenxuan/karin-plugin-kkk/commit/840ce1a93bbe72113d8af75dabdd2258c74b5b52))
+* **ktr:** 登录二维码模板去掉 font-sans，修复无字体容器内渲染成方格 ([3da33b2](https://github.com/ikenxuan/karin-plugin-kkk/commit/3da33b23ea03131d494eb50151a5ef7a41769ca8))
+* 优化部分错误提示 ([a232c68](https://github.com/ikenxuan/karin-plugin-kkk/commit/a232c6899c3a03c8301abeb0fcc2cbae70447b5f))
+* 修复链接解析 SSRF 并将视频预览改为令牌寻址 ([9a83c49](https://github.com/ikenxuan/karin-plugin-kkk/commit/9a83c49318edf7b9475d199d8494408a5eb95e94))
+
+
+### 📦 依赖更新
+
+* update amagi ([a10a50d](https://github.com/ikenxuan/karin-plugin-kkk/commit/a10a50d37bba0d188f718f661d0c1143e6f9ebdd))
+
 ## [2.43.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.43.1...v2.43.2) (2026-09-22)
 
 
