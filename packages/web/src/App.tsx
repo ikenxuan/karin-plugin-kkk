@@ -1,6 +1,6 @@
 import { Description, ScrollShadow, Spinner, Surface, Toast } from '@heroui/react'
 import { useMemoizedFn, useSetState } from 'ahooks'
-import { useEffect, type ComponentType } from 'react'
+import { useEffect, useRef, type ComponentType } from 'react'
 import { BrowserRouter, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 
 import { authChangedEventName, hasAuthToken } from './auth/token'
@@ -9,6 +9,7 @@ import LoginPanel from './components/common/LoginPanel'
 import { useTheme } from './hooks/useTheme'
 import type { MainLayoutProps, MainMenuKey } from './types/navigation'
 import { detectDevice, type DeviceLayout } from './utils/device'
+import { bindSmoothScroll } from './utils/smoothScroll'
 
 /**
  * 加载 PC 端布局。
@@ -40,10 +41,22 @@ const routeMenuMap: Record<string, MainMenuKey> = {
  * 配置页面路由组件（独立渲染，支持 URL 查询参数）
  */
 const ConfigRoute = ({ device }: { device: DeviceLayout }) => {
+  // 配置页滚动容器 ref（ScrollShadow 本身就是滚动元素）
+  const scrollRef = useRef<HTMLDivElement>(null)
+
+  /**
+   * 绑定滚轮平滑滚动（由快到慢的缓动曲线）。
+   */
+  useEffect(() => {
+    const handle = bindSmoothScroll(scrollRef)
+    return handle.destroy
+  }, [])
+
   return (
     <Surface className="h-screen overflow-hidden bg-background">
       <Toast.Provider placement="top" />
       <ScrollShadow
+        ref={scrollRef}
         hideScrollBar
         className={`h-full px-3 py-3 sm:px-5 sm:py-4 ${
           device === 'mobile'
