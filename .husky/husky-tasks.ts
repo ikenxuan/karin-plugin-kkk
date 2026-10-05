@@ -1,6 +1,8 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
+import { changelogSections } from '../scripts/changelog-types'
+
 /**
  * 更新核心包的 timestamp 字段
  * @description 用于 pre-commit 钩子
@@ -16,22 +18,15 @@ const updateTimestamp = (): void => {
 }
 
 /**
- * 校验提交信息格式是否符合 release-please 的 changelog 类型
+ * 校验提交信息格式是否符合 changelog 类型约定
  * @description 用于 commit-msg 钩子
+ *
+ * 类型清单来自 scripts/changelog-types.ts —— 与 CHANGELOG.md 分组（scripts/release.ts
+ * 发版时生成）和 GitHub Release 分组（changelogithub.config.ts）同源。release-please
+ * 已于 2026-10-06 退役，发布流程改为 tag 触发（见 .github/workflows/release.yml 头注）。
  */
 const checkCommitType = (commitMsgFile: string): void => {
-  const configPath = path.resolve('.release-please-config.json')
-  if (!fs.existsSync(configPath)) {
-    console.error('⚠️ 未找到 .release-please-config.json，无法验证提交信息类型')
-    process.exit(1)
-  }
-
-  const config = JSON.parse(fs.readFileSync(configPath, 'utf-8'))
-  const allowedTypes: string[] = (config['changelog-sections'] ?? []).map((s: any) => s.type)
-  if (!allowedTypes.length) {
-    console.error('⚠️ .release-please-config.json 中未找到 changelog-sections')
-    process.exit(1)
-  }
+  const allowedTypes: string[] = changelogSections.map((s) => s.type)
 
   const commitMsg = fs.readFileSync(commitMsgFile, 'utf-8').trim()
 

@@ -1,0 +1,251 @@
+name: Release
+
+# ──────────────────────────────────────────────────────────────────────────
+# **tag 就是发布按钮。** 本 workflow 的唯一触发器是 `v*` tag 推送（rolldown/
+# tsdown 风格，2026-10-06 从 release-please + workflow_dispatch 手动模式改造，
+# 流程与 amagi 仓库对齐）。
+#
+# 发版流程：
+#   1. 维护者本地跑 `pnpm run release`（scripts/release.ts）：
+#      bumpp 交互式选版本 → 改 packages/core/package.json → 从上个 v* tag 起
+#      按提交类型分组生成 CHANGELOG.md 条目并 prepend → `chore: release vX.Y.Z`
+#      提交 → 打 v* tag。推送交给人工：`git push origin main --follow-tags`。
+#   2. tag push 触发本 workflow：版本闸 → changelogithub 建 GitHub Release →
+#      build → npm 发布 → GitHub Packages 镜像。
+#
+# 为什么 CHANGELOG.md 由发版脚本在本地写、随发版提交进 tag：插件的更新日志
+# 渲染会同时从「npm 包内 CHANGELOG.md」与「tag v* 的 GitHub raw」竞速抓取
+# packages/core/CHANGELOG.md，条目不在 tag 树里就会把旧日志推给用户，所以
+# CI 不碰这份文件。
+#
+# 为什么放弃 release-please：
+#   1. 它按「提交是否触及 packages/core」分配变更 —— 只改 CI/文档的周期里
+#      永远不开 release PR（2.44.1 发不出去的直接原因）；
+#   2. release PR 由 GITHUB_TOKEN 创建，GitHub 的递归保护让 PR 上的 CI 不跑，
+#      门禁形同虚设；
+#   3. 版本与 CHANGELOG 深度耦合在 CI 端，业务需要 tag 里就带全量变更日志。
+#
+# npm 认证用仓库 Secret NPM_TOKEN（setup-node 的 registry-url 会在 .npmrc
+# 写入 NODE_AUTH_TOKEN 占位）。若日后想切 OIDC trusted publishing（免
+# token），需在 npmjs.com 包设置里绑定本仓库 + 本 workflow 文件名 release.yml。
+# ──────────────────────────────────────────────────────────────────────────
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write # changelogithub 建 GitHub Release
+  id-token: write # pnpm publish --provenance
+  packages: write # GitHub Packages 镜像
+
+env:
+  APP_NAME: karin-plugin-kkk
+
+jobs:
+  npm-publish:
+    name: 🚀 发布到 npm
+    runs-on: ubuntu-latest
+    # 仓库守卫：fork 上被推 v* tag 也不会空跑
+    if: github.repository == 'ikenxuan/karin-plugin-kkk'
+    # 连推多个 tag（或重跑与下次发版挨得近）时串行，后到的靠幂等检查跳过
+    concurrency:
+      group: release-publish
+      cancel-in-progress: false
+    steps:
+      - name: 📥 检出源代码
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0 # changelogithub 要完整提交历史
+          submodules: recursive # 根 postinstall 会构建 amagi 子模块
+
+      # 防「先打 tag 后 bump」：tag 与 package.json 脱节时，发出的包和 GitHub
+      # Release 各说各话。不一致直接红 —— 此时什么都还没发，删 tag 重来即可。
+      - name: 🛡️ 版本闸：tag 必须等于 packages/core 的版本
+        id: gate
+        run: |
+          VERSION=$(node -p "require('./packages/core/package.json').version")
+          if [ "v$VERSION" != "$GITHUB_REF_NAME" ]; then
+            echo "❌ tag $GITHUB_REF_NAME 与 packages/core/package.json 的版本 v$VERSION 不一致" >&2
+            echo "   用 pnpm run release bump 后再打 tag" >&2
+            exit 1
+          fi
+          echo "✅ tag 与版本一致：$GITHUB_REF_NAME"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: 📦 配置 PNPM 环境
+        uses: pnpm/action-setup@v6
+        # 版本读根 package.json 的 packageManager 钉子（checkout 已就位）
+
+      - name: 🟢 配置 Node.js 环境
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'pnpm'
+          cache-dependency-path: 'pnpm-lock.yaml'
+
+      - name: 📦 安装依赖
+        run: pnpm install
+
+      # changelog 失败不阻断发布（continue-on-error）：GitHub Release 是给人看的，
+      # npm 包才是产物 —— 失败了回头手工补一份 Release 即可。
+      - name: 📝 生成 GitHub Release（changelogithub）
+        run: pnpx changelogithub
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
+
+      - name: 🔨 构建
+        run: pnpm build
+
+      # 幂等检查：版本已在 npm 上就跳过，重跑 tag 不会撞 E403
+      - name: 🔎 检查该版本是否已在 npm 上
+        id: check-published
+        working-directory: packages/core
+        run: |
+          VERSION=${{ steps.gate.outputs.version }}
+          PKG=$(node -p "require('./package.json').name")
+
+          if OUTPUT=$(npm view "$PKG@$VERSION" version 2>&1); then
+            echo "⏭️ $PKG@$VERSION 已在 npm 上，跳过发布（重跑场景）"
+            echo "published=false" >> "$GITHUB_OUTPUT"
+          elif printf '%s' "$OUTPUT" | grep -q 'E404'; then
+            echo "🚀 $PKG@$VERSION 尚未发布"
+            echo "published=true" >> "$GITHUB_OUTPUT"
+          else
+            # registry 读不通时不能当成「没发过」，直接红
+            echo "❌ 无法确认 npm 上的版本状态：" >&2
+            printf '%s\n' "$OUTPUT" >&2
+            exit 1
+          fi
+
+      - name: 🚀 发布到 npm
+        if: steps.check-published.outputs.published == 'true'
+        working-directory: packages/core
+        run: |
+          VERSION=${{ steps.gate.outputs.version }}
+
+          # 预发布版本显式给 dist-tag，避免 pnpm add 装到 beta；
+          # 标签取后缀第一段：7.0.0-beta.3 → beta
+          TAG_ARG=""
+          case "$VERSION" in
+            *-*) TAG_ARG="--tag $(printf '%s' "${VERSION#*-}" | cut -d. -f1)" ;;
+          esac
+          echo "🏷️ dist-tag：${TAG_ARG:-latest（正式版）}"
+
+          # --no-git-checks：tag 与版本的绑定已由上面的版本闸验过
+          pnpm publish --provenance --no-git-checks $TAG_ARG
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      # 产物同时喂给下游的 GitHub Packages 镜像 job —— 与 npm 发出去的是同一份构建
+      - name: 📦 准备发布产物
+        if: steps.check-published.outputs.published == 'true'
+        run: |
+          cd packages/core
+          mkdir -p ${{ runner.temp }}/production/
+          cp -r package.json README.md CHANGELOG.md LICENSE config resources lib ${{ runner.temp }}/production/
+          node -e "const fs=require('fs');const p='${{ runner.temp }}/production/package.json';const pkg=JSON.parse(fs.readFileSync(p,'utf8'));delete pkg.devDependencies;delete pkg.scripts;fs.writeFileSync(p,JSON.stringify(pkg,null,2));"
+
+      - name: 📤 上传发布产物
+        if: steps.check-published.outputs.published == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: production-build
+          path: ${{ runner.temp }}/production/
+          if-no-files-found: error
+
+  # npm 是闸门，它没发出去镜像也不发；GPR 失败不影响 npm 已发出的版本，
+  # 重跑本 workflow 幂等续上
+  github-package-publish:
+    name: 🪞 GitHub Packages 镜像
+    runs-on: ubuntu-latest
+    if: github.repository == 'ikenxuan/karin-plugin-kkk'
+    needs: [npm-publish]
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: 📥 下载构建产物
+        uses: actions/download-artifact@v8
+        with:
+          name: production-build
+          path: packages/core
+
+      - name: 🟢 配置 Node.js 环境
+        uses: actions/setup-node@v6
+        with:
+          node-version: 20
+          registry-url: 'https://npm.pkg.github.com'
+
+      - name: ✏️ 修改包名 (添加 Scope)
+        working-directory: packages/core
+        run: |
+          ORIGINAL_NAME=$(node -p "require('./package.json').name")
+          OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+
+          if [[ "$ORIGINAL_NAME" != @* ]]; then
+            NEW_NAME="@$OWNER/$ORIGINAL_NAME"
+          else
+            NEW_NAME="$ORIGINAL_NAME"
+          fi
+
+          echo "📦 修改包名: $ORIGINAL_NAME -> $NEW_NAME"
+
+          node -e "
+            const fs = require('fs');
+            const pkg = require('./package.json');
+            pkg.name = '$NEW_NAME';
+            pkg.publishConfig = { registry: 'https://npm.pkg.github.com/' };
+            fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2));
+          "
+
+      # 包名已带 @owner/ 且 publishConfig 指向 GPR，npm view 查的就是这个源
+      - name: 🔎 检查该版本是否已在 GitHub Packages 上
+        id: check-published
+        working-directory: packages/core
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          PKG=$(node -p "require('./package.json').name")
+
+          if OUTPUT=$(npm view "$PKG@$VERSION" version 2>&1); then
+            echo "⏭️ $PKG@$VERSION 已在 GitHub Packages 上，跳过发布"
+            echo "published=false" >> "$GITHUB_OUTPUT"
+          elif printf '%s' "$OUTPUT" | grep -q 'E404'; then
+            echo "🚀 $PKG@$VERSION 尚未发布，开始发布"
+            echo "published=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "❌ 无法确认 GitHub Packages 上的版本状态：" >&2
+            printf '%s\n' "$OUTPUT" >&2
+            exit 1
+          fi
+
+      - name: 🚀 发布到 GitHub Packages
+        if: steps.check-published.outputs.published == 'true'
+        working-directory: packages/core
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+
+          # npm publish 对预发布版本直接报错，不给 --tag 就整步红
+          TAG_ARG=""
+          case "$VERSION" in
+            *-*) TAG_ARG="--tag $(printf '%s' "${VERSION#*-}" | cut -d. -f1)" ;;
+          esac
+
+          npm publish $TAG_ARG
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 📊 生成发布报告
+        if: steps.check-published.outputs.published == 'true'
+        run: |
+          echo "## 📦 GitHub Packages 发布成功" >> $GITHUB_STEP_SUMMARY
+          PKG_NAME=$(node -p "require('./package.json').name")
+          VERSION=$(node -p "require('./package.json').version")
+
+          echo "- **包名:** \`$PKG_NAME\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **版本:** \`$VERSION\`" >> $GITHUB_STEP_SUMMARY

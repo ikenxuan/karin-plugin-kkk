@@ -154,7 +154,7 @@ pnpm sort
 ## Git、提交与发布
 
 - Husky pre-commit：当 `packages/core/template`、`packages/amagi`、`packages/richtext`、`packages/web` 有暂存改动时，会更新 `packages/core/package.json` 的 `timestamp`。
-- Husky commit-msg：提交类型必须匹配 `.release-please-config.json` 的 changelog 类型，例如 `feat:`、`fix:`、`docs:`、`style:`、`refactor:`、`test:`、`build:`、`ci:`、`config:`、`db:`、`amagi:` 等。
+- Husky commit-msg：提交类型必须匹配 `scripts/changelog-types.ts` 的类型清单（与 CHANGELOG.md / GitHub Release 分组同源），例如 `feat:`、`fix:`、`docs:`、`style:`、`refactor:`、`test:`、`build:`、`ci:`、`config:`、`db:`、`amagi:` 等。
 - Release Please 只管理 `packages/core`，正式发布包名为 `karin-plugin-kkk`。
 - CI 在 main/PR 上构建 core+web，发布正式包、GitHub Packages、预览包，并同步 build 分支。
 

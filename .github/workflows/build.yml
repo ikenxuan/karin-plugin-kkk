@@ -2,35 +2,6 @@ name: CI/CD
 
 on:
   workflow_dispatch:
-    inputs:
-      # 手动运行模式选择
-      run_mode:
-        description: '运行模式'
-        required: true
-        default: 'preview'
-        type: choice
-        options:
-          - preview
-          - production
-
-      # 手动发布版本号（仅生产模式需要）
-      manual_version:
-        description: '手动指定版本号 (如: 1.2.3，仅生产模式有效)'
-        required: false
-        type: string
-
-      # 发布说明
-      release_notes:
-        description: '发布说明 (可选)'
-        required: false
-        type: string
-
-      # 是否强制发布到 NPM
-      force_npm_publish:
-        description: '强制发布到 NPM (仅生产模式)'
-        required: false
-        default: false
-        type: boolean
 
   push:
     branches:
@@ -52,97 +23,9 @@ permissions:
   pull-requests: write
 
 jobs:
-  # 版本发布管理
-  version-release:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    outputs:
-      releases_created: ${{ steps.release-please.outputs.releases_created || steps.manual-release.outputs.releases_created }}
-      core_release_created: ${{ steps.release-please.outputs['packages/core--release_created'] || steps.manual-release.outputs.core_release_created }}
-      core_tag_name: ${{ steps.release-please.outputs['packages/core--tag_name'] || steps.manual-release.outputs.core_tag_name }}
-      core_version: ${{ steps.get-version-info.outputs.core_version }}
-      should_upload_release: ${{ steps.get-version-info.outputs.should_upload_release }}
-      release_tag_name: ${{ steps.get-version-info.outputs.release_tag_name }}
-      is_manual_production: ${{ steps.get-version-info.outputs.is_manual_production }}
-      manual_release_notes: ${{ steps.get-version-info.outputs.manual_release_notes }}
-
-    steps:
-      - name: 📥 检出源代码
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-          submodules: recursive
-
-      # 自动版本发布检查（非手动生产模式）
-      - name: 🚀 执行版本发布检查
-        if: github.event_name != 'workflow_dispatch' || inputs.run_mode != 'production'
-        id: release-please
-        uses: googleapis/release-please-action@v5
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          config-file: .release-please-config.json
-          manifest-file: .release-please-manifest.json
-
-      # 手动生产发布处理
-      - name: 🎯 处理手动生产发布
-        if: github.event_name == 'workflow_dispatch' && inputs.run_mode == 'production'
-        id: manual-release
-        run: |
-          if [ -z "${{ inputs.manual_version }}" ]; then
-            echo "❌ 生产模式必须指定版本号" >&2
-            exit 1
-          fi
-
-          # 验证版本号格式
-          if ! echo "${{ inputs.manual_version }}" | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$'; then
-            echo "❌ 版本号格式错误，应为 x.y.z 格式" >&2
-            exit 1
-          fi
-
-          echo "releases_created=true" >> $GITHUB_OUTPUT
-          echo "core_release_created=true" >> $GITHUB_OUTPUT
-          echo "core_tag_name=v${{ inputs.manual_version }}" >> $GITHUB_OUTPUT
-
-          echo "✅ 手动生产发布已配置：v${{ inputs.manual_version }}"
-
-      - name: 🏷️ 获取版本信息
-        id: get-version-info
-        run: |
-          cd packages/core
-
-          # 处理手动生产模式
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.run_mode }}" = "production" ]; then
-            # 手动更新 package.json 版本号
-            npm version ${{ inputs.manual_version }} --no-git-tag-version
-            CORE_VERSION="${{ inputs.manual_version }}"
-            echo "should_upload_release=true" >> $GITHUB_OUTPUT
-            echo "release_tag_name=v${{ inputs.manual_version }}" >> $GITHUB_OUTPUT
-            echo "is_manual_production=true" >> $GITHUB_OUTPUT
-            echo "manual_release_notes=${{ inputs.release_notes }}" >> $GITHUB_OUTPUT
-            echo "🎯 手动生产模式：版本 $CORE_VERSION"
-          else
-            # 自动模式或预览模式
-            CORE_VERSION=$(node -p "require('./package.json').version")
-            echo "is_manual_production=false" >> $GITHUB_OUTPUT
-            echo "manual_release_notes=" >> $GITHUB_OUTPUT
-            
-            if [ "${{ steps.release-please.outputs.core_release_created }}" = "true" ] || [ "${{ inputs.force_npm_publish }}" = "true" ]; then
-              echo "should_upload_release=true" >> $GITHUB_OUTPUT
-              echo "release_tag_name=${{ steps.release-please.outputs.core_tag_name }}" >> $GITHUB_OUTPUT
-            else
-              echo "should_upload_release=false" >> $GITHUB_OUTPUT
-              echo "release_tag_name=" >> $GITHUB_OUTPUT
-            fi
-          fi
-
-          echo "core_version=$CORE_VERSION" >> $GITHUB_OUTPUT
-          echo "📦 当前版本：$CORE_VERSION"
-
-  # 统一构建作业（仅核心包和Web应用）
   unified-build:
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    needs: [version-release]
     outputs:
       build_success: ${{ steps.build-status.outputs.success }}
       package_name: ${{ steps.package-info.outputs.name }}
@@ -197,23 +80,6 @@ jobs:
           echo "commit_hash=$COMMIT_HASH" >> $GITHUB_OUTPUT
           echo "short_commit_hash=$SHORT_COMMIT_HASH" >> $GITHUB_OUTPUT
 
-      # 手动生产模式：应用版本号变更
-      - name: 🎯 应用手动版本号
-        if: github.event_name == 'workflow_dispatch' && inputs.run_mode == 'production'
-        run: |
-          cd packages/core
-          npm version ${{ inputs.manual_version }} --no-git-tag-version
-          echo "✅ 已应用手动版本号：${{ inputs.manual_version }}"
-
-      - name: 📦 准备发布产物 (正式版)
-        if: needs.version-release.outputs.core_release_created == 'true' || (github.event_name == 'workflow_dispatch' && inputs.run_mode == 'production')
-        run: |
-          cd packages/core
-          pnpm pkg delete devDependencies
-          pnpm pkg delete scripts
-          mkdir -p ${{ runner.temp }}/production/
-          cp -r package.json README.md CHANGELOG.md LICENSE config resources lib ${{ runner.temp }}/production/
-
       - name: 📦 准备构建分支产物
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
@@ -224,18 +90,10 @@ jobs:
           cp -r package.json CHANGELOG.md README.md LICENSE resources config lib ${{ runner.temp }}/build-branch/
 
       - name: 📦 准备预览包产物
-        if: github.event_name != 'workflow_dispatch' || inputs.run_mode != 'production'
         run: |
           cd packages/core
           mkdir -p ${{ runner.temp }}/preview/
           cp -r package.json README.md CHANGELOG.md LICENSE config resources lib ${{ runner.temp }}/preview/
-
-      - name: 📤 上传正式版构建产物
-        if: needs.version-release.outputs.core_release_created == 'true' || (github.event_name == 'workflow_dispatch' && inputs.run_mode == 'production')
-        uses: actions/upload-artifact@v7
-        with:
-          name: production-build
-          path: ${{ runner.temp }}/production/
 
       - name: 📤 上传构建分支产物
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -245,7 +103,6 @@ jobs:
           path: ${{ runner.temp }}/build-branch/
 
       - name: 📤 上传预览包产物
-        if: github.event_name != 'workflow_dispatch' || inputs.run_mode != 'production'
         uses: actions/upload-artifact@v7
         with:
           name: preview-build
@@ -254,143 +111,6 @@ jobs:
       - name: ✅ 标记构建状态
         id: build-status
         run: echo "success=true" >> $GITHUB_OUTPUT
-
-  # NPM 正式发布
-  npm-production-publish:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    needs: [version-release, unified-build]
-    if: |
-      needs.unified-build.outputs.build_success == 'true' && (
-        needs.version-release.outputs.core_release_created == 'true' ||
-        (github.event_name == 'workflow_dispatch' && inputs.run_mode == 'production') ||
-        inputs.force_npm_publish == true
-      )
-    permissions:
-      contents: write
-      id-token: write
-    steps:
-      - name: 📥 检出仓库（供 action-setup 读取 packageManager 钉子）
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 1
-      - name: 📥 下载构建产物
-        uses: actions/download-artifact@v8
-        with:
-          name: production-build
-          path: packages/core
-
-      - name: 🟢 配置 Node.js 环境
-        uses: actions/setup-node@v6
-        with:
-          node-version: 24
-          registry-url: 'https://registry.npmjs.org'
-
-      - name: 📦 配置 PNPM 环境
-        uses: pnpm/action-setup@v6
-
-      - name: 🚀 发布到 NPM 官方源
-        id: publish-to-npm
-        working-directory: packages/core
-        run: |
-          pnpm publish --no-git-checks --provenance
-
-          echo "name=$(npm pkg get name | tr -d '"')" >> $GITHUB_OUTPUT
-          echo "version=$(npm pkg get version | tr -d '"')" >> $GITHUB_OUTPUT
-
-      - name: 📊 生成发布报告
-        run: |
-          echo "## 📦 NPM 发布成功" >> $GITHUB_STEP_SUMMARY
-          echo "- **包名:** \`${{ steps.publish-to-npm.outputs.name }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "- **版本:** \`${{ steps.publish-to-npm.outputs.version }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "- **模式:** ${{ github.event_name == 'workflow_dispatch' && inputs.run_mode == 'production' && '🎯 手动生产发布' || '🤖 自动发布' }}" >> $GITHUB_STEP_SUMMARY
-
-          if [ "${{ needs.version-release.outputs.manual_release_notes }}" != "" ]; then
-            echo "- **发布说明:** ${{ needs.version-release.outputs.manual_release_notes }}" >> $GITHUB_STEP_SUMMARY
-          fi
-
-  # GitHub Packages 发布
-  github-package-publish:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    needs: [version-release, unified-build]
-    permissions:
-      contents: read
-      packages: write
-    if: |
-      needs.unified-build.outputs.build_success == 'true' && (
-        needs.version-release.outputs.core_release_created == 'true' ||
-        (github.event_name == 'workflow_dispatch' && inputs.run_mode == 'production') ||
-        inputs.force_npm_publish == true
-      )
-    steps:
-      - name: 📥 下载构建产物
-        uses: actions/download-artifact@v8
-        with:
-          name: production-build
-          path: packages/core
-
-      - name: 🟢 配置 Node.js 环境
-        uses: actions/setup-node@v6
-        with:
-          node-version: 24
-          registry-url: 'https://npm.pkg.github.com'
-
-      - name: ✏️ 修改包名 (添加 Scope)
-        working-directory: packages/core
-        run: |
-          # 读取原始包名
-          ORIGINAL_NAME=$(node -p "require('./package.json').name")
-          OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
-
-          # 构造新包名 @owner/name
-          NEW_NAME="@$OWNER/$ORIGINAL_NAME"
-
-          echo "📦 修改包名: $ORIGINAL_NAME -> $NEW_NAME"
-
-          # 修改 package.json
-          node -e "
-            const fs = require('fs');
-            const pkg = require('./package.json');
-            pkg.name = '$NEW_NAME';
-            pkg.publishConfig = { registry: 'https://npm.pkg.github.com/' };
-            fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2));
-          "
-
-      - name: 🚀 发布到 GitHub Packages
-        working-directory: packages/core
-        run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: 📊 生成发布报告
-        run: |
-          echo "## 📦 GitHub Packages 发布成功" >> $GITHUB_STEP_SUMMARY
-          PKG_NAME=$(node -p "require('./packages/core/package.json').name")
-          VERSION=$(node -p "require('./packages/core/package.json').version")
-
-          echo "- **包名:** \`$PKG_NAME\`" >> $GITHUB_STEP_SUMMARY
-          echo "- **版本:** \`$VERSION\`" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### 📥 安装配置" >> $GITHUB_STEP_SUMMARY
-          echo "在 \`.npmrc\` 中添加：" >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`ini" >> $GITHUB_STEP_SUMMARY
-          echo "@${{ github.repository_owner }}:registry=https://npm.pkg.github.com" >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-          echo "然后运行：" >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
-          echo "npm install $PKG_NAME" >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-
-  # 镜像源同步
-  npm-mirror-sync:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    needs: [npm-production-publish]
-    steps:
-      - name: 🔄 同步到国内镜像源
-        run: |
-          curl --max-time 60 --connect-timeout 10 -X PUT "https://registry-direct.npmmirror.com/-/package/karin-plugin-kkk/syncs"
 
   # 构建分支同步
   build-branch-sync:
@@ -480,8 +200,8 @@ jobs:
   preview-package-publish:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    needs: [unified-build, version-release]
-    if: needs.unified-build.outputs.build_success == 'true' && (github.event_name != 'workflow_dispatch' || inputs.run_mode != 'production')
+    needs: [unified-build]
+    if: needs.unified-build.outputs.build_success == 'true'
     outputs:
       pkg_version: ${{ steps.version-gen.outputs.version }}
       pnpm_install_cmd: ${{ steps.publish_pkg.outputs.pnpm_install_cmd }}
@@ -527,8 +247,8 @@ jobs:
             BASE_VERSION="0.0.0"
           fi
 
-          # 2) 获取release-please输出的版本作为参考
-          RELEASE_VERSION="${{ needs.version-release.outputs.core_version }}"
+          # 2) release-please 已退役（发版走 tag），只以最后 tag 与包内版本为基准
+          RELEASE_VERSION=""
           PKG_VERSION=$(node -p "require('./package.json').version" 2>/dev/null || echo "")
 
           # 3) 选择最高的版本作为基准（确保不会倒退）
@@ -621,18 +341,6 @@ jobs:
 
           # 6) 根据事件类型拼接预发布后缀
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-            if [[ "${{ github.head_ref }}" == release-please--branches--* ]]; then
-              TAG="${{ needs.version-release.outputs.release_tag_name }}"
-              if [ -n "$TAG" ]; then
-                TAG=${TAG#v}
-                BASE_NEXT="$TAG"
-              fi
-              TIME_SUFFIX=$(TZ='Asia/Shanghai' date +%m%d%H%M)
-              NEW_VERSION="${BASE_NEXT}-rc.${TIME_SUFFIX}"
-            else
-              PR_NUMBER=${{ github.event.number }}
-              PR_COMMIT_COUNT=$(git rev-list --count HEAD ^origin/main 2>/dev/null || echo 0)
-              NEW_VERSION="${BASE_NEXT}-alpha.${PR_NUMBER}.${PR_COMMIT_COUNT}"
             fi
           elif [ "${{ github.event_name }}" = "push" ] && [ "${{ github.ref }}" = "refs/heads/main" ]; then
             TIME_SUFFIX=$(echo "$TIMESTAMP" | tail -c 5)
@@ -747,7 +455,7 @@ jobs:
   build-summary:
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    needs: [unified-build, preview-package-publish, github-package-publish]
+    needs: [unified-build, preview-package-publish]
     if: always() && needs.unified-build.outputs.build_success == 'true'
     steps:
       - name: 📊 生成完整构建摘要
@@ -766,11 +474,4 @@ jobs:
             echo '```' >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
           fi
-
-          # GitHub Packages 信息
-          if [ "${{ needs.github-package-publish.result }}" = "success" ]; then
-            echo "## 📦 GitHub Packages" >> $GITHUB_STEP_SUMMARY
-            echo "- **状态:** ✅ 发布成功" >> $GITHUB_STEP_SUMMARY
-            echo "- **Registry:** https://npm.pkg.github.com" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-          fi
+
