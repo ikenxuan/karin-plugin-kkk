@@ -341,7 +341,9 @@ jobs:
 
           # 6) 根据事件类型拼接预发布后缀
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-            fi
+            PR_NUMBER=${{ github.event.number }}
+            PR_COMMIT_COUNT=$(git rev-list --count HEAD ^origin/main 2>/dev/null || echo 0)
+            NEW_VERSION="${BASE_NEXT}-alpha.${PR_NUMBER}.${PR_COMMIT_COUNT}"
           elif [ "${{ github.event_name }}" = "push" ] && [ "${{ github.ref }}" = "refs/heads/main" ]; then
             TIME_SUFFIX=$(echo "$TIMESTAMP" | tail -c 5)
             NEW_VERSION="${BASE_NEXT}-beta.${COMMIT_COUNT}.${TIME_SUFFIX}"
