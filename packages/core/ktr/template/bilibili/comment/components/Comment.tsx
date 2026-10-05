@@ -203,7 +203,11 @@ const BilibiliLogo: React.FC = () => {
  * @param props 组件属性
  * @returns JSX元素
  */
-const QRCodeSection: React.FC<QRCodeSectionProps & { useDarkTheme: boolean; avatarUrl?: string }> = ({ share_url, useDarkTheme, avatarUrl }) => {
+const QRCodeSection: React.FC<QRCodeSectionProps & { useDarkTheme: boolean; avatarUrl?: string }> = ({
+  share_url,
+  useDarkTheme,
+  avatarUrl
+}) => {
   return (
     <div className="flex flex-col items-center">
       <div className="flex justify-center items-center w-100 h-100 p-4">

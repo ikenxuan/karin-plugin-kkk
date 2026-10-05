@@ -29,13 +29,7 @@ export interface SSRChartProps {
 export const SSRChart: React.FC<SSRChartProps> = ({ option, width, height, className }) => {
   const svg = renderChartToSVG(option, width, height)
 
-  return (
-    <div
-      className={cn('flex justify-center', className)}
-      style={{ width, height }}
-      dangerouslySetInnerHTML={{ __html: svg }}
-    />
-  )
+  return <div className={cn('flex justify-center', className)} style={{ width, height }} dangerouslySetInnerHTML={{ __html: svg }} />
 }
 
 export default SSRChart

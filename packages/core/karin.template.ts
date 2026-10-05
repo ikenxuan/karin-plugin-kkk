@@ -66,11 +66,12 @@ const avatarProxyPlugin = () => {
  */
 const fontLinkPlugin = () => ({
   name: 'kkk-font-link-plugin',
-  transformIndexHtml: () => templateFonts.map((font) => ({
-    tag: 'link',
-    attrs: { rel: 'stylesheet', href: `/@fs/${font.stylesheetPath.split(path.sep).join('/')}` },
-    injectTo: 'head' as const
-  }))
+  transformIndexHtml: () =>
+    templateFonts.map((font) => ({
+      tag: 'link',
+      attrs: { rel: 'stylesheet', href: `/@fs/${font.stylesheetPath.split(path.sep).join('/')}` },
+      injectTo: 'head' as const
+    }))
 })
 
 export default defineConfig({

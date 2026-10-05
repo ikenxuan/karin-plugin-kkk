@@ -5,10 +5,18 @@ import { DefaultLayout } from '../../../components/DefaultLayout'
 import type { PosterProps } from '../../../types/ctx'
 import { BoxplotGuide } from '../../components/BoxplotGuide'
 import { ChartCard } from '../../components/ChartCard'
-import { PlatformTable } from '../../components/PlatformTable'
-import { collectRankPlatforms, RankLegend, RankList } from '../../components/RankList'
-import { KpiCard } from '../../components/KpiCard'
-import { SSRChart } from '../../components/SSRChart'
+import {
+  buildBucketOption,
+  buildPlatformDonutOption,
+  buildPlatformLegend,
+  buildBoxplotOption,
+  buildDurationCurveOption,
+  buildHeatmapOption,
+  buildSilenceBucketsOption,
+  buildTrendLineOption,
+  buildWeekdayOption,
+  buildWorkTypeLegend
+} from '../../components/chartPresets'
 import {
   axisLabelStyle,
   axisLineStyle,
@@ -22,19 +30,11 @@ import {
   withAlpha,
   WORK_TYPE_META
 } from '../../components/chartTheme'
-import {
-  buildBucketOption,
-  buildPlatformDonutOption,
-  buildPlatformLegend,
-  buildBoxplotOption,
-  buildDurationCurveOption,
-  buildHeatmapOption,
-  buildSilenceBucketsOption,
-  buildTrendLineOption,
-  buildWeekdayOption,
-  buildWorkTypeLegend
-} from '../../components/chartPresets'
 import { formatCompact, formatDateShort, formatPercent, formatWithCommas } from '../../components/format'
+import { KpiCard } from '../../components/KpiCard'
+import { PlatformTable } from '../../components/PlatformTable'
+import { collectRankPlatforms, RankLegend, RankList } from '../../components/RankList'
+import { SSRChart } from '../../components/SSRChart'
 import type { StatisticsPlatform } from '../../components/types'
 import type { GlobalStatisticsData, GroupRankItem, PlatformTrend, PlatformWorkTypeCount, SizeBucket, TrendPoint } from './types'
 
@@ -226,10 +226,11 @@ export const GlobalStatistics: React.FC<PosterProps<GlobalStatisticsData>> = (pr
   const silenceTotal = data.silenceBuckets.reduce((sum, bucket) => sum + bucket.count, 0)
   const silenceActive = data.silenceBuckets.slice(0, 2).reduce((sum, bucket) => sum + bucket.count, 0)
   const silenceActivePercent = silenceTotal > 0 ? Math.round((silenceActive / silenceTotal) * 100) : 0
-  const heatPeak = data.userActivity.cells.reduce(
-    (peak, [x, y, count]) => (count > peak.count ? { x, y, count } : peak),
-    { x: 0, y: 0, count: 0 }
-  )
+  const heatPeak = data.userActivity.cells.reduce((peak, [x, y, count]) => (count > peak.count ? { x, y, count } : peak), {
+    x: 0,
+    y: 0,
+    count: 0
+  })
 
   const platformTotal = data.platformData.reduce((sum, item) => sum + item.count, 0)
   const parsesPerUser = data.totalUsers > 0 ? data.totalParses / data.totalUsers : 0
@@ -371,7 +372,8 @@ export const GlobalStatistics: React.FC<PosterProps<GlobalStatisticsData>> = (pr
               {trendIsSplit ? (
                 <div className="mt-2 text-center text-xl text-muted/80">
                   近 30 天 · 虚线为全局日均 <span className="font-bold text-foreground/80">{data.dailyAverage.toFixed(1)}</span> 次 ·{' '}
-                  <span className="text-foreground/80 font-bold">{data.trendCompleteFrom}</span> 之前的灰色虚线为旧版回填数据，口径失真仅作参考
+                  <span className="text-foreground/80 font-bold">{data.trendCompleteFrom}</span>{' '}
+                  之前的灰色虚线为旧版回填数据，口径失真仅作参考
                 </div>
               ) : (
                 <div className="mt-2 text-center text-xl text-muted/80">
@@ -425,9 +427,7 @@ export const GlobalStatistics: React.FC<PosterProps<GlobalStatisticsData>> = (pr
           const fiveSecondIndex = item.buckets.findIndex((bucket) => bucket.upper === '≤5s')
           const fiveSecondShare =
             fiveSecondIndex >= 0 && metricTotal > 0
-              ? Math.round(
-                  (item.buckets.slice(0, fiveSecondIndex + 1).reduce((sum, bucket) => sum + bucket.count, 0) / metricTotal) * 100
-                )
+              ? Math.round((item.buckets.slice(0, fiveSecondIndex + 1).reduce((sum, bucket) => sum + bucket.count, 0) / metricTotal) * 100)
               : undefined
 
           return (
@@ -438,12 +438,14 @@ export const GlobalStatistics: React.FC<PosterProps<GlobalStatisticsData>> = (pr
               accentClassName={METRIC_META[item.metric].accent}
               caption={
                 <>
-                  横轴 = <b className="text-foreground/80">耗时上限</b> · 纵轴 = 有多少比例的解析在这个时间内跑完 · 两条虚线是 50% / 90% 的位置
+                  横轴 = <b className="text-foreground/80">耗时上限</b> · 纵轴 = 有多少比例的解析在这个时间内跑完 · 两条虚线是 50% / 90%
+                  的位置
                   <br />
                   读法：
                   {fiveSecondShare !== undefined ? (
                     <>
-                      「≤5s」那个点是 <b className="text-foreground/80">{fiveSecondShare}%</b>，意思就是 {fiveSecondShare}% 的解析 5 秒内跑完
+                      「≤5s」那个点是 <b className="text-foreground/80">{fiveSecondShare}%</b>，意思就是 {fiveSecondShare}% 的解析 5
+                      秒内跑完
                     </>
                   ) : (
                     <>任取一点，横轴是耗时上限、纵轴就是跑完的比例</>
@@ -474,7 +476,11 @@ export const GlobalStatistics: React.FC<PosterProps<GlobalStatisticsData>> = (pr
         <div className="grid grid-cols-2 gap-14">
           {data.sizeBuckets.some((bucket: SizeBucket) => bucket.count > 0) && (
             <ChartCard title="群规模分布" subtitle="GROUP SIZES" accentClassName="bg-amber-500" caption="按各群累计解析次数分桶">
-              <SSRChart option={buildBucketOption(data.sizeBuckets, dark, { yName: '群数' })} width={HALF_CHART_WIDTH} height={HALF_CHART_HEIGHT} />
+              <SSRChart
+                option={buildBucketOption(data.sizeBuckets, dark, { yName: '群数' })}
+                width={HALF_CHART_WIDTH}
+                height={HALF_CHART_HEIGHT}
+              />
             </ChartCard>
           )}
 
@@ -495,20 +501,15 @@ export const GlobalStatistics: React.FC<PosterProps<GlobalStatisticsData>> = (pr
               caption={
                 <>
                   横轴 → 用过几个群 · 纵轴 ↑ 总解析次数 · 格子数字 = 落在这档的用户数
-                  <br />
-                  共 <b className="text-foreground/80">{formatWithCommas(heatTotal)}</b> 位用户 ·
-                  最密集的一格是「{data.userActivity.xLabels[heatPeak.x]} × {data.userActivity.yLabels[heatPeak.y]}」，
-                  占 <b className="text-foreground/80">{formatPercent(heatPeak.count, heatTotal)}%</b>
+                  <br />共 <b className="text-foreground/80">{formatWithCommas(heatTotal)}</b> 位用户 · 最密集的一格是「
+                  {data.userActivity.xLabels[heatPeak.x]} × {data.userActivity.yLabels[heatPeak.y]}」， 占{' '}
+                  <b className="text-foreground/80">{formatPercent(heatPeak.count, heatTotal)}%</b>
                   <br />
                   颜色越深人越多；左上角大片深色 = 大多数人只在少数群里轻度使用
                 </>
               }
             >
-              <SSRChart
-                option={buildHeatmapOption(data.userActivity, dark)}
-                width={HALF_CHART_WIDTH}
-                height={HEATMAP_CHART_HEIGHT}
-              />
+              <SSRChart option={buildHeatmapOption(data.userActivity, dark)} width={HALF_CHART_WIDTH} height={HEATMAP_CHART_HEIGHT} />
             </ChartCard>
           )}
 
@@ -519,8 +520,8 @@ export const GlobalStatistics: React.FC<PosterProps<GlobalStatisticsData>> = (pr
               accentClassName="bg-purple-500"
               caption={
                 <>
-                  怎么算的：把每个群按<b className="text-foreground/80">群内使用人数</b>分档，
-                  档内所有群的<b className="text-foreground/80">总解析次数</b>合起来画成一个箱体
+                  怎么算的：把每个群按<b className="text-foreground/80">群内使用人数</b>分档， 档内所有群的
+                  <b className="text-foreground/80">总解析次数</b>合起来画成一个箱体
                   <br />
                   横轴 = 使用人数档 · 纵轴 = 群总解析次数 · 箱体上方的数字是中位数
                 </>
@@ -570,11 +571,7 @@ export const GlobalStatistics: React.FC<PosterProps<GlobalStatisticsData>> = (pr
                 </>
               }
             >
-              <SSRChart
-                option={buildSilenceBucketsOption(data.silenceBuckets, dark)}
-                width={HALF_CHART_WIDTH}
-                height={HALF_CHART_HEIGHT}
-              />
+              <SSRChart option={buildSilenceBucketsOption(data.silenceBuckets, dark)} width={HALF_CHART_WIDTH} height={HALF_CHART_HEIGHT} />
             </ChartCard>
           )}
         </div>

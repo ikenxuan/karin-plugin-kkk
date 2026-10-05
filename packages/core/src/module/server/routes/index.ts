@@ -11,6 +11,7 @@ import { templateFonts } from '@/module/utils/templateFonts'
 import { API_V1_PREFIX, ASSETS_PREFIX, KKK_PREFIX, SSR_PREFIX } from '../constants/routes'
 import { createReloadableAmagiRouter } from './amagi'
 import { apiRouter } from './api'
+import { captchaRouter } from './captcha'
 import { ssrRouter } from './ssr'
 import { staticRouter } from './static'
 
@@ -49,6 +50,7 @@ if (Config.amagi.APIServer && Config.amagi.APIServerMount) {
 app.use(API_V1_PREFIX, apiRouter) // /kkk/v1/*
 app.use(SSR_PREFIX, ssrRouter) // /kkk/ssr/*
 app.use(ASSETS_PREFIX, staticRouter) // /kkk/assets/*
+app.use('/captcha', captchaRouter) // /kkk/captcha/*，人工验证页（浏览器无鉴权直开）
 
 // 挂载到 Karin 主路由
 karinApp.use(KKK_PREFIX, app)

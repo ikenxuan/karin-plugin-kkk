@@ -110,7 +110,9 @@ export const RankList: React.FC<RankListProps> = ({ rows, dark }) => {
 
 /** 榜单需要的平台图例（只列真正出现过的平台） */
 export const collectRankPlatforms = (rows: RankRow[]): StatisticsPlatform[] =>
-  PLATFORM_ORDER.filter((platform) => rows.some((row) => row.segments.some((segment) => segment.platform === platform && segment.count > 0)))
+  PLATFORM_ORDER.filter((platform) =>
+    rows.some((row) => row.segments.some((segment) => segment.platform === platform && segment.count > 0))
+  )
 
 /** 榜单的平台图例，和堆叠条配套使用 */
 export const RankLegend: React.FC<{ platforms: StatisticsPlatform[]; dark: boolean }> = ({ platforms, dark }) => (

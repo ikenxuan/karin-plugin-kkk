@@ -10,16 +10,7 @@
 export type StatisticsPlatform = 'douyin' | 'bilibili' | 'kuaishou' | 'xiaohongshu'
 
 /** 解析内容形态 */
-export type StatisticsWorkType =
-  | 'video'
-  | 'gallery'
-  | 'collection'
-  | 'article'
-  | 'live'
-  | 'bangumi'
-  | 'dynamic'
-  | 'music'
-  | 'unknown'
+export type StatisticsWorkType = 'video' | 'gallery' | 'collection' | 'article' | 'live' | 'bangumi' | 'dynamic' | 'music' | 'unknown'
 
 /**
  * 解析过程里采集的量化指标（与 core 侧 `ParseMetric` 对齐）。

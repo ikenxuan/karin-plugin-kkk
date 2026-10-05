@@ -1,10 +1,4 @@
-import {
-  METRIC_BUCKETS,
-  type ParseMetric,
-  type ParseMetricBucketRow,
-  type ParsePlatform,
-  type ParseWorkType
-} from '@/module/db'
+import { METRIC_BUCKETS, type ParseMetric, type ParseMetricBucketRow, type ParsePlatform, type ParseWorkType } from '@/module/db'
 
 /**
  * 统计海报的**纯聚合层**。
@@ -278,7 +272,10 @@ export const aggregateGroup = (input: GroupAggregateInput) => {
   // 30 天窗口不是 7 的整数倍（末尾那两天对应的星期几各出现 5 次，其余各 4 次），
   // 直接求和的话那两个星期几会凭空高出 25%，纯粹是曝光天数造成的，跟用户行为无关。
   // 出现天数必须按窗口日期数，不能按有数据的行为准 —— 没记录的那天也算出现了一次。
-  const weekday = buildWeekdayAverages(windowDates, groupHistory.map((row) => ({ date: row.date, count: row.parseCount })))
+  const weekday = buildWeekdayAverages(
+    windowDates,
+    groupHistory.map((row) => ({ date: row.date, count: row.parseCount }))
+  )
 
   // 平台 × 时段：ParseHourStats 本身就带 platform，直接铺成矩阵
   const platformHourMap = new Map<ParsePlatform, number[]>()
@@ -385,7 +382,10 @@ export const aggregateGlobal = (input: GlobalAggregateInput) => {
   }
 
   // 周内分布：同群维度，取「该星期几的日均」
-  const weekday = buildWeekdayAverages(windowDates, historyData.map((row) => ({ date: row.date, count: row.totalParses })))
+  const weekday = buildWeekdayAverages(
+    windowDates,
+    historyData.map((row) => ({ date: row.date, count: row.totalParses }))
+  )
 
   // 按群聚合：总次数 + 使用人数
   const groupAgg = new Map<string, { totalParses: number; users: Set<string>; platforms: Map<ParsePlatform, number> }>()

@@ -5,7 +5,8 @@ import { getValue } from '../utils'
 import type { ConfigPageProps } from './pageTypes'
 
 const AppConfigPage = ({ config, renderers }: ConfigPageProps) => {
-  const { renderCheckboxGroup, renderPageHeader, renderSelectField, renderSlider, renderSubSection, renderSwitch, renderTextField } = renderers
+  const { renderCheckboxGroup, renderPageHeader, renderSelectField, renderSlider, renderSubSection, renderSwitch, renderTextField } =
+    renderers
   const appLivePhotoMode = getValue<string>(config, ['app', 'livePhotoMode'], 'video_and_livephoto')
 
   return (

@@ -24,11 +24,10 @@ import _ from 'node-karin/lodash'
 import React from 'react'
 import { MdSchedule } from 'react-icons/md'
 
-import { DefaultLayout } from '../../../components/DefaultLayout'
-import type { PosterProps } from '../../../types/ctx'
 import { generateQRCode } from '../../../../utils/QRcode'
 import { isDark } from '../../../../utils/theme'
-
+import { DefaultLayout } from '../../../components/DefaultLayout'
+import type { PosterProps } from '../../../types/ctx'
 import { getRandomErrorTitle } from './errorTitles'
 import { highlightStack } from './stackHighlight'
 import type { AmagiErrorDetail, ApiErrorData } from './types'
@@ -223,7 +222,8 @@ const TRACE_REASON_LABELS: Record<string, string> = {
 }
 
 const getLogLevelTheme = (level: LogLevel, dark: boolean) => {
-  const themeMap: Record<    LogLevel,
+  const themeMap: Record<
+    LogLevel,
     {
       bgClass: string
       borderClass: string
@@ -652,7 +652,7 @@ export const handlerError: React.FC<PosterProps<ApiErrorData>> = (props) => {
                 {ERROR_KIND_META[data.amagi.kind].hint}
               </p>
 
-              {/* 错误说明：与堆栈里那份 inspect 转储不同，这里是干净的一句话。
+{/* 错误说明：与堆栈里那份 inspect 转储不同，这里是干净的一句话。
                   标签随 `raw` 在场与否切换 —— 响应体是纯文本时 amagi 提不出平台文案，
                   这一句必然是它自己的兜底句，继续印「平台原文」会让看图的人以为那是平台说的 */}
               <div
@@ -791,7 +791,9 @@ export const handlerError: React.FC<PosterProps<ApiErrorData>> = (props) => {
                             </span>
                             <span
                               className="font-mono text-2xl font-bold"
-                              style={{ color: entry.status === undefined ? mutedColor : ok ? (dark ? '#4ade80' : '#15803d') : primaryColor }}
+                              style={{
+                                color: entry.status === undefined ? mutedColor : ok ? (dark ? '#4ade80' : '#15803d') : primaryColor
+                              }}
                             >
                               {entry.status ?? '未发出'}
                             </span>

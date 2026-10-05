@@ -158,19 +158,11 @@ export const DefaultLayout: React.FC<DefaultLayoutProps> = ({ children, ctx, cla
                       <GlowText className="opacity-90" blurRadius={8} glowStrength={useDarkTheme ? 0.55 : 0}>
                         Design By
                       </GlowText>
-                      <GlowImage
-                        blurRadius={12}
-                        glowStrength={useDarkTheme ? 1 : 0}
-                        imgClassName="object-cover rounded-full w-5 h-5"
-                      >
+                      <GlowImage blurRadius={12} glowStrength={useDarkTheme ? 1 : 0} imgClassName="object-cover rounded-full w-5 h-5">
                         <img src="https://unavatar.io/github/ikenxuan" alt="ikenxuan" className="object-cover rounded-full w-5 h-5" />
                       </GlowImage>
                     </div>
-                    <GlowText
-                      className="text-4xl font-bold leading-none opacity-90"
-                      blurRadius={14}
-                      glowStrength={useDarkTheme ? 0.6 : 0}
-                    >
+                    <GlowText className="text-4xl font-bold leading-none opacity-90" blurRadius={14} glowStrength={useDarkTheme ? 0.6 : 0}>
                       ikenxuan
                     </GlowText>
                   </div>

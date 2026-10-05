@@ -41,7 +41,6 @@
   @import 'highlight.js/styles/github-dark.css';
 }
 
-
 /* 基础样式 */
 @layer base {
   * {
@@ -53,7 +52,10 @@
   }
 
   body {
-    font-family: HarmonyOS Sans SC, bilifont, fansmedal-num;
+    font-family:
+      HarmonyOS Sans SC,
+      bilifont,
+      fansmedal-num;
     line-height: 1.6;
     color: var(--theme-text);
     background-color: var(--theme-bg);

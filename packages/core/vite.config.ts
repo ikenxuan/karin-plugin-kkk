@@ -137,6 +137,9 @@ export default defineConfig({
       { find: '@', replacement: resolve(__dirname, './src') },
       { find: '@kkk/richtext', replacement: resolve(__dirname, '../richtext/src/index.ts') },
       { find: '@template', replacement: resolve(__dirname, './ktr') },
+      // core 全部以 '@ikenxuan/amagi' 导入，构建直接 bundle 工作区 amagi 源码，
+      // 不能依赖 registry 发布产物（否则本地改的 amagi src 不会进构建产物）
+      { find: '@ikenxuan/amagi', replacement: resolve(__dirname, '../amagi/packages/core/src/index.ts') },
       { find: 'amagi', replacement: resolve(__dirname, '../amagi/packages/core/src') }
     ]
   },

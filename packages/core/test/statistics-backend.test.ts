@@ -175,12 +175,18 @@ describe('耗时横轴跟着数据裁剪', () => {
   it('整体偏慢时，前面没数据的快档会被裁掉', () => {
     // 只有 5-10s 和 10-20s 有数据 —— 不裁的话横轴左边五格全是 0
     const trimmed = trimEmptyBuckets(mk([0, 0, 0, 0, 0, 40, 60]))
-    expect(trimmed.map((bucket) => bucket.label), '数据范围 + 左边一个空档').toEqual(['3-5s', '5-10s', '10-20s'])
+    expect(
+      trimmed.map((bucket) => bucket.label),
+      '数据范围 + 左边一个空档'
+    ).toEqual(['3-5s', '5-10s', '10-20s'])
   })
 
   it('整体偏快时，后面没数据的慢档会被裁掉', () => {
     const trimmed = trimEmptyBuckets(mk([70, 30, 0, 0, 0, 0, 0]))
-    expect(trimmed.map((bucket) => bucket.label), '数据范围 + 右边一个空档').toEqual(['<0.5s', '0.5-1s', '1-2s'])
+    expect(
+      trimmed.map((bucket) => bucket.label),
+      '数据范围 + 右边一个空档'
+    ).toEqual(['<0.5s', '0.5-1s', '1-2s'])
   })
 
   it('只剩一个数据档时，左右各留一个空档撑着，不至于退化成孤点', () => {
@@ -215,8 +221,14 @@ describe('周内日均的分母', () => {
     expect(windowDates, `${TREND_DAYS} 天 = 4 周 + 2 天`).toHaveLength(TREND_DAYS)
     // 多出来的那两天落在哪两个星期几上，它们就多出现一次
     expect(Math.max(...occurrences), '有两个星期几会出现 5 次').toBe(5)
-    expect(occurrences.filter((count) => count === 5), '而且只有两个').toHaveLength(2)
-    expect(occurrences.filter((count) => count === 4), '其余五个各 4 次').toHaveLength(5)
+    expect(
+      occurrences.filter((count) => count === 5),
+      '而且只有两个'
+    ).toHaveLength(2)
+    expect(
+      occurrences.filter((count) => count === 4),
+      '其余五个各 4 次'
+    ).toHaveLength(5)
   })
 
   it('每天解析量相同时，七个星期几的日均必须相等', () => {
@@ -350,8 +362,14 @@ describe('聚合层算出的东西和写入的一致', () => {
     })
 
     const total = aggregated.groupTotalParses
-    expect(aggregated.trend.reduce((sum, point) => sum + point.count, 0), '趋势').toBe(total)
-    expect(aggregated.hourly.reduce((sum, count) => sum + count, 0), '24 小时').toBe(total)
+    expect(
+      aggregated.trend.reduce((sum, point) => sum + point.count, 0),
+      '趋势'
+    ).toBe(total)
+    expect(
+      aggregated.hourly.reduce((sum, count) => sum + count, 0),
+      '24 小时'
+    ).toBe(total)
     // 周内是「日均」不是总量，加起来当然不等于总量。
     // 真正要验的是分母：只该除以该星期几在窗口里出现的天数。
     expect(aggregated.weekday, '固定 7 格').toHaveLength(7)
@@ -362,8 +380,14 @@ describe('聚合层算出的东西和写入的一致', () => {
       aggregated.weekday.filter((_, index) => index !== todayIndex).every((value) => value === 0),
       '只有今天有数据，其余星期几应当全是 0'
     ).toBe(true)
-    expect(aggregated.workTypes.reduce((sum, item) => sum + item.count, 0), '内容形态').toBe(total)
-    expect(aggregated.metrics[0].buckets.reduce((sum, bucket) => sum + bucket.count, 0), '耗时分布').toBe(total)
+    expect(
+      aggregated.workTypes.reduce((sum, item) => sum + item.count, 0),
+      '内容形态'
+    ).toBe(total)
+    expect(
+      aggregated.metrics[0].buckets.reduce((sum, bucket) => sum + bucket.count, 0),
+      '耗时分布'
+    ).toBe(total)
 
     // 趋势是补齐过的 30 天窗口，不是只有今天
     expect(aggregated.trend).toHaveLength(TREND_DAYS)
@@ -427,7 +451,10 @@ describe('聚合层算出的东西和写入的一致', () => {
 
     // 周内 / 趋势
     expect(aggregated.weekday, '固定 7 格').toHaveLength(7)
-    expect(aggregated.weekday.filter((value) => value > 0), '只有今天有数据').toHaveLength(1)
+    expect(
+      aggregated.weekday.filter((value) => value > 0),
+      '只有今天有数据'
+    ).toHaveLength(1)
     expect(aggregated.trend.reduce((sum, point) => sum + point.count, 0)).toBe(6)
     expect(aggregated.dailyAverage).toBeCloseTo(6 / TREND_DAYS)
   })

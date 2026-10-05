@@ -649,7 +649,10 @@ export class DouYin extends Base {
               CommentLength: douyinCommentsRes.CommentsData.length ?? 0,
               // 非视频作品没有直链，二维码用 www.douyin.com 的 PC 访问地址；
               // iesdouyin 超长分享链接字节过多，会降低二维码的鲁棒性。
-              share_url: isVideo && selectedVideo ? buildDouyinPlayUrl(selectedVideo.play_addr) : `https://www.douyin.com/${isArticle ? 'article' : 'note'}/${aweme.aweme_id}`,
+              share_url:
+                isVideo && selectedVideo
+                  ? buildDouyinPlayUrl(selectedVideo.play_addr)
+                  : `https://www.douyin.com/${isArticle ? 'article' : 'note'}/${aweme.aweme_id}`,
               VideoSize: mp4size,
               VideoFPS: FPS,
               ImageLength: imagenum,

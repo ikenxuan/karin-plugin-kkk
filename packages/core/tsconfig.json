@@ -31,15 +31,7 @@
     "emitDecoratorMetadata": true,
     "composite": true
   },
-  "include": [
-    "src/**/*.ts",
-    "ktr/**/*.ts",
-    "ktr/**/*.tsx",
-    "vite.plugin/**/*.ts",
-    "vite.config.ts",
-    "karin.template.ts",
-    ".ktr/**/*.d.ts"
-  ],
+  "include": ["src/**/*.ts", "ktr/**/*.ts", "ktr/**/*.tsx", "vite.plugin/**/*.ts", "vite.config.ts", "karin.template.ts", ".ktr/**/*.d.ts"],
   "references": [
     {
       "path": "../richtext"

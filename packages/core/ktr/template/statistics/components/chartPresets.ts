@@ -1,4 +1,3 @@
-import type { ActivityBox, ActivityHeatmap, StatisticsPlatform, StatisticsWorkType } from './types'
 import {
   axisLabelStyle,
   axisLineStyle,
@@ -12,6 +11,7 @@ import {
   WORK_TYPE_META
 } from './chartTheme'
 import { formatCompact, formatDateShort, formatPercent } from './format'
+import type { ActivityBox, ActivityHeatmap, StatisticsPlatform, StatisticsWorkType } from './types'
 
 /** 平台计数（两张海报共用的最小结构） */
 export interface PlatformCountLike {
@@ -273,11 +273,7 @@ export interface BucketCount {
  * @param opts.yName y 轴名称
  * @param opts.accent 柱色，默认用主强调色
  */
-export const buildBucketOption = (
-  buckets: BucketCount[],
-  dark: boolean,
-  opts: { yName: string; accent?: string } = { yName: '数量' }
-) => {
+export const buildBucketOption = (buckets: BucketCount[], dark: boolean, opts: { yName: string; accent?: string } = { yName: '数量' }) => {
   const palette = getChartPalette(dark)
   const color = opts.accent ?? palette.accent
 

@@ -4,10 +4,15 @@ import { isDark } from '../../../../utils/theme'
 import { DefaultLayout } from '../../../components/DefaultLayout'
 import type { PosterProps } from '../../../types/ctx'
 import { ChartCard } from '../../components/ChartCard'
-import { PlatformTable } from '../../components/PlatformTable'
-import { collectRankPlatforms, RankLegend, RankList } from '../../components/RankList'
-import { KpiCard } from '../../components/KpiCard'
-import { SSRChart } from '../../components/SSRChart'
+import {
+  buildDurationCurveOption,
+  buildPlatformDonutOption,
+  buildPlatformHourOption,
+  buildPlatformLegend,
+  buildTrendLineOption,
+  buildWeekdayOption,
+  buildWorkTypeLegend
+} from '../../components/chartPresets'
 import {
   axisLabelStyle,
   axisLineStyle,
@@ -20,16 +25,11 @@ import {
   withAlpha,
   WORK_TYPE_META
 } from '../../components/chartTheme'
-import {
-  buildDurationCurveOption,
-  buildPlatformDonutOption,
-  buildPlatformHourOption,
-  buildPlatformLegend,
-  buildTrendLineOption,
-  buildWeekdayOption,
-  buildWorkTypeLegend
-} from '../../components/chartPresets'
 import { formatCompact, formatPercent, formatWithCommas } from '../../components/format'
+import { KpiCard } from '../../components/KpiCard'
+import { PlatformTable } from '../../components/PlatformTable'
+import { collectRankPlatforms, RankLegend, RankList } from '../../components/RankList'
+import { SSRChart } from '../../components/SSRChart'
 import type { GroupStatisticsData, TopUser, WorkTypeCount } from './types'
 
 /**
@@ -240,7 +240,9 @@ export const GroupStatistics: React.FC<PosterProps<GroupStatisticsData>> = (prop
             <h1 className="text-[5rem] font-bold leading-none tracking-tighter text-foreground/90">解析统计</h1>
           </div>
           <div className="text-right shrink-0">
-            <div className="text-3xl font-bold text-foreground/80 max-w-140 truncate">{data.groupName}({data.groupId})</div>
+            <div className="text-3xl font-bold text-foreground/80 max-w-140 truncate">
+              {data.groupName}({data.groupId})
+            </div>
             <div className="text-2xl text-muted/70 mt-2">
               {data.groupMemberCount ? `共 ${data.groupMemberCount} 人 · ` : ''}数据截止 {data.generatedAt}
             </div>
@@ -327,7 +329,11 @@ export const GroupStatistics: React.FC<PosterProps<GroupStatisticsData>> = (prop
               title="活跃时段"
               subtitle="ACTIVE HOURS"
               accentClassName="bg-amber-500"
-              caption={<>最活跃时段 {peakHour}:00 - {peakHour + 1}:00</>}
+              caption={
+                <>
+                  最活跃时段 {peakHour}:00 - {peakHour + 1}:00
+                </>
+              }
             >
               <SSRChart
                 option={buildHourPolarOption(data.hourly, { width: POLAR_CHART_WIDTH, height: POLAR_CHART_HEIGHT }, dark)}
@@ -350,11 +356,7 @@ export const GroupStatistics: React.FC<PosterProps<GroupStatisticsData>> = (prop
                 </>
               }
             >
-              <SSRChart
-                option={buildWeekdayOption(data.weekday, dark)}
-                width={WEEKDAY_CHART_WIDTH}
-                height={POLAR_CHART_HEIGHT}
-              />
+              <SSRChart option={buildWeekdayOption(data.weekday, dark)} width={WEEKDAY_CHART_WIDTH} height={POLAR_CHART_HEIGHT} />
             </ChartCard>
           )}
         </div>
@@ -363,11 +365,7 @@ export const GroupStatistics: React.FC<PosterProps<GroupStatisticsData>> = (prop
         <div className="grid grid-cols-2 gap-14">
           {workTypeTotal > 0 && (
             <ChartCard title="内容形态" subtitle="WORK TYPES" accentClassName="bg-cyan-500">
-              <SSRChart
-                option={buildWorkTypeTreemapOption(data.workTypes, dark)}
-                width={HALF_CHART_WIDTH}
-                height={HALF_CHART_HEIGHT}
-              />
+              <SSRChart option={buildWorkTypeTreemapOption(data.workTypes, dark)} width={HALF_CHART_WIDTH} height={HALF_CHART_HEIGHT} />
               <div className="mt-2 flex flex-wrap justify-center gap-x-6 gap-y-2">
                 {buildWorkTypeLegend(data.workTypes).map((row) => (
                   <div key={row.key} className="flex items-center gap-3">
@@ -381,11 +379,7 @@ export const GroupStatistics: React.FC<PosterProps<GroupStatisticsData>> = (prop
 
           {hourlyTotal > 0 && data.platformHourly.length > 0 && (
             <ChartCard title="平台 × 时段" subtitle="PLATFORM BY HOUR" accentClassName="bg-indigo-500">
-              <SSRChart
-                option={buildPlatformHourOption(data.platformHourly, dark)}
-                width={HALF_CHART_WIDTH}
-                height={HALF_CHART_HEIGHT}
-              />
+              <SSRChart option={buildPlatformHourOption(data.platformHourly, dark)} width={HALF_CHART_WIDTH} height={HALF_CHART_HEIGHT} />
               <div className="mt-2 flex flex-wrap justify-center gap-x-6 gap-y-2">
                 {data.platformHourly.map((item) => (
                   <div key={item.platform} className="flex items-center gap-3">
@@ -405,9 +399,7 @@ export const GroupStatistics: React.FC<PosterProps<GroupStatisticsData>> = (prop
           const fiveSecondIndex = item.buckets.findIndex((bucket) => bucket.upper === '≤5s')
           const fiveSecondShare =
             fiveSecondIndex >= 0 && metricTotal > 0
-              ? Math.round(
-                  (item.buckets.slice(0, fiveSecondIndex + 1).reduce((sum, bucket) => sum + bucket.count, 0) / metricTotal) * 100
-                )
+              ? Math.round((item.buckets.slice(0, fiveSecondIndex + 1).reduce((sum, bucket) => sum + bucket.count, 0) / metricTotal) * 100)
               : undefined
 
           return (
@@ -418,12 +410,14 @@ export const GroupStatistics: React.FC<PosterProps<GroupStatisticsData>> = (prop
               accentClassName={METRIC_META[item.metric].accent}
               caption={
                 <>
-                  横轴 = <b className="text-foreground/80">耗时上限</b> · 纵轴 = 有多少比例的解析在这个时间内跑完 · 两条虚线是 50% / 90% 的位置
+                  横轴 = <b className="text-foreground/80">耗时上限</b> · 纵轴 = 有多少比例的解析在这个时间内跑完 · 两条虚线是 50% / 90%
+                  的位置
                   <br />
                   读法：
                   {fiveSecondShare !== undefined ? (
                     <>
-                      「≤5s」那个点是 <b className="text-foreground/80">{fiveSecondShare}%</b>，意思就是 {fiveSecondShare}% 的解析 5 秒内跑完
+                      「≤5s」那个点是 <b className="text-foreground/80">{fiveSecondShare}%</b>，意思就是 {fiveSecondShare}% 的解析 5
+                      秒内跑完
                     </>
                   ) : (
                     <>任取一点，横轴是耗时上限、纵轴就是跑完的比例</>

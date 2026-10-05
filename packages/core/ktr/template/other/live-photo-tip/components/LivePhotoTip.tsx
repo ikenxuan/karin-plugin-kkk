@@ -203,10 +203,7 @@ export const LivePhotoTip: React.FC<PosterProps<LivePhotoTipData>> = React.memo(
              普通叠加同样不会蒙灰纱。
           另外这里必须用内联 <svg> 元素：改成 SVG 的 background-image 平铺反而更慢，
           Chromium 会为整块图层重新栅格化滤镜，1440 宽的画布直接卡住 */}
-      <svg
-        className="absolute inset-0 h-full w-full pointer-events-none"
-        style={{ opacity: dark ? 0.32 : 0.28 }}
-      >
+      <svg className="absolute inset-0 h-full w-full pointer-events-none" style={{ opacity: dark ? 0.32 : 0.28 }}>
         <filter id="kkkLivePhotoNoise">
           <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" stitchTiles="stitch" result="noise" />
           <feColorMatrix in="noise" type="saturate" values="0" result="gray" />

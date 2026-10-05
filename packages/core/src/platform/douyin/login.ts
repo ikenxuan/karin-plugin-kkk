@@ -24,6 +24,28 @@ const CODE_MAX_ATTEMPTS = 3
 /** 6 位数字验证码 */
 const CODE_PATTERN = /^\d{6}$/
 
+/** 等待用户回填登录密码的时限（秒） */
+const PASSWORD_INPUT_TIMEOUT = 90
+
+/** 登录密码回填允许的重试次数（后端只校验一次，这里收的是格式回填次数） */
+const PASSWORD_MAX_ATTEMPTS = 2
+
+/** 登录密码的最短长度（抖音密码段一般 8 位以上，6 位兜底防误触） */
+const PASSWORD_MIN_LENGTH = 6
+
+/**
+ * 登录密码二次验证（pwd_verify）的运行时结构。
+ *
+ * 构建时 amagi 走仓库内 src（vite alias），但类型层解析到的是 npm 安装的
+ * dist（7.0.0-beta.6 暂未导出 `PasswordChallenge`），为避免 IDE/tsc 报
+ * 「没有导出的成员」，这里按运行时形状声明同构类型，改回上游导出后可删除。
+ */
+interface PasswordChallengeShape {
+  kind: 'password'
+  hint?: string
+  availableWays: string[]
+}
+
 /** 登录凭证里需要确认下发的关键 cookie */
 const REQUIRED_COOKIES = ['sessionid', 'sessionid_ss', 'sid_guard', 'uid_tt', 'uid_tt_ss', 'ttwid']
 
@@ -133,6 +155,41 @@ const collectSmsCode = async (e: Message, challenge: SmsChallenge, tracker: Retu
 }
 
 /**
+ * 处理登录密码二次验证（pwd_verify）：等用户回填登录密码 → 交回会话。
+ *
+ * 账号未绑定（或不可用）可接收短信的手机号时，服务端只下发这一路验证方式。
+ * 密码由会话的 `answer` 直接提交校验，本函数只把密码取回来；后端判错后
+ * 会话会终结，用户需重新扫码发起登录。
+ * @param e - 消息事件
+ * @param challenge - 会话给出的登录密码 challenge
+ * @param tracker - 消息登记器
+ * @returns 用户回填的登录密码
+ * @throws {LoginAborted} 用户超时、格式不合格用尽次数
+ */
+const collectPassword = async (
+  e: Message,
+  challenge: PasswordChallengeShape,
+  tracker: ReturnType<typeof createMessageTracker>
+): Promise<string> => {
+  const hint = challenge.hint
+  const extra = hint ? `\n提示：${hint}` : ''
+  await tracker.send(`此次登录需要验证登录密码\n请在 ${PASSWORD_INPUT_TIMEOUT} 秒内直接回复抖音账号的登录密码${extra}`)
+
+  for (let attempt = 1; attempt <= PASSWORD_MAX_ATTEMPTS; attempt++) {
+    const context = await karin.ctx(e, { time: PASSWORD_INPUT_TIMEOUT, reply: false, throwOnTimeout: false })
+    if (!context) throw new LoginAborted('等待登录密码超时，登录已取消')
+
+    const password = context.msg.trim()
+    if (password.length >= PASSWORD_MIN_LENGTH) return password
+
+    if (attempt === PASSWORD_MAX_ATTEMPTS) throw new LoginAborted('输入格式不正确，登录已取消')
+    await tracker.send(`请只发送抖音账号的登录密码（剩余 ${PASSWORD_MAX_ATTEMPTS - attempt} 次机会）`)
+  }
+
+  throw new LoginAborted('密码校验未通过，登录已取消')
+}
+
+/**
  * 保存登录凭证并重载 Amagi 客户端
  * @param cookie - 完整登录 cookie
  */
@@ -160,7 +217,8 @@ const noticeOf = (error: AmagiError): string => {
  *
  * 协议与轮询编排都在 amagi 的 v7 登录会话里（`client.douyin.login.qrcode()`）：
  * 取码、轮询、退避、限频加倍、challenge 编排、`expire_time` 秒转毫秒全由引擎负责。
- * 这里只做三件与用户交互的事 —— 渲染二维码、收短信验证码、把凭证落库。
+ * 这里只做三件与用户交互的事 —— 渲染二维码、收二次验证信息（短信验证码 /
+ * 登录密码）、把凭证落库。
  * @param e - 消息事件
  * @returns 固定 true，交回命令框架
  */
@@ -200,15 +258,22 @@ export const douyinLogin = async (e: Message) => {
         await tracker.send('二维码已扫描，请在手机上确认登录')
       },
 
-      // 回调签名是泛型的（返回值形状由 challenge.kind 决定），这里只支持短信一路，
-      // 断言收口到那一支；图形验证码走 LoginAborted 退出
+      // 回调签名是泛型的（返回值形状由 challenge.kind 决定），按 kind 分叉：
+      // 短信走发码 + 回填，登录密码（pwd_verify）直接回填，其余（图形验证码 /
+      // 官方安全验证）如实说明不支持，不要再用误导性的「图形验证码」概括。
+      // 外部包类型暂缺 'password' 分支，先以字符串收窄 + 形状断言绕开
       onChallenge: (async (challenge: LoginChallenge) => {
         scanned = true
         clearTimeout(scanTimer)
-        if (challenge.kind !== 'sms') {
-          throw new LoginAborted('账号触发了图形验证码，当前仅支持短信验证码')
+        const kind = challenge.kind as string
+        switch (kind) {
+          case 'sms':
+            return { code: await collectSmsCode(e, challenge as SmsChallenge, tracker) }
+          case 'password':
+            return { password: await collectPassword(e, challenge as unknown as PasswordChallengeShape, tracker) }
+          default:
+            throw new LoginAborted('登录还需完成图形验证或官方安全验证，当前暂不支持，请稍后再试')
         }
-        return { code: await collectSmsCode(e, challenge, tracker) }
       }) as never,
 
       onSuccess: async (credential) => {

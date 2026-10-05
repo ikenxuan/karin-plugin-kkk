@@ -25,7 +25,14 @@ export interface ChartCardProps {
  * 那张头每张图要吃掉约 360px，五张图光标题栏就占掉 1800px，
  * 是海报被撑到 6900px 的主因。这里把标题压进卡片内部，一张图总共只需约 80px。
  */
-export const ChartCard: React.FC<ChartCardProps> = ({ title, subtitle, accentClassName = 'bg-violet-500', caption, className, children }) => (
+export const ChartCard: React.FC<ChartCardProps> = ({
+  title,
+  subtitle,
+  accentClassName = 'bg-violet-500',
+  caption,
+  className,
+  children
+}) => (
   <div className={cn('relative flex flex-col rounded-2xl bg-surface/40 backdrop-blur-md border-2 border-border/40 p-6', className)}>
     <div className="flex items-center gap-4 mb-4">
       <div className={cn('w-3 h-10 rounded-full shrink-0', accentClassName)} />

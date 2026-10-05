@@ -5,11 +5,11 @@ import React from 'react'
 import { renderToReadableStream } from 'react-dom/server'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { buildDitherAvatar } from '../src/module/utils/avatar'
 import { GlobalStatistics } from '../ktr/template/statistics/global/components/GlobalStatistics'
 import type { GlobalStatisticsData } from '../ktr/template/statistics/global/components/types'
 import { GroupStatistics } from '../ktr/template/statistics/group/components/GroupStatistics'
 import type { GroupStatisticsData } from '../ktr/template/statistics/group/components/types'
+import { buildDitherAvatar } from '../src/module/utils/avatar'
 
 /**
  * 两张统计海报的整树 SSR 冒烟测试。
@@ -88,9 +88,10 @@ const buildGroupData = (): GroupStatisticsData => {
       // 走的是和生产同一条生成路径，不是随便塞个占位图
       avatar: buildDitherAvatar(`1000${index}`),
       // 轮流给 1~3 个平台，覆盖「单平台用户」和「多平台用户」两种堆叠形态
-      segments: ['douyin', 'bilibili', 'kuaishou']
-        .slice(0, (index % 3) + 1)
-        .map((platform, i) => ({ platform: platform as StatisticsPlatform, count: Math.max(1, Math.round((430 - index * 30) * [0.6, 0.25, 0.15][i])) }))
+      segments: ['douyin', 'bilibili', 'kuaishou'].slice(0, (index % 3) + 1).map((platform, i) => ({
+        platform: platform as StatisticsPlatform,
+        count: Math.max(1, Math.round((430 - index * 30) * [0.6, 0.25, 0.15][i]))
+      }))
     })),
     hourly: Array.from({ length: 24 }, (_, hour) => (hour * 13) % 70),
     weekday: Array.from({ length: 7 }, (_, day) => (day * 47) % 300),
@@ -104,15 +105,18 @@ const buildGroupData = (): GroupStatisticsData => {
       { workType: 'article', count: 210 }
     ],
     metrics: [
-      { metric: 'duration', buckets: [
-        { label: '<1s', upper: '≤1s', count: 20 },
-        { label: '1-2s', upper: '≤2s', count: 40 },
-        { label: '2-3s', upper: '≤3s', count: 60 },
-        { label: '3-5s', upper: '≤5s', count: 80 },
-        { label: '5-10s', upper: '≤10s', count: 100 },
-        { label: '10-30s', upper: '≤30s', count: 120 },
-        { label: '30s+', upper: '>30s', count: 140 }
-      ] }
+      {
+        metric: 'duration',
+        buckets: [
+          { label: '<1s', upper: '≤1s', count: 20 },
+          { label: '1-2s', upper: '≤2s', count: 40 },
+          { label: '2-3s', upper: '≤3s', count: 60 },
+          { label: '3-5s', upper: '≤5s', count: 80 },
+          { label: '5-10s', upper: '≤10s', count: 100 },
+          { label: '10-30s', upper: '≤30s', count: 120 },
+          { label: '30s+', upper: '>30s', count: 140 }
+        ]
+      }
     ],
     globalTotalGroups: 128,
     globalTotalParses: 45621
@@ -154,9 +158,10 @@ const buildGlobalData = (): GlobalStatisticsData => {
       avatar: buildDitherAvatar(`10000${index}`),
       totalParses: 9800 - index * 700,
       uniqueUsers: 190 - index * 12,
-      segments: ['douyin', 'bilibili', 'xiaohongshu']
-        .slice(0, ((index + 1) % 3) + 1)
-        .map((platform, i) => ({ platform: platform as StatisticsPlatform, count: Math.max(1, Math.round((9800 - index * 700) * [0.55, 0.3, 0.15][i])) }))
+      segments: ['douyin', 'bilibili', 'xiaohongshu'].slice(0, ((index + 1) % 3) + 1).map((platform, i) => ({
+        platform: platform as StatisticsPlatform,
+        count: Math.max(1, Math.round((9800 - index * 700) * [0.55, 0.3, 0.15][i]))
+      }))
     })),
     sizeBuckets: [
       { label: '1-10', count: 41 },
@@ -209,15 +214,18 @@ const buildGlobalData = (): GlobalStatisticsData => {
       { platform: 'xiaohongshu', workType: 'gallery', count: 191 }
     ],
     metrics: [
-      { metric: 'duration', buckets: [
-        { label: '<1s', upper: '≤1s', count: 20 },
-        { label: '1-2s', upper: '≤2s', count: 40 },
-        { label: '2-3s', upper: '≤3s', count: 60 },
-        { label: '3-5s', upper: '≤5s', count: 80 },
-        { label: '5-10s', upper: '≤10s', count: 100 },
-        { label: '10-30s', upper: '≤30s', count: 120 },
-        { label: '30s+', upper: '>30s', count: 140 }
-      ] }
+      {
+        metric: 'duration',
+        buckets: [
+          { label: '<1s', upper: '≤1s', count: 20 },
+          { label: '1-2s', upper: '≤2s', count: 40 },
+          { label: '2-3s', upper: '≤3s', count: 60 },
+          { label: '3-5s', upper: '≤5s', count: 80 },
+          { label: '5-10s', upper: '≤10s', count: 100 },
+          { label: '10-30s', upper: '≤30s', count: 120 },
+          { label: '30s+', upper: '>30s', count: 140 }
+        ]
+      }
     ]
   }
 }

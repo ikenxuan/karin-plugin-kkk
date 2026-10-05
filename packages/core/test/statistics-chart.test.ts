@@ -2,8 +2,8 @@ import React from 'react'
 import { renderToReadableStream } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
 
-import { SSRChart } from '../ktr/template/statistics/components/SSRChart'
 import { getChartPalette, renderChartToSVG } from '../ktr/template/statistics/components/chartTheme'
+import { SSRChart } from '../ktr/template/statistics/components/SSRChart'
 
 /** 一份最小的饼图配置，够触发真实的布局与文本渲染 */
 const pieOption = (color: string) => ({

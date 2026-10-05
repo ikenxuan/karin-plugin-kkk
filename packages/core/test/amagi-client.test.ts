@@ -219,9 +219,10 @@ describe('softFetch 放行指定的平台业务码', () => {
 
   it('成功时 isSoftFailure 为假，data 可直接读', async () => {
     runtime.state.envelope = successEnvelope
-    const result = await softFetch(() => probe(bilibiliFetcher).fetchThing() as Promise<never>, [
-      SOFT_ERROR_CODES.BILIBILI_COMMENTS_DISABLED
-    ])
+    const result = await softFetch(
+      () => probe(bilibiliFetcher).fetchThing() as Promise<never>,
+      [SOFT_ERROR_CODES.BILIBILI_COMMENTS_DISABLED]
+    )
 
     expect(isSoftFailure(result, SOFT_ERROR_CODES.BILIBILI_COMMENTS_DISABLED)).toBe(false)
     if (!isSoftFailure(result, SOFT_ERROR_CODES.BILIBILI_COMMENTS_DISABLED)) {

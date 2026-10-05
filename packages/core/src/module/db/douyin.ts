@@ -638,10 +638,12 @@ export class DouyinDBBase {
     if (aweme_ids.length === 0) return
     const now = new Date().toISOString()
     const placeholders = aweme_ids.map(() => '?').join(', ')
-    await this.runQuery(
-      `UPDATE AwemeCaches SET updatedAt = ? WHERE sec_uid = ? AND pushType = ? AND aweme_id IN (${placeholders})`,
-      [now, sec_uid, pushType, ...aweme_ids]
-    )
+    await this.runQuery(`UPDATE AwemeCaches SET updatedAt = ? WHERE sec_uid = ? AND pushType = ? AND aweme_id IN (${placeholders})`, [
+      now,
+      sec_uid,
+      pushType,
+      ...aweme_ids
+    ])
   }
 
   /**

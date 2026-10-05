@@ -66,7 +66,17 @@ const describeFailure = (envelope: AmagiFailure): string => {
   return `[${error.kind}/${error.code}] ${error.message}${facts.length > 0 ? ` (${facts.join(' ')})` : ''}`
 }
 
-/** Amagi 失败异常：`message` 是一行摘要，结构化字段各有属性，完整信封在 {@link AmagiError.envelope} */
+/**
+ * `error.challenge` 的类型桥接：core 运行时构建的是工作区 amagi 源码（vite alias），
+ * 其在 `RiskChallenge` 上新增了 `verifyData`（TTGCaptcha 自建验证页要的完整配置）；
+ * 而 core 类型层解析到的是 registry 的 `@ikenxuan/amagi@7.0.0-beta.6`，尚未带该字段。
+ * registry 版本跟随时删除这层扩展。
+ */
+export type RiskChallengeWithVerifyData = NonNullable<AmagiErrorContract['challenge']> & { verifyData?: Record<string, unknown> }
+
+/**
+ * Amagi 失败异常：`message` 是一行摘要，结构化字段各有属性，完整信封在 {@link AmagiError.envelope}
+ */
 export class AmagiError extends Error {
   /** 平台业务码，见 {@link legacyCode} */
   code: number
@@ -88,6 +98,15 @@ export class AmagiError extends Error {
   issues?: AmagiErrorContract['issues']
   /** 整条失败信封，`meta.requestId` / `attempts` / `durationMs` 在里面 */
   envelope: AmagiFailure
+  /**
+   * `error.challenge` 的类型桥接：core 运行时构建的是工作区 amagi 源码（vite alias），
+   * 其在 `RiskChallenge` 上新增了 `verifyData`（TTGCaptcha 自建验证页要的完整配置）；
+   * 而 core 类型层解析到的是 registry 的 `@ikenxuan/amagi@7.0.0-beta.6`，尚未带该字段。
+   * registry 版本跟随时删除这层扩展。
+   */
+  get challenge(): RiskChallengeWithVerifyData | undefined {
+    return this.rawError.challenge
+  }
 
   constructor(envelope: AmagiFailure) {
     const error = envelope.error

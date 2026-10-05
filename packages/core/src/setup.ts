@@ -1,5 +1,6 @@
 import '@/module/server'
 import '@/platform/bilibili/riskControl'
+import '@/platform/douyin/riskControl'
 import karin, { AdapterType, BOT_CONNECT, config, ImageElement, Message, mkdirSync, SendMessage } from 'node-karin'
 import { karinPathBase } from 'node-karin/root'
 
