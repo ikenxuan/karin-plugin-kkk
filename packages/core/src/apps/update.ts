@@ -1,3 +1,4 @@
+import type { UpdateHelpData } from '@template/template/other/updateHelp/components/types'
 import karin, {
   checkPkgUpdate,
   config,
@@ -12,16 +13,15 @@ import karin, {
   updatePkg
 } from 'node-karin'
 
-import { Root } from '@/module'
+import { Render, Root } from '@/module'
 import { getChangelogImage } from '@/module/utils/changelog'
 import { Config } from '@/module/utils/Config'
 import { wrapWithErrorHandler } from '@/module/utils/ErrorHandler'
+import { parseReleaseChannel, RELEASE_CHANNEL_LABEL } from '@/module/utils/releaseChannel'
 import { isSemverGreater } from '@/module/utils/semver'
 
 const UPDATE_LOCK_KEY = 'kkk:update:lock'
 const UPDATE_MSGID_KEY = 'kkk:update:msgid'
-const UPDATE_CONFIRM_KEY = 'kkk:update:downgrade-confirm'
-const UPDATE_CONFIRM_TTL = 2 * 60 * 1000
 
 /**
  * 定时更新检测处理器
@@ -233,21 +233,43 @@ const installAndRestart = async (e: Message, version: string) => {
   await restart(e.selfId, e.contact, msgResult.messageId)
 }
 
+/** 渲染 #kkk更新 用法面板（含各渠道可用版本） */
+const getUpdateHelpImage = async (e: Message) => {
+  const channelDefs = [
+    { label: '正式版', tag: 'latest', command: '#kkk更新' },
+    { label: '测试版', tag: 'beta', command: '#kkk更新beta' },
+    { label: '预览版', tag: 'rc', command: '#kkk更新rc' }
+  ]
+  const channels = await Promise.all(
+    channelDefs.map(async (def) => {
+      const version = await getRemotePkgVersion(Root.pluginName, def.tag).catch(() => '')
+      return {
+        ...def,
+        version,
+        available: !!version,
+        hasUpdate: !!version && isSemverGreater(version, Root.pluginVersion)
+      }
+    })
+  )
+  const data: UpdateHelpData = {
+    currentVersion: Root.pluginVersion,
+    currentChannel: RELEASE_CHANNEL_LABEL[parseReleaseChannel(Root.pluginVersion)],
+    channels
+  }
+  return await Render(e, 'other/updateHelp', data)
+}
+
 const handleKkkUpdate = wrapWithErrorHandler(
   async (e: Message) => {
     const arg = /^#?kkk更新(?:\s*(\S+))?$/.exec(e.msg)?.[1]
     const parsed = parseUpdateArg(arg)
     if (parsed.type === 'unknown') {
-      e.reply(
-        [
-          '用法：',
-          '#kkk更新 —— 更新到最新正式版',
-          '#kkk更新beta —— 更新到测试渠道最新版',
-          '#kkk更新rc —— 更新到预览渠道最新版',
-          '#kkk更新<版本号> —— 更新到指定版本（如 #kkk更新2.45.0、#kkk更新2.46.1-rc.2）'
-        ].join('\n'),
-        { reply: true }
-      )
+      const img = await getUpdateHelpImage(e).catch(() => null)
+      if (img && img.length > 0) {
+        e.reply(img, { reply: true })
+      } else {
+        e.reply('渲染更新面板失败。用法：#kkk更新 | #kkk更新beta | #kkk更新rc | #kkk更新<版本号>', { reply: true })
+      }
       return
     }
 
@@ -266,18 +288,21 @@ const handleKkkUpdate = wrapWithErrorHandler(
 
     if (!isSemverGreater(remote, local)) {
       // 降级更新：单线程 main 模型下旧版本会覆盖新代码，必须二次确认
-      await db.set(
-        UPDATE_CONFIRM_KEY,
-        JSON.stringify({ userId: e.userId, contact: JSON.stringify(e.contact), version: remote, expire: Date.now() + UPDATE_CONFIRM_TTL })
-      )
       e.reply(
         [
           `⚠️ 检测到降级更新：当前 ${local} → 目标 ${remote}`,
           '降级可能带来配置或数据兼容问题，请确认你知道自己在做什么。',
-          '回复「确认」继续更新，回复「取消」放弃（2 分钟内有效）。'
+          '回复「确认」继续更新，回复其他内容放弃（2 分钟内有效）。'
         ].join('\n'),
         { reply: true }
       )
+      const confirmCtx = await karin.ctx(e, { time: 120, reply: true, throwOnTimeout: false })
+      if (!confirmCtx) return
+      if (confirmCtx.msg.trim() !== '确认') {
+        e.reply('已放弃降级更新。', { reply: true })
+        return
+      }
+      await installAndRestart(e, remote)
       return
     }
 
@@ -299,39 +324,6 @@ const handleKkkUpdate = wrapWithErrorHandler(
     businessName: 'KKK更新'
   }
 )
-
-/**
- * 降级更新二次确认 Hook
- * 发起者的任意后续消息都会消费该确认记录：「确认」继续，其余视为放弃。
- */
-const kkkDowngradeConfirm = hooks.message.friend(
-  async (e, next) => {
-    const raw = await db.get(UPDATE_CONFIRM_KEY)
-    if (!raw) return next()
-    let record: { userId: string; contact: string; version: string; expire: number }
-    try {
-      record = JSON.parse(raw as string)
-    } catch {
-      await db.del(UPDATE_CONFIRM_KEY)
-      return next()
-    }
-    // 仅发起者本人可应答；其他人的消息不消费记录
-    if (e.userId !== record.userId || JSON.stringify(e.contact) !== record.contact) return next()
-    await db.del(UPDATE_CONFIRM_KEY)
-    if (Date.now() > record.expire) {
-      e.reply('降级更新确认已超时，如仍需降级请重新执行命令。', { reply: true })
-      return
-    }
-    if (e.msg !== '确认') {
-      e.reply('已放弃降级更新。', { reply: true })
-      return
-    }
-    await installAndRestart(e, record.version)
-  },
-  { priority: 50 }
-)
-
-export const kkkDowngradeConfirmHook = kkkDowngradeConfirm
 
 export const kkkUpdateCommand = karin.command(/^#?kkk更新(?:\s*(\S+))?$/, handleKkkUpdate, { name: 'kkk-更新', perm: 'master' })
 

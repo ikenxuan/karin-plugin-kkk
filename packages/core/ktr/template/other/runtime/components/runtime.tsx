@@ -3,7 +3,7 @@ import React from 'react'
 import ReactMarkdown from 'react-markdown'
 
 import { isDark } from '../../../../utils/theme'
-import { DefaultLayout } from '../../../components/DefaultLayout'
+import { DefaultLayout, RELEASE_TYPE_LABEL } from '../../../components/DefaultLayout'
 import type { PosterProps } from '../../../types/ctx'
 import type { RuntimeReportData } from './types'
 
@@ -17,12 +17,7 @@ import type { RuntimeReportData } from './types'
 export const RuntimeReport: React.FC<PosterProps<RuntimeReportData>> = React.memo((props) => {
   const { data } = props
   const dark = isDark(props.ctx)
-  const releaseLabel =
-    data.identity.releaseType.toLowerCase() === 'stable'
-      ? '正式版'
-      : data.identity.releaseType.toLowerCase() === 'preview'
-        ? '预览版'
-        : data.identity.releaseType
+  const releaseLabel = RELEASE_TYPE_LABEL[data.identity.releaseType] ?? data.identity.releaseType
   const buildStatus =
     data.build.state === 'matched'
       ? { label: '构建信息一致', icon: <CheckCircle2 className="h-8 w-8" />, color: '#22c55e' }

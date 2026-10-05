@@ -22,3 +22,11 @@ export const parseReleaseChannel = (version: string): ReleaseChannel => {
   if (pre[0] === 'beta' && pre.length <= 2) return 'Beta'
   return 'Canary'
 }
+
+/** 渠道显示名（中文） */
+export const RELEASE_CHANNEL_LABEL: Record<ReleaseChannel, string> = {
+  Stable: '正式版',
+  Beta: '测试版',
+  Rc: '预览版',
+  Canary: '金丝雀'
+}

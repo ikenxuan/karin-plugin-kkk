@@ -30,7 +30,7 @@ interface DefaultLayoutProps {
 /**
  * 渠道徽章文案：ctx.version.releaseType → 中文渠道名（未知值回显原值兜底）
  */
-const RELEASE_TYPE_LABEL: Record<string, string> = {
+export const RELEASE_TYPE_LABEL: Record<string, string> = {
   Stable: '正式版',
   Beta: '测试版',
   Rc: '预览版',
