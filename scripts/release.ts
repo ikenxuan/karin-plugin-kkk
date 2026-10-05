@@ -20,6 +20,10 @@ import { changelogSections } from './changelog-types'
  * 「npm 包内的 CHANGELOG.md」和「tag v* 的 GitHub raw」竞速抓取，条目必须
  * 在打 tag 之前就进提交，tag 树里才看得到这一版。
  *
+ * 版本线约定：不要在上一条版本线转正前开下一条 beta 线（例：2.45.0 尚未发布就打
+ * 2.46.0-beta.1）—— main 是单列火车，2.46.0-beta.1 内容上包含 2.45.0-beta 的全部提交，
+ * 交错编号会让 semver 与内容脱节，且 CHANGELOG 小节顺序不再匹配版本序。
+ *
  * 为什么 git 不全交给 bumpp：bumpp 的提交是带路径的部分提交，会把钩子塞进
  * 临时索引里跑（amagi 2026-09-21 的教训）。这里 bumpp 只负责选版本改文件，
  * git 步骤手工编排 —— 全量提交走正常钩子路径，pre-commit 重写 timestamp
