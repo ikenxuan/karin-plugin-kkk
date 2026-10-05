@@ -11,6 +11,7 @@ import { logger } from '@/module/utils/logger'
 // 注册 Unicode emoji 图源解析器（emoji-datasource-apple，见 utils/emojiAssets.ts）
 import '@/module/utils/emojiAssets'
 
+import { parseReleaseChannel } from '../releaseChannel'
 import { isSemverGreater } from '../semver'
 import { templateFonts } from '../templateFonts'
 import { resolveUseDarkTheme } from './coverTheme'
@@ -86,7 +87,7 @@ export const Render = async <P extends keyof LoadedRegistry>(
       plugin: 'karin-plugin',
       pluginName: 'kkk',
       pluginVersion: Root.pluginVersion,
-      releaseType: /^\d+\.\d+\.\d+$/.test(Root.pluginVersion) ? ('Stable' as const) : ('Preview' as const),
+      releaseType: parseReleaseChannel(Root.pluginVersion),
       poweredBy: 'Karin',
       frameworkVersion: Root.karinVersion,
       hasUpdate

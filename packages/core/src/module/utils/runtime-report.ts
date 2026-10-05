@@ -9,6 +9,7 @@ import { Root } from '../../root'
 import { formatBuildTime, getBuildMetadata } from './build-metadata'
 import { Config } from './Config'
 import { formatBytes } from './Network/helpers'
+import { parseReleaseChannel } from './releaseChannel'
 
 type PluginPackageMetadata = typeof Root.pkg & {
   karin?: {
@@ -90,7 +91,7 @@ export const collectRuntimeReport = (event: Message): RuntimeReportData => {
       pluginName: Root.pluginName,
       pluginVersion: Root.pluginVersion,
       karinVersion: Root.karinVersion || '未知',
-      releaseType: /^\d+\.\d+\.\d+$/.test(Root.pluginVersion) ? 'Stable' : 'Preview',
+      releaseType: parseReleaseChannel(Root.pluginVersion),
       requiredNodeVersion: packageMetadata.engines?.node ?? '未声明',
       requiredKarinVersion: packageMetadata.karin?.engines ?? packageMetadata.engines?.karin ?? '未声明'
     },

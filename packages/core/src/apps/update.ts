@@ -1,17 +1,32 @@
-import karin, { checkPkgUpdate, config, db, hooks, Message, restart, segment, updatePkg } from 'node-karin'
+import karin, {
+  checkPkgUpdate,
+  config,
+  db,
+  exec,
+  getRemotePkgVersion,
+  getPkgVersion,
+  hooks,
+  Message,
+  restart,
+  segment,
+  updatePkg
+} from 'node-karin'
 
 import { Root } from '@/module'
 import { getChangelogImage } from '@/module/utils/changelog'
+import { Config } from '@/module/utils/Config'
 import { wrapWithErrorHandler } from '@/module/utils/ErrorHandler'
 import { isSemverGreater } from '@/module/utils/semver'
 
 const UPDATE_LOCK_KEY = 'kkk:update:lock'
-const UPDATE_MSGID_KEY = 'kkk:update:msgId'
+const UPDATE_MSGID_KEY = 'kkk:update:msgid'
+const UPDATE_CONFIRM_KEY = 'kkk:update:downgrade-confirm'
+const UPDATE_CONFIRM_TTL = 2 * 60 * 1000
 
 /**
  * 定时更新检测处理器
- * 主动获取 Bot 列表与好友关系，匹配主人可用的 Bot，
- * 渲染更新日志并私聊通知所有主人。
+ * 按订阅渠道检查远程版本（latest 恒参与 —— 装 prerelease 的用户也要收到转正提醒），
+ * 候选取 semver 最大且大于本地者，渲染变更日志并私聊通知所有主人。
  *
  * @returns 是否继续后续任务
  */
@@ -20,22 +35,23 @@ const Handler = async () => {
   //   return true
   // }
 
-  let upd: { status: 'yes'; local: string; remote: string } | { status: 'no'; local: string } | { status: 'error'; error: Error }
+  // 订阅渠道（config 默认 ['stable']）：latest 恒参与，beta/rc 按订阅
+  const channels = Config.app.UpdateNotifyChannels?.length ? Config.app.UpdateNotifyChannels : ['stable']
+  const tags = ['latest', ...channels.filter((c) => c !== 'stable')]
 
-  try {
-    upd = await checkPkgUpdate(Root.pluginName, { compare: 'semver' })
-  } catch {
-    return true
-  }
-
-  // 防守性校验：远程必须严格大于本地，否则视为无更新
-  if (upd.status === 'yes' && !isSemverGreater(upd.remote, upd.local)) {
-    return true
-  }
-
-  if (upd.status !== 'yes') {
-    return true
-  }
+  const remotes = await Promise.all(
+    tags.map(async (tag) => {
+      try {
+        return (await getRemotePkgVersion(Root.pluginName, tag)) || null
+      } catch {
+        return null
+      }
+    })
+  )
+  const remote = [...new Set(remotes.filter((v): v is string => !!v))]
+    .filter((v) => isSemverGreater(v, Root.pluginVersion))
+    .sort((a, b) => (isSemverGreater(b, a) ? 1 : -1))[0]
+  if (!remote) return true
 
   // 版本提醒锁（检查是否已经推送过相同或更高版本的更新通知）
   try {
@@ -44,20 +60,16 @@ const Handler = async () => {
       // 本地版本达到或超过锁定版本 => 解锁
       if (!isSemverGreater(lockedVersion, Root.pluginVersion)) {
         await db.del(UPDATE_LOCK_KEY)
-      } else {
-        // 检查远程版本是否比锁定版本更新
-        if (!isSemverGreater(upd.remote, lockedVersion)) {
-          // 远程版本不比锁定版本新，跳过本次提醒
-          return true
-        }
-        // 远程版本比锁定版本新，继续推送并更新锁定版本
+      } else if (!isSemverGreater(remote, lockedVersion)) {
+        // 远程版本不比锁定版本新，跳过本次提醒
+        return true
       }
     }
   } catch {}
 
   // 设置锁为当前远程版本，确保只推送一次
   try {
-    await db.set(UPDATE_LOCK_KEY, upd.remote)
+    await db.set(UPDATE_LOCK_KEY, remote)
   } catch {}
 
   const masters = config.master().filter((id) => id !== 'console')
@@ -73,9 +85,7 @@ const Handler = async () => {
       try {
         const list = await item.bot.getFriendList()
         friendsMap.set(item.bot.account.selfId, list || [])
-      } catch {
-        friendsMap.set(item.bot.account.selfId, [])
-      }
+      } catch {}
     })
   )
 
@@ -96,7 +106,7 @@ const Handler = async () => {
     if (!hasOwners) continue
     const img = await getChangelogImage({ bot: item.bot } as Message, {
       localVersion: Root.pluginVersion,
-      remoteVersion: upd.remote,
+      remoteVersion: remote,
       Tip: true
     })
     if (img && img.length > 0) {
@@ -168,27 +178,112 @@ export const kkkUpdate = hooks.message.friend(
   { priority: 100 }
 )
 
+/** 解析 #kkk更新 的可选参数：缺省/stable=正式版，beta/rc=渠道 tag，其余识别为版本号 */
+const parseUpdateArg = (
+  arg?: string
+): { type: 'latest' } | { type: 'tag'; tag: 'beta' | 'rc' } | { type: 'version'; version: string } | { type: 'unknown' } => {
+  if (!arg) return { type: 'latest' }
+  if (arg === 'stable' || arg === 'latest') return { type: 'latest' }
+  if (arg === 'beta' || arg === 'rc') return { type: 'tag', tag: arg }
+  if (/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(arg)) return { type: 'version', version: arg }
+  return { type: 'unknown' }
+}
+
+/** 解析目标版本号：latest / 渠道 tag 取对应 dist-tag，指定版本号校验存在性 */
+const resolveUpdateTarget = async (
+  parsed: ReturnType<typeof parseUpdateArg>
+): Promise<{ version: string; tag: string } | { error: string }> => {
+  if (parsed.type === 'latest') {
+    const version = await getRemotePkgVersion(Root.pluginName).catch(() => '')
+    return version ? { version, tag: 'latest' } : { error: '获取远程版本失败' }
+  }
+  if (parsed.type === 'tag') {
+    const version = await getRemotePkgVersion(Root.pluginName, parsed.tag).catch(() => '')
+    return version ? { version, tag: parsed.tag } : { error: `渠道 ${parsed.tag} 暂无可用版本` }
+  }
+  if (parsed.type === 'version') {
+    // 校验该版本在 registry 上存在
+    const { status, stdout } = await exec(`npm view ${Root.pluginName}@${parsed.version} version`)
+    const found = status ? stdout.toString().trim() : ''
+    return found ? { version: found, tag: '' } : { error: `版本 ${parsed.version} 不存在` }
+  }
+  return { error: '未识别的渠道或版本' }
+}
+
+/** 安装指定版本并重启（含降级；调用前必须已完成二次确认） */
+const installAndRestart = async (e: Message, version: string) => {
+  await e.reply(`开始更新 karin-plugin-kkk → ${version} ......`, { reply: true })
+  const { error } = await exec(`pnpm up ${Root.pluginName}@${version}`)
+  if (error) {
+    e.reply(`${Root.pluginName} 更新失败: ${error}`, { reply: true })
+    return
+  }
+  const installed = await getPkgVersion(Root.pluginName)
+  if (installed !== version) {
+    e.reply(`更新失败：安装后版本为 ${installed}，预期 ${version}。可尝试手动执行 pnpm up ${Root.pluginName}@${version}`, { reply: true })
+    return
+  }
+  const msgResult = await e.reply(`${Root.pluginName} 更新成功！→ ${version}\n开始执行重启......`)
+  if (msgResult.messageId) {
+    try {
+      await db.del(UPDATE_MSGID_KEY)
+      await db.del(UPDATE_LOCK_KEY)
+    } catch {}
+  }
+  await restart(e.selfId, e.contact, msgResult.messageId)
+}
+
 const handleKkkUpdate = wrapWithErrorHandler(
   async (e: Message) => {
-    const upd = await checkPkgUpdate(Root.pluginName, { compare: 'semver' })
-    if (upd.status === 'error') {
-      e.reply(`获取远程版本失败：${upd.error?.message ?? String(upd.error)}`)
-      return
-    }
-    if (upd.status === 'no') {
-      e.reply(`当前已是最新版本：${upd.local}`, { reply: true })
+    const arg = /^#?kkk更新(?:\s*(\S+))?$/.exec(e.msg)?.[1]
+    const parsed = parseUpdateArg(arg)
+    if (parsed.type === 'unknown') {
+      e.reply(
+        [
+          '用法：',
+          '#kkk更新 —— 更新到最新正式版',
+          '#kkk更新beta —— 更新到测试渠道最新版',
+          '#kkk更新rc —— 更新到预览渠道最新版',
+          '#kkk更新<版本号> —— 更新到指定版本（如 #kkk更新2.45.0、#kkk更新2.46.1-rc.2）'
+        ].join('\n'),
+        { reply: true }
+      )
       return
     }
 
-    // 防守性校验：远程必须严格大于本地，否则视为无更新
-    if (upd.status === 'yes' && !isSemverGreater(upd.remote, upd.local)) {
-      e.reply(`当前已是最新或预览版本：${upd.local}`, { reply: true })
+    const resolved = await resolveUpdateTarget(parsed)
+    if ('error' in resolved) {
+      e.reply(resolved.error, { reply: true })
+      return
+    }
+    const { version: remote } = resolved
+    const local = Root.pluginVersion
+
+    if (remote === local) {
+      e.reply(`当前已是该版本：${local}`, { reply: true })
+      return
+    }
+
+    if (!isSemverGreater(remote, local)) {
+      // 降级更新：单线程 main 模型下旧版本会覆盖新代码，必须二次确认
+      await db.set(
+        UPDATE_CONFIRM_KEY,
+        JSON.stringify({ userId: e.userId, contact: JSON.stringify(e.contact), version: remote, expire: Date.now() + UPDATE_CONFIRM_TTL })
+      )
+      e.reply(
+        [
+          `⚠️ 检测到降级更新：当前 ${local} → 目标 ${remote}`,
+          '降级可能带来配置或数据兼容问题，请确认你知道自己在做什么。',
+          '回复「确认」继续更新，回复「取消」放弃（2 分钟内有效）。'
+        ].join('\n'),
+        { reply: true }
+      )
       return
     }
 
     const ChangeLogImg = await getChangelogImage(e, {
-      localVersion: Root.pluginVersion,
-      remoteVersion: upd.remote,
+      localVersion: local,
+      remoteVersion: remote,
       Tip: false,
       isRemote: true
     })
@@ -198,27 +293,47 @@ const handleKkkUpdate = wrapWithErrorHandler(
       e.reply('获取更新日志失败，更新进程继续......', { reply: true })
     }
 
-    // 执行更新并重启
-    const result = await updatePkg(Root.pluginName)
-    if (result.status === 'ok') {
-      const msgResult = await e.reply(`${Root.pluginName} 更新成功！\n${result.local} -> ${result.remote}\n开始执行重启......`)
-      if (msgResult.messageId) {
-        try {
-          await db.del(UPDATE_MSGID_KEY)
-          await db.del(UPDATE_LOCK_KEY)
-        } catch {}
-      }
-      await restart(e.selfId, e.contact, msgResult.messageId)
-    } else {
-      e.reply(`${Root.pluginName} 更新失败: ${result.data ?? '更新执行失败'}`)
-    }
+    await installAndRestart(e, remote)
   },
   {
     businessName: 'KKK更新'
   }
 )
 
-export const kkkUpdateCommand = karin.command(/^#?kkk更新$/, handleKkkUpdate, { name: 'kkk-更新', perm: 'master' })
+/**
+ * 降级更新二次确认 Hook
+ * 发起者的任意后续消息都会消费该确认记录：「确认」继续，其余视为放弃。
+ */
+const kkkDowngradeConfirm = hooks.message.friend(
+  async (e, next) => {
+    const raw = await db.get(UPDATE_CONFIRM_KEY)
+    if (!raw) return next()
+    let record: { userId: string; contact: string; version: string; expire: number }
+    try {
+      record = JSON.parse(raw as string)
+    } catch {
+      await db.del(UPDATE_CONFIRM_KEY)
+      return next()
+    }
+    // 仅发起者本人可应答；其他人的消息不消费记录
+    if (e.userId !== record.userId || JSON.stringify(e.contact) !== record.contact) return next()
+    await db.del(UPDATE_CONFIRM_KEY)
+    if (Date.now() > record.expire) {
+      e.reply('降级更新确认已超时，如仍需降级请重新执行命令。', { reply: true })
+      return
+    }
+    if (e.msg !== '确认') {
+      e.reply('已放弃降级更新。', { reply: true })
+      return
+    }
+    await installAndRestart(e, record.version)
+  },
+  { priority: 50 }
+)
+
+export const kkkDowngradeConfirmHook = kkkDowngradeConfirm
+
+export const kkkUpdateCommand = karin.command(/^#?kkk更新(?:\s*(\S+))?$/, handleKkkUpdate, { name: 'kkk-更新', perm: 'master' })
 
 export const kkkUpdateTest =
   process.env.NODE_ENV === 'development' &&

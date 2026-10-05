@@ -14,7 +14,7 @@ export interface PosterContext extends RenderContext {
     /** 插件版本 */
     pluginVersion: string
     /** 发布类型 */
-    releaseType: 'Stable' | 'Preview'
+    releaseType: 'Stable' | 'Beta' | 'Rc' | 'Canary'
     /** 驱动框架 */
     poweredBy: string
     /** 框架版本 */

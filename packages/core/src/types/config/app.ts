@@ -28,6 +28,9 @@ export interface appConfig {
   /** 渲染图片的等待时间，单位：秒；传递0可禁用 */
   RenderWaitTime: number
 
+  /** 更新推送订阅的渠道（多选）：stable=正式版 beta=测试版 rc=预览版；金丝雀不推送 */
+  UpdateNotifyChannels: string[]
+
   /** 表情回应，若适配器不支持需要关闭 */
   EmojiReply: boolean
 

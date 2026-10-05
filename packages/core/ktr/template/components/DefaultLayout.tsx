@@ -27,6 +27,16 @@ interface DefaultLayoutProps {
  * @param props 组件属性
  * @returns JSX元素
  */
+/**
+ * 渠道徽章文案：ctx.version.releaseType → 中文渠道名（未知值回显原值兜底）
+ */
+const RELEASE_TYPE_LABEL: Record<string, string> = {
+  Stable: '正式版',
+  Beta: '测试版',
+  Rc: '预览版',
+  Canary: '金丝雀'
+}
+
 export const DefaultLayout: React.FC<DefaultLayoutProps> = ({ children, ctx, className = '', style = {} }) => {
   // 明暗只用于内部装饰分支（辉光强度等）；dark 类与 data-theme 由 ktr 外壳统一写在 body 上，
   // 模板根元素不再重复施加。唯一事实来源是 ctx.theme.mode。
@@ -91,26 +101,24 @@ export const DefaultLayout: React.FC<DefaultLayoutProps> = ({ children, ctx, cla
               <div className="flex items-center mb-1 space-x-2 text-sm font-bold tracking-widest uppercase text-foreground/80">
                 {version.hasUpdate && <CircleFadingArrowUp strokeWidth={3} className="w-4 h-4 text-success" />}
                 {!version.hasUpdate && version.releaseType === 'Stable' && <CheckCircle strokeWidth={3} className="w-4 h-4" />}
-                {!version.hasUpdate && version.releaseType === 'Preview' && (
+                {!version.hasUpdate && (version.releaseType === 'Beta' || version.releaseType === 'Rc') && (
                   <AlertTriangle strokeWidth={3} className="w-4 h-4 text-warning" />
                 )}
-                {!version.hasUpdate && version.releaseType !== 'Stable' && version.releaseType !== 'Preview' && (
-                  <Info strokeWidth={3} className="w-4 h-4" />
-                )}
+                {!version.hasUpdate && version.releaseType === 'Canary' && <Info strokeWidth={3} className="w-4 h-4" />}
                 <span
                   className={cn(
                     version.hasUpdate && 'text-success',
-                    !version.hasUpdate && version.releaseType === 'Preview' && 'text-warning'
+                    !version.hasUpdate && (version.releaseType === 'Beta' || version.releaseType === 'Rc') && 'text-warning'
                   )}
                 >
-                  {version.hasUpdate ? '有可用更新' : version.releaseType}
+                  {version.hasUpdate ? '有可用更新' : (RELEASE_TYPE_LABEL[version.releaseType] ?? version.releaseType)}
                 </span>
               </div>
               <span
                 className={cn(
                   'text-5xl font-bold tracking-wide',
                   version.hasUpdate && 'text-success',
-                  !version.hasUpdate && version.releaseType === 'Preview' && 'text-warning'
+                  !version.hasUpdate && (version.releaseType === 'Beta' || version.releaseType === 'Rc') && 'text-warning'
                 )}
               >
                 v{version.pluginVersion}
@@ -158,19 +166,11 @@ export const DefaultLayout: React.FC<DefaultLayoutProps> = ({ children, ctx, cla
                       <GlowText className="opacity-90" blurRadius={8} glowStrength={useDarkTheme ? 0.55 : 0}>
                         Design By
                       </GlowText>
-                      <GlowImage
-                        blurRadius={12}
-                        glowStrength={useDarkTheme ? 1 : 0}
-                        imgClassName="object-cover rounded-full w-5 h-5"
-                      >
+                      <GlowImage blurRadius={12} glowStrength={useDarkTheme ? 1 : 0} imgClassName="object-cover rounded-full w-5 h-5">
                         <img src="https://unavatar.io/github/ikenxuan" alt="ikenxuan" className="object-cover rounded-full w-5 h-5" />
                       </GlowImage>
                     </div>
-                    <GlowText
-                      className="text-4xl font-bold leading-none opacity-90"
-                      blurRadius={14}
-                      glowStrength={useDarkTheme ? 0.6 : 0}
-                    >
+                    <GlowText className="text-4xl font-bold leading-none opacity-90" blurRadius={14} glowStrength={useDarkTheme ? 0.6 : 0}>
                       ikenxuan
                     </GlowText>
                   </div>

@@ -159,6 +159,9 @@ export const getChangelogImage = async (ctx: Message, props: Omit<ChangelogData,
     }
   }
 
+  // 预发布版本小节加「测试版」角标：提醒该段变更来自测试/预览渠道（显示但标记）
+  changelog = changelog.replace(/^(## \[\d+\.\d+\.\d+-[^\]]+\][^\r\n]*)/gm, '$1 「测试版」')
+
   const img = await Render(event, 'other/changelog', {
     markdown: changelog,
     Tip: props.Tip,

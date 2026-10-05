@@ -25,6 +25,10 @@ Theme: 0
 # 渲染图片的等待时间，单位：秒。传递 0 可禁用等待（Linux系统必须大于0）
 RenderWaitTime: 60
 
+# 接收哪些渠道的更新推送（多选）：stable=正式版 beta=测试版 rc=预览版；金丝雀版本不推送
+UpdateNotifyChannels:
+  - stable
+
 # 表情回应，若适配器或对应平台不支持需要关闭
 EmojiReply: true
 
