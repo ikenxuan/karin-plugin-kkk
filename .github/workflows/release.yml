@@ -101,12 +101,20 @@ jobs:
         run: pnpm build
 
       # 幂等检查：版本已在 npm 上就跳过，重跑 tag 不会撞 E403
+      # 发布前剥离 manifest 的 devDependencies/scripts：npm 上的 package.json 保持干净
+      # （与旧 build.yml 的「正式版产物」同款剥离；构建目录在 CI 工作区内，改动即弃）
+      - name: 🧹 剥离 manifest 开发依赖与脚本
+        working-directory: packages/core
+        run: |
+          pnpm pkg delete devDependencies
+          pnpm pkg delete scripts
+
       - name: 🔎 检查该版本是否已在 npm 上
         id: check-published
         working-directory: packages/core
         run: |
           VERSION=${{ steps.gate.outputs.version }}
-          PKG=$(node -p "require('./package.json').name")
+          PKG=$(node -p "require('./packages/core/package.json').name")
 
           if OUTPUT=$(npm view "$PKG@$VERSION" version 2>&1); then
             echo "⏭️ $PKG@$VERSION 已在 npm 上，跳过发布（重跑场景）"
@@ -147,7 +155,6 @@ jobs:
           cd packages/core
           mkdir -p ${{ runner.temp }}/production/
           cp -r package.json README.md CHANGELOG.md LICENSE config resources lib ${{ runner.temp }}/production/
-          node -e "const fs=require('fs');const p='${{ runner.temp }}/production/package.json';const pkg=JSON.parse(fs.readFileSync(p,'utf8'));delete pkg.devDependencies;delete pkg.scripts;fs.writeFileSync(p,JSON.stringify(pkg,null,2));"
 
       - name: 📤 上传发布产物
         if: steps.check-published.outputs.published == 'true'
@@ -209,7 +216,7 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          VERSION=$(node -p "require('./package.json').version")
+          VERSION=$(node -p "require('./packages/core/package.json').version")
           PKG=$(node -p "require('./package.json').name")
 
           if OUTPUT=$(npm view "$PKG@$VERSION" version 2>&1); then
