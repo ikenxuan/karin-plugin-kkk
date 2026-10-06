@@ -11,7 +11,8 @@ import { changelogSections } from './changelog-types'
  *
  * 流程：守卫（main / 工作区干净 / 与远端同步）→ 打印自上个 tag 以来的提交清单
  * → 交互选择版本（选项感知当前 prerelease 线：beta.1 已发 → 建议 beta.2 /
- * 转正 / 下一功能线）→ 从上个 v* tag 起收集提交，按 changelog 类型分组，
+ * 转正 / 下一功能线）→ 收集上一个 tag 以来的提交（不分渠道，只写增量小节，互不重复；
+ * 跨渠道的完整覆盖由推送渲染端的 range 拼装历史小节完成），按 changelog 类型分组，
  * 以 release-please 风格 prepend 进 `packages/core/CHANGELOG.md` → 提交
  * （只含 CHANGELOG）→ 打 v* tag。**推送交给人工**：审计后
  * `git push origin main` + `git push origin v<版本>`，tag 一推即触发
@@ -61,6 +62,10 @@ const lastPrereleaseTag = (): string => {
   return tags.split('\n')[0] ?? ''
 }
 
+/** 选中版本的渠道 preid：无后缀 = ''（stable），-beta.N = beta，-rc.N = rc */
+const channelOf = (version: string): string =>
+  version.replace(/^v/, '').split('-').slice(1).join('-').split('.')[0]
+
 /** prerelease tag 的延续版本：末段数字 +1（v2.45.0-beta.1 → 2.45.0-beta.2） */
 const bumpPrerelease = (tag: string): string => {
   const v = tag.replace(/^v/, '')
@@ -85,6 +90,9 @@ const collectEntries = (range: string): CommitEntry[] => {
     const [sha, subject] = line.split('\u0001')
     const match = /^([a-zA-Z][a-zA-Z0-9]*)(?:\(([^)]*)\))?:(?:\s+)(.+)$/.exec(subject ?? '')
     if (!match || !knownTypes.has(match[1])) continue
+    // 历史发版提交是元数据不是内容：stable 全量归纳的 range 会扫过 beta/rc 的
+    // chore: release vX.Y.Z 提交，剔除之（同渠道 range 本就不含，恒过滤无副作用）
+    if (match[1] === 'chore' && /^release v/.test(match[3])) continue
     entries.push({ sha, type: match[1], scope: match[2] || undefined, message: match[3] })
   }
   return entries
@@ -108,6 +116,20 @@ const renderEntry = (version: string, prevTag: string, entries: CommitEntry[]): 
     if (items.length > 0) blocks.push(`### ${section.title}\n\n${items.join('\n')}`)
   }
   return blocks.join('\n\n\n')
+}
+
+/**
+ * 转正发布空增量时的占位条目：告知完整变更位于本版本线更早的各测试/预览小节。
+ * 不写这条占位，推送图的版本区间会缺少 stable 锚点（range 的 endVersion 回退到
+ * 预发布 tag），首屏标题将落在预发布版本上，与提示条的「最新版本」不一致。
+ */
+const renderStablePlaceholder = (version: string, prevTag: string): string => {
+  const date = new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Shanghai' })
+  const heading = prevTag
+    ? `## [${version}](https://github.com/${REPO}/compare/${prevTag}...v${version}) (${date})`
+    : `## ${version} (${date})`
+  const since = prevTag ? `\`${prevTag.replace(/^v/, '')}\`` : '历史版本'
+  return `${heading}\n\n> 本版本为测试/预览线的转正发布，自上一个 tag 以来没有新增常规提交。完整变更记录见 ${since} 及更早的各小节。`
 }
 
 /**
@@ -232,13 +254,19 @@ if (dry) {
     process.exit(1)
   }
 }
+// 每个版本的小节只写「上一个 tag（不分渠道）以来的增量」——beta/rc/stable 的小节
+// 互不重复；跨渠道的完整覆盖由渲染端负责：推送图用 range 在 [本地版本 → 远程版本]
+// 区间按版本序拼装历史小节（如 2.44.1 用户收到 2.45.0 推送时，拼出整条版本线）
 const entries = collectEntries(range)
-if (entries.length === 0) {
-  clack.log.error(`❌ ${prevTag || '仓库起点'} 之后没有可分组的 conventional 提交，无法生成 CHANGELOG 条目`)
+
+// 预发布版本空增量 = 没有可发布的内容；转正发布允许空增量（测试完直接转正），
+// 但仍要写入占位小节 —— 否则推送图的版本区间缺少 stable 锚点，首屏标题会落到预发布版本上
+if (entries.length === 0 && channelOf(version) !== '') {
+  clack.log.error(`❌ ${prevTag || '仓库起点'} 之后没有可分组的 conventional 提交，预发布版本无内容可发布`)
   process.exit(1)
 }
 
-const entry = renderEntry(version, prevTag, entries)
+const entry = entries.length > 0 ? renderEntry(version, prevTag, entries) : renderStablePlaceholder(version, prevTag)
 console.log(`\n${entry.replaceAll('*', '•')}\n`)
 
 if (dry) {
