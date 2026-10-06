@@ -41,6 +41,11 @@ const Handler = async () => {
   const channels = Config.app.UpdateNotifyChannels?.length ? Config.app.UpdateNotifyChannels : ['stable']
   const tags = ['latest', ...channels.filter((c) => c !== 'stable')]
 
+  // 金丝雀用户的时间线比较基准：本机构建时间与构建指纹（build-metadata）
+  const installedIsCanary = parseReleaseChannel(Root.pluginVersion) === 'Canary'
+  const build = getBuildMetadata()
+  const installedBuildTime = build?.buildTimestamp
+
   const remotes = await Promise.all(
     tags.map(async (tag) => {
       try {
@@ -50,9 +55,18 @@ const Handler = async () => {
       }
     })
   )
-  const remote = [...new Set(remotes.filter((v): v is string => !!v))]
-    .filter((v) => isSemverGreater(v, Root.pluginVersion))
-    .sort((a, b) => (isSemverGreater(b, a) ? 1 : -1))[0]
+  // 金丝雀用户：semver 的 ASCII 序（beta < canary）对跨渠道比较无意义，
+  // 推送候选与面板同款改按构建时间线——渠道发布节点晚于本机构建时间即为候选；
+  // 找不到发布节点时回退 semver 比较
+  const canaryInfo = installedIsCanary ? await fetchCanaryInfo() : null
+  const candidates = [...new Set(remotes.filter((v): v is string => !!v))].filter((version) => {
+    if (installedIsCanary && installedBuildTime !== undefined) {
+      const releaseNode = canaryInfo?.nodes.find((n) => n.message.includes(version))
+      if (releaseNode) return releaseNode.time > installedBuildTime
+    }
+    return isSemverGreater(version, Root.pluginVersion)
+  })
+  const remote = candidates.sort((a, b) => (isSemverGreater(b, a) ? 1 : -1))[0]
   if (!remote) return true
 
   // 版本提醒锁（检查是否已经推送过相同或更高版本的更新通知）

@@ -235,14 +235,12 @@ jobs:
         run: |
           # 1) 获取最新的Git标签版本作为基准
           LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
-          if [ -n "$LAST_TAG" ]; then
-            # 移除v前缀并提取版本号
-            LAST_TAG_VERSION=${LAST_TAG#v}
-            if echo "$LAST_TAG_VERSION" | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' >/dev/null; then
-              BASE_VERSION="$LAST_TAG_VERSION"
-            else
-              BASE_VERSION="0.0.0"
-            fi
+          # 移除v前缀后剥离 prerelease/build 后缀（v2.45.0-beta.1 → 2.45.0）：
+          # 预发布 tag 不能把基准打回 0.0.0，否则后续 canary 版本号会从 0.0.x 重新起步
+          LAST_TAG_VERSION="${LAST_TAG#v}"
+          LAST_TAG_VERSION="${LAST_TAG_VERSION%%-*}"
+          if echo "$LAST_TAG_VERSION" | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' >/dev/null; then
+            BASE_VERSION="$LAST_TAG_VERSION"
           else
             BASE_VERSION="0.0.0"
           fi
@@ -250,6 +248,8 @@ jobs:
           # 2) release-please 已退役（发版走 tag），只以最后 tag 与包内版本为基准
           RELEASE_VERSION=""
           PKG_VERSION=$(node -p "require('./package.json').version" 2>/dev/null || echo "")
+          # 剥离 prerelease 后缀参与基准比较（canary 用户安装的 0.0.x 也能被 2.45.0 正确压过）
+          PKG_VERSION="${PKG_VERSION%%-*}"
 
           # 3) 选择最高的版本作为基准（确保不会倒退）
           compare_versions() {

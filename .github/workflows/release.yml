@@ -7,9 +7,10 @@ name: Release
 #
 # 发版流程：
 #   1. 维护者本地跑 `pnpm run release`（scripts/release.ts）：
-#      bumpp 交互式选版本 → 改 packages/core/package.json → 从上个 v* tag 起
-#      按提交类型分组生成 CHANGELOG.md 条目并 prepend → `chore: release vX.Y.Z`
-#      提交 → 打 v* tag。推送交给人工：`git push origin main --follow-tags`。
+#      bumpp 交互式选版本（版本号不写入提交——主分支 package.json 钉在最近
+#      stable 版本）→ 从上个 v* tag 起按提交类型分组生成 CHANGELOG.md 条目并
+#      prepend → `chore: release vX.Y.Z` 提交 → 打 v* tag。推送交给人工：
+#      `git push origin main` + `git push origin v<版本>`。
 #   2. tag push 触发本 workflow：版本闸 → changelogithub 建 GitHub Release →
 #      build → npm 发布 → GitHub Packages 镜像。
 #
@@ -60,18 +61,20 @@ jobs:
           fetch-depth: 0 # changelogithub 要完整提交历史
           submodules: recursive # 根 postinstall 会构建 amagi 子模块
 
-      # 防「先打 tag 后 bump」：tag 与 package.json 脱节时，发出的包和 GitHub
-      # Release 各说各话。不一致直接红 —— 此时什么都还没发，删 tag 重来即可。
-      - name: 🛡️ 版本闸：tag 必须等于 packages/core 的版本
+      # 主分支不变式：packages/core/package.json 钉在最近 stable 版本（release 脚本
+      # 不把 prerelease 版本写进提交），prerelease 版本由 tag 携带、在此注入发布产物。
+      # tag 就是版本号的唯一来源，格式非法直接红。
+      - name: 🛡️ 版本闸：校验 tag 并注入版本号
         id: gate
+        working-directory: packages/core
         run: |
-          VERSION=$(node -p "require('./packages/core/package.json').version")
-          if [ "v$VERSION" != "$GITHUB_REF_NAME" ]; then
-            echo "❌ tag $GITHUB_REF_NAME 与 packages/core/package.json 的版本 v$VERSION 不一致" >&2
-            echo "   用 pnpm run release bump 后再打 tag" >&2
+          VERSION="${GITHUB_REF_NAME#v}"
+          if ! echo "$VERSION" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$'; then
+            echo "❌ tag $GITHUB_REF_NAME 不是合法 semver 版本" >&2
             exit 1
           fi
-          echo "✅ tag 与版本一致：$GITHUB_REF_NAME"
+          npm version "$VERSION" --no-git-tag-version
+          echo "✅ 版本已从 tag 注入：$VERSION"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
       - name: 📦 配置 PNPM 环境

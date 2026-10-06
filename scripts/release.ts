@@ -20,6 +20,11 @@ import { changelogSections } from './changelog-types'
  * 「npm 包内的 CHANGELOG.md」和「tag v* 的 GitHub raw」竞速抓取，条目必须
  * 在打 tag 之前就进提交，tag 树里才看得到这一版。
  *
+ * 版本不变式：main 的 packages/core/package.json 始终维持最近 stable 版本；
+ * prerelease 版本（beta/rc/canary）只存在于 tag 名与发布产物——release.yml
+ * 在发布时从 tag 注入版本号。这样 beta/rc/canary 的 tag 之间不会互相追版本号，
+ * 金丝雀构建的版本号基准也始终有稳定的 semver 锚点。
+ *
  * 版本线约定：不要在上一条版本线转正前开下一条 beta 线（例：2.45.0 尚未发布就打
  * 2.46.0-beta.1）—— main 是单列火车，2.46.0-beta.1 内容上包含 2.45.0-beta 的全部提交，
  * 交错编号会让 semver 与内容脱节，且 CHANGELOG 小节顺序不再匹配版本序。
@@ -171,8 +176,13 @@ if (dry) {
 
 prependEntry(entry)
 
+// 主分支不变式：package.json 始终维持最近 stable 版本，prerelease 版本只存在于
+// tag 与发布产物（release.yml 从 tag 注入）。bumpp 的临时写入在此还原，
+// 否则 pre-commit 钩子会把带着 prerelease 版本号的 package.json 一起提交。
+execFileSync('git', ['checkout', '--', CORE_PKG], { stdio: 'inherit' })
+
 // ── 提交 + 打 tag ────────────────────────────────────────────────────────
-execFileSync('git', ['add', CORE_PKG, CHANGELOG], { stdio: 'inherit' })
+execFileSync('git', ['add', CHANGELOG], { stdio: 'inherit' })
 execFileSync('git', ['commit', '-m', `chore: release v${version}`], { stdio: 'inherit' })
 execFileSync('git', ['tag', `v${version}`], { stdio: 'inherit' })
 
