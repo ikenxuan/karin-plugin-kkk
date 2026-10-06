@@ -166,11 +166,13 @@ export const Changelog: React.FC<PosterProps<ChangelogData>> = React.memo((props
             <div className="pt-32">
               <div className="text-5xl leading-relaxed text-center mb-8 opacity-50 text-foreground/70">以下任意方式均可更新</div>
 
-              <div className="mb-10 px-8 py-5 rounded-2xl border border-border/70 bg-surface/50 text-foreground/80 text-[2.2em] flex items-center justify-center gap-6">
-                <span>当前版本: v{props.data.localVersion}</span>
-                <span>→</span>
-                <span>最新版本: v{props.data.remoteVersion}</span>
-                <span>，共落后 {props.data.lagVersionCount ?? 0} 个版本</span>
+              <div className="mb-10 px-8 py-5 rounded-2xl border border-border/70 bg-surface/50 text-foreground/80 text-[2.2em] flex flex-col items-center gap-3">
+                <div className="flex items-center justify-center gap-6 flex-wrap">
+                  <span className="whitespace-nowrap">当前版本: v{props.data.localVersion}</span>
+                  <span className="text-muted">→</span>
+                  <span className="whitespace-nowrap font-semibold text-foreground">最新版本: v{props.data.remoteVersion}</span>
+                </div>
+                <div className="whitespace-nowrap text-[0.8em] leading-none text-foreground/60">共落后 {props.data.lagVersionCount ?? 0} 个版本</div>
               </div>
 
               <div className="flex flex-col gap-6 text-[2.8em] leading-relaxed text-foreground/80">
@@ -181,9 +183,9 @@ export const Changelog: React.FC<PosterProps<ChangelogData>> = React.memo((props
                   <span>立刻开始</span>
                 </div>
 
-                <div className="flex items-center gap-5">
+                <div className="flex flex-wrap items-center gap-x-5 gap-y-4">
                   <span className="text-muted text-[1.2em]">•</span>
-                  <span>进入</span>
+                  <span className="whitespace-nowrap">进入</span>
                   <InlineCalloutCode className="text-[0.9em] font-mono">Karin WebUI</InlineCalloutCode>
                   <span>→</span>
                   <InlineCalloutCode className="text-[0.9em]">插件管理</InlineCalloutCode>
@@ -193,9 +195,9 @@ export const Changelog: React.FC<PosterProps<ChangelogData>> = React.memo((props
                   <span>一览更新</span>
                 </div>
 
-                <div className="flex items-center gap-5">
+                <div className="flex flex-wrap items-center gap-x-5 gap-y-4">
                   <span className="text-muted text-[1.2em]">•</span>
-                  <span>Karin 根目录运行</span>
+                  <span className="whitespace-nowrap">Karin 根目录运行</span>
                   <InlineCalloutCode className="text-[0.85em] whitespace-nowrap font-mono">
                     pnpm add karin-plugin-kkk@{props.data.remoteVersion} -w
                   </InlineCalloutCode>
@@ -363,11 +365,12 @@ export const Changelog: React.FC<PosterProps<ChangelogData>> = React.memo((props
                   </div>
 
                   <div className="text-4xl leading-relaxed text-foreground/60">
-                    <span>扫码查看实际运行代码从</span>
-                    <span className="font-bold text-foreground/80"> v{props.data.localVersion}</span>
-                    <span> 到 </span>
-                    <span className="font-bold text-foreground/80"> v{props.data.remoteVersion}</span>
-                    <span> 的差异</span>
+                  <div>扫码查看实际运行代码差异</div>
+                  <div className="flex flex-wrap items-center gap-x-3 whitespace-nowrap text-foreground/80">
+                    <span className="font-bold">v{props.data.localVersion}</span>
+                    <span>→</span>
+                    <span className="font-bold">v{props.data.remoteVersion}</span>
+                  </div>
                   </div>
                 </div>
               </div>
@@ -376,12 +379,13 @@ export const Changelog: React.FC<PosterProps<ChangelogData>> = React.memo((props
                 <div className="w-120 h-auto">
                   <img src={generateQRCode(share_url, dark)} alt="二维码" className="w-full h-full object-contain" />
                 </div>
-                <div className="text-4xl text-foreground/60">
-                  <span>扫码查看实际运行代码从</span>
-                  <span className="font-bold text-foreground/80"> v{props.data.localVersion}</span>
-                  <span> 到 </span>
-                  <span className="font-bold text-foreground/80"> v{props.data.remoteVersion}</span>
-                  <span> 的差异</span>
+                <div className="text-4xl leading-relaxed text-foreground/60">
+                <div>扫码查看实际运行代码差异</div>
+                <div className="flex flex-wrap items-center gap-x-3 whitespace-nowrap text-foreground/80">
+                  <span className="font-bold">v{props.data.localVersion}</span>
+                  <span>→</span>
+                  <span className="font-bold">v{props.data.remoteVersion}</span>
+                </div>
                 </div>
               </div>
             )}
@@ -393,7 +397,7 @@ export const Changelog: React.FC<PosterProps<ChangelogData>> = React.memo((props
           <div className="flex gap-8 justify-center text-foreground/60">
             <div className="text-4xl">
               更新频道:
-              <span className="font-bold text-foreground/80"> 正式版</span>
+              <span className="font-bold text-foreground/80"> {props.data.channelLabel ?? '正式版'}</span>
             </div>
             <div className="text-4xl">
               编译于:

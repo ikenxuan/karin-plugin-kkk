@@ -16,6 +16,8 @@ export interface ChangelogData {
   lagVersionCount?: number
   /** 构建时间 */
   buildTime?: string
+  /** 更新频道标签（正式版/测试版/预览版/金丝雀），缺省按正式版展示 */
+  channelLabel?: string
   /** 版本差异对比页面分享链接 */
   share_url?: string
 }

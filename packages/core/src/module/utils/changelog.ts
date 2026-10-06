@@ -7,7 +7,7 @@ import axios from 'node-karin/axios'
 import { baseHeaders, Render, Root } from '@/module'
 
 import { formatBuildTime, getBuildMetadata } from './build-metadata'
-import { parseReleaseChannel } from './releaseChannel'
+import { parseReleaseChannel, RELEASE_CHANNEL_LABEL } from './releaseChannel'
 import { isSemverGreater } from './semver'
 
 /**
@@ -198,6 +198,7 @@ export const getChangelogImage = async (ctx: Message, props: Omit<ChangelogData,
     Tip: props.Tip,
     localVersion: props.localVersion,
     remoteVersion: props.remoteVersion,
+    channelLabel: RELEASE_CHANNEL_LABEL[parseReleaseChannel(props.remoteVersion)],
     lagVersionCount,
     buildTime,
     share_url: `https://karin-plugin-kkk-docs.vercel.app/diff?old=${props.localVersion}&new=latest`
