@@ -339,20 +339,23 @@ jobs:
           COMMIT_COUNT=$(git rev-list --count HEAD 2>/dev/null || echo 0)
           TIMESTAMP=$(date +%s)
 
-          # 6) 根据事件类型拼接预发布后缀
+          # 6) 拼接金丝雀版本号（canary 语义：pkg.pr.new 分发，不占用 npm 渠道 dist-tag）
+          #    统一 `-canary` 前缀，parseReleaseChannel 据此识别为金丝雀渠道：
+          #    - PR:        <base>-canary.pr<编号>.<短哈希>
+          #    - main 推送: <base>-canary.<提交序号>.<短哈希>
+          #    - 手动触发:  <base>-canary.manual.<时间戳>
+          #    - 其他分支:  <base>-canary.<分支名>.<短哈希>
+          SHORT_SHA=$(git rev-parse --short HEAD 2>/dev/null || echo "0")
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-            PR_NUMBER=${{ github.event.number }}
-            PR_COMMIT_COUNT=$(git rev-list --count HEAD ^origin/main 2>/dev/null || echo 0)
-            NEW_VERSION="${BASE_NEXT}-alpha.${PR_NUMBER}.${PR_COMMIT_COUNT}"
+            NEW_VERSION="${BASE_NEXT}-canary.pr${{ github.event.number }}.${SHORT_SHA}"
           elif [ "${{ github.event_name }}" = "push" ] && [ "${{ github.ref }}" = "refs/heads/main" ]; then
-            TIME_SUFFIX=$(echo "$TIMESTAMP" | tail -c 5)
-            NEW_VERSION="${BASE_NEXT}-beta.${COMMIT_COUNT}.${TIME_SUFFIX}"
+            NEW_VERSION="${BASE_NEXT}-canary.${COMMIT_COUNT}.${SHORT_SHA}"
           elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             TIME_SUFFIX=$(TZ='Asia/Shanghai' date +%m%d%H%M)
-            NEW_VERSION="${BASE_NEXT}-manual.${TIME_SUFFIX}"
+            NEW_VERSION="${BASE_NEXT}-canary.manual.${TIME_SUFFIX}"
           else
             BRANCH_NAME=$(echo "${{ github.ref_name }}" | sed 's/[^a-zA-Z0-9]/-/g' | tr '[:upper:]' '[:lower:]')
-            NEW_VERSION="${BASE_NEXT}-dev.${BRANCH_NAME}.${{ needs.unified-build.outputs.short_commit_hash }}"
+            NEW_VERSION="${BASE_NEXT}-canary.${BRANCH_NAME}.${SHORT_SHA}"
           fi
 
           echo "🎯 最终生成版本: $NEW_VERSION"
