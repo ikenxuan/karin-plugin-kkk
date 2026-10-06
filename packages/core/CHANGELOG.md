@@ -2,6 +2,22 @@
 
 # Changelog
 
+## [2.45.0-beta.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.45.0-beta.1...v2.45.0-beta.2) (2026-10-06)
+
+
+### 🐛 错误修复
+
+* 添加 @clack/prompts 依赖并更新发版脚本以使用交互式版本选择 ([dd18fc2](https://github.com/ikenxuan/karin-plugin-kkk/commit/dd18fc23993d6b9ca6185cb4a75190a16f9c3dab))
+* 移除不必要的 bumpp 依赖，并优化本地发版脚本 ([4123512](https://github.com/ikenxuan/karin-plugin-kkk/commit/4123512b404009daa34512cc57a375c3de0c8462))
+* ci ([5767211](https://github.com/ikenxuan/karin-plugin-kkk/commit/57672119b6502ba9717eaf3a45dcf0b65ec9d36f))
+* 规范化短哈希长度为 7 位，以避免构建指纹误判 ([de02dcc](https://github.com/ikenxuan/karin-plugin-kkk/commit/de02dcc39bf4d75178e21f2c947d827f43b11e14))
+* ci ([d38ef28](https://github.com/ikenxuan/karin-plugin-kkk/commit/d38ef28a1c17717ea42341b10a6bcbf2b60849ae))
+* ci ([c7ddce5](https://github.com/ikenxuan/karin-plugin-kkk/commit/c7ddce59ae8b60fc4c120b79cd3d191f96a69e1b))
+* 回退版本号至 2.44.1，并修复 dry 模式下版本号验证逻辑 ([eabd9aa](https://github.com/ikenxuan/karin-plugin-kkk/commit/eabd9aa457d5ad098d7967304990ad8648073956))
+* 优化版本比较逻辑，支持金丝雀用户的构建时间线判定 ([d811024](https://github.com/ikenxuan/karin-plugin-kkk/commit/d811024eeff8dfa28b70be7ecb0443011b2176e0))
+* release 发布前剥离 devDeps，修复 GPR 报告步骤路径 ([2f02b22](https://github.com/ikenxuan/karin-plugin-kkk/commit/2f02b2294ade62b7b336363462e3cc8785d75217))
+* 金丝雀用户的面板比较改为构建时间线判定 ([7aa712d](https://github.com/ikenxuan/karin-plugin-kkk/commit/7aa712dcf22113c58602629cec13115c62eefb9d))
+
 ## [2.45.0-beta.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.44.0...v2.45.0-beta.1) (2026-10-06)
 
 
