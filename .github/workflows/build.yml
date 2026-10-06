@@ -76,7 +76,7 @@ jobs:
         id: git-info
         run: |
           COMMIT_HASH=$(git rev-parse HEAD)
-          SHORT_COMMIT_HASH=$(git rev-parse --short HEAD)
+          SHORT_COMMIT_HASH=$(git rev-parse --short=7 HEAD)
           echo "commit_hash=$COMMIT_HASH" >> $GITHUB_OUTPUT
           echo "short_commit_hash=$SHORT_COMMIT_HASH" >> $GITHUB_OUTPUT
 
@@ -244,7 +244,7 @@ jobs:
           CANARY_BASE="${MAJOR}.${MINOR}.$((PATCH + 1))"
 
           # 来源标识：PR 编号 / 提交序号 / 手动时间戳 / 分支名，短哈希收尾保证唯一
-          SHORT_SHA=$(git rev-parse --short HEAD 2>/dev/null || echo "0")
+          SHORT_SHA=$(git rev-parse --short=7 HEAD 2>/dev/null || echo "0")
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             NEW_VERSION="${CANARY_BASE}-canary.pr${{ github.event.number }}.${SHORT_SHA}"
           elif [ "${{ github.event_name }}" = "push" ] && [ "${{ github.ref }}" = "refs/heads/main" ]; then

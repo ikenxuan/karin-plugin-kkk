@@ -351,8 +351,11 @@ const getUpdateHelpImage = async (e: Message) => {
 
   // 金丝雀行：最新 main 构建；canary 用户比对本机构建指纹判定有无新构建
   const canaryChannel = canaryInfo?.channel ?? { label: '金丝雀', tag: 'pkg.pr.new · main', status: 'error' as const }
-  if (installedIsCanary && canaryChannel.status === 'canary' && build?.shortCommitHash) {
-    canaryChannel.hasUpdate = canaryChannel.version !== build.shortCommitHash
+  // 指纹比较归一化到 7 位：git rev-parse --short 在歧义时会扩展到 8 位，
+  // 而 pkg.pr.new API 固定 7 位——不归一会出现同构建误判「有新构建」
+  const installedSha = (build?.shortCommitHash ?? '').slice(0, 7)
+  if (installedIsCanary && canaryChannel.status === 'canary' && installedSha) {
+    canaryChannel.hasUpdate = installedSha !== canaryChannel.version
   }
   channels.push(canaryChannel)
 
