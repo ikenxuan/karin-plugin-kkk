@@ -25,7 +25,7 @@
     "watch": "pnpm --filter karin-plugin-kkk run watch"
   },
   "dependencies": {
-    "node-karin": "1.16.3"
+    "node-karin": "1.18.0"
   },
   "devDependencies": {
     "@clack/prompts": "^1.8.1",

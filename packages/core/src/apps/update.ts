@@ -28,6 +28,8 @@ const UPDATE_CHANNELS = ['stable', 'beta', 'rc'] as const
 /** 各渠道更新提醒锁：记录该渠道上次已推送的版本，检测到新版本推送一次后上锁 */
 const updateLockKey = (channel: string) => `kkk:update:lock:${channel}`
 const UPDATE_MSGID_KEY = 'kkk:update:msgid'
+/** 推送图对应的安装目标版本（引用回复推送图「更新」时安装它） */
+const UPDATE_PUSHED_KEY = 'kkk:update:pushed'
 
 /**
  * 定时更新检测处理器
@@ -51,11 +53,19 @@ const Handler = async () => {
   const build = getBuildMetadata()
   const installedBuildTime = build?.buildTimestamp
 
+  // 逐渠道检测远程版本：非金丝雀用框架 checkPkgUpdate 按渠道 tag 检测（判定有更新
+  // 才记录版本号）；金丝雀因 semver 的 ASCII 序（beta < canary）对跨标识比较无意义，
+  // 仅取版本号、留待时间线判定
   const tagVersions = new Map<string, string | null>()
   await Promise.all(
     [...new Set(channels.map(tagOf))].map(async (tag) => {
       try {
-        tagVersions.set(tag, (await getRemotePkgVersion(Root.pluginName, tag)) || null)
+        if (!installedIsCanary) {
+          const upd = await checkPkgUpdate(Root.pluginName, { tag, compare: 'semver' })
+          tagVersions.set(tag, upd.status === 'yes' ? upd.remote : null)
+        } else {
+          tagVersions.set(tag, (await getRemotePkgVersion(Root.pluginName, tag)) || null)
+        }
       } catch {
         tagVersions.set(tag, null)
       }
@@ -88,6 +98,9 @@ const Handler = async () => {
     pending.add(version)
   }
   if (pending.size === 0) return true
+
+  // 引用回复推送图「更新」时的安装目标：多渠道同时待推送时取 semver 最大者
+  const installTarget = [...pending].sort((a, b) => (isSemverGreater(b, a) ? 1 : -1))[0]
 
   const masters = config.master().filter((id) => id !== 'console')
   if (masters.length === 0) return true
@@ -152,6 +165,7 @@ const Handler = async () => {
   if (storedMsgId) {
     try {
       await db.set(UPDATE_MSGID_KEY, storedMsgId)
+      await db.set(UPDATE_PUSHED_KEY, installTarget)
     } catch {}
   }
   return true
@@ -159,6 +173,14 @@ const Handler = async () => {
 
 const handleUpdateHook = wrapWithErrorHandler(
   async (e: Message) => {
+    // 引用回复推送图：直接安装推送时记录的版本 —— 框架 checkPkgUpdate 即便支持
+    // tag 也覆盖不了金丝雀安装（semver 的 ASCII 序恒判「无更新」），且回复图
+    // 对应的具体版本以推送时的记录为准
+    const pushedVersion = await db.get(UPDATE_PUSHED_KEY)
+    if (typeof pushedVersion === 'string' && pushedVersion) {
+      await installAndRestart(e, pushedVersion)
+      return
+    }
     e.reply('开始更新 karin-plugin-kkk ...', { reply: true })
     const upd = await checkPkgUpdate(Root.pluginName, { compare: 'semver' })
     if (upd.status === 'yes') {
@@ -168,6 +190,7 @@ const handleUpdateHook = wrapWithErrorHandler(
         if (msgResult.messageId) {
           try {
             await db.del(UPDATE_MSGID_KEY)
+            await db.del(UPDATE_PUSHED_KEY)
             for (const ch of UPDATE_CHANNELS) {
               await db.del(updateLockKey(ch))
             }
@@ -250,6 +273,7 @@ const installAndRestart = async (e: Message, version: string) => {
   if (msgResult.messageId) {
     try {
       await db.del(UPDATE_MSGID_KEY)
+      await db.del(UPDATE_PUSHED_KEY)
       for (const ch of UPDATE_CHANNELS) {
         await db.del(updateLockKey(ch))
       }
@@ -450,6 +474,7 @@ export const kkkUpdateTest =
     'test',
     async (_e: Message, next) => {
       await db.del(UPDATE_MSGID_KEY)
+      await db.del(UPDATE_PUSHED_KEY)
       for (const ch of UPDATE_CHANNELS) {
         await db.del(updateLockKey(ch))
       }
