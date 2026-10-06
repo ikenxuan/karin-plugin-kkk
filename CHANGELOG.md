@@ -2,6 +2,23 @@
 
 # Changelog
 
+## [2.45.0-rc.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.45.0-rc.1...v2.45.0-rc.2) (2026-10-07)
+
+
+### ✨ 新功能
+
+* 更新日志推送图按渠道裁剪引导，预发布角标区分测试版与预览版 ([16920a8](https://github.com/ikenxuan/karin-plugin-kkk/commit/16920a8dbfd720235bd1fa2de143a996b2808d65))
+
+
+### 🐛 错误修复
+
+* 发布脚本添加版本倒挂检查，确保版本号单调递增并更新渲染逻辑 ([64198f2](https://github.com/ikenxuan/karin-plugin-kkk/commit/64198f22db9a9c06bba38fbcf6f500e9071b0a71))
+
+
+### 💄 UI 优化
+
+* 更新面板金丝雀行改为直接展示构建 SHA ([121572a](https://github.com/ikenxuan/karin-plugin-kkk/commit/121572a16f8350242de0cdcd0b80b9ad366f1597))
+
 ## [2.45.0-rc.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.45.0-beta.6...v2.45.0-rc.1) (2026-10-06)
 
 
