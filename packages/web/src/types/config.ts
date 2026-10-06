@@ -58,6 +58,8 @@ export interface ConfigType {
     }
     /** 渲染等待时间 */
     RenderWaitTime: number
+    /** 更新推送订阅的渠道（多选）：stable=正式版 beta=测试版 rc=预览版；金丝雀不推送 */
+    UpdateNotifyChannels: Array<'stable' | 'beta' | 'rc'>
     /** 表情回应 */
     EmojiReply: boolean
     /** 解析提示 */

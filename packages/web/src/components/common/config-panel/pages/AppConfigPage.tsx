@@ -113,6 +113,21 @@ const AppConfigPage = ({ config, renderers }: ConfigPageProps) => {
         </>
       )}
       {renderSubSection(
+        '更新推送设置',
+        <>
+          {renderCheckboxGroup(
+            ['app', 'UpdateNotifyChannels'],
+            '更新推送渠道',
+            '接收哪些渠道的版本更新推送；金丝雀构建经 pkg.pr.new 分发，不提供推送。',
+            [
+              { label: '正式版', value: 'stable' },
+              { label: '预览版', value: 'rc' },
+              { label: '测试版', value: 'beta' }
+            ]
+          )}
+        </>
+      )}
+      {renderSubSection(
         '上传与下载设置',
         <>
           <Surface className="flex flex-col gap-5 p-4 mb-4 rounded-3xl" variant="secondary">
