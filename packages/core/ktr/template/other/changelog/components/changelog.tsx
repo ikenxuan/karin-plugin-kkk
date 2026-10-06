@@ -176,24 +176,27 @@ export const Changelog: React.FC<PosterProps<ChangelogData>> = React.memo((props
               </div>
 
               <div className="flex flex-col gap-6 text-[2.8em] leading-relaxed text-foreground/80">
-                <div className="flex items-center gap-5">
+                <div className="flex flex-wrap items-center gap-x-5 gap-y-4">
                   <span className="text-muted text-[1.2em]">•</span>
                   <span>引用回复</span>
                   <span className="inline-block text-[1.15em] font-bold text-foreground">更新</span>
-                  <span>立刻开始</span>
+                  <span>立刻开始更新到</span>
+                  <span className="whitespace-nowrap font-bold text-foreground">v{props.data.remoteVersion}</span>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-x-5 gap-y-4">
-                  <span className="text-muted text-[1.2em]">•</span>
-                  <span className="whitespace-nowrap">进入</span>
-                  <InlineCalloutCode className="text-[0.9em] font-mono">Karin WebUI</InlineCalloutCode>
-                  <span>→</span>
-                  <InlineCalloutCode className="text-[0.9em]">插件管理</InlineCalloutCode>
-                  <span>→</span>
-                  <InlineCalloutCode className="text-[0.9em]">已安装</InlineCalloutCode>
-                  <span>→</span>
-                  <span>一览更新</span>
-                </div>
+                {props.data.channel === 'Stable' && (
+                  <div className="flex flex-wrap items-center gap-x-5 gap-y-4">
+                    <span className="text-muted text-[1.2em]">•</span>
+                    <span className="whitespace-nowrap">进入</span>
+                    <InlineCalloutCode className="text-[0.9em] font-mono">Karin WebUI</InlineCalloutCode>
+                    <span>→</span>
+                    <InlineCalloutCode className="text-[0.9em]">插件管理</InlineCalloutCode>
+                    <span>→</span>
+                    <InlineCalloutCode className="text-[0.9em]">已安装</InlineCalloutCode>
+                    <span>→</span>
+                    <span>一览更新</span>
+                  </div>
+                )}
 
                 <div className="flex flex-wrap items-center gap-x-5 gap-y-4">
                   <span className="text-muted text-[1.2em]">•</span>

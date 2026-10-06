@@ -18,6 +18,8 @@ export interface ChangelogData {
   buildTime?: string
   /** 更新频道标签（正式版/测试版/预览版/金丝雀），缺省按正式版展示 */
   channelLabel?: string
+  /** 推送目标的发布渠道：模板按渠道裁剪引导（WebUI 快捷更新仅 Stable；diff 引导不含 Canary） */
+  channel?: 'Stable' | 'Beta' | 'Rc' | 'Canary'
   /** 版本差异对比页面分享链接 */
   share_url?: string
 }

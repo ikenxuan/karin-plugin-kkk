@@ -190,18 +190,28 @@ export const getChangelogImage = async (ctx: Message, props: Omit<ChangelogData,
     }
   }
 
-  // 预发布版本小节加「测试版」角标：提醒该段变更来自测试/预览渠道（显示但标记）
-  changelog = changelog.replace(/^(## \[\d+\.\d+\.\d+-[^\]]+\][^\r\n]*)/gm, '$1 「测试版」')
+  // 预发布版本小节加渠道角标（与 RELEASE_CHANNEL_LABEL 同口径）：beta=测试版，rc=预览版
+  changelog = changelog.replace(
+    /^(## \[\d+\.\d+\.\d+-(beta|rc)\.[^\]]+\][^\r\n]*)/gm,
+    (_match: string, head: string, preid: string) => `${head} 「${preid === 'rc' ? '预览版' : '测试版'}」`
+  )
 
+  const targetChannel = parseReleaseChannel(props.remoteVersion)
   const img = await Render(event, 'other/changelog', {
     markdown: changelog,
     Tip: props.Tip,
     localVersion: props.localVersion,
     remoteVersion: props.remoteVersion,
-    channelLabel: RELEASE_CHANNEL_LABEL[parseReleaseChannel(props.remoteVersion)],
+    channelLabel: RELEASE_CHANNEL_LABEL[targetChannel],
+    channel: targetChannel,
     lagVersionCount,
     buildTime,
-    share_url: `https://karin-plugin-kkk-docs.vercel.app/diff?old=${props.localVersion}&new=latest`
+    // diff 页从 npm registry 拉包解压对比（docs/lib/diff-client.ts）——金丝雀版本不发布
+    // 到 npm，diff 链接对金丝雀用户不可用：不传 share_url，模板即不渲染二维码与 diff 引导
+    share_url:
+      targetChannel === 'Canary'
+        ? undefined
+        : `https://karin-plugin-kkk-docs.vercel.app/diff?old=${props.localVersion}&new=latest`
   })
   return img || null
 }
