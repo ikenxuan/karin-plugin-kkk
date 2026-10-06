@@ -252,31 +252,35 @@ jobs:
           PKG_VERSION="${PKG_VERSION%%-*}"
 
           # 3) 选择最高的版本作为基准（确保不会倒退）
+          # 结果写入 COMPARE_RESULT 而非 return：函数裸调用返回非零会被 bash -e 静默退出
+          # （本轮实测：PKG_VERSION 剥离后首次低于 FINAL_BASE，compare 返回 1 直接红）
           compare_versions() {
+            COMPARE_RESULT=0  # v1 == v2
             local v1=$1 v2=$2
             local IFS=.
             local i ver1=($v1) ver2=($v2)
             for ((i=0; i<3; i++)); do
               if [[ ${ver1[i]:-0} -gt ${ver2[i]:-0} ]]; then
-                return 1  # v1 > v2
+                COMPARE_RESULT=1  # v1 > v2
+                break
               elif [[ ${ver1[i]:-0} -lt ${ver2[i]:-0} ]]; then
-                return 2  # v1 < v2
+                COMPARE_RESULT=2  # v1 < v2
+                break
               fi
             done
-            return 0  # v1 == v2
           }
 
           # 选择最高版本作为基准
           FINAL_BASE="$BASE_VERSION"
           if [ -n "$RELEASE_VERSION" ] && echo "$RELEASE_VERSION" | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' >/dev/null; then
             compare_versions "$FINAL_BASE" "$RELEASE_VERSION"
-            case $? in
+            case $COMPARE_RESULT in
               2) FINAL_BASE="$RELEASE_VERSION" ;;  # RELEASE_VERSION更高
             esac
           fi
           if [ -n "$PKG_VERSION" ] && echo "$PKG_VERSION" | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' >/dev/null; then
             compare_versions "$FINAL_BASE" "$PKG_VERSION"
-            case $? in
+            case $COMPARE_RESULT in
               2) FINAL_BASE="$PKG_VERSION" ;;  # PKG_VERSION更高
             esac
           fi
