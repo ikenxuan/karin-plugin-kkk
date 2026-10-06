@@ -2,6 +2,13 @@
 
 # Changelog
 
+## [2.45.0-beta.5](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.45.0-beta.4...v2.45.0-beta.5) (2026-10-06)
+
+
+### 🐛 错误修复
+
+* 更新 node-karin 依赖版本至 1.18.0 ([42ef2e2](https://github.com/ikenxuan/karin-plugin-kkk/commit/42ef2e2729556b7a4c75c68f7ee1714b6581ced2))
+
 ## [2.45.0-beta.4](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.45.0-beta.3...v2.45.0-beta.4) (2026-10-06)
 
 
