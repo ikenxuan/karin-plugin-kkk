@@ -2,6 +2,13 @@
 
 # Changelog
 
+## [2.45.0-beta.3](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.45.0-beta.2...v2.45.0-beta.3) (2026-10-06)
+
+
+### 🐛 错误修复
+
+* 更新发布脚本以正确引用 package.json 文件 ([499ef1d](https://github.com/ikenxuan/karin-plugin-kkk/commit/499ef1d824a4b34b09101accd6988929569d0354))
+
 ## [2.45.0-beta.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.45.0-beta.1...v2.45.0-beta.2) (2026-10-06)
 
 
