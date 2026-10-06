@@ -2,6 +2,47 @@
 
 # Changelog
 
+## [2.45.0-beta.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.44.0...v2.45.0-beta.1) (2026-10-06)
+
+
+### ✨ 新功能
+
+* 更新渠道面板支持金丝雀构建展示与非可升级状态置灰 ([53a31f8](https://github.com/ikenxuan/karin-plugin-kkk/commit/53a31f8d77eb230793ac1549710f9f0778257352))
+* #kkk更新 用法渲染为渠道面板图片，降级确认改用 karin ctx ([9b5e9ad](https://github.com/ikenxuan/karin-plugin-kkk/commit/9b5e9adb629215d8ffdfa1be2b61a46735aff337))
+* 更新推送与版本展示支持发布渠道（stable/beta/rc/canary） ([53581d4](https://github.com/ikenxuan/karin-plugin-kkk/commit/53581d416db20fd860fc9b9c7a27da958888624c))
+
+
+### 🐛 错误修复
+
+* 更新 prependEntry 函数以使用 UTF-8 读写，避免中文/emoji 截断问题 ([0488be5](https://github.com/ikenxuan/karin-plugin-kkk/commit/0488be5dc039199c86735482da086bbfa6b732c5))
+* ci 修复 version-gen 删 rc 分支时破坏的 if/else 结构（补回 alpha 版本体） ([bedffc5](https://github.com/ikenxuan/karin-plugin-kkk/commit/bedffc5cc3f612d15ef425f1f427420db001a8d2))
+* release 脚本推送提示改用显式 tag ref（--follow-tags 不推轻量 tag） ([68e7e58](https://github.com/ikenxuan/karin-plugin-kkk/commit/68e7e581f62bb3aa805e51a9bbe2e32f7e26f26f))
+* ci ([f209c08](https://github.com/ikenxuan/karin-plugin-kkk/commit/f209c08a62b7f8745ec9e3ebb282c2bb7a72a8c2))
+
+
+### 📝 文档更新
+
+* kkk-design 噪点规范更新为高对比离散颗粒配方 ([e4a8196](https://github.com/ikenxuan/karin-plugin-kkk/commit/e4a81961919103dc23fd043ca74085847904d905))
+* release 脚本补充版本线约定注释 ([b02ea20](https://github.com/ikenxuan/karin-plugin-kkk/commit/b02ea20bb16ad96c900b0bf600739303a927d33e))
+
+
+### 💄 UI 优化
+
+* updateHelp 按 kkk-design+apple-design 重构，区分渠道缺失与获取失败 ([9c33223](https://github.com/ikenxuan/karin-plugin-kkk/commit/9c33223c07eb3301ffdc79cd8ce2ab89420357c9))
+* updateHelp 面板按 kkk-design 弥散海报规范重构 ([1a4bc9a](https://github.com/ikenxuan/karin-plugin-kkk/commit/1a4bc9aaf1b47d6db43d33021f14429eff1b3d6e))
+
+
+### 🧰 其他更新
+
+* 添加更新推送设置和渠道配置选项 ([0492f33](https://github.com/ikenxuan/karin-plugin-kkk/commit/0492f339d51b40749a3fedc22754be5c1b1c6c5c))
+* 同步 release-please manifest 至 2.44.1 ([a55d71e](https://github.com/ikenxuan/karin-plugin-kkk/commit/a55d71e496e3ebaedd846a217ecc7f57e4c7f8cc))
+
+
+### 🏗️ 构建系统
+
+* pkg.pr.new 预览包版本号统一 canary 语义 ([6e06fb4](https://github.com/ikenxuan/karin-plugin-kkk/commit/6e06fb46c087d739a7089a2725566b40214613fd))
+* 发版流程改为 tag 触发，CHANGELOG.md 由发版脚本本地生成 ([7d639f1](https://github.com/ikenxuan/karin-plugin-kkk/commit/7d639f14551428fcda24e25869b8bcfa86d11da2))
+
 ## [2.44.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.43.2...v2.44.0) (2026-10-05)
 
 
