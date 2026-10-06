@@ -1,4 +1,4 @@
-import type { UpdateHelpData } from '@template/template/other/updateHelp/components/types'
+import type { UpdateChannelInfo, UpdateHelpData } from '@template/template/other/updateHelp/components/types'
 import karin, {
   checkPkgUpdate,
   config,
@@ -12,6 +12,7 @@ import karin, {
   segment,
   updatePkg
 } from 'node-karin'
+import axios from 'node-karin/axios'
 
 import { Render, Root } from '@/module'
 import { getChangelogImage } from '@/module/utils/changelog'
@@ -233,6 +234,45 @@ const installAndRestart = async (e: Message, version: string) => {
   await restart(e.selfId, e.contact, msgResult.messageId)
 }
 
+/** pkg.pr.new 仓库（金丝雀数据源，只跟踪 main 分支构建） */
+const PKG_PR_NEW_REPO = 'ikenxuan/karin-plugin-kkk'
+
+/** 拉取 pkg.pr.new 上 main 分支的最新金丝雀构建（失败返回 null，由调用方降级展示） */
+const fetchLatestCanary = async (): Promise<UpdateChannelInfo | null> => {
+  try {
+    const [owner, repo] = PKG_PR_NEW_REPO.split('/')
+    const res = await axios.get(`https://pkg.pr.new/api/repo/commits?owner=${owner}&repo=${repo}`, { timeout: 10000 })
+    const nodes = res.data?.target?.history?.nodes as
+      | Array<{
+          branch?: string | null
+          abbreviatedOid?: string
+          authoredDate?: string
+          message?: string
+          statusCheckRollup?: { contexts?: { nodes?: Array<{ packages?: Array<{ installUrl?: string }> }> } }
+        }>
+      | undefined
+    if (!Array.isArray(nodes)) return null
+
+    const node = nodes.find(
+      (n) => n.branch === 'main' && n.statusCheckRollup?.contexts?.nodes?.some((c) => c.packages?.some((pkg) => pkg.installUrl))
+    )
+    const pkg = node?.statusCheckRollup?.contexts?.nodes?.flatMap((c) => c.packages ?? []).find((p) => p.installUrl)
+    if (!node?.abbreviatedOid || !pkg?.installUrl) return null
+
+    return {
+      label: '金丝雀',
+      tag: 'pkg.pr.new · main',
+      status: 'canary',
+      version: node.abbreviatedOid.slice(0, 7),
+      installCommand: `pnpm add ${pkg.installUrl} -w`,
+      publishedAt: node.authoredDate,
+      commitMessage: node.message?.slice(0, 40)
+    }
+  } catch {
+    return null
+  }
+}
+
 /** 渲染 #kkk更新 用法面板（含各渠道可用版本） */
 const getUpdateHelpImage = async (e: Message) => {
   // 单次查询全部 dist-tags：既能拿到各渠道版本，也能区分「渠道不存在」与「查询失败」
@@ -244,10 +284,11 @@ const getUpdateHelpImage = async (e: Message) => {
     } catch {}
   }
 
+  // 渠道按稳定度排序：rc 最接近正式版，排在 beta 之前
   const channels: UpdateHelpData['channels'] = [
     { label: '正式版', tag: 'latest', command: '#kkk更新' },
-    { label: '测试版', tag: 'beta', command: '#kkk更新beta' },
-    { label: '预览版', tag: 'rc', command: '#kkk更新rc' }
+    { label: '预览版', tag: 'rc', command: '#kkk更新rc' },
+    { label: '测试版', tag: 'beta', command: '#kkk更新beta' }
   ].map((def) => {
     if (!status) return { ...def, status: 'error' as const }
     const version = distTags[def.tag]
@@ -255,8 +296,8 @@ const getUpdateHelpImage = async (e: Message) => {
     return { ...def, status: 'ok' as const, version, hasUpdate: isSemverGreater(version, Root.pluginVersion) }
   })
 
-  // 金丝雀：pkg.pr.new 分发，无 dist-tag 可订阅
-  channels.push({ label: '金丝雀', tag: 'pkg.pr.new', status: 'skipped' })
+  // 金丝雀：展示 pkg.pr.new main 分支最新构建（纯展示，更新由用户复制安装命令自行执行）
+  channels.push((await fetchLatestCanary()) ?? { label: '金丝雀', tag: 'pkg.pr.new · main', status: 'error' })
 
   const data: UpdateHelpData = {
     currentVersion: Root.pluginVersion,

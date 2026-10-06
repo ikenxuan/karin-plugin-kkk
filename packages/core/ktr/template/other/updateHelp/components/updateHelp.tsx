@@ -1,3 +1,5 @@
+import { format, formatDistanceToNow } from 'date-fns'
+import { zhCN } from 'date-fns/locale'
 import React from 'react'
 
 import { isDark } from '../../../../utils/theme'
@@ -6,288 +8,358 @@ import type { PosterProps } from '../../../types/ctx'
 import type { UpdateChannelInfo, UpdateHelpData } from './types'
 
 /**
- * `#kkk更新` 用法面板（kkk-design 系统 B 弥散信息海报 × Apple 材质与排版原则）。
+ * `#kkk更新` 用法面板（kkk-design 系统 B × Apple 排版原则）。
  *
- * 双栏 4/8：左栏系统标签 + 主标题 + 当前安装（负字距大字锚点）+ 一句订阅说明；
- * 右栏单块玻璃面板承载渠道清单（hairline 分隔、状态灯），下接 2×2 命令矩阵与降级注记。
- * 排版按字号分级字距：大字负字距、正文归零、标签宽字距；行高随字号反向。
+ * 主情绪色为深青（teal）——紫罗兰系在 runtime/更新日志等模板已被占用，避开色彩同质化。
+ * 构图：横向 Hero 带（左主标题、右当前安装版本，版本号按长度分级缩放防溢出）→
+ * 表格式渠道清单（固定列宽 grid，命令列纵向对齐）→ 命令→说明单行对。
+ * 状态为完整 semver 比较：有更新 / 已是最新 / 低于当前版本三分，而非笼统布尔。
+ * 噪点沿用 runtime 的高对比离散颗粒（深色 0.16 / 浅色 0.12）。
  */
+
+/** 完整 semver 比较（core 数字 + prerelease 段，规则与 core 的 semver.ts 一致） */
+const semverCompare = (a: string, b: string): number => {
+  const parse = (v: string) => {
+    const [core, pre] = v.trim().replace(/^[vV]/, '').split('+')[0].split('-')
+    const [maj, min, pat] = core.split('.').map((n) => Number.parseInt(n, 10) || 0)
+    return { maj, min, pat, pre: pre ? pre.split('.') : [] }
+  }
+  const p = parse(a)
+  const q = parse(b)
+  if (p.maj !== q.maj) return p.maj - q.maj
+  if (p.min !== q.min) return p.min - q.min
+  if (p.pat !== q.pat) return p.pat - q.pat
+  if (p.pre.length === 0 && q.pre.length === 0) return 0
+  if (p.pre.length === 0) return 1
+  if (q.pre.length === 0) return -1
+  const len = Math.min(p.pre.length, q.pre.length)
+  for (let i = 0; i < len; i++) {
+    const an = /^\d+$/.test(p.pre[i])
+    const bn = /^\d+$/.test(q.pre[i])
+    if (an !== bn) return an ? -1 : 1
+    if (p.pre[i] !== q.pre[i]) {
+      if (an && bn) return Number(p.pre[i]) - Number(q.pre[i])
+      return p.pre[i] > q.pre[i] ? 1 : -1
+    }
+  }
+  return p.pre.length === q.pre.length ? 0 : p.pre.length > q.pre.length ? 1 : -1
+}
+
+/**
+ * Hero 版本号布局：
+ * - 短版本（纯 semver，≤6 字符）与主标题同行横排，150px；
+ * - 长版本（canary 等 prerelease）独占整行堆叠在标题下方，字号按「可用宽 1180px ÷
+ *   等宽字符宽 0.6em」自适应，上限仍 150px——标题与版本号不再挤同一行。
+ */
+const heroStacked = (version: string): boolean => version.trim().replace(/^[vV]/, '').length > 6
+
+const heroVersionSize = (version: string): number => {
+  const len = version.trim().replace(/^[vV]/, '').length
+  if (len <= 6) return 150
+  return Math.max(72, Math.min(150, Math.floor(1180 / (len * 0.6))))
+}
+
 export const UpdateHelp: React.FC<PosterProps<UpdateHelpData>> = React.memo((props) => {
   const { data } = props
   const dark = isDark(props.ctx)
 
   const palette = dark
     ? {
-        background: '#0d0a1c',
-        glowPrimary: 'rgba(139, 92, 246, 0.30)',
-        glowSecondary: 'rgba(56, 189, 248, 0.15)',
-        glowWarm: 'rgba(251, 146, 60, 0.13)',
-        ink: '#f6f3ff',
-        muted: 'rgba(246, 243, 255, 0.64)',
-        faint: 'rgba(246, 243, 255, 0.40)',
-        hairline: 'rgba(246, 243, 255, 0.10)',
-        panelBg: 'rgba(255, 255, 255, 0.07)',
-        panelBorder: 'rgba(255, 255, 255, 0.12)',
-        panelTopEdge: 'rgba(255, 255, 255, 0.22)',
-        pillBg: 'rgba(139, 92, 246, 0.16)',
-        pillBorder: 'rgba(196, 181, 253, 0.32)',
-        pillText: '#c4b5fd',
-        accent: '#a78bfa',
+        background: '#081416',
+        glowPrimary: 'rgba(45, 212, 191, 0.28)',
+        glowSecondary: 'rgba(56, 130, 246, 0.14)',
+        glowWarm: 'rgba(250, 204, 21, 0.12)',
+        bgWord: '#99f6e4',
+        ink: '#effefd',
+        muted: 'rgba(239, 254, 253, 0.62)',
+        faint: 'rgba(239, 254, 253, 0.36)',
+        pillBg: 'rgba(45, 212, 191, 0.12)',
+        pillBorder: 'rgba(94, 234, 212, 0.32)',
+        pillText: '#5eead4',
+        accentText: '#5eead4',
         success: '#4ade80',
-        warning: '#fdba74'
+        warning: '#fbbf24',
+        noiseOpacity: 0.16
       }
     : {
-        background: '#f7f4ff',
-        glowPrimary: 'rgba(139, 92, 246, 0.28)',
-        glowSecondary: 'rgba(56, 189, 248, 0.18)',
-        glowWarm: 'rgba(251, 146, 60, 0.14)',
-        ink: '#1c1436',
-        muted: 'rgba(28, 20, 54, 0.68)',
-        faint: 'rgba(28, 20, 54, 0.44)',
-        hairline: 'rgba(28, 20, 54, 0.10)',
-        panelBg: 'rgba(255, 255, 255, 0.64)',
-        panelBorder: 'rgba(28, 20, 54, 0.10)',
-        panelTopEdge: 'rgba(255, 255, 255, 0.85)',
-        pillBg: 'rgba(139, 92, 246, 0.11)',
-        pillBorder: 'rgba(139, 92, 246, 0.28)',
-        pillText: '#6d28d9',
-        accent: '#7c3aed',
+        background: '#effaf8',
+        glowPrimary: 'rgba(20, 184, 166, 0.26)',
+        glowSecondary: 'rgba(125, 211, 252, 0.40)',
+        glowWarm: 'rgba(250, 204, 21, 0.26)',
+        bgWord: '#0c3b38',
+        ink: '#0c3b38',
+        muted: 'rgba(12, 59, 56, 0.68)',
+        faint: 'rgba(12, 59, 56, 0.42)',
+        pillBg: 'rgba(20, 184, 166, 0.10)',
+        pillBorder: 'rgba(20, 184, 166, 0.30)',
+        pillText: '#0f766e',
+        accentText: '#0d9488',
         success: '#15803d',
-        warning: '#b45309'
+        warning: '#8a5a06',
+        noiseOpacity: 0.12
       }
 
-  /** 渠道状态语义：反馈四类中的 status/warning/error */
+  /**
+   * 渠道状态：文案按具体状态区分（有更新 / 已是最新 / 低于当前版本 / 暂未发布 / 获取失败），
+   * 颜色只分两档 —— 可升级（success）与置灰（faint）：非可升级状态一律不引导行动。
+   * active 供行内所有元素同步置灰。
+   */
   const statusView = (channel: UpdateChannelInfo) => {
-    switch (channel.status) {
-      case 'ok':
-        return channel.hasUpdate ? { dot: palette.success, text: '有更新可升级' } : { dot: palette.faint, text: '已是最新' }
-      case 'missing':
-        return { dot: palette.faint, text: '该渠道暂未发布' }
-      case 'error':
-        return { dot: palette.warning, text: '获取失败' }
-      default:
-        return { dot: palette.faint, text: '不提供推送' }
-    }
+    if (channel.status === 'missing') return { dot: palette.faint, text: '该渠道暂未发布', active: false }
+    if (channel.status === 'error') return { dot: palette.faint, text: '获取失败', active: false }
+    if (channel.status === 'canary') return { dot: palette.accentText, text: 'main 分支构建', active: true }
+    const order = semverCompare(channel.version ?? '0.0.0', data.currentVersion)
+    if (order > 0) return { dot: palette.success, text: '有更新可升级', active: true }
+    if (order === 0) return { dot: palette.faint, text: '已是最新', active: false }
+    return { dot: palette.faint, text: '低于当前版本', active: false }
   }
 
-  const noiseOpacity = dark ? 0.12 : 0.09
-  const channelRows = data.channels
-
   return (
-    <DefaultLayout {...props} className="relative overflow-hidden" style={{ backgroundColor: palette.background }}>
-      {/* 弥散光：左上主情绪 / 右中辅助 / 底部暖色 */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden select-none">
+    <DefaultLayout {...props} className="relative min-h-440 overflow-hidden" style={{ backgroundColor: palette.background }}>
+      {/* 氛围层：三片弥散光 + 横排背景字 */}
+      <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
         <div
-          className="absolute rounded-full blur-[170px]"
-          style={{
-            background: `radial-gradient(ellipse at 40% 40%, ${palette.glowPrimary} 0%, transparent 70%)`,
-            width: '1180px',
-            height: '1040px',
-            left: '-300px',
-            top: '-280px'
-          }}
+          className="absolute -left-130 -top-120 h-337.5 w-375 rounded-full blur-[230px]"
+          style={{ background: `radial-gradient(ellipse at center, ${palette.glowPrimary} 0%, transparent 70%)` }}
         />
         <div
-          className="absolute rounded-full blur-[150px]"
-          style={{
-            background: `radial-gradient(ellipse at 50% 50%, ${palette.glowSecondary} 0%, transparent 72%)`,
-            width: '860px',
-            height: '820px',
-            right: '-260px',
-            top: '600px'
-          }}
+          className="absolute -right-130 top-[36%] h-312.5 w-300 rounded-full blur-[240px]"
+          style={{ background: `radial-gradient(ellipse at center, ${palette.glowSecondary} 0%, transparent 72%)` }}
         />
         <div
-          className="absolute rounded-full blur-[200px]"
-          style={{
-            background: `radial-gradient(ellipse at 50% 60%, ${palette.glowWarm} 0%, transparent 75%)`,
-            width: '1040px',
-            height: '700px',
-            left: '120px',
-            bottom: '-320px'
-          }}
+          className="absolute -bottom-120 -left-80 h-287.5 w-337.5 rounded-full blur-[260px]"
+          style={{ background: `radial-gradient(ellipse at center, ${palette.glowWarm} 0%, transparent 72%)` }}
         />
-        {/* 噪点：单色低透明，只做质感 */}
-        <svg className="pointer-events-none absolute inset-0 h-full w-full mix-blend-overlay" style={{ opacity: noiseOpacity }}>
-          <filter id="updateHelpNoise">
-            <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="1" stitchTiles="stitch" />
-          </filter>
-          <rect width="100%" height="100%" filter="url(#updateHelpNoise)" />
-        </svg>
-        {/* 背景气氛字 */}
         <div
-          className="pointer-events-none absolute right-10 top-10 select-none font-bold leading-none tracking-[-0.02em]"
-          style={{ fontSize: '200px', opacity: 0.05, color: palette.ink }}
+          className="pointer-events-none absolute right-14 top-8 select-none font-bold leading-none tracking-[-0.02em]"
+          style={{ fontSize: '220px', opacity: 0.04, color: palette.bgWord }}
         >
           UPDATE
         </div>
-        {/* 角落短线组 */}
-        <div className="pointer-events-none absolute bottom-14 left-20 flex select-none flex-col gap-2">
-          <div className="h-1 w-24 rounded-full" style={{ backgroundColor: palette.accent, opacity: 0.5 }} />
-          <div className="h-1 w-14 rounded-full" style={{ backgroundColor: palette.accent, opacity: 0.3 }} />
-          <div className="h-1 w-8 rounded-full" style={{ backgroundColor: palette.accent, opacity: 0.18 }} />
-        </div>
       </div>
 
-      {/* 内容：双栏 4/8 */}
-      <section className="relative z-10 grid grid-cols-12 gap-10 px-20 pt-20 pb-12">
-        {/* 左栏：身份与当前安装 */}
-        <aside className="col-span-4 flex flex-col">
-          <div className="mb-10 flex items-center gap-4">
-            <span className="h-3 w-3 rounded-full" style={{ backgroundColor: palette.accent }} />
-            <span className="text-[24px] font-bold uppercase tracking-[0.26em]" style={{ color: palette.muted }}>
-              Update Channels
-            </span>
+      {/* 高对比离散噪点层（runtime 同源数值：离散纯黑白颗粒，深 0.16 / 浅 0.12） */}
+      <div className="pointer-events-none absolute inset-0 z-0" style={{ opacity: palette.noiseOpacity }}>
+        <svg className="h-full w-full" xmlns="http://www.w3.org/2000/svg">
+          <filter id="updateHelpNoise" x="0%" y="0%" width="100%" height="100%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="1" stitchTiles="stitch" result="noise" />
+            <feColorMatrix type="saturate" values="0" result="gray" />
+            <feComponentTransfer>
+              <feFuncR type="discrete" tableValues="0 1" />
+              <feFuncG type="discrete" tableValues="0 1" />
+              <feFuncB type="discrete" tableValues="0 1" />
+            </feComponentTransfer>
+          </filter>
+          <rect width="100%" height="100%" filter="url(#updateHelpNoise)" />
+        </svg>
+      </div>
+
+      <main className="relative z-10 px-22 pb-16 pt-20">
+        {/* 顶带：小节标签 + 当前渠道 */}
+        <header className="relative flex items-center justify-between gap-12">
+          <div className="flex items-center gap-4">
+            <span className="h-3 w-3 rounded-full" style={{ background: palette.accentText }} />
+            <span className="whitespace-nowrap text-[24px] font-bold tracking-[0.28em] text-foreground/44">更新面板 · UPDATE PANEL</span>
           </div>
-
-          <h1 className="text-[112px] font-bold leading-[1.0] tracking-[-0.02em]" style={{ color: palette.ink }}>
-            更新
-            <br />
-            渠道
-          </h1>
-
-          {/* 当前安装：第一视觉锚点 */}
-          <div className="mt-16">
-            <div className="text-[24px] font-semibold uppercase tracking-[0.22em]" style={{ color: palette.faint }}>
-              Installed
-            </div>
-            <div
-              className="mt-4 font-mono text-[72px] font-bold leading-none tracking-[-0.01em] tabular-nums"
-              style={{ color: palette.ink }}
-            >
-              v{data.currentVersion}
-            </div>
-            <div className="mt-5">
-              <span
-                className="inline-block rounded-full border px-5 py-1.5 text-[26px] font-bold"
-                style={{ backgroundColor: palette.pillBg, borderColor: palette.pillBorder, color: palette.pillText }}
-              >
-                {data.currentChannel}
-              </span>
-            </div>
-          </div>
-
-          {/* 分隔 hairline */}
-          <div className="my-12 h-px w-full" style={{ backgroundColor: palette.hairline }} />
-
-          <p className="whitespace-nowrap text-[27px] leading-[1.6]" style={{ color: palette.muted }}>
-            新版本发布时自动推送变更日志
-            <br />
-            降级到更低版本号需回复「确认」执行
-          </p>
-        </aside>
-
-        {/* 右栏：单块玻璃面板（Apple 材质：hairline 分隔、顶缘高光，不做卡中卡） */}
-        <section className="col-span-8 flex flex-col gap-10">
-          <div
-            className="rounded-[3rem] border px-12 py-10 backdrop-blur-xl"
-            style={{
-              backgroundColor: palette.panelBg,
-              borderColor: palette.panelBorder,
-              boxShadow: `inset 0 1px 0 ${palette.panelTopEdge}`
-            }}
+          <span
+            className="whitespace-nowrap rounded-full border px-6 py-2 text-[22px] font-bold tracking-[0.14em]"
+            style={{ borderColor: palette.pillBorder, background: palette.pillBg, color: palette.pillText }}
           >
-            <div className="flex items-center justify-between">
-              <h2 className="text-[44px] font-bold leading-none tracking-[-0.01em]" style={{ color: palette.ink }}>
-                可用版本
-              </h2>
-              <span className="font-mono text-[24px] uppercase tracking-[0.16em]" style={{ color: palette.faint }}>
-                npm dist-tags
-              </span>
-            </div>
+            {data.currentChannel}
+          </span>
+        </header>
 
-            <ul>
-              {channelRows.map((channel, index) => {
-                const status = statusView(channel)
+        {/* Hero：短版本与标题同行横排；长版本（canary）堆叠——版本号独占整行按宽自适应，避免溢出 */}
+        {heroStacked(data.currentVersion) ? (
+          <>
+            <div>
+              <h1 className="whitespace-nowrap text-[96px] font-bold leading-[1.04] tracking-[-0.02em] text-foreground">更新渠道</h1>
+              <p className="mt-6 whitespace-nowrap text-[30px] font-semibold text-foreground/48">
+                {data.currentChannel === '金丝雀'
+                  ? '金丝雀构建跟随 main 分支实时发布，可随时切换回正式渠道'
+                  : '各渠道可用版本与 #kkk更新 用法一览'}
+              </p>
+            </div>
+            <div className="relative mt-14">
+              <div className="text-[22px] font-bold uppercase tracking-[0.22em] text-foreground/36">当前安装 · INSTALLED</div>
+              <div
+                className="mt-4 whitespace-nowrap font-mono font-bold leading-none tracking-[-0.05em] tabular-nums text-foreground"
+                style={{ fontSize: `${heroVersionSize(data.currentVersion)}px` }}
+              >
+                <span className="mr-3 align-top text-[0.42em] font-bold text-foreground/40">v</span>
+                {data.currentVersion}
+              </div>
+            </div>
+          </>
+        ) : (
+          <div className="relative mt-14 flex items-end justify-between gap-12">
+            <div>
+              <h1 className="whitespace-nowrap text-[96px] font-bold leading-[1.04] tracking-[-0.02em] text-foreground">更新渠道</h1>
+              <p className="mt-6 whitespace-nowrap text-[30px] font-semibold text-foreground/48">
+                {data.currentChannel === '金丝雀'
+                  ? '金丝雀构建跟随 main 分支实时发布，可随时切换回正式渠道'
+                  : '各渠道可用版本与 #kkk更新 用法一览'}
+              </p>
+            </div>
+            <div className="flex shrink-0 flex-col items-end">
+              <div className="text-[22px] font-bold uppercase tracking-[0.22em] text-foreground/36">当前安装 · INSTALLED</div>
+              <div
+                className="mt-4 whitespace-nowrap font-mono font-bold leading-none tracking-[-0.05em] tabular-nums text-foreground"
+                style={{ fontSize: `${heroVersionSize(data.currentVersion)}px` }}
+              >
+                <span className="mr-3 align-top text-[0.42em] font-bold text-foreground/40">v</span>
+                {data.currentVersion}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 渠道清单：固定列宽 grid，命令列纵向对齐；稳定度序 正式 → 预览 → 测试 → 金丝雀 */}
+        <section className="relative mt-24">
+          <div className="flex items-center gap-4">
+            <span className="h-3 w-3 rounded-full" style={{ background: palette.accentText }} />
+            <span className="text-[24px] font-bold tracking-[0.28em] text-foreground/44">可用版本 · AVAILABLE</span>
+          </div>
+
+          <div className="mt-12 flex flex-col gap-14">
+            {data.channels.map((channel) => {
+              const status = statusView(channel)
+              const publishedDate = channel.publishedAt ? new Date(channel.publishedAt) : undefined
+
+              // 金丝雀：独立纵向块（长安装命令 + 发布时间放不进三列行）
+              if (channel.status === 'canary') {
                 return (
-                  <li
-                    key={channel.tag}
-                    className="flex items-center justify-between gap-8 py-7"
-                    style={{ borderTop: index === 0 ? 'none' : `1px solid ${palette.hairline}` }}
-                  >
-                    <div className="flex min-w-0 flex-col gap-2 whitespace-nowrap">
+                  <div key={channel.tag} className="flex flex-col gap-4">
+                    <div className="flex items-center justify-between gap-10">
                       <div className="flex items-center gap-4">
-                        <span className="text-[34px] font-bold" style={{ color: palette.ink }}>
+                        <span
+                          className="whitespace-nowrap text-[30px] font-semibold"
+                          style={{ color: status.active ? palette.muted : palette.faint }}
+                        >
                           {channel.label}
                         </span>
                         <span
-                          className="rounded-full border px-4 py-0.5 font-mono text-[22px] font-semibold"
-                          style={{ backgroundColor: palette.pillBg, borderColor: palette.pillBorder, color: palette.pillText }}
+                          className="whitespace-nowrap rounded-full border px-4 py-0.5 font-mono text-[20px] font-semibold"
+                          style={{
+                            borderColor: palette.pillBorder,
+                            background: palette.pillBg,
+                            color: status.active ? palette.pillText : palette.faint
+                          }}
                         >
                           {channel.tag}
                         </span>
                       </div>
-                      {channel.command && (
-                        <div className="font-mono text-[24px]" style={{ color: palette.muted }}>
-                          {channel.command}
-                        </div>
-                      )}
+                      <div className="flex items-center gap-6">
+                        <span
+                          className="whitespace-nowrap font-mono text-[46px] font-bold leading-none"
+                          style={{ color: status.active ? palette.ink : palette.faint }}
+                        >
+                          {channel.version}
+                        </span>
+                        <span className="flex items-center gap-3 whitespace-nowrap text-[24px] font-semibold" style={{ color: status.dot }}>
+                          <span className="h-2.5 w-2.5 rounded-full" style={{ background: status.dot }} />
+                          {status.text}
+                        </span>
+                      </div>
                     </div>
-                    <div className="flex flex-col items-end gap-2 whitespace-nowrap">
-                      <span
-                        className="font-mono text-[44px] font-bold leading-none tabular-nums"
-                        style={{ color: channel.status === 'ok' ? palette.ink : palette.faint }}
+
+                    {/* 安装命令：整块供复制 */}
+                    {channel.installCommand && (
+                      <div
+                        className="whitespace-nowrap rounded-3xl px-7 py-4 font-mono text-[27px] font-semibold"
+                        style={{
+                          background: status.active ? palette.pillBg : 'transparent',
+                          color: status.active ? palette.pillText : palette.faint
+                        }}
                       >
-                        {channel.status === 'ok' ? `v${channel.version}` : '—'}
+                        {channel.installCommand}
+                      </div>
+                    )}
+
+                    <div className="flex items-center justify-between gap-10 whitespace-nowrap">
+                      <span className="text-[24px] text-foreground/42">
+                        发布于 {publishedDate && format(publishedDate, 'yyyy/MM/dd HH:mm')}
                       </span>
-                      <span className="flex items-center gap-2.5 text-[25px] font-semibold" style={{ color: status.dot }}>
-                        <span className="h-3 w-3 rounded-full" style={{ backgroundColor: status.dot }} />
-                        {status.text}
+                      <span className="font-mono text-[24px] font-semibold" style={{ color: palette.faint }} title={channel.publishedAt}>
+                        {publishedDate && formatDistanceToNow(publishedDate, { addSuffix: true, locale: zhCN })}
                       </span>
                     </div>
-                  </li>
+                  </div>
                 )
-              })}
-            </ul>
-          </div>
+              }
 
-          {/* 用法矩阵：2×2 命令卡 */}
-          <div
-            className="rounded-[3rem] border px-12 py-10 backdrop-blur-xl"
-            style={{
-              backgroundColor: palette.panelBg,
-              borderColor: palette.panelBorder,
-              boxShadow: `inset 0 1px 0 ${palette.panelTopEdge}`
-            }}
-          >
-            <div className="mb-8 flex items-center justify-between">
-              <h2 className="text-[44px] font-bold leading-none tracking-[-0.01em]" style={{ color: palette.ink }}>
-                用法
-              </h2>
-              <span className="text-[24px] font-semibold uppercase tracking-[0.22em]" style={{ color: palette.faint }}>
-                Commands
-              </span>
-            </div>
-
-            <div className="grid grid-cols-2 gap-6">
-              {[
-                { command: '#kkk更新', desc: '更新到最新正式版' },
-                { command: '#kkk更新beta', desc: '更新到测试渠道' },
-                { command: '#kkk更新rc', desc: '更新到预览渠道' },
-                { command: '#kkk更新<版本号>', desc: '更新到指定版本' }
-              ].map((item) => (
-                <div
-                  key={item.command}
-                  className="flex flex-col gap-3 rounded-[28px] px-8 py-6"
-                  style={{ backgroundColor: palette.rowBg ?? palette.panelBg }}
-                >
-                  <span className="whitespace-nowrap font-mono text-[30px] font-semibold" style={{ color: palette.pillText }}>
-                    {item.command}
+              // semver 渠道：三列行（渠道 → 命令 → 版本/状态）
+              return (
+                <div key={channel.tag} className="grid grid-cols-[11rem_1fr_auto] items-center gap-8">
+                  <div className="flex flex-col gap-2">
+                    <span
+                      className="whitespace-nowrap text-[30px] font-semibold"
+                      style={{ color: status.active ? palette.muted : palette.faint }}
+                    >
+                      {channel.label}
+                    </span>
+                    <span
+                      className="w-fit whitespace-nowrap rounded-full border px-4 py-0.5 font-mono text-[20px] font-semibold"
+                      style={{
+                        borderColor: palette.pillBorder,
+                        background: palette.pillBg,
+                        color: status.active ? palette.pillText : palette.faint
+                      }}
+                    >
+                      {channel.tag}
+                    </span>
+                  </div>
+                  <span
+                    className="whitespace-nowrap font-mono text-[24px] font-semibold"
+                    style={{ color: status.active ? palette.muted : palette.faint }}
+                  >
+                    {channel.command}
                   </span>
-                  <span className="whitespace-nowrap text-[25px]" style={{ color: palette.muted }}>
-                    {item.desc}
-                  </span>
+                  <div className="flex flex-col items-end gap-2.5 whitespace-nowrap">
+                    <span
+                      className="font-mono text-[56px] font-bold leading-none tracking-[-0.02em] tabular-nums"
+                      style={{ color: status.active ? palette.ink : palette.faint }}
+                    >
+                      {channel.status === 'ok' ? `v${channel.version}` : '—'}
+                    </span>
+                    <span className="flex items-center gap-3 text-[24px] font-semibold" style={{ color: status.dot }}>
+                      <span className="h-2.5 w-2.5 rounded-full" style={{ background: status.dot }} />
+                      {status.text}
+                    </span>
+                  </div>
                 </div>
-              ))}
-            </div>
-
-            <div className="mt-8 flex flex-col gap-1.5" style={{ color: palette.faint }}>
-              <span className="whitespace-nowrap text-[25px] leading-[1.5]">金丝雀经 pkg.pr.new 分发，不提供渠道订阅与推送</span>
-              <span className="whitespace-nowrap text-[25px] leading-[1.5]">指定低于当前的版本号属于降级，需回复「确认」执行</span>
-            </div>
+              )
+            })}
           </div>
         </section>
-      </section>
+
+        {/* 用法：命令 → 说明 单行对 */}
+        <section className="relative mt-28">
+          <div className="flex items-center gap-4">
+            <span className="h-3 w-3 rounded-full" style={{ background: palette.accentText }} />
+            <span className="text-[24px] font-bold tracking-[0.28em] text-foreground/44">用法 · COMMANDS</span>
+          </div>
+
+          <div className="mt-12 flex flex-col gap-10">
+            {[
+              { command: '#kkk更新', desc: '更新到最新正式版' },
+              { command: '#kkk更新rc', desc: '更新到预览渠道最新版' },
+              { command: '#kkk更新beta', desc: '更新到测试渠道最新版' },
+              { command: '#kkk更新<版本号>', desc: '更新到指定 stable 版本，例如 #kkk更新2.45.0' }
+            ].map((item) => (
+              <div key={item.command} className="grid grid-cols-[24rem_1fr] items-baseline gap-8">
+                <span className="whitespace-nowrap font-mono text-[34px] font-bold text-foreground">{item.command}</span>
+                <span className="whitespace-nowrap text-[26px] font-semibold text-foreground/48">{item.desc}</span>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-16 flex flex-col gap-2 whitespace-nowrap font-mono text-[22px] font-semibold text-foreground/28">
+            <span>金丝雀版本经 pkg.pr.new 分发，不提供渠道订阅与更新推送</span>
+            <span>指定低于当前安装版本的版本号属于降级，需回复「确认」才会执行</span>
+          </div>
+        </section>
+      </main>
     </DefaultLayout>
   )
 })
