@@ -30,7 +30,6 @@
   "devDependencies": {
     "@kkk/cli": "workspace:*",
     "@types/node": "24.13.4",
-    "bumpp": "12.3.0",
     "cross-env": "10.1.0",
     "husky": "^9.1.7",
     "oxfmt": "^0.68.0",

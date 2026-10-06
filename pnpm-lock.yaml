@@ -181,9 +181,6 @@ importers:
       '@types/node':
         specifier: 24.13.4
         version: 24.13.4
-      bumpp:
-        specifier: 12.3.0
-        version: 12.3.0
       cross-env:
         specifier: 10.1.0
         version: 10.1.0

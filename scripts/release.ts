@@ -1,42 +1,36 @@
 import { execFileSync } from 'node:child_process'
 import { readFileSync, writeFileSync } from 'node:fs'
 import process from 'node:process'
-
-import { versionBump } from 'bumpp'
+import { createInterface } from 'node:readline/promises'
 
 import { changelogSections } from './changelog-types'
 
 /**
- * 本地发版入口：`pnpm run release`（`--dry --to x.y.z` 只预览 CHANGELOG 条目）
+ * 本地发版入口：`pnpm run release`（`--dry` 只预览 CHANGELOG 条目）
  *
- * 流程：守卫（main / 工作区干净 / 与远端同步）→ bumpp 交互式选版本并改写
- * `packages/core/package.json` → 从上个 v* tag 起收集提交，按 changelog 类型
- * 分组，以既有 release-please 风格 prepend 进 `packages/core/CHANGELOG.md`
- * → 全量提交 `chore: release vX.Y.Z` → 打 v* tag。**推送交给人工**：审计提交
- * 与 CHANGELOG 无误后 `git push origin main` + `git push origin v<版本>`，tag 一推即触发
- * `.github/workflows/release.yml` 发布。
+ * 流程：守卫（main / 工作区干净 / 与远端同步）→ 自算建议版本（上一 prerelease
+ * tag 的延续：beta.1 → beta.2）→ readline 确认或自定义 → 从上个 v* tag 起收集
+ * 提交，按 changelog 类型分组，以 release-please 风格 prepend 进
+ * `packages/core/CHANGELOG.md` → 提交（只含 CHANGELOG）→ 打 v* tag。
+ * **推送交给人工**：审计后 `git push origin main` + `git push origin v<版本>`，
+ * tag 一推即触发 `.github/workflows/release.yml` 发布。
  *
  * 为什么 CHANGELOG.md 在本地写而不是 CI 里补：插件的更新日志渲染会同时从
  * 「npm 包内的 CHANGELOG.md」和「tag v* 的 GitHub raw」竞速抓取，条目必须
  * 在打 tag 之前就进提交，tag 树里才看得到这一版。
  *
- * 版本不变式：main 的 packages/core/package.json 始终维持最近 stable 版本；
- * prerelease 版本（beta/rc/canary）只存在于 tag 名与发布产物——release.yml
- * 在发布时从 tag 注入版本号。这样 beta/rc/canary 的 tag 之间不会互相追版本号，
- * 金丝雀构建的版本号基准也始终有稳定的 semver 锚点。
+ * 版本不变式：main 的 packages/core/package.json 始终维持最近 stable 版本，
+ * **本脚本完全不写 package.json**；prerelease 版本只存在于 tag 名与发布产物
+ * ——release.yml 在发布时从 tag 注入。延续版本由「上一 prerelease tag + 1」
+ * 自算，无需 bumpp（bumpp 的建议基于当前包版本，在钉 stable 的不变式下
+ * 永远建议不出正确的 prerelease 延续）。
  *
  * 版本线约定：不要在上一条版本线转正前开下一条 beta 线（例：2.45.0 尚未发布就打
  * 2.46.0-beta.1）—— main 是单列火车，2.46.0-beta.1 内容上包含 2.45.0-beta 的全部提交，
  * 交错编号会让 semver 与内容脱节，且 CHANGELOG 小节顺序不再匹配版本序。
- *
- * 为什么 git 不全交给 bumpp：bumpp 的提交是带路径的部分提交，会把钩子塞进
- * 临时索引里跑（amagi 2026-09-21 的教训）。这里 bumpp 只负责选版本改文件，
- * git 步骤手工编排 —— 全量提交走正常钩子路径，pre-commit 重写 timestamp
- * 后自行重新 add，不会留下幻影改动。
  */
 
 const REPO = 'ikenxuan/karin-plugin-kkk'
-const CORE_PKG = 'packages/core/package.json'
 const CHANGELOG = 'packages/core/CHANGELOG.md'
 
 const gitOut = (args: string[]): string => execFileSync('git', args, { encoding: 'utf-8' }).trim()
@@ -55,6 +49,24 @@ const previousTag = (): string => {
   } catch {
     return ''
   }
+}
+
+/** 解析最后一个 prerelease tag（带 - 的 v* tag；无则返回空） */
+const lastPrereleaseTag = (): string => {
+  const tags = gitOut(['tag', '-l', 'v*-*', '--sort=-creatordate'])
+  return tags.split('\n')[0] ?? ''
+}
+
+/** prerelease tag 的延续版本：末段数字 +1（v2.45.0-beta.1 → 2.45.0-beta.2） */
+const bumpPrerelease = (tag: string): string => {
+  const v = tag.replace(/^v/, '')
+  const dot = v.indexOf('-')
+  if (dot === -1) return v
+  const core = v.slice(0, dot)
+  const segs = v.slice(dot + 1).split('.')
+  const last = segs[segs.length - 1]
+  segs[segs.length - 1] = /^\d+$/.test(last) ? String(Number(last) + 1) : `${last}.1`
+  return `${core}-${segs.join('.')}`
 }
 
 /** 收集上一版 tag 之后的常规提交（跳过 merge），解析 conventional 前缀 */
@@ -111,14 +123,9 @@ const prependEntry = (entry: string): void => {
 
 // ── 入口 ─────────────────────────────────────────────────────────────────
 const dry = process.argv.includes('--dry')
-const dryTo = dry ? process.argv[process.argv.indexOf('--to') + 1] : undefined
+const dryToIndex = process.argv.indexOf('--to')
+const dryTo = dry && dryToIndex !== -1 ? process.argv[dryToIndex + 1] : undefined
 
-if (dry && (!dryTo || !/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(dryTo))) {
-  console.error('用法：pnpm release --dry --to x.y.z')
-  process.exit(1)
-}
-
-let packageJsonContent = ''
 if (!dry) {
   // 前置守卫：tag 推上去即触发发布，发版只允许在 main 上、工作区干净、与远端同步。
   const branch = gitOut(['rev-parse', '--abbrev-ref', 'HEAD'])
@@ -137,23 +144,38 @@ if (!dry) {
   }
 }
 
-// ── 选版本（dry 模式用 --to 指定，不落盘）────────────────────────────────
+const lastPre = lastPrereleaseTag()
+const suggested = lastPre ? bumpPrerelease(lastPre) : ''
+
+// ── 选版本（dry 模式用 --to 指定，不交互）────────────────────────────────
 let version: string
 if (dry) {
-  version = dryTo as string
+  if (dryTo && !/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(dryTo)) {
+    console.error('用法：pnpm release --dry [--to x.y.z 或 x.y.z-beta.n]')
+    process.exit(1)
+  }
+  version = dryTo || suggested
+  if (!version) {
+    console.error('❌ 仓库没有任何 tag，dry 预览请用 --to 指定版本')
+    process.exit(1)
+  }
   console.log(`🧪 dry 模式：预览 ${version} 的 CHANGELOG 条目`)
 } else {
-  packageJsonContent = readFileSync(CORE_PKG, 'utf-8')
-  await versionBump({ files: [CORE_PKG], commit: false, tag: false, push: false, confirm: true })
-
-  // 从文件读回版本号，和 HEAD 比对：确认环节取消时 bumpp 不写文件，这里直接退出
-  version = JSON.parse(readFileSync(CORE_PKG, 'utf-8')).version
-  const headVersion = JSON.parse(execFileSync('git', ['show', `HEAD:${CORE_PKG}`], { encoding: 'utf-8' })).version
-  if (version === headVersion) {
-    console.log('版本号未变化，已取消发版')
-    process.exit(0)
+  if (!suggested) {
+    console.error('❌ 仓库没有任何 tag，无法推断延续版本。请手动指定（或先打一个 stable tag）')
+    process.exit(1)
   }
 
+  // 版本号交互：回车 = 上一 prerelease 线延续，也可输入任意合法版本
+  const rl = createInterface({ input: process.stdin, output: process.stdout })
+  const answer = (await rl.question(`版本号（回车 = ${suggested}）: `)).trim()
+  rl.close()
+  version = answer || suggested
+
+  if (!/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(version)) {
+    console.error(`❌ ${version} 不是合法 semver 版本`)
+    process.exit(1)
+  }
   if (gitOut(['tag', '-l', `v${version}`])) {
     console.error(`❌ tag v${version} 已存在。换一个版本号。`)
     process.exit(1)
@@ -178,13 +200,8 @@ if (dry) {
 
 prependEntry(entry)
 
-// 主分支不变式：package.json 始终维持最近 stable 版本，prerelease 版本只存在于
-// tag 与发布产物（release.yml 从 tag 注入）。bumpp 的临时写入在此按「bumpp 前
-// 捕获的内容」原样写回——不能用 git checkout 还原：索引里可能还是上一次的
-// prerelease 版本（不变式迁移期的实际情况），checkout 会把它带回来。
-writeFileSync(CORE_PKG, packageJsonContent, 'utf-8')
-
 // ── 提交 + 打 tag ────────────────────────────────────────────────────────
+// 只提交 CHANGELOG：package.json 钉在 stable 不动（版本由 tag 携带、CI 注入）
 execFileSync('git', ['add', CHANGELOG], { stdio: 'inherit' })
 execFileSync('git', ['commit', '-m', `chore: release v${version}`], { stdio: 'inherit' })
 execFileSync('git', ['tag', `v${version}`], { stdio: 'inherit' })
