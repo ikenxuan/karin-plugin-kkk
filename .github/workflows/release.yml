@@ -117,7 +117,7 @@ jobs:
         working-directory: packages/core
         run: |
           VERSION=${{ steps.gate.outputs.version }}
-          PKG=$(node -p "require('./packages/core/package.json').name")
+          PKG=$(node -p "require('./package.json').name")
 
           if OUTPUT=$(npm view "$PKG@$VERSION" version 2>&1); then
             echo "⏭️ $PKG@$VERSION 已在 npm 上，跳过发布（重跑场景）"
@@ -219,7 +219,7 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          VERSION=$(node -p "require('./packages/core/package.json').version")
+          VERSION=$(node -p "require('./package.json').version")
           PKG=$(node -p "require('./package.json').name")
 
           if OUTPUT=$(npm view "$PKG@$VERSION" version 2>&1); then
@@ -254,8 +254,8 @@ jobs:
         if: steps.check-published.outputs.published == 'true'
         run: |
           echo "## 📦 GitHub Packages 发布成功" >> $GITHUB_STEP_SUMMARY
-          PKG_NAME=$(node -p "require('./package.json').name")
-          VERSION=$(node -p "require('./package.json').version")
+          PKG_NAME=$(node -p "require('./packages/core/package.json').name")
+          VERSION=$(node -p "require('./packages/core/package.json').version")
 
           echo "- **包名:** \`$PKG_NAME\`" >> $GITHUB_STEP_SUMMARY
           echo "- **版本:** \`$VERSION\`" >> $GITHUB_STEP_SUMMARY
