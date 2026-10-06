@@ -269,11 +269,7 @@ export const UpdateHelp: React.FC<PosterProps<UpdateHelpData>> = React.memo((pro
                           className="whitespace-nowrap font-mono text-[46px] font-bold leading-none"
                           style={{ color: status.active ? palette.ink : palette.faint }}
                         >
-                          {channel.version}
-                        </span>
-                        <span className="flex items-center gap-3 whitespace-nowrap text-[24px] font-semibold" style={{ color: status.dot }}>
-                          <span className="h-2.5 w-2.5 rounded-full" style={{ background: status.dot }} />
-                          {status.text}
+                         SHA: {channel.version}
                         </span>
                       </div>
                     </div>
