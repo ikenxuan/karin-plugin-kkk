@@ -2,6 +2,14 @@
 
 # Changelog
 
+## [2.45.0-beta.4](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.45.0-beta.3...v2.45.0-beta.4) (2026-10-06)
+
+
+### 🐛 错误修复
+
+* 优化更新检测逻辑，支持逐渠道版本锁定与提醒 ([ddfd011](https://github.com/ikenxuan/karin-plugin-kkk/commit/ddfd011ac3bcd49789870a2e154003973c52cea9))
+* 优化更新逻辑以支持金丝雀用户的版本解锁和范围起点解析 ([4a28ce5](https://github.com/ikenxuan/karin-plugin-kkk/commit/4a28ce55b82115683713ad6985d456751f151c23))
+
 ## [2.45.0-beta.3](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.45.0-beta.2...v2.45.0-beta.3) (2026-10-06)
 
 
