@@ -15,6 +15,7 @@ import karin, {
 import axios from 'node-karin/axios'
 
 import { Render, Root } from '@/module'
+import { getBuildMetadata } from '@/module/utils/build-metadata'
 import { getChangelogImage } from '@/module/utils/changelog'
 import { Config } from '@/module/utils/Config'
 import { wrapWithErrorHandler } from '@/module/utils/ErrorHandler'
@@ -238,7 +239,19 @@ const installAndRestart = async (e: Message, version: string) => {
 const PKG_PR_NEW_REPO = 'ikenxuan/karin-plugin-kkk'
 
 /** 拉取 pkg.pr.new 上 main 分支的最新金丝雀构建（失败返回 null，由调用方降级展示） */
-const fetchLatestCanary = async (): Promise<UpdateChannelInfo | null> => {
+interface CanaryNode {
+  sha: string
+  time: number
+  message: string
+}
+
+interface CanaryInfo {
+  channel: UpdateChannelInfo
+  nodes: CanaryNode[]
+}
+
+/** 拉取 pkg.pr.new 的发布历史与 main 分支最新构建（失败返回 null，由调用方降级展示） */
+const fetchCanaryInfo = async (): Promise<CanaryInfo | null> => {
   try {
     const [owner, repo] = PKG_PR_NEW_REPO.split('/')
     const res = await axios.get(`https://pkg.pr.new/api/repo/commits?owner=${owner}&repo=${repo}`, { timeout: 10000 })
@@ -253,20 +266,28 @@ const fetchLatestCanary = async (): Promise<UpdateChannelInfo | null> => {
       | undefined
     if (!Array.isArray(nodes)) return null
 
-    const node = nodes.find(
+    const history: CanaryNode[] = nodes.map((n) => ({
+      sha: (n.abbreviatedOid ?? '').slice(0, 7),
+      time: n.authoredDate ? new Date(n.authoredDate).getTime() : 0,
+      message: n.message ?? ''
+    }))
+
+    const mainNode = nodes.find(
       (n) => n.branch === 'main' && n.statusCheckRollup?.contexts?.nodes?.some((c) => c.packages?.some((pkg) => pkg.installUrl))
     )
-    const pkg = node?.statusCheckRollup?.contexts?.nodes?.flatMap((c) => c.packages ?? []).find((p) => p.installUrl)
-    if (!node?.abbreviatedOid || !pkg?.installUrl) return null
+    const pkg = mainNode?.statusCheckRollup?.contexts?.nodes?.flatMap((c) => c.packages ?? []).find((p) => p.installUrl)
+    if (!mainNode?.abbreviatedOid || !pkg?.installUrl) return null
 
     return {
-      label: '金丝雀',
-      tag: 'pkg.pr.new · main',
-      status: 'canary',
-      version: node.abbreviatedOid.slice(0, 7),
-      installCommand: `pnpm add ${pkg.installUrl} -w`,
-      publishedAt: node.authoredDate,
-      commitMessage: node.message?.slice(0, 40)
+      channel: {
+        label: '金丝雀',
+        tag: 'pkg.pr.new · main',
+        status: 'canary',
+        version: mainNode.abbreviatedOid.slice(0, 7),
+        installCommand: `pnpm add ${pkg.installUrl} -w`,
+        publishedAt: mainNode.authoredDate
+      },
+      nodes: history
     }
   } catch {
     return null
@@ -284,6 +305,14 @@ const getUpdateHelpImage = async (e: Message) => {
     } catch {}
   }
 
+  // 金丝雀：pkg.pr.new 发布历史（含各 main 构建的 sha 与时间），失败降级为 error 行
+  const canaryInfo = await fetchCanaryInfo()
+
+  // 金丝雀用户的时间线比较基准：本机构建时间与构建指纹（build-metadata）
+  const installedIsCanary = parseReleaseChannel(Root.pluginVersion) === 'Canary'
+  const build = getBuildMetadata()
+  const installedBuildTime = build?.buildTimestamp
+
   // 渠道按稳定度排序：rc 最接近正式版，排在 beta 之前
   const channels: UpdateHelpData['channels'] = [
     { label: '正式版', tag: 'latest', command: '#kkk更新' },
@@ -293,11 +322,25 @@ const getUpdateHelpImage = async (e: Message) => {
     if (!status) return { ...def, status: 'error' as const }
     const version = distTags[def.tag]
     if (!version) return { ...def, status: 'missing' as const }
+
+    // 金丝雀用户：semver 的 ASCII 序（beta < canary）对跨渠道比较无意义，
+    // 改按构建时间线——渠道的发布节点（release 提交）晚于本机构建时间即为有新版本；
+    // 找不到发布节点（如历史遗留 tag）时回退 semver 比较
+    if (installedIsCanary && installedBuildTime !== undefined) {
+      const releaseNode = canaryInfo?.nodes.find((n) => n.message.includes(version))
+      if (releaseNode) {
+        return { ...def, status: 'ok' as const, version, hasUpdate: releaseNode.time > installedBuildTime }
+      }
+    }
     return { ...def, status: 'ok' as const, version, hasUpdate: isSemverGreater(version, Root.pluginVersion) }
   })
 
-  // 金丝雀：展示 pkg.pr.new main 分支最新构建（纯展示，更新由用户复制安装命令自行执行）
-  channels.push((await fetchLatestCanary()) ?? { label: '金丝雀', tag: 'pkg.pr.new · main', status: 'error' })
+  // 金丝雀行：最新 main 构建；canary 用户比对本机构建指纹判定有无新构建
+  const canaryChannel = canaryInfo?.channel ?? { label: '金丝雀', tag: 'pkg.pr.new · main', status: 'error' as const }
+  if (installedIsCanary && canaryChannel.status === 'canary' && build?.shortCommitHash) {
+    canaryChannel.hasUpdate = canaryChannel.version !== build.shortCommitHash
+  }
+  channels.push(canaryChannel)
 
   const data: UpdateHelpData = {
     currentVersion: Root.pluginVersion,

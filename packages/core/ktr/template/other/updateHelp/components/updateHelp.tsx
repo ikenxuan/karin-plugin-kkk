@@ -107,7 +107,12 @@ export const UpdateHelp: React.FC<PosterProps<UpdateHelpData>> = React.memo((pro
   const statusView = (channel: UpdateChannelInfo) => {
     if (channel.status === 'missing') return { dot: palette.faint, text: '该渠道暂未发布', active: false }
     if (channel.status === 'error') return { dot: palette.faint, text: '获取失败', active: false }
-    if (channel.status === 'canary') return { dot: palette.accentText, text: 'main 分支构建', active: true }
+    if (channel.status === 'canary') {
+      // canary 用户：比对本机构建指纹，落后 main 最新构建即提示；其他用户仅作信息展示
+      return channel.hasUpdate
+        ? { dot: palette.success, text: '有新构建可升级', active: true }
+        : { dot: palette.accentText, text: 'main 分支构建', active: true }
+    }
     const order = semverCompare(channel.version ?? '0.0.0', data.currentVersion)
     if (order > 0) return { dot: palette.success, text: '有更新可升级', active: true }
     if (order === 0) return { dot: palette.faint, text: '已是最新', active: false }
