@@ -108,10 +108,13 @@ export const UpdateHelp: React.FC<PosterProps<UpdateHelpData>> = React.memo((pro
     if (channel.status === 'missing') return { dot: palette.faint, text: '该渠道暂未发布', active: false }
     if (channel.status === 'error') return { dot: palette.faint, text: '获取失败', active: false }
     if (channel.status === 'canary') {
-      // canary 用户：比对本机构建指纹，落后 main 最新构建即提示；其他用户仅作信息展示
-      return channel.hasUpdate
-        ? { dot: palette.success, text: '有新构建可升级', active: true }
-        : { dot: palette.accentText, text: 'main 分支构建', active: true }
+      // hasUpdate 由 core 以构建指纹比对（不限金丝雀安装，tag 构建同样携带指纹）：
+      // true=落后 main 最新构建；false=与当前安装同源提交（金丝雀同构建 / beta·stable
+      // 构建自该提交）；undefined=本机无构建指纹无法判定 —— 后两者按设计规范置灰
+      if (channel.hasUpdate) return { dot: palette.success, text: '有新构建可升级', active: true }
+      return channel.hasUpdate === false
+        ? { dot: palette.faint, text: '与当前构建一致', active: false }
+        : { dot: palette.faint, text: 'main 分支构建', active: false }
     }
     const order = semverCompare(channel.version ?? '0.0.0', data.currentVersion)
     // hasUpdate 由 core 判定（金丝雀用户走构建时间线）——优先于 semver 字母序：
