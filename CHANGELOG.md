@@ -2,6 +2,19 @@
 
 # Changelog
 
+## [2.45.0-beta.6](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.45.0-beta.5...v2.45.0-beta.6) (2026-10-06)
+
+
+### ✨ 新功能
+
+* 发版脚本变更日志改为增量小节，转正发布空增量时写入占位小节 ([f4f67a7](https://github.com/ikenxuan/karin-plugin-kkk/commit/f4f67a780434b73f5ddc3227bfe6a3611aa4463e))
+* 金丝雀用户多渠道待推送收敛为单图，避免同一批变更重复推送 ([40d4ff9](https://github.com/ikenxuan/karin-plugin-kkk/commit/40d4ff9a527d7715ebc3531d0b59439afb8335ef))
+
+
+### 🐛 错误修复
+
+* 更新日志模板版式适配长版本号，更新频道标签改由渠道数据传入 ([fc27e29](https://github.com/ikenxuan/karin-plugin-kkk/commit/fc27e29c1be1d0e623b76f4a108baecee402e5a1))
+
 ## [2.45.0-beta.5](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.45.0-beta.4...v2.45.0-beta.5) (2026-10-06)
 
 
