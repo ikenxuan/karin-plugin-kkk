@@ -5,6 +5,7 @@ import process from 'node:process'
 import * as clack from '@clack/prompts'
 
 import { changelogSections } from './changelog-types'
+import { isSemverGreater } from '../packages/core/src/module/utils/semver'
 
 /**
  * 本地发版入口：`pnpm run release`（`--dry` 只预览 CHANGELOG 条目）
@@ -29,7 +30,7 @@ import { changelogSections } from './changelog-types'
  *
  * 版本线约定：不要在上一条版本线转正前开下一条 beta 线（例：2.45.0 尚未发布就打
  * 2.46.0-beta.1）—— main 是单列火车，2.46.0-beta.1 内容上包含 2.45.0-beta 的全部提交，
- * 交错编号会让 semver 与内容脱节，且 CHANGELOG 小节顺序不再匹配版本序。
+交错编号会让 semver 与内容脱节，且 CHANGELOG 小节顺序不再匹配版本序。脚本会在选择列表中把倒挂版本渲染为置灰禁用项，自定义输入则直接拒绝。
  *
  * 交互采用 @clack/prompts（bumpp 同款 UI 库），替代 bumpp：bumpp 的建议基于
  * 当前包版本（钉 stable 后永远不含 prerelease 线延续），无法感知 tag 线。
@@ -60,6 +61,23 @@ const previousTag = (): string => {
 const lastPrereleaseTag = (): string => {
   const tags = gitOut(['tag', '-l', 'v*-*', '--sort=-creatordate'])
   return tags.split('\n')[0] ?? ''
+}
+
+/** 解析最近一个 stable tag（不带预发布后缀的 v* tag；无则返回空） */
+const lastStableTag = (): string => {
+  const tags = gitOut(['tag', '-l', 'v*', '--sort=-creatordate']).split('\n').filter(Boolean)
+  return tags.find((t) => !t.replace(/^v/, '').includes('-')) ?? ''
+}
+
+/**
+ * 单列火车守卫：检查版本倒挂 —— 返回第一个 semver 高于待发布版本的已发布 tag
+ * （如 rc.1 已发布后再倒发 beta.7）。存在倒挂时该版本不可发布：semver 判其低于
+ * 已发布版本，已装用户永远收不到它的推送，且 CHANGELOG 小节顺序与版本序脱节。
+ * 无倒挂返回空。
+ */
+const higherExistingTag = (version: string): string => {
+  const tags = gitOut(['tag', '-l', 'v*']).split('\n').filter(Boolean).map((t) => t.replace(/^v/, ''))
+  return tags.find((t) => isSemverGreater(t, version)) ?? ''
 }
 
 /** 选中版本的渠道 preid：无后缀 = ''（stable），-beta.N = beta，-rc.N = rc */
@@ -123,10 +141,10 @@ const renderEntry = (version: string, prevTag: string, entries: CommitEntry[]): 
  * 不写这条占位，推送图的版本区间会缺少 stable 锚点（range 的 endVersion 回退到
  * 预发布 tag），首屏标题将落在预发布版本上，与提示条的「最新版本」不一致。
  */
-const renderStablePlaceholder = (version: string, prevTag: string): string => {
+const renderStablePlaceholder = (version: string, prevTag: string, linkBase: string): string => {
   const date = new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Shanghai' })
-  const heading = prevTag
-    ? `## [${version}](https://github.com/${REPO}/compare/${prevTag}...v${version}) (${date})`
+  const heading = linkBase
+    ? `## [${version}](https://github.com/${REPO}/compare/${linkBase}...v${version}) (${date})`
     : `## ${version} (${date})`
   const since = prevTag ? `\`${prevTag.replace(/^v/, '')}\`` : '历史版本'
   return `${heading}\n\n> 本版本为测试/预览线的转正发布，自上一个 tag 以来没有新增常规提交。完整变更记录见 ${since} 及更早的各小节。`
@@ -192,10 +210,16 @@ const pkgVersion = JSON.parse(readFileSync('packages/core/package.json', 'utf-8'
 const pkgStable = pkgVersion.split('-')[0]
 const [pkgMaj, pkgMin, pkgPat] = pkgStable.split('.').map(Number)
 
-type VersionOption = { value: string; label: string; hint?: string }
+type VersionOption = { value: string; label: string; hint?: string; disabled?: boolean }
 const opts: VersionOption[] = []
 const pushOpt = (value: string, hint: string): void => {
-  opts.push({ value, label: value, hint })
+  const blocker = higherExistingTag(value)
+  opts.push({
+    value,
+    label: value,
+    hint: blocker ? `❌ 版本倒挂：低于已发布的 v${blocker}` : hint,
+    disabled: Boolean(blocker)
+  })
 }
 
 if (lastPre) {
@@ -249,6 +273,12 @@ if (dry) {
     version = picked as string
   }
 
+  const blocker = higherExistingTag(version)
+  if (blocker) {
+    clack.log.error(`❌ 版本倒挂：v${version} 低于已发布的 v${blocker}。单列火车要求版本号单调递增，换一个版本号。`)
+    process.exit(1)
+  }
+
   if (gitOut(['tag', '-l', `v${version}`])) {
     clack.log.error(`❌ tag v${version} 已存在。换一个版本号。`)
     process.exit(1)
@@ -266,7 +296,11 @@ if (entries.length === 0 && channelOf(version) !== '') {
   process.exit(1)
 }
 
-const entry = entries.length > 0 ? renderEntry(version, prevTag, entries) : renderStablePlaceholder(version, prevTag)
+// compare 链接基准：stable（转正/热修）指向上一个 stable tag —— 转正链接代表整条
+// 版本线的完整差异；预发布保持上一个 tag（渠道内增量）。历史版本无 tag 时（如 2.44.1）
+// 做不了基准 —— GitHub compare 链接要求两个 ref 都存在，实际落到最近的 stable tag
+const linkBase = channelOf(version) === '' ? lastStableTag() || prevTag : prevTag
+const entry = entries.length > 0 ? renderEntry(version, linkBase, entries) : renderStablePlaceholder(version, prevTag, linkBase)
 console.log(`\n${entry.replaceAll('*', '•')}\n`)
 
 if (dry) {
