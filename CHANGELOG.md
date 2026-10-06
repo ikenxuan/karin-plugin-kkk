@@ -2,6 +2,13 @@
 
 # Changelog
 
+## [2.45.0-rc.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.45.0-beta.6...v2.45.0-rc.1) (2026-10-06)
+
+
+### 🐛 错误修复
+
+* 更新面板金丝雀行按构建指纹判定，与当前构建同源提交时置灰 ([dd54ddb](https://github.com/ikenxuan/karin-plugin-kkk/commit/dd54ddb527189bbf8bd290b2009c9e24e0b6c654))
+
 ## [2.45.0-beta.6](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.45.0-beta.5...v2.45.0-beta.6) (2026-10-06)
 
 
