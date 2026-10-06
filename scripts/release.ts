@@ -113,11 +113,12 @@ const prependEntry = (entry: string): void => {
 const dry = process.argv.includes('--dry')
 const dryTo = dry ? process.argv[process.argv.indexOf('--to') + 1] : undefined
 
-if (dry && (!dryTo || !/^\d+\.\d+\.\d+$/.test(dryTo))) {
+if (dry && (!dryTo || !/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(dryTo))) {
   console.error('用法：pnpm release --dry --to x.y.z')
   process.exit(1)
 }
 
+let packageJsonContent = ''
 if (!dry) {
   // 前置守卫：tag 推上去即触发发布，发版只允许在 main 上、工作区干净、与远端同步。
   const branch = gitOut(['rev-parse', '--abbrev-ref', 'HEAD'])
@@ -142,6 +143,7 @@ if (dry) {
   version = dryTo as string
   console.log(`🧪 dry 模式：预览 ${version} 的 CHANGELOG 条目`)
 } else {
+  packageJsonContent = readFileSync(CORE_PKG, 'utf-8')
   await versionBump({ files: [CORE_PKG], commit: false, tag: false, push: false, confirm: true })
 
   // 从文件读回版本号，和 HEAD 比对：确认环节取消时 bumpp 不写文件，这里直接退出
@@ -177,9 +179,10 @@ if (dry) {
 prependEntry(entry)
 
 // 主分支不变式：package.json 始终维持最近 stable 版本，prerelease 版本只存在于
-// tag 与发布产物（release.yml 从 tag 注入）。bumpp 的临时写入在此还原，
-// 否则 pre-commit 钩子会把带着 prerelease 版本号的 package.json 一起提交。
-execFileSync('git', ['checkout', '--', CORE_PKG], { stdio: 'inherit' })
+// tag 与发布产物（release.yml 从 tag 注入）。bumpp 的临时写入在此按「bumpp 前
+// 捕获的内容」原样写回——不能用 git checkout 还原：索引里可能还是上一次的
+// prerelease 版本（不变式迁移期的实际情况），checkout 会把它带回来。
+writeFileSync(CORE_PKG, packageJsonContent, 'utf-8')
 
 // ── 提交 + 打 tag ────────────────────────────────────────────────────────
 execFileSync('git', ['add', CHANGELOG], { stdio: 'inherit' })
