@@ -22,13 +22,17 @@ import { wrapWithErrorHandler } from '@/module/utils/ErrorHandler'
 import { parseReleaseChannel, RELEASE_CHANNEL_LABEL } from '@/module/utils/releaseChannel'
 import { isSemverGreater } from '@/module/utils/semver'
 
-const UPDATE_LOCK_KEY = 'kkk:update:lock'
+/** 更新提醒的订阅渠道（与面板 UpdateNotifyChannels 可选项一致） */
+const UPDATE_CHANNELS = ['stable', 'beta', 'rc'] as const
+
+/** 各渠道更新提醒锁：记录该渠道上次已推送的版本，检测到新版本推送一次后上锁 */
+const updateLockKey = (channel: string) => `kkk:update:lock:${channel}`
 const UPDATE_MSGID_KEY = 'kkk:update:msgid'
 
 /**
  * 定时更新检测处理器
- * 按订阅渠道检查远程版本（latest 恒参与 —— 装 prerelease 的用户也要收到转正提醒），
- * 候选取 semver 最大且大于本地者，渲染变更日志并私聊通知所有主人。
+ * 逐渠道检查远程 dist-tag 版本：检测到该渠道有新版本就推送一次然后上锁，
+ * 各渠道锁相互独立、互不挤占；金丝雀安装按构建时间线判定新版本。
  *
  * @returns 是否继续后续任务
  */
@@ -37,67 +41,53 @@ const Handler = async () => {
   //   return true
   // }
 
-  // 订阅渠道（config 默认 ['stable']）：latest 恒参与，beta/rc 按订阅
+  // 订阅渠道（config 默认 ['stable']）：每个渠道独立检测、独立上锁，
+  // 检测到该渠道有新版本就推送一次然后上锁，互不挤占；stable 即 latest tag
   const channels = Config.app.UpdateNotifyChannels?.length ? Config.app.UpdateNotifyChannels : ['stable']
-  const tags = ['latest', ...channels.filter((c) => c !== 'stable')]
+  const tagOf = (c: string) => (c === 'stable' ? 'latest' : c)
 
   // 金丝雀用户的时间线比较基准：本机构建时间与构建指纹（build-metadata）
   const installedIsCanary = parseReleaseChannel(Root.pluginVersion) === 'Canary'
   const build = getBuildMetadata()
   const installedBuildTime = build?.buildTimestamp
 
-  const remotes = await Promise.all(
-    tags.map(async (tag) => {
+  const tagVersions = new Map<string, string | null>()
+  await Promise.all(
+    [...new Set(channels.map(tagOf))].map(async (tag) => {
       try {
-        return (await getRemotePkgVersion(Root.pluginName, tag)) || null
+        tagVersions.set(tag, (await getRemotePkgVersion(Root.pluginName, tag)) || null)
       } catch {
-        return null
+        tagVersions.set(tag, null)
       }
     })
   )
+
   // 金丝雀用户：semver 的 ASCII 序（beta < canary）对跨渠道比较无意义，
-  // 推送候选与面板同款改按构建时间线——渠道发布节点晚于本机构建时间即为候选；
+  // 新版本判定与面板同款改按构建时间线——渠道发布节点晚于本机构建时间即为新版本；
   // 找不到发布节点时回退 semver 比较
   const canaryInfo = installedIsCanary ? await fetchCanaryInfo() : null
-  const candidates = [...new Set(remotes.filter((v): v is string => !!v))].filter((version) => {
+  const isNewVersion = (version: string): boolean => {
     if (installedIsCanary && installedBuildTime !== undefined) {
       const releaseNode = canaryInfo?.nodes.find((n) => n.message.includes(version))
       if (releaseNode) return releaseNode.time > installedBuildTime
     }
     return isSemverGreater(version, Root.pluginVersion)
-  })
-  const remote = candidates.sort((a, b) => (isSemverGreater(b, a) ? 1 : -1))[0]
-  if (!remote) return true
+  }
 
-  // 版本提醒锁（检查是否已经推送过相同或更高版本的更新通知）
-  try {
-    const lockedVersion = await db.get(UPDATE_LOCK_KEY)
-    if (typeof lockedVersion === 'string' && lockedVersion.length > 0) {
-      if (installedIsCanary && installedBuildTime !== undefined) {
-        // 金丝雀用户：semver 的 ASCII 序（beta < canary）让锁定版本恒「小于」本地
-        // 金丝雀版本 → 解锁条件恒真 → 锁每轮被删 → 同一版本反复推送。
-        // 与候选判定同款改按构建时间线：锁定版本发布晚于本机构建才算「未达锁」，
-        // 此时远程候选仍是已推送过的那个版本就跳过；否则锁已无意义，清除。
-        const lockedNode = canaryInfo?.nodes.find((n) => n.message.includes(lockedVersion))
-        if (lockedNode && lockedNode.time > installedBuildTime) {
-          if (remote === lockedVersion) return true
-        } else {
-          await db.del(UPDATE_LOCK_KEY)
-        }
-      } else if (!isSemverGreater(lockedVersion, Root.pluginVersion)) {
-        // 本地版本达到或超过锁定版本 => 解锁
-        await db.del(UPDATE_LOCK_KEY)
-      } else if (!isSemverGreater(remote, lockedVersion)) {
-        // 远程版本不比锁定版本新，跳过本次提醒
-        return true
-      }
-    }
-  } catch {}
-
-  // 设置锁为当前远程版本，确保只推送一次
-  try {
-    await db.set(UPDATE_LOCK_KEY, remote)
-  } catch {}
+  // 逐渠道判定并上锁：该渠道有新版本且未曾推送过 → 记为待推送并写入该渠道的锁
+  // （锁在发送前写入，渲染/发送失败也不会反复重推同一版本）
+  const pending = new Set<string>()
+  for (const channel of channels) {
+    const version = tagVersions.get(tagOf(channel)) ?? null
+    if (!version || !isNewVersion(version)) continue
+    try {
+      const locked = await db.get(updateLockKey(channel))
+      if (typeof locked === 'string' && locked === version) continue
+      await db.set(updateLockKey(channel), version)
+    } catch {}
+    pending.add(version)
+  }
+  if (pending.size === 0) return true
 
   const masters = config.master().filter((id) => id !== 'console')
   if (masters.length === 0) return true
@@ -125,20 +115,24 @@ const Handler = async () => {
     }
   }
 
-  // 分组渲染：每个 Bot 渲染一次
+  // 分组渲染：每个 Bot 渲染一次；多个渠道同时有待推送版本时逐版本拼接
   const botToImage = new Map<string, Array<ReturnType<typeof segment.image> | ReturnType<typeof segment.text>>>()
   for (const item of botItems) {
     // 仅在该 Bot 存在主人匹配时渲染
     const hasOwners = Array.from(masterToBot.entries()).some(([, b]) => b.account.selfId === item.bot.account.selfId)
     if (!hasOwners) continue
-    const img = await getChangelogImage({ bot: item.bot } as Message, {
-      localVersion: Root.pluginVersion,
-      remoteVersion: remote,
-      Tip: true
-    })
-    if (img && img.length > 0) {
-      botToImage.set(item.bot.account.selfId, [segment.text('karin-plugin-kkk 有新的更新！'), ...img])
+    const elements: Array<ReturnType<typeof segment.image> | ReturnType<typeof segment.text>> = [
+      segment.text('karin-plugin-kkk 有新的更新！')
+    ]
+    for (const version of pending) {
+      const img = await getChangelogImage({ bot: item.bot } as Message, {
+        localVersion: Root.pluginVersion,
+        remoteVersion: version,
+        Tip: true
+      })
+      if (img && img.length > 0) elements.push(...img)
     }
+    if (elements.length > 1) botToImage.set(item.bot.account.selfId, elements)
   }
 
   // 依次私聊所有主人（存在好友命中的才发送）
@@ -174,7 +168,9 @@ const handleUpdateHook = wrapWithErrorHandler(
         if (msgResult.messageId) {
           try {
             await db.del(UPDATE_MSGID_KEY)
-            await db.del(UPDATE_LOCK_KEY)
+            for (const ch of UPDATE_CHANNELS) {
+              await db.del(updateLockKey(ch))
+            }
           } catch {}
         }
         await restart(e.selfId, e.contact, msgResult.messageId)
@@ -254,7 +250,9 @@ const installAndRestart = async (e: Message, version: string) => {
   if (msgResult.messageId) {
     try {
       await db.del(UPDATE_MSGID_KEY)
-      await db.del(UPDATE_LOCK_KEY)
+      for (const ch of UPDATE_CHANNELS) {
+        await db.del(updateLockKey(ch))
+      }
     } catch {}
   }
   await restart(e.selfId, e.contact, msgResult.messageId)
@@ -452,7 +450,9 @@ export const kkkUpdateTest =
     'test',
     async (_e: Message, next) => {
       await db.del(UPDATE_MSGID_KEY)
-      await db.del(UPDATE_LOCK_KEY)
+      for (const ch of UPDATE_CHANNELS) {
+        await db.del(updateLockKey(ch))
+      }
       await Handler()
       next()
     },
