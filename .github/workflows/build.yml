@@ -233,29 +233,79 @@ jobs:
         id: version-gen
         working-directory: packages/core
         run: |
-          # 版本基准 = 包版本（主分支钉最近 stable 的不变式），金丝雀不看 tag：
-          # tag 属于 beta/rc 渠道的版本线；金丝雀 = stable 的下一个 patch 号 + 来源标识，
-          # 使整个版本空间 semver 全序正确：stable < canary < 下一线 beta/rc < 下一 stable
+          # 版本基准：最后一个 STABLE tag（beta/rc 的 prerelease tag 不参与基准，
+          # 避免 prerelease 之间互相追号）+ 包版本防倒退。
+          # 金丝雀广告「下一个版本号」：feat 累积 → canary 显示 2.45.0-canary.N。
+          STABLE_TAG=$(git tag -l 'v*' --sort=-creatordate | grep -v -- '-' | head -1 || echo "")
+          if [ -n "$STABLE_TAG" ]; then
+            BASE_VERSION="${STABLE_TAG#v}"
+          else
+            BASE_VERSION="0.0.0"
+          fi
           PKG_VERSION=$(node -p "require('./package.json').version" 2>/dev/null || echo "")
           PKG_VERSION="${PKG_VERSION%%-*}"
-          MAJOR=$(echo "$PKG_VERSION" | cut -d. -f1)
-          MINOR=$(echo "$PKG_VERSION" | cut -d. -f2)
-          PATCH=$(echo "$PKG_VERSION" | cut -d. -f3)
-          CANARY_BASE="${MAJOR}.${MINOR}.$((PATCH + 1))"
+
+          # 防倒退：取两者较大（结果写 COMPARE_RESULT，裸调用返回非零会被 bash -e 静默退出）
+          compare_versions() {
+            COMPARE_RESULT=0  # v1 == v2
+            local v1=$1 v2=$2
+            local IFS=.
+            local i ver1=($v1) ver2=($v2)
+            for ((i=0; i<3; i++)); do
+              if [[ ${ver1[i]:-0} -gt ${ver2[i]:-0} ]]; then
+                COMPARE_RESULT=1  # v1 > v2
+                break
+              elif [[ ${ver1[i]:-0} -lt ${ver2[i]:-0} ]]; then
+                COMPARE_RESULT=2  # v1 < v2
+                break
+              fi
+            done
+          }
+          FINAL_BASE="$BASE_VERSION"
+          if [ -n "$PKG_VERSION" ] && echo "$PKG_VERSION" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+            compare_versions "$FINAL_BASE" "$PKG_VERSION"
+            case $COMPARE_RESULT in
+              2) FINAL_BASE="$PKG_VERSION" ;;  # PKG_VERSION更高
+            esac
+          fi
+
+          # 提交分析（自上个 stable tag）：BREAKING→major / feat→minor / fix|perf|refactor→patch / 兜底 patch
+          if [ -n "$STABLE_TAG" ]; then
+            COMMITS=$(git log --no-merges --pretty=%s "$STABLE_TAG"..HEAD 2>/dev/null || echo "")
+          else
+            COMMITS=$(git log --no-merges --pretty=%s HEAD 2>/dev/null || echo "")
+          fi
+          BUMP="patch"
+          if echo "$COMMITS" | grep -E 'BREAKING CHANGE|.*!:' >/dev/null; then
+            BUMP="major"
+          elif echo "$COMMITS" | grep -E '^feat(\(.+\))?:' >/dev/null; then
+            BUMP="minor"
+          elif echo "$COMMITS" | grep -E '^(fix|perf|refactor)(\(.+\))?:' >/dev/null; then
+            BUMP="patch"
+          fi
+          MAJOR=$(echo "$FINAL_BASE" | cut -d. -f1)
+          MINOR=$(echo "$FINAL_BASE" | cut -d. -f2)
+          PATCH=$(echo "$FINAL_BASE" | cut -d. -f3)
+          case "$BUMP" in
+            major) MAJOR=$((MAJOR + 1)); MINOR=0; PATCH=0 ;;
+            minor) MINOR=$((MINOR + 1)); PATCH=0 ;;
+            patch) PATCH=$((PATCH + 1)) ;;
+          esac
+          BASE_NEXT="${MAJOR}.${MINOR}.${PATCH}"
 
           # 来源标识：PR 编号 / 提交序号 / 手动时间戳 / 分支名，短哈希收尾保证唯一
           SHORT_SHA=$(git rev-parse --short=7 HEAD 2>/dev/null || echo "0")
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-            NEW_VERSION="${CANARY_BASE}-canary.pr${{ github.event.number }}.${SHORT_SHA}"
+            NEW_VERSION="${BASE_NEXT}-canary.pr${{ github.event.number }}.${SHORT_SHA}"
           elif [ "${{ github.event_name }}" = "push" ] && [ "${{ github.ref }}" = "refs/heads/main" ]; then
             COMMIT_COUNT=$(git rev-list --count HEAD 2>/dev/null || echo 0)
-            NEW_VERSION="${CANARY_BASE}-canary.${COMMIT_COUNT}.${SHORT_SHA}"
+            NEW_VERSION="${BASE_NEXT}-canary.${COMMIT_COUNT}.${SHORT_SHA}"
           elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             TIME_SUFFIX=$(TZ='Asia/Shanghai' date +%m%d%H%M)
-            NEW_VERSION="${CANARY_BASE}-canary.manual.${TIME_SUFFIX}"
+            NEW_VERSION="${BASE_NEXT}-canary.manual.${TIME_SUFFIX}"
           else
             BRANCH_NAME=$(echo "${{ github.ref_name }}" | sed 's/[^a-zA-Z0-9]/-/g' | tr '[:upper:]' '[:lower:]')
-            NEW_VERSION="${CANARY_BASE}-canary.${BRANCH_NAME}.${SHORT_SHA}"
+            NEW_VERSION="${BASE_NEXT}-canary.${BRANCH_NAME}.${SHORT_SHA}"
           fi
 
           echo "🎯 最终生成版本: $NEW_VERSION"
