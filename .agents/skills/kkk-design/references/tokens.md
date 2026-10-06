@@ -82,9 +82,9 @@
 ## 噪点
 
 - 常规：`baseFrequency=0.8`、`numOctaves=1`、opacity 0.08-0.16。
-- 颗粒更明显：`baseFrequency=0.88`、`numOctaves=2`。
+- **高对比离散颗粒（信息海报推荐）**：普通湍流噪声太淡，先 `feColorMatrix type="saturate" values="0"` 灰度化，再用 `feComponentTransfer` 把 `feFuncR/G/B` 设为 `type="discrete" tableValues="0 1"`，将噪声离散成纯黑白颗粒；普通混合（不叠加 overlay/soft-light），深色 opacity 0.16、浅色 0.12。
 - 媒体背景：`baseFrequency=1.2-1.4`、`numOctaves=3`、opacity 0.35-0.45。
-- 混合模式：浅色可用 overlay；深色可用 soft-light；不确定时只用低透明度 normal。
+- 颗粒必须统一单色或灰度，不使用彩色噪点。
 
 ## 颜色角色
 
