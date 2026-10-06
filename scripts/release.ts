@@ -89,14 +89,18 @@ const renderEntry = (version: string, prevTag: string, entries: CommitEntry[]): 
   return blocks.join('\n\n\n')
 }
 
-/** 把条目插到第一个版本小节之前（按字节读写，保留文件既有行尾风格） */
+/**
+ * 把条目插到第一个版本小节之前（保持文件既有行尾风格）。
+ * 必须用 UTF-8 读写：latin1 读写虽对既有字节无损，但新条目字符串里的
+ * 中文/emoji 会在 latin1 写出时被截断成单字节（乱码根因，v2.45.0-beta.1 首跑实测）。
+ */
 const prependEntry = (entry: string): void => {
-  const raw = readFileSync(CHANGELOG, 'latin1')
+  const raw = readFileSync(CHANGELOG, 'utf-8')
   const eol = raw.includes('\r\n') ? '\r\n' : '\n'
   const entryText = entry.replace(/\n/g, eol)
   const idx = raw.search(/^## /m)
   const updated = idx === -1 ? raw + eol + entryText + eol : raw.slice(0, idx) + entryText + eol + eol + raw.slice(idx)
-  writeFileSync(CHANGELOG, updated, 'latin1')
+  writeFileSync(CHANGELOG, updated, 'utf-8')
   console.log(`📝 已写入 ${CHANGELOG}（${eol === '\r\n' ? 'CRLF' : 'LF'}，插入位置：${idx === -1 ? '末尾' : '首个版本小节前'}）`)
 }
 
@@ -173,5 +177,5 @@ execFileSync('git', ['commit', '-m', `chore: release v${version}`], { stdio: 'in
 execFileSync('git', ['tag', `v${version}`], { stdio: 'inherit' })
 
 console.log(`\n✅ 发版就绪：${version}（commit + tag 已就位，尚未推送）`)
-console.log('   审计后手动推送：git push origin main && git push origin v${version}')
+console.log(`   审计后手动推送：git push origin main && git push origin v${version}`)
 console.log('   tag 推上去即触发 release.yml：changelogithub 建 GitHub Release → build → npm 发布')
