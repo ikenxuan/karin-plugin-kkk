@@ -102,6 +102,11 @@ const Handler = async () => {
   // 引用回复推送图「更新」时的安装目标：多渠道同时待推送时取 semver 最大者
   const installTarget = [...pending].sort((a, b) => (isSemverGreater(b, a) ? 1 : -1))[0]
 
+  // 金丝雀用户：stable/beta/rc 发布的是同一条 main 的快照，stable 转正条目还全量
+  // 归纳了整条版本线 —— 逐渠道各推一张图会把同一批变更重复多遍。只渲染 semver 最大
+  // 的待推送版本（其变更日志覆盖其余渠道内容）；各渠道锁已按版本写好，不会被重推
+  const rendered = installedIsCanary && pending.size > 1 ? new Set([installTarget]) : pending
+
   const masters = config.master().filter((id) => id !== 'console')
   if (masters.length === 0) return true
 
@@ -137,7 +142,7 @@ const Handler = async () => {
     const elements: Array<ReturnType<typeof segment.image> | ReturnType<typeof segment.text>> = [
       segment.text('karin-plugin-kkk 有新的更新！')
     ]
-    for (const version of pending) {
+    for (const version of rendered) {
       const img = await getChangelogImage({ bot: item.bot } as Message, {
         localVersion: Root.pluginVersion,
         remoteVersion: version,
