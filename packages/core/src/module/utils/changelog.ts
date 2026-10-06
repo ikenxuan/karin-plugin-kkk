@@ -7,6 +7,7 @@ import axios from 'node-karin/axios'
 import { baseHeaders, Render, Root } from '@/module'
 
 import { formatBuildTime, getBuildMetadata } from './build-metadata'
+import { parseReleaseChannel } from './releaseChannel'
 import { isSemverGreater } from './semver'
 
 /**
@@ -36,6 +37,26 @@ const getLagVersionCount = (changelog: string, localVersion: string, remoteVersi
     const notAfterRemote = !isSemverGreater(version, remote)
     return afterLocal && notAfterRemote
   }).length
+}
+
+/**
+ * 金丝雀用户的 range 起点解析：semver 的 ASCII 序（beta < canary）无法表达
+ * 「发布晚于本机构建」——改按 pkg.pr.new 发布历史的时间线，取本机构建时间
+ * 之前的最后一个发布版本作为 range 起点。失败返回 undefined（回退 semver）。
+ */
+const resolveCanaryRangeStart = async (buildTimestamp?: number): Promise<string | undefined> => {
+  if (!buildTimestamp) return undefined
+  try {
+    const res = await axios.get('https://pkg.pr.new/api/repo/commits?owner=ikenxuan&repo=karin-plugin-kkk', { timeout: 10000 })
+    const nodes = res.data?.target?.history?.nodes as Array<{ authoredDate?: string; message?: string }> | undefined
+    if (!Array.isArray(nodes)) return undefined
+    for (const n of nodes) {
+      const t = n.authoredDate ? new Date(n.authoredDate).getTime() : 0
+      const v = /v?(\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?)/.exec(n.message ?? '')?.[1]
+      if (t > 0 && t <= buildTimestamp && v) return v
+    }
+  } catch {}
+  return undefined
 }
 
 /**
@@ -132,9 +153,14 @@ export const getChangelogImage = async (ctx: Message, props: Omit<ChangelogData,
       buildTime = formatBuildTime(remoteMeta.buildTime)
     }
 
+    // 金丝雀用户：range 起点按构建时间线解析（semver 的 ASCII 序对跨标识无意义）
+    const rangeStart =
+      parseReleaseChannel(props.localVersion) === 'Canary'
+        ? ((await resolveCanaryRangeStart(getBuildMetadata()?.buildTimestamp)) ?? props.localVersion)
+        : props.localVersion
     changelog = range({
       data: changelog,
-      startVersion: props.localVersion,
+      startVersion: rangeStart,
       endVersion: versionCore(props.remoteVersion),
       compare: 'semver'
     })
@@ -142,9 +168,14 @@ export const getChangelogImage = async (ctx: Message, props: Omit<ChangelogData,
     try {
       changelog = fs.readFileSync(Root.pluginPath + '/CHANGELOG.md', 'utf8')
       lagVersionCount = getLagVersionCount(changelog, props.localVersion, props.remoteVersion)
+      // 金丝雀用户：range 起点按构建时间线解析
+      const rangeStart =
+        parseReleaseChannel(props.localVersion) === 'Canary'
+          ? ((await resolveCanaryRangeStart(getBuildMetadata()?.buildTimestamp)) ?? props.localVersion)
+          : props.localVersion
       changelog = range({
         data: changelog,
-        startVersion: props.localVersion,
+        startVersion: rangeStart,
         endVersion: versionCore(props.remoteVersion),
         compare: 'semver'
       })

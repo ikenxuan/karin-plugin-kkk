@@ -73,8 +73,19 @@ const Handler = async () => {
   try {
     const lockedVersion = await db.get(UPDATE_LOCK_KEY)
     if (typeof lockedVersion === 'string' && lockedVersion.length > 0) {
-      // 本地版本达到或超过锁定版本 => 解锁
-      if (!isSemverGreater(lockedVersion, Root.pluginVersion)) {
+      if (installedIsCanary && installedBuildTime !== undefined) {
+        // 金丝雀用户：semver 的 ASCII 序（beta < canary）让锁定版本恒「小于」本地
+        // 金丝雀版本 → 解锁条件恒真 → 锁每轮被删 → 同一版本反复推送。
+        // 与候选判定同款改按构建时间线：锁定版本发布晚于本机构建才算「未达锁」，
+        // 此时远程候选仍是已推送过的那个版本就跳过；否则锁已无意义，清除。
+        const lockedNode = canaryInfo?.nodes.find((n) => n.message.includes(lockedVersion))
+        if (lockedNode && lockedNode.time > installedBuildTime) {
+          if (remote === lockedVersion) return true
+        } else {
+          await db.del(UPDATE_LOCK_KEY)
+        }
+      } else if (!isSemverGreater(lockedVersion, Root.pluginVersion)) {
+        // 本地版本达到或超过锁定版本 => 解锁
         await db.del(UPDATE_LOCK_KEY)
       } else if (!isSemverGreater(remote, lockedVersion)) {
         // 远程版本不比锁定版本新，跳过本次提醒

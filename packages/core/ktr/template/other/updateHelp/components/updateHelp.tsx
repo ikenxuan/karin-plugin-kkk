@@ -114,6 +114,13 @@ export const UpdateHelp: React.FC<PosterProps<UpdateHelpData>> = React.memo((pro
         : { dot: palette.accentText, text: 'main 分支构建', active: true }
     }
     const order = semverCompare(channel.version ?? '0.0.0', data.currentVersion)
+    // hasUpdate 由 core 判定（金丝雀用户走构建时间线）——优先于 semver 字母序：
+    // beta.3 发布晚于 canary.1590 构建时，字母序会误判「低于当前版本」
+    if (channel.hasUpdate !== undefined) {
+      return channel.hasUpdate
+        ? { dot: palette.success, text: '有更新可升级', active: true }
+        : { dot: palette.faint, text: order < 0 ? '低于当前版本' : '已是最新', active: false }
+    }
     if (order > 0) return { dot: palette.success, text: '有更新可升级', active: true }
     if (order === 0) return { dot: palette.faint, text: '已是最新', active: false }
     return { dot: palette.faint, text: '低于当前版本', active: false }
