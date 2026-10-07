@@ -22,7 +22,6 @@ import {
   PaperPlaneRight,
   Play as PhPlay,
   Question,
-  Robot,
   RocketLaunch
 } from '@phosphor-icons/react'
 import {
@@ -299,7 +298,6 @@ export const iconRegistry: Record<string, ComponentType<any>> = {
   'ph:paper-plane-right-fill': PaperPlaneRight,
   'ph:arrows-clockwise-fill': ArrowsClockwise,
   'ph:bell-fill': Bell,
-  'ph:robot-fill': Robot,
   'ph:monitor-fill': PhMonitor,
   'logos:tiktok-icon': FaTiktok,
   'streamline-ultimate:bilibili-logo-bold': SiBilibili,

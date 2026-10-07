@@ -96,12 +96,6 @@ const HELP_MENU_CONFIG: RoleMenuGroup[] = [
     title: '设置相关',
     items: [
       {
-        title: '#kkk设置推送机器人 + Bot ID',
-        description: '一键更换推送机器人',
-        icon: 'ph:robot-fill',
-        roles: ['master']
-      },
-      {
         title: '#抖音登录',
         description: '使用抖音APP扫码登录获取 Cookies',
         icon: 'logos:tiktok-icon',

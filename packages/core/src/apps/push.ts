@@ -128,57 +128,6 @@ const handleDouyinPushList = wrapWithErrorHandler(
   }
 )
 
-// 包装设置机器人ID命令
-const handleChangeBotID = wrapWithErrorHandler(
-  async (e) => {
-    const newBotId = e.msg.replace(/^#kkk设置推送机器人/, '')
-
-    // 更新抖音配置和数据库
-    const newDouyinlist = Config.pushlist.douyin.map((item) => {
-      const modifiedGroupIds = item.group_id.map((groupId) => {
-        const [group_id, oldBotId] = groupId.split(':')
-        // 更新数据库中的botId
-        if (oldBotId && oldBotId !== newBotId) {
-          douyinDB.updateGroupBotId(group_id, oldBotId, newBotId).catch((err) => {
-            logger.error(`Failed to update douyin group ${group_id}:`, err)
-          })
-        }
-        return `${group_id}:${newBotId}`
-      })
-      return {
-        ...item,
-        group_id: modifiedGroupIds
-      }
-    })
-
-    // 更新B站配置和数据库
-    const newBilibililist = Config.pushlist.bilibili.map((item) => {
-      const modifiedGroupIds = item.group_id.map((groupId) => {
-        const [group_id, oldBotId] = groupId.split(':')
-        // 更新数据库中的botId
-        if (oldBotId && oldBotId !== newBotId) {
-          bilibiliDB.updateGroupBotId(group_id, oldBotId, newBotId).catch((err) => {
-            logger.error(`Failed to update bilibili group ${group_id}:`, err)
-          })
-        }
-        return `${group_id}:${newBotId}`
-      })
-      return {
-        ...item,
-        group_id: modifiedGroupIds
-      }
-    })
-
-    Config.Modify('pushlist', 'douyin', newDouyinlist)
-    Config.Modify('pushlist', 'bilibili', newBilibililist)
-    await e.reply('推送机器人已修改为' + newBotId)
-    return true
-  },
-  {
-    businessName: '设置推送机器人'
-  }
-)
-
 // 包装全局忽略命令
 const handleGlobalIgnore = wrapWithErrorHandler(
   async (e) => {
@@ -313,11 +262,6 @@ export const bilibiliPushList = karin.command(/^#?[bB]站推送列表$/, handleB
 export const douyinPushList = karin.command(/^#?抖音推送列表$/, handleDouyinPushList, {
   name: 'kkk-推送功能-列表',
   event: 'message.group'
-})
-
-export const changeBotID = karin.command(/^#kkk设置推送机器人/, handleChangeBotID, {
-  name: 'kkk-推送功能-设置',
-  perm: 'master'
 })
 
 export const globalIgnore = karin.command(/^#kkk推送全局忽略/, handleGlobalIgnore, {
