@@ -64,6 +64,11 @@ export default defineConfig({
     outDir: 'lib',
     rolldownOptions: {
       platform: 'node',
+      // 依赖包（heroui/radix/lucide 等）源码顶部的 "use client" 是 RSC 标记，本插件是纯 Node 端产物，
+      // 合并 chunk 后保留与否无运行时影响，关掉 rolldown 对这类模块级指令的逐条提醒
+      checks: {
+        moduleLevelDirective: false
+      },
       preserveEntrySignatures: 'allow-extension',
       external: [
         ...builtinModules,
