@@ -1,4 +1,4 @@
-import { AlertTriangle, CheckCircle, CircleFadingArrowUp, Info, Palette, Zap } from 'lucide-react'
+import { TriangleAlert, CircleCheckBig, CircleFadingArrowUp, Info, Palette, Zap } from 'lucide-react'
 import React from 'react'
 
 import { cn } from '../../utils/cn'
@@ -100,9 +100,9 @@ export const DefaultLayout: React.FC<DefaultLayoutProps> = ({ children, ctx, cla
             <div className="flex flex-col items-start opacity-90">
               <div className="flex items-center mb-1 space-x-2 text-sm font-bold tracking-widest uppercase text-foreground/80">
                 {version.hasUpdate && <CircleFadingArrowUp strokeWidth={3} className="w-4 h-4 text-success" />}
-                {!version.hasUpdate && version.releaseType === 'Stable' && <CheckCircle strokeWidth={3} className="w-4 h-4" />}
+                {!version.hasUpdate && version.releaseType === 'Stable' && <CircleCheckBig strokeWidth={3} className="w-4 h-4" />}
                 {!version.hasUpdate && (version.releaseType === 'Beta' || version.releaseType === 'Rc') && (
-                  <AlertTriangle strokeWidth={3} className="w-4 h-4 text-warning" />
+                  <TriangleAlert strokeWidth={3} className="w-4 h-4 text-warning" />
                 )}
                 {!version.hasUpdate && version.releaseType === 'Canary' && <Info strokeWidth={3} className="w-4 h-4" />}
                 <span

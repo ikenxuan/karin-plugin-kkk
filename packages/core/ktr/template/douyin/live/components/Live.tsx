@@ -1,4 +1,4 @@
-import { Eye, FileVideo, MapPin, Monitor, ShoppingBag, UserPlus, Users } from 'lucide-react'
+import { Eye, FilePlay, MapPin, Monitor, ShoppingBag, UserPlus, Users } from 'lucide-react'
 import React from 'react'
 
 import { isDark } from '../../../../utils/theme'
@@ -158,7 +158,7 @@ const BottomSection: React.FC<PosterProps<DouyinLiveData>> = ({ data, ctx }) => 
         <div className="flex gap-6 text-3xl text-foreground/70">
           <div className="flex flex-col gap-2 px-6 py-3 rounded-2xl bg-default/45">
             <div className="flex items-center gap-2">
-              <FileVideo size={28} />
+              <FilePlay size={28} />
               <span className="text-foreground/40">作品</span>
             </div>
             <span className="font-medium text-4xl select-text">{data.aweme_count}</span>

@@ -1,5 +1,5 @@
 import { Button } from '@heroui/react'
-import { BarChart3, BellRing, Gamepad2, Gift } from 'lucide-react'
+import { ChartColumn, BellRing, Gamepad2, Gift } from 'lucide-react'
 import React from 'react'
 
 import { cn } from '../../../../utils/cn'
@@ -56,7 +56,7 @@ export const BilibiliVoteCard: React.FC<{ vote: NonNullable<BilibiliAdditionalDa
     <div className="overflow-hidden rounded-4xl bg-surface">
       <div className="flex gap-8 items-center px-10 py-8">
         <div className="shrink-0">
-          <BarChart3 size={56} />
+          <ChartColumn size={56} />
         </div>
         <div className="flex flex-col gap-3 flex-1 min-w-0">
           <div className="text-5xl font-medium text-foreground select-text line-clamp-1">{vote.title}</div>

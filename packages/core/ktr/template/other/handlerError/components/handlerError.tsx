@@ -2,7 +2,7 @@ import { Chip } from '@heroui/react'
 import { formatDistanceToNow, parse } from 'date-fns'
 import { zhCN } from 'date-fns/locale'
 import {
-  AlertCircle,
+  CircleAlert,
   Braces,
   Clock,
   FileText,
@@ -692,7 +692,7 @@ export const handlerError: React.FC<PosterProps<ApiErrorData>> = (props) => {
               {/* 分层错误码与请求归因 */}
               <div className="grid grid-cols-3 gap-x-12 gap-y-10">
                 <DetailCell
-                  icon={<AlertCircle size={26} style={{ color: mutedColor }} />}
+                  icon={<CircleAlert size={26} style={{ color: mutedColor }} />}
                   label="AMAGI 码"
                   value={data.amagi.code}
                   color={mutedColor}
@@ -875,7 +875,7 @@ export const handlerError: React.FC<PosterProps<ApiErrorData>> = (props) => {
         {/* 错误堆栈 */}
         <div className="mb-14">
           <SectionTitle
-            icon={<AlertCircle size={36} style={{ color: mutedColor }} />}
+            icon={<CircleAlert size={36} style={{ color: mutedColor }} />}
             en="Stack Trace"
             zh={data.amagi ? '调用栈（结构化上下文见上）' : data.error?.dump ? '调用栈（对象转储见下）' : '错误堆栈'}
             color={mutedColor}

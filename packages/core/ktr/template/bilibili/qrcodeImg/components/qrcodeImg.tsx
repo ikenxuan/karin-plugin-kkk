@@ -1,5 +1,5 @@
 import { SiBilibili } from '@icons-pack/react-simple-icons'
-import { AlertTriangle, ScanLine, User } from 'lucide-react'
+import { TriangleAlert, ScanLine, User } from 'lucide-react'
 import React from 'react'
 import { RiArrowRightFill } from 'react-icons/ri'
 
@@ -157,7 +157,7 @@ export const BilibiliQrcodeImg: React.FC<PosterProps<BilibiliQrcodeImgData>> = R
         <div className="w-full max-w-4xl pt-20">
           <div className="flex flex-col items-center space-y-6 text-center">
             <div className="flex items-center justify-center w-16 h-16 mb-2">
-              <AlertTriangle size={64} style={{ color: theme.text }} strokeWidth={1.5} />
+              <TriangleAlert size={64} style={{ color: theme.text }} strokeWidth={1.5} />
             </div>
             <h3 className="text-[40px] font-bold" style={{ color: theme.text }}>
               免责声明

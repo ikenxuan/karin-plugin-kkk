@@ -1,4 +1,4 @@
-import { CheckCircle2, TriangleAlert } from 'lucide-react'
+import { CircleCheck, TriangleAlert } from 'lucide-react'
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
 
@@ -62,7 +62,7 @@ const SpecRow = ({ index, label, value, meta, accentText }: SpecRowProps) => {
         <span className="text-[30px] font-bold tracking-[0.24em] text-foreground/40">{label}</span>
       </div>
       <div
-        className="mt-2 line-clamp-2 break-words font-bold leading-[1.2] tracking-[-0.02em] text-foreground"
+        className="mt-2 line-clamp-2 wrap-break-word font-bold leading-[1.2] tracking-[-0.02em] text-foreground"
         style={{ fontSize: valueSize }}
       >
         {value}
@@ -85,7 +85,7 @@ export const RuntimeReport: React.FC<PosterProps<RuntimeReportData>> = React.mem
   const releaseLabel = RELEASE_TYPE_LABEL[data.identity.releaseType] ?? data.identity.releaseType
   const buildStatus =
     data.build.state === 'matched'
-      ? { label: '构建信息一致', icon: <CheckCircle2 className="h-10 w-10" />, color: '#22c55e' }
+      ? { label: '构建信息一致', icon: <CircleCheck className="h-10 w-10" />, color: '#22c55e' }
       : data.build.state === 'mismatched'
         ? { label: '构建信息不一致', icon: <TriangleAlert className="h-10 w-10" />, color: '#f59e0b' }
         : { label: '未找到构建信息', icon: <TriangleAlert className="h-10 w-10" />, color: '#94a3b8' }

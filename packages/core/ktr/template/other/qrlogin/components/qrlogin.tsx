@@ -1,4 +1,4 @@
-import { AlertTriangle, QrCode, Smartphone } from 'lucide-react'
+import { TriangleAlert, QrCode, Smartphone } from 'lucide-react'
 import React from 'react'
 
 import { isDark } from '../../../../utils/theme'
@@ -122,7 +122,7 @@ export const QrLogin: React.FC<PosterProps<QrLoginData>> = React.memo((props) =>
                   boxShadow: dark ? '0 0 40px rgba(248,113,113,0.6)' : '0 0 40px rgba(239,68,68,0.5)'
                 }}
               >
-                <AlertTriangle className="w-16 h-16 text-white" strokeWidth={3} />
+                <TriangleAlert className="w-16 h-16 text-white" strokeWidth={3} />
               </div>
             </div>
 
