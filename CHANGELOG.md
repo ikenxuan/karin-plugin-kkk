@@ -2,6 +2,23 @@
 
 # Changelog
 
+## [2.45.0-rc.4](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.45.0-rc.3...v2.45.0-rc.4) (2026-10-07)
+
+
+### 🧰 其他更新
+
+* 补充 amagi 7.0.0-beta.8 的 lockfile 解析（与上一提交的 package.json 配套） ([c60d37f](https://github.com/ikenxuan/karin-plugin-kkk/commit/c60d37ff84ac17421a87120042065935ae036c26))
+
+
+### ♻️ 代码重构
+
+* 移除 #kkk设置推送机器人 命令，推送机器人更换已集成至 Web 面板 ([7ac8655](https://github.com/ikenxuan/karin-plugin-kkk/commit/7ac865561931de53672ce39f010faf9bd0365ed9))
+
+
+### 📦 依赖更新
+
+* update ([88db52a](https://github.com/ikenxuan/karin-plugin-kkk/commit/88db52a00ff9bb3ad36f8fc8b261ce6282ec8da5))
+
 ## [2.45.0-rc.3](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.45.0-rc.2...v2.45.0-rc.3) (2026-10-07)
 
 
