@@ -2,6 +2,20 @@
 
 # Changelog
 
+## [2.45.0-rc.3](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.45.0-rc.2...v2.45.0-rc.3) (2026-10-07)
+
+
+### ✨ 新功能
+
+* 推送配置新增 Bot 快捷切换，支持平台级与单个推送对象的可视化替换 ([c7d8810](https://github.com/ikenxuan/karin-plugin-kkk/commit/c7d8810063771e63d197e17e5ef27379ef0ecade))
+* 帮助菜单新增 #kkk更新帮助 入口 ([2ed7335](https://github.com/ikenxuan/karin-plugin-kkk/commit/2ed7335d40d2ecb79fb074e18befcc60b79dfa61))
+* 运行诊断海报重构为两栏参数面板，数值字号随内容自适应 ([300b7da](https://github.com/ikenxuan/karin-plugin-kkk/commit/300b7da08724feef0e2f6ee229e3ad8b08aa100b))
+
+
+### 🐛 错误修复
+
+* 注册帮助菜单缺失的图标并清理 lucide 弃用别名 ([85158dd](https://github.com/ikenxuan/karin-plugin-kkk/commit/85158ddc962c45a5c3b5085f9c4cc220995c7e7e))
+
 ## [2.45.0-rc.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.45.0-rc.1...v2.45.0-rc.2) (2026-10-07)
 
 
