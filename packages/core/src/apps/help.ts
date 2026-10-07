@@ -128,6 +128,12 @@ const HELP_MENU_CONFIG: RoleMenuGroup[] = [
         roles: ['member', 'master']
       },
       {
+        title: '#kkk更新帮助',
+        description: '查看更新渠道面板：各渠道可用版本与更新用法一览',
+        icon: 'ph:rocket-launch-fill',
+        roles: ['master']
+      },
+      {
         title: '「#kkk更新日志」「#kkk更新」',
         description: '查看更新日志或执行插件更新',
         icon: 'ph:arrows-clockwise-fill',
