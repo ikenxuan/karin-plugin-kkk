@@ -18161,7 +18161,7 @@
     letter-spacing: var(--tracking-widest);
   }
 
-  .break-words, .wrap-break-word {
+  .wrap-break-word {
     overflow-wrap: break-word;
   }
 
