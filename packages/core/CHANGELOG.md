@@ -2,6 +2,10 @@
 
 # Changelog
 
+## [2.45.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.44.0...v2.45.0) (2026-10-07)
+
+> 本版本为测试/预览线的转正发布，自上一个 tag 以来没有新增常规提交。完整变更记录见 `2.45.0-rc.4` 及更早的各小节。
+
 ## [2.45.0-rc.4](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.45.0-rc.3...v2.45.0-rc.4) (2026-10-07)
 
 
