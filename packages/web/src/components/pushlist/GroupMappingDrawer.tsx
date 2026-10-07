@@ -1,7 +1,9 @@
-import { Button, Description, Drawer } from '@heroui/react'
-import { Plus } from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { Button, Description, Drawer, Label } from '@heroui/react'
+import { ArrowRightLeft, Plus } from 'lucide-react'
+import { useEffect, useMemo, useState } from 'react'
 
+import { getPushBots, type BotInfo } from '../../api/pushTargets'
+import BotQuickSwitchDialog from './BotQuickSwitchDialog'
 import GroupMappingDraftList from './GroupMappingDraftList'
 import GroupMappingEditorDrawer from './GroupMappingEditorDrawer'
 import { formatTargetValue, normalizeTargetValues, parseTargetValue } from './targetUtils'
@@ -12,6 +14,8 @@ interface GroupMappingDrawerProps {
   values: string[]
   mappings: PushTargetMapping[]
   device: PushlistDevice
+  /** 所属推送对象的展示名，用于快捷切换对话框的预览 */
+  itemLabel?: string
   onOpenChange: (isOpen: boolean) => void
   onApply: (values: string[]) => void
 }
@@ -48,14 +52,34 @@ const toDraftMappings = (values: string[], mappings: PushTargetMapping[], localD
   return { values: normalizedValues, mappings: draftMappings }
 }
 
-const GroupMappingDrawer = ({ isOpen, values, mappings, device, onOpenChange, onApply }: GroupMappingDrawerProps) => {
+const GroupMappingDrawer = ({ isOpen, values, mappings, device, itemLabel, onOpenChange, onApply }: GroupMappingDrawerProps) => {
   const [draftValues, setDraftValues] = useState(() => normalizeTargetValues(values))
   const [localDetails, setLocalDetails] = useState<MappingDetails>({})
   const [editingValue, setEditingValue] = useState<string | null>(null)
   const [editorOpen, setEditorOpen] = useState(false)
+  const [switchOpen, setSwitchOpen] = useState(false)
+  const [bots, setBots] = useState<BotInfo[]>([])
   const draft = useMemo(() => toDraftMappings(draftValues, mappings, localDetails), [draftValues, localDetails, mappings])
   const placement = device === 'desktop' ? 'right' : 'bottom'
+  const buttonSize = device === 'mobile' ? 'sm' : 'md'
   const editorInitialMapping = editingValue ? parseTargetValue(editingValue) : null
+
+  useEffect(() => {
+    if (!isOpen) return
+
+    // 仅用于切换后立即富化草稿条目的 Bot 展示信息，失败时退化为显示 Bot ID
+    getPushBots()
+      .then(setBots)
+      .catch(() => setBots([]))
+  }, [isOpen])
+
+  // 抽屉关闭期间外部可能改写了 values（如平台级 Bot 快捷切换），重置草稿避免关闭时用旧值覆盖
+  useEffect(() => {
+    if (isOpen) return
+
+    setDraftValues(normalizeTargetValues(values))
+    setLocalDetails({})
+  }, [isOpen, values])
 
   const openEditor = (value: string | null) => {
     setEditingValue(value)
@@ -96,6 +120,40 @@ const GroupMappingDrawer = ({ isOpen, values, mappings, device, onOpenChange, on
     onApply(draft.values)
   }
 
+  /** 快捷切换对话框的应用回调：写回草稿并立即富化新条目的展示信息 */
+  const handleQuickSwitchApply = (nextValues: string[][]) => {
+    const next = normalizeTargetValues(nextValues[0] ?? draftValues)
+
+    const nextDetails: MappingDetails = {}
+    next.forEach((value) => {
+      if (draftValues.includes(value)) return
+
+      const parsed = parseTargetValue(value)
+      if (!parsed) return
+
+      const oldValue = draftValues.find((item) => parseTargetValue(item)?.groupId === parsed.groupId)
+      const previousDetail = oldValue ? localDetails[oldValue] || mappings.find((item) => formatTargetValue(item) === oldValue) : undefined
+      const bot = bots.find((item) => item.id === parsed.botId)
+
+      const mapping: PushTargetMapping = { groupId: parsed.groupId, botId: parsed.botId }
+      if (previousDetail?.groupName) mapping.groupName = previousDetail.groupName
+      if (previousDetail?.groupAvatar) mapping.groupAvatar = previousDetail.groupAvatar
+      if (bot?.name) mapping.botName = bot.name
+      if (bot?.avatar) mapping.botAvatar = bot.avatar
+      if (bot) mapping.isOnline = bot.isOnline
+      nextDetails[value] = mapping
+    })
+
+    setDraftValues(next)
+    setLocalDetails((current) => {
+      const merged = { ...current, ...nextDetails }
+      draftValues.forEach((value) => {
+        if (!next.includes(value)) delete merged[value]
+      })
+      return merged
+    })
+  }
+
   const handleOpenChange = (open: boolean) => {
     if (!open) {
       onApply(draft.values)
@@ -115,7 +173,26 @@ const GroupMappingDrawer = ({ isOpen, values, mappings, device, onOpenChange, on
               <Description>管理所有接收推送的群和 Bot 映射。</Description>
             </Drawer.Header>
             <Drawer.Body className="flex min-h-0 flex-col gap-3">
-              <Button className="self-start" size={device === 'mobile' ? 'sm' : 'md'} onPress={() => openEditor(null)}>
+              <div className="rounded-lg border border-default-200 bg-default-50/50 p-3">
+                <div className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-1">
+                    <Label>快捷切换 Bot</Label>
+                    <Description>把本推送对象的推送目标从当前 Bot 切换到目标 Bot，先应用到下方草稿。</Description>
+                  </div>
+                  <Button
+                    className="self-start"
+                    size={buttonSize}
+                    variant="secondary"
+                    isDisabled={draftValues.length === 0}
+                    onPress={() => setSwitchOpen(true)}
+                  >
+                    <ArrowRightLeft className="size-4" />
+                    <span>切换 Bot</span>
+                  </Button>
+                </div>
+              </div>
+
+              <Button className="self-start" size={buttonSize} onPress={() => openEditor(null)}>
                 <Plus className="size-4" />
                 添加推送目标
               </Button>
@@ -128,10 +205,10 @@ const GroupMappingDrawer = ({ isOpen, values, mappings, device, onOpenChange, on
               />
             </Drawer.Body>
             <Drawer.Footer>
-              <Button size={device === 'mobile' ? 'sm' : 'md'} slot="close" variant="secondary">
+              <Button size={buttonSize} slot="close" variant="secondary">
                 取消
               </Button>
-              <Button size={device === 'mobile' ? 'sm' : 'md'} slot="close" onPress={finish}>
+              <Button size={buttonSize} slot="close" onPress={finish}>
                 完成
               </Button>
             </Drawer.Footer>
@@ -146,6 +223,23 @@ const GroupMappingDrawer = ({ isOpen, values, mappings, device, onOpenChange, on
         isOpen={editorOpen}
         onConfirm={writeTarget}
         onOpenChange={setEditorOpen}
+      />
+
+      <BotQuickSwitchDialog
+        device={device}
+        isOpen={switchOpen}
+        items={[
+          {
+            label: itemLabel || '本推送对象',
+            description: '',
+            values: draftValues
+          }
+        ]}
+        title="快捷切换 Bot"
+        description="把本推送对象的推送目标从当前 Bot 切换到目标 Bot，先应用到抽屉草稿。"
+        appliedHint="完成抽屉并保存配置后生效"
+        onApply={handleQuickSwitchApply}
+        onOpenChange={setSwitchOpen}
       />
     </>
   )

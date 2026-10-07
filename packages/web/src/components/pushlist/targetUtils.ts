@@ -31,3 +31,31 @@ export const getTargetDisplayName = (mapping: PushTargetMapping) => {
   const bot = mapping.botName || mapping.botId
   return `${group} -> ${bot}`
 }
+
+/** 将单条 `groupId:botId` 的 Bot 替换为指定 Bot；解析失败时原样返回 */
+export const switchTargetBot = (value: string, botId: string): string => {
+  const parsed = parseTargetValue(value)
+  if (!parsed) return value
+  return formatTargetValue({ groupId: parsed.groupId, botId })
+}
+
+/** 单个 Bot 在推送目标中的引用统计 */
+export interface BotUsageCount {
+  botId: string
+  count: number
+}
+
+/** 汇总若干推送对象的推送目标，统计每个 Bot 被引用的条数（按条数降序） */
+export const collectBotUsage = (valuesGroups: string[][]): BotUsageCount[] => {
+  const counts = new Map<string, number>()
+
+  for (const values of valuesGroups) {
+    for (const value of values) {
+      const parsed = parseTargetValue(value)
+      if (!parsed) continue
+      counts.set(parsed.botId, (counts.get(parsed.botId) ?? 0) + 1)
+    }
+  }
+
+  return Array.from(counts, ([botId, count]) => ({ botId, count })).sort((a, b) => b.count - a.count)
+}

@@ -9,6 +9,7 @@ import { useState } from 'react'
 
 import BilibiliPushItemPanel from './BilibiliPushItemPanel'
 import DouyinPushItemPanel from './DouyinPushItemPanel'
+import PushBotQuickSwitch from './PushBotQuickSwitch'
 import type { BilibiliPushItem, DouyinPushItem, PushPlatform, PushlistManagerProps } from './types'
 
 export type { BilibiliPushItem, DouyinPushItem } from './types'
@@ -67,6 +68,17 @@ export default function PushlistManager({ douyinList, bilibiliList, onDouyinChan
 
         <Tabs.Panel id="douyin">
           <div className="space-y-4 pt-4">
+            <PushBotQuickSwitch
+              device={device}
+              platformLabel="抖音"
+              items={douyinList.map((item, index) => ({
+                label: item.remark || item.short_id || item.sec_uid || `推送项 ${index + 1}`,
+                description: item.short_id ? `抖音号: ${item.short_id}` : item.sec_uid ? `sec_uid: ${item.sec_uid.slice(0, 20)}...` : '',
+                values: item.group_id
+              }))}
+              onApply={(nextValues) => onDouyinChange(douyinList.map((item, index) => ({ ...item, group_id: nextValues[index] ?? item.group_id })))}
+            />
+
             <Button className="w-full" variant="primary" size="sm" onPress={() => onDouyinChange([...douyinList, createDouyinItem()])}>
               <Plus className="size-4" />
               <span>添加抖音推送项</span>
@@ -86,6 +98,19 @@ export default function PushlistManager({ douyinList, bilibiliList, onDouyinChan
 
         <Tabs.Panel id="bilibili">
           <div className="space-y-4 pt-4">
+            <PushBotQuickSwitch
+              device={device}
+              platformLabel="B站"
+              items={bilibiliList.map((item, index) => ({
+                label: item.remark || `UID: ${item.host_mid}` || `推送项 ${index + 1}`,
+                description: `B站 UID: ${item.host_mid}`,
+                values: item.group_id
+              }))}
+              onApply={(nextValues) =>
+                onBilibiliChange(bilibiliList.map((item, index) => ({ ...item, group_id: nextValues[index] ?? item.group_id })))
+              }
+            />
+
             <Button className="w-full" variant="primary" onPress={() => onBilibiliChange([...bilibiliList, createBilibiliItem()])}>
               <Plus className="size-4" />
               <span>添加B站推送项</span>

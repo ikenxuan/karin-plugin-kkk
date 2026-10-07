@@ -106,6 +106,7 @@ const GroupMappingsField = ({ value, disabled, itemLabel, device, onChange }: Gr
         <GroupMappingDrawer
           device={device}
           isOpen={drawerOpen}
+          itemLabel={itemLabel}
           mappings={mappings}
           values={normalizedValues}
           onApply={handleApply}
