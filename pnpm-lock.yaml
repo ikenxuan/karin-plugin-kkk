@@ -324,8 +324,8 @@ importers:
         specifier: ^13.15.1
         version: 13.15.1(react@19.3.0)
       '@ikenxuan/amagi':
-        specifier: workspace:*
-        version: link:../amagi/packages/core
+        specifier: 7.0.0-beta.8
+        version: 7.0.0-beta.8(debug@4.4.3(supports-color@7.2.0))(supports-color@7.2.0)
       '@karinjs/adapter-qqbot':
         specifier: 3.3.0
         version: 3.3.0
@@ -1114,6 +1114,9 @@ packages:
     resolution: {integrity: sha512-S35E7vJlJzMeoqjwwI7ZmQUJ2W+2KspnB6bc49KdoDGwp5mCgAy9L3sscfWMewQSMgBdPU8KWWwpSGq5DJyAFw==}
     peerDependencies:
       react: ^16.13 || ^17 || ^18 || ^19
+
+  '@ikenxuan/amagi@7.0.0-beta.8':
+    resolution: {integrity: sha512-Htvjyn/TICYSWeoa2Lq+pQgerCSyPLdj0G4UbTO8qOecuXlE++MGopyAwh61lyaDmx/rIguVutjjnr1SXJHghA==}
 
   '@ikenxuan/qrcode@1.5.0':
     resolution: {integrity: sha512-tF7q9LVVWGlG9KJQx1AiY313lrR2uFjTzkQGpmTC2msZ+vArgnjgSIFvUjv7WMl2nPR9hySl6/NkAU2Wwn1iZg==}
@@ -7427,6 +7430,17 @@ snapshots:
   '@icons-pack/react-simple-icons@13.15.1(react@19.3.0)':
     dependencies:
       react: 19.3.0
+
+  '@ikenxuan/amagi@7.0.0-beta.8(debug@4.4.3(supports-color@7.2.0))(supports-color@7.2.0)':
+    dependencies:
+      '@ikenxuan/xhshow-ts': 1.1.0
+      axios: 1.20.0(debug@4.4.3(supports-color@7.2.0))(supports-color@7.2.0)
+      express: 5.2.1(supports-color@7.2.0)
+      protobufjs: 8.8.0
+      zod: 4.6.5
+    transitivePeerDependencies:
+      - debug
+      - supports-color
 
   '@ikenxuan/qrcode@1.5.0': {}
 
