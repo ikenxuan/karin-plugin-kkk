@@ -2,6 +2,19 @@
 
 # Changelog
 
+## [2.45.1-beta.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.45.0...v2.45.1-beta.0) (2026-10-08)
+
+
+### 🧰 其他更新
+
+* 优化发布脚本 ([a37069d](https://github.com/ikenxuan/karin-plugin-kkk/commit/a37069dd510b704d647f860606cccb8738547559))
+* 更新 package.json 版本至 2.45.0，并优化发布脚本以稳定版本钉住 ([9b2f89e](https://github.com/ikenxuan/karin-plugin-kkk/commit/9b2f89ee5995173bdaab1a110a37d0ff1b64aed0))
+
+
+### 💄 UI 优化
+
+* **web:** 优化网页配置订阅群组交互 ([7529a4e](https://github.com/ikenxuan/karin-plugin-kkk/commit/7529a4e802337ae1c266549afa31fbfc73edfbc4))
+
 ## [2.45.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.44.0...v2.45.0) (2026-10-07)
 
 > 本版本为测试/预览线的转正发布，自上一个 tag 以来没有新增常规提交。完整变更记录见 `2.45.0-rc.4` 及更早的各小节。
