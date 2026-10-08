@@ -31,6 +31,7 @@
     "@clack/prompts": "^1.8.1",
     "@kkk/cli": "workspace:*",
     "@types/node": "24.19.1",
+    "chalk": "6.0.1",
     "cross-env": "10.1.0",
     "husky": "^9.1.7",
     "oxfmt": "^0.72.0",

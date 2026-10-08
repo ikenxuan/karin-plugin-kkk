@@ -3,6 +3,7 @@ import { readFileSync, writeFileSync } from 'node:fs'
 import process from 'node:process'
 
 import * as clack from '@clack/prompts'
+import chalk from 'chalk'
 
 import { changelogSections } from './changelog-types'
 import { isSemverGreater } from '../packages/core/src/module/utils/semver'
@@ -98,6 +99,22 @@ const bumpPrerelease = (tag: string): string => {
   const last = segs[segs.length - 1]
   segs[segs.length - 1] = /^\d+$/.test(last) ? String(Number(last) + 1) : `${last}.1`
   return `${core}-${segs.join('.')}`
+}
+
+/**
+ * 顶部徽标行：stable / rc / beta 三渠道当前已发布的最新版本（无 tag 显示 无）。
+ * 颜色走 chalk：自动感知 TTY / --no-color / FORCE_COLOR，无色环境输出纯文本。
+ */
+const channelBadges = (): string => {
+  const tags = gitOut(['tag', '-l', 'v*', '--sort=-creatordate']).split('\n').filter(Boolean)
+  const latestOf = (preid: string): string => tags.find((t) => channelOf(t) === preid)?.replace(/^v/, '') ?? ''
+  const slot = (label: string, value: string, style: (s: string) => string): string =>
+    `${chalk.dim(label)} ${value ? style(value) : chalk.dim('无')}`
+  return [
+    slot('stable', latestOf(''), chalk.bold.green),
+    slot('rc', latestOf('rc'), chalk.bold.yellow),
+    slot('beta', latestOf('beta'), chalk.bold.magenta)
+  ].join(chalk.dim(' ｜ '))
 }
 
 /** 收集上一版 tag 之后的常规提交（跳过 merge），解析 conventional 前缀 */
@@ -215,11 +232,13 @@ if (!dry) {
 const prevTag = previousTag()
 const range = prevTag ? `${prevTag}..HEAD` : 'HEAD'
 
-// 发布前的提交清单（与 bumpp 同款：先给上下文，再选版本）
-const commitsList = gitOut(['log', range, '--no-merges', '--pretty=  %h  %s'])
+// 发布前的提交清单（与 bumpp 同款：先给上下文，再选版本）。
+// 缩进由 JS 侧补：gitOut 的 trim 会吃掉写在 --pretty 里的首行前导空格
+const commitsList = gitOut(['log', range, '--no-merges', '--pretty=%h  %s'])
 const commitCount = commitsList ? commitsList.split('\n').length : 0
 if (commitCount > 0) {
-  console.log(`\n${commitCount} Commits since the last version:\n${commitsList}\n`)
+  const indented = commitsList.split('\n').map((l) => `  ${l}`).join('\n')
+  console.log(`\n${commitCount} Commits since the last version:\n${indented}\n`)
 }
 
 // ── 版本选择：以最近 stable tag 为基准，按版本线 × 渠道推导候选 ──────────
@@ -257,7 +276,10 @@ const lines: Array<[string, string]> = [
   [`${maj}.${min + 1}.0`, '下一功能线'],
   [`${maj + 1}.0.0`, '大版本线']
 ]
-for (const [core, lineName] of lines) {
+for (const [i, [core, lineName]] of lines.entries()) {
+  // clack 无原生分隔线：用禁用伪选项模拟——SelectPrompt 的 findCursor 会跳过
+  // disabled 项，光标落不上、Enter 选不中，纯视觉分组
+  if (i > 0) opts.push({ value: `__divider_${i}__`, label: `── ${lineName} ──`, disabled: true })
   for (const [preid, chName] of [['beta', '测试渠道'], ['rc', '预览渠道'], ['', '正式渠道']]) {
     pushOpt(preid ? nextPre(core, preid) : core, `${lineName} · ${chName}`)
   }
@@ -271,6 +293,7 @@ if (dry) {
   version = dryTo || bumpPrerelease(lastPre || `v0.0.0`) || '0.0.1'
   console.log(`🧪 dry 模式：预览 ${version} 的 CHANGELOG 条目`)
 } else {
+  console.log(`\n当前渠道版本：${channelBadges()}\n`)
   const picked = await clack.select({
     message: '选择要发布的版本',
     options,
