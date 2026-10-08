@@ -11,7 +11,7 @@ import {
   Gauge,
   GitBranch,
   ListChecks,
-  Puzzle,
+  Network,
   QrCode,
   Radio,
   Repeat,
@@ -293,7 +293,8 @@ const getLogLevelTheme = (level: LogLevel, dark: boolean) => {
   return themeMap[level] || themeMap['TRAC']
 }
 
-const ADAPTER_LOGO_MAP: Record<string, string> = {
+/** 协议实现（napcat / lagrange / …）的徽标。键按 `protocol` 的取值写，没有则落空。 */
+const PROTOCOL_LOGO_MAP: Record<string, string> = {
   napcat: '/image/other/handlerError/napcat.webp',
   lagrange: '/image/other/handlerError/lagrange.webp',
   chronocat: '/image/other/handlerError/chronocat.svg',
@@ -303,12 +304,85 @@ const ADAPTER_LOGO_MAP: Record<string, string> = {
   gocq: '/image/other/handlerError/gocq-http.webp'
 }
 
-const getAdapterLogo = (adapterName: string): React.ReactNode => {
-  const nameLower = adapterName.toLowerCase()
-  for (const [key, logoPath] of Object.entries(ADAPTER_LOGO_MAP)) {
-    if (nameLower.includes(key)) return <img src={logoPath} className="h-20 w-auto" alt={adapterName} />
+/** 协议标准（onebot11 / milky / satori）的徽标。onebot 两个版本共用一张。 */
+const STANDARD_LOGO_MAP: Record<string, string> = {
+  onebot: '/image/other/handlerError/onebot.png',
+  milky: '/image/other/handlerError/Milky.png',
+  satori: '/image/other/handlerError/satori.png'
+}
+
+/**
+ * 在徽标表里找一张图。
+ *
+ * 同时拿 `protocol` 与 `name` 去匹配：Karin 的 `protocol` 是枚举（`napcat`、`lagrange`…），
+ * 那是首选依据；但自建适配器常把 `protocol` 填成 `other`、真正的实现名只写在 `name` 里
+ * （如 `NapCat.Onebot`），所以两者拼起来做子串匹配，保住这部分的徽标覆盖。
+ * @param map - 徽标表
+ * @param values - 参与匹配的字段原文
+ * @returns 命中的图片路径，没有对应徽标时为 `undefined`
+ */
+const findLogo = (map: Record<string, string>, ...values: unknown[]): string | undefined => {
+  const haystack = values.map(String).join(' ').toLowerCase()
+  for (const [key, logoPath] of Object.entries(map)) {
+    if (haystack.includes(key)) return logoPath
   }
-  return <Puzzle size={64} className="text-danger/80" />
+  return undefined
+}
+
+/** 徽标的透明度渐变：右上角全不透明，往左下收到一半。 */
+const LOGO_MASK = 'linear-gradient(to bottom left, rgba(0,0,0,1) 0%, rgba(0,0,0,0.5) 100%)'
+
+/**
+ * 卡片右侧的徽标。
+ *
+ * 是 flex 的真实兄弟节点，不是绝对定位的水印 —— 这样格子高度会把它算进去，哪怕文字只有
+ * 一行也不会裁掉图；原先那版靠负偏移加 `overflow-hidden`，协议实现那格一到三行就把图切了。
+ *
+ * **定高不定宽**：`h-16` 固定高度、`w-auto` 让宽随图自己的比例走。徽标长宽比差得很远
+ * （napcat 是 3053×4114 的竖图、onebot 是正方），锁成方框会给竖图留两条空白。
+ * 反过来也不能用 `h-full`：那会让高度喂给宽度、宽度又撑开行高，格子一路涨到 600px。
+ *
+ * 高度**正好等于两行文字块**（标签 + 值 = 64px）。网格行是 `items-stretch`，徽标一旦更高
+ * 就由它决定整行高度，同行那个没徽标的格子只能跟着空出一截 —— 96px 时四格全被拉到 120px。
+ *
+ * 没有对应徽标就整块不渲染，文字区照常铺满。
+ */
+const CardLogo: React.FC<{ src?: string; alt: string }> = ({ src, alt }) => {
+  if (!src) return null
+  return (
+    <img
+      src={src}
+      alt={alt}
+      className="h-16 w-auto object-contain shrink-0 self-center rounded-xl"
+      style={{ WebkitMaskImage: LOGO_MASK, maskImage: LOGO_MASK }}
+    />
+  )
+}
+
+/**
+ * `AdapterStandard` 的中文说法。
+ *
+ * 适配器顶层要回答的是「这个事件源遵的是哪套标准接口」，而不是它自称什么名字 ——
+ * 名字（`NapCat.Onebot` 之类）是协议实现那一格的事。
+ */
+const ADAPTER_STANDARD_LABELS: Record<string, string> = {
+  onebot11: 'OneBot v11',
+  onebot12: 'OneBot v12',
+  oicq: 'OICQ',
+  icqq: 'ICQQ',
+  milky: 'Milky',
+  satori: 'Satori'
+}
+
+/**
+ * 把 `standard` 印成一句话。
+ * @param standard - Karin 适配器声明的协议标准
+ * @returns 形如「符合 OneBot v11 标准」；`other` / 空值时说明它没声明通用标准
+ */
+const standardSentenceOf = (standard: unknown): string => {
+  const key = String(standard ?? '').toLowerCase()
+  if (key === '' || key === 'other') return '未声明通用标准'
+  return `符合 ${ADAPTER_STANDARD_LABELS[key] ?? _.upperFirst(_.camelCase(key))} 标准`
 }
 
 /**
@@ -1004,26 +1078,22 @@ export const handlerError: React.FC<PosterProps<ApiErrorData>> = (props) => {
               >
                 <div className="flex items-start justify-between gap-8 mb-6">
                   <div className="flex items-center gap-6 min-w-0">
-                    {getAdapterLogo(data.adapterInfo.name)}
+                    <Network size={64} className="text-danger/80 shrink-0" />
                     <div className="min-w-0">
                       <p className="text-xl mb-1" style={{ color: mutedColor }}>
                         Adapter / 适配器
                       </p>
-                      <div className="flex items-center gap-4 flex-wrap">
-                        <p className="text-3xl font-bold truncate" style={{ color: accentColor }}>
-                          {data.adapterInfo.name}
-                        </p>
-                        <Chip size="lg" variant="soft" color="danger" className="h-8 text-lg">
-                          {data.adapterInfo.version.startsWith('v') ? data.adapterInfo.version : `v${data.adapterInfo.version}`}
-                        </Chip>
-                      </div>
+                      <p className="text-3xl font-bold truncate" style={{ color: accentColor }}>
+                        {standardSentenceOf(data.adapterInfo.standard)}
+                      </p>
                     </div>
                   </div>
                   <p className="text-xl font-medium mb-4" style={{ color: mutedColor }}>
                     事件信息来源
                   </p>
                 </div>
-                <div className="grid grid-cols-4 gap-4 text-lg" style={{ color: secondaryColor }}>
+                {/* 两列两行：协议实现那一格要装实现名与版本号，四列挤不开 */}
+                <div className="grid grid-cols-2 gap-4 text-lg" style={{ color: secondaryColor }}>
                   <div
                     className="rounded-2xl px-4 py-3"
                     style={{ backgroundColor: dark ? 'rgba(248,113,113,0.08)' : 'rgba(220,38,38,0.05)' }}
@@ -1032,60 +1102,37 @@ export const handlerError: React.FC<PosterProps<ApiErrorData>> = (props) => {
                     <p className="font-semibold break-all text-2xl">{String(data.adapterInfo.platform)}</p>
                   </div>
                   <div
-                    className="rounded-2xl px-4 py-3 relative overflow-hidden"
+                    className="rounded-2xl px-4 py-3 flex items-stretch gap-4"
                     style={{ backgroundColor: dark ? 'rgba(248,113,113,0.08)' : 'rgba(220,38,38,0.05)' }}
                   >
-                    <p className="text-sm mb-1 opacity-75">Standard / 协议标准</p>
-                    <p className="font-semibold break-all text-2xl">{_.upperFirst(_.camelCase(String(data.adapterInfo.standard)))}</p>
-                    {String(data.adapterInfo.standard).toLowerCase() === 'milky' && (
-                      <div className="absolute inset-0 pointer-events-none">
-                        <img
-                          src="/image/other/handlerError/Milky.png"
-                          alt="Milky"
-                          className="absolute -right-2 -bottom-3 w-24 h-24 object-contain"
-                          style={{
-                            WebkitMaskImage: 'linear-gradient(to top left, transparent 0%, rgba(0,0,0,1) 60%)',
-                            maskImage: 'linear-gradient(to top left, transparent 0%, rgba(0,0,0,1) 60%)',
-                            opacity: 1
-                          }}
-                        />
-                      </div>
-                    )}
-                    {String(data.adapterInfo.standard).toLowerCase() === 'satori' && (
-                      <div className="absolute inset-0 pointer-events-none">
-                        <img
-                          src="/image/other/handlerError/satori.png"
-                          alt="Satori"
-                          className="absolute -right-2 -bottom-3 w-24 h-24 object-contain"
-                          style={{
-                            WebkitMaskImage: 'linear-gradient(to top left, transparent 0%, rgba(0,0,0,1) 60%)',
-                            maskImage: 'linear-gradient(to top left, transparent 0%, rgba(0,0,0,1) 60%)',
-                            opacity: 1
-                          }}
-                        />
-                      </div>
-                    )}
-                    {String(data.adapterInfo.standard).includes('onebot') && (
-                      <div className="absolute inset-0 pointer-events-none">
-                        <img
-                          src="/image/other/handlerError/onebot.png"
-                          alt="OneBot"
-                          className="absolute -right-2 -bottom-3 w-24 h-24 object-contain"
-                          style={{
-                            WebkitMaskImage: 'linear-gradient(to top left, transparent 0%, rgba(0,0,0,1) 60%)',
-                            maskImage: 'linear-gradient(to top left, transparent 0%, rgba(0,0,0,1) 60%)',
-                            opacity: 1
-                          }}
-                        />
-                      </div>
-                    )}
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm mb-1 opacity-75">Standard / 协议标准</p>
+                      <p className="font-semibold break-all text-2xl">{_.upperFirst(_.camelCase(String(data.adapterInfo.standard)))}</p>
+                    </div>
+                    <CardLogo src={findLogo(STANDARD_LOGO_MAP, data.adapterInfo.standard)} alt="协议标准徽标" />
                   </div>
                   <div
-                    className="rounded-2xl px-4 py-3"
+                    className="rounded-2xl px-4 py-3 flex items-stretch gap-4"
                     style={{ backgroundColor: dark ? 'rgba(248,113,113,0.08)' : 'rgba(220,38,38,0.05)' }}
                   >
-                    <p className="text-sm mb-1 opacity-75">Protocol / 协议实现</p>
-                    <p className="font-semibold break-all text-2xl">{String(data.adapterInfo.protocol)}</p>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm mb-1 opacity-75">Protocol / 协议实现</p>
+                      {/* 实现名与版本号跟 protocol 挤在同一行，这一格才和另外三格一样是两行 ——
+                          它独占三行的话，整行会被拉到它的高度，通信方式那格就空出一截。
+                          名字与 protocol 同字（chronocat 这类）时只留版本号，不把同一个词印两遍。
+                          名字 `truncate` 限一行：换行会让这一格变三行，整行又被拉高、通信方式那格空一截。
+                          protocol 与版本号是定位用的关键信息，名字是补充，所以牺牲的是名字的完整度 */}
+                      <div className="flex items-center gap-3">
+                        <p className="font-semibold text-2xl shrink-0">{String(data.adapterInfo.protocol)}</p>
+                        {data.adapterInfo.name.toLowerCase() !== String(data.adapterInfo.protocol).toLowerCase() && (
+                          <p className="text-xl opacity-80 truncate min-w-0">{data.adapterInfo.name}</p>
+                        )}
+                        <Chip size="lg" variant="soft" color="danger" className="h-7 text-base shrink-0">
+                          {data.adapterInfo.version.startsWith('v') ? data.adapterInfo.version : `v${data.adapterInfo.version}`}
+                        </Chip>
+                      </div>
+                    </div>
+                    <CardLogo src={findLogo(PROTOCOL_LOGO_MAP, data.adapterInfo.protocol, data.adapterInfo.name)} alt="协议实现徽标" />
                   </div>
                   <div
                     className="rounded-2xl px-4 py-3"

@@ -27,6 +27,9 @@ const UPDATE_CHANNELS = ['stable', 'beta', 'rc'] as const
 
 /** 各渠道更新提醒锁：记录该渠道上次已推送的版本，检测到新版本推送一次后上锁 */
 const updateLockKey = (channel: string) => `kkk:update:lock:${channel}`
+/** 推送文本用的渠道中文名（UpdateNotifyChannels 的取值 → 展示标签） */
+const UPDATE_CHANNEL_LABELS: Record<string, string> = { stable: '正式版', beta: '测试版', rc: '预览版' }
+
 const UPDATE_MSGID_KEY = 'kkk:update:msgid'
 /** 推送图对应的安装目标版本（引用回复推送图「更新」时安装它） */
 const UPDATE_PUSHED_KEY = 'kkk:update:pushed'
@@ -86,7 +89,7 @@ const Handler = async () => {
 
   // 逐渠道判定并上锁：该渠道有新版本且未曾推送过 → 记为待推送并写入该渠道的锁
   // （锁在发送前写入，渲染/发送失败也不会反复重推同一版本）
-  const pending = new Set<string>()
+  const versionChannels = new Map<string, string[]>()
   for (const channel of channels) {
     const version = tagVersions.get(tagOf(channel)) ?? null
     if (!version || !isNewVersion(version)) continue
@@ -95,17 +98,17 @@ const Handler = async () => {
       if (typeof locked === 'string' && locked === version) continue
       await db.set(updateLockKey(channel), version)
     } catch {}
-    pending.add(version)
+    versionChannels.set(version, [...(versionChannels.get(version) ?? []), channel])
   }
-  if (pending.size === 0) return true
+  if (versionChannels.size === 0) return true
 
   // 引用回复推送图「更新」时的安装目标：多渠道同时待推送时取 semver 最大者
-  const installTarget = [...pending].sort((a, b) => (isSemverGreater(b, a) ? 1 : -1))[0]
+  const installTarget = [...versionChannels.keys()].sort((a, b) => (isSemverGreater(b, a) ? 1 : -1))[0]
 
   // 金丝雀用户：stable/beta/rc 发布的是同一条 main 的快照，stable 转正条目还全量
   // 归纳了整条版本线 —— 逐渠道各推一张图会把同一批变更重复多遍。只渲染 semver 最大
   // 的待推送版本（其变更日志覆盖其余渠道内容）；各渠道锁已按版本写好，不会被重推
-  const rendered = installedIsCanary && pending.size > 1 ? new Set([installTarget]) : pending
+  const rendered = installedIsCanary && versionChannels.size > 1 ? [installTarget] : [...versionChannels.keys()]
 
   const masters = config.master().filter((id) => id !== 'console')
   if (masters.length === 0) return true
@@ -139,8 +142,13 @@ const Handler = async () => {
     // 仅在该 Bot 存在主人匹配时渲染
     const hasOwners = Array.from(masterToBot.entries()).some(([, b]) => b.account.selfId === item.bot.account.selfId)
     if (!hasOwners) continue
+    // 推送文本标注渠道与版本：多渠道订阅时不用点开图片即可区分是哪条渠道的更新
+    const describe = (version: string): string => {
+      const labels = (versionChannels.get(version) ?? []).map((c) => UPDATE_CHANNEL_LABELS[c] ?? c).join('/')
+      return labels ? `${labels} ${version}` : version
+    }
     const elements: Array<ReturnType<typeof segment.image> | ReturnType<typeof segment.text>> = [
-      segment.text('karin-plugin-kkk 有新的更新！')
+      segment.text(`karin-plugin-kkk 更新提醒 · ${rendered.map(describe).join(' / ')}`)
     ]
     for (const version of rendered) {
       const img = await getChangelogImage({ bot: item.bot } as Message, {
