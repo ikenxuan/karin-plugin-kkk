@@ -82,9 +82,9 @@ export class Xiaohongshu extends Base {
   }
 
   async XiaohongshuHandler(data: XiaohongshuIdData) {
-    if (Config.amagi.cookies.xiaohongshu === '') {
-      throw new Error('我还没有小红书的 Cookies，暂时无法解析呢 ~')
-    }
+    // if (Config.amagi.cookies.xiaohongshu === '') {
+    //   throw new Error('我还没有小红书的 Cookies，暂时无法解析呢 ~')
+    // }
     if (Config.app.parseTip) {
       await this.e.reply('检测到小红书链接，开始解析')
     }
@@ -402,7 +402,7 @@ export const xiaohongshuProcessVideos = (streamData: unknown, videoQuality: stri
   }
 
   // 按兼容性优先级收集所有视频流：h265 > h264 > av1 > h266
-  const codecPriority = ['h265', 'h264', 'av1', 'h266']
+  const codecPriority = ['h265', 'h264', 'av1', 'h266', 'EF4', 'EF5', 'EF6', 'EF7']
   const allVideos: XhsVideoStream[] = []
 
   for (const codec of codecPriority) {

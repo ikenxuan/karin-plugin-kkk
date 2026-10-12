@@ -395,7 +395,12 @@ const ERROR_KIND_META: Record<AmagiErrorDetail['kind'], { zh: string; hint: stri
   validation: { zh: '参数校验', hint: '调用参数不合法，通常是插件自身的问题' },
   auth: { zh: '身份失效', hint: 'Cookie 缺失或已过期，重新扫码登录即可' },
   rate_limit: { zh: '触发限流', hint: '请求太频繁，等一会儿再试' },
-  risk: { zh: '命中风控', hint: '平台要求人机验证，或需要换一个账号的 Cookie' },
+  // 「风险类」远不止人机验证，笼统写「需要人机验证 / 换一个账号的 Cookie」会把用户引到
+  // 错方向：小红书游客的评论接口回 461 是**限流**或**分享令牌失效**（令牌与发放它的会话
+  // 绑定，换个会话即废），快手 CAPTCHA_REQUIRED 才算真的人机验证，抖音 SIGNATURE_REFUSED
+  // 则是 amagi 侧的签名问题、与账号无关。而且游客路径本来就没配 Cookie，「换一个」无从谈起。
+  // 所以先给对所有成因都成立的那个动作：等几分钟重试。
+  risk: { zh: '命中风控', hint: '平台拦了这次请求：多为请求过频或令牌失效，少数才是人机验证。先等几分钟重试，仍失败再考虑换 Cookie' },
   not_found: { zh: '内容不存在', hint: '作品可能已删除、被设为私密或仅粉丝可见' },
   forbidden: { zh: '无权访问', hint: '当前账号看不到这份内容（付费 / 地区 / 权限）' },
   unavailable: { zh: '服务不可用', hint: '平台侧临时故障，稍后重试' },

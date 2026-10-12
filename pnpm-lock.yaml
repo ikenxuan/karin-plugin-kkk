@@ -253,9 +253,6 @@ importers:
 
   packages/amagi/packages/core:
     dependencies:
-      '@ikenxuan/xhshow-ts':
-        specifier: ^1.1.0
-        version: 1.1.0
       axios:
         specifier: ^1.20.0
         version: 1.20.0(debug@4.4.3(supports-color@7.2.0))(supports-color@7.2.0)
@@ -1091,9 +1088,6 @@ packages:
 
   '@ikenxuan/qrcode@1.5.0':
     resolution: {integrity: sha512-tF7q9LVVWGlG9KJQx1AiY313lrR2uFjTzkQGpmTC2msZ+vArgnjgSIFvUjv7WMl2nPR9hySl6/NkAU2Wwn1iZg==}
-
-  '@ikenxuan/xhshow-ts@1.1.0':
-    resolution: {integrity: sha512-wvWgHMr86qBMneGg3VWNj/MyTM1YI2KfgueBpp+ajfNVxX98r9hVVUoDHYcadPlk9aKWWFcpa/P6Rj5aESBHew==}
 
   '@img/colour@1.1.0':
     resolution: {integrity: sha512-Td76q7j57o/tLVdgS746cYARfSyxk8iEfRxewL9h4OMzYhbW4TAcppl0mT4eyqXddh6L/jwoM75mo7ixa/pCeQ==}
@@ -7416,10 +7410,6 @@ snapshots:
       react: 19.3.0
 
   '@ikenxuan/qrcode@1.5.0': {}
-
-  '@ikenxuan/xhshow-ts@1.1.0':
-    dependencies:
-      zod: 4.6.5
 
   '@img/colour@1.1.0':
     optional: true
