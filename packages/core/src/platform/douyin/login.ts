@@ -9,8 +9,11 @@ import { resolveTriggerAvatarUrl } from '@/module/utils/bot'
 import { Config } from '@/module/utils/Config'
 import { logger } from '@/module/utils/logger'
 
-/** 等待用户扫码的时限上限，与消息可撤回窗口（2 分钟）对齐 */
-const SCAN_TIMEOUT = 120_000
+/**
+ * 等扫码的时限：撤回窗口是 120s，这里留 10s 余量给网络与程序时延 ——
+ * 顶格写 120s 的话，超时那一刻二维码已经撤不掉了。
+ */
+const SCAN_TIMEOUT = 110_000
 
 /** 扫码后等待手机确认或完成二次验证的时限 */
 const CONFIRM_TIMEOUT = 180_000

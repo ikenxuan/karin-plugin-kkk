@@ -121,7 +121,7 @@ export const sendErrorToAllMasters = async (
  *
  * @returns
  */
-const resolveSingleMasterTarget = async (
+export const resolveSingleMasterTarget = async (
   event: ErrorContext['event'],
   isPush: boolean
 ): Promise<{ master: string; botId: string } | undefined> => {

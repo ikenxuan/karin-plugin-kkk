@@ -9,8 +9,11 @@ import { resolveTriggerAvatarUrl } from '@/module/utils/bot'
 import { Config } from '@/module/utils/Config'
 import { logger } from '@/module/utils/logger'
 
-/** 等扫码的时限；超时还没扫就撤回二维码结束会话 */
-const SCAN_TIMEOUT = 120_000
+/**
+ * 等扫码的时限：撤回窗口是 120s，这里留 10s 余量给网络与程序时延 ——
+ * 顶格写 120s 的话，超时那一刻二维码已经撤不掉了。
+ */
+const SCAN_TIMEOUT = 110_000
 
 /** 扫码后等手机确认（含可能出现的风控二次验证）的时限 */
 const CONFIRM_TIMEOUT = 180_000
