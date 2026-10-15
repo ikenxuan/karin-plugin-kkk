@@ -4,6 +4,10 @@ douyin:
 # B站ck
 bilibili:
 
+# B站登录态续期令牌（refresh_token）：扫码登录成功后自动写入，用于「B站续期」命令。
+# 它与 B站 ck 是一组（同一次登录下发），请勿手工改动
+bilibiliRefreshToken:
+
 # 快手ck
 kuaishou:
 

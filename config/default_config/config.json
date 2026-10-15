@@ -14,6 +14,7 @@
     },
     "cookies": {
       "bilibili": "",
+      "bilibiliRefreshToken": "",
       "douyin": "",
       "kuaishou": "",
       "xiaohongshu": ""
@@ -154,7 +155,8 @@
   "kuaishou": {
     "switch": true,
     "comment": true,
-    "numcomment": 10
+    "numcomment": 10,
+    "loginPerm": "master"
   },
   "xiaohongshu": {
     "switch": true,
@@ -167,7 +169,8 @@
     ],
     "numcomment": 10,
     "videoQuality": "4k",
-    "maxAutoVideoSize": 1000
+    "maxAutoVideoSize": 1000,
+    "loginPerm": "master"
   },
   "pushlist": {
     "douyin": [],
