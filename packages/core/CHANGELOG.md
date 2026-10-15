@@ -2,6 +2,14 @@
 
 # Changelog
 
+## [2.45.1-beta.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.45.1-beta.1...v2.45.1-beta.2) (2026-10-15)
+
+
+### ✨ 新功能
+
+* 风控验证二维码模板与自动监听模块 ([dce1f12](https://github.com/ikenxuan/karin-plugin-kkk/commit/dce1f124636f25e9e12cda25e419776a341b2f3a))
+* 接入快手/小红书扫码登录与 B站登录态续期 ([269949c](https://github.com/ikenxuan/karin-plugin-kkk/commit/269949c8d0b39a7b4d87baf382fe003de55ae142))
+
 ## [2.45.1-beta.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.45.1-beta.0...v2.45.1-beta.1) (2026-10-12)
 
 
