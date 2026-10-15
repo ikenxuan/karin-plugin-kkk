@@ -1,4 +1,5 @@
 export * from './comments'
 export * from './getdata'
+export * from './login'
 export * from './getID'
 export * from './kuaishou'

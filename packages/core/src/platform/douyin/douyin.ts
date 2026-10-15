@@ -955,10 +955,10 @@ export class DouYin extends Base {
           }
 
           const room_data = JSON.parse(roomDataRaw)
-          const live_data = await this.amagi.douyin.fetcher.fetchLiveRoomInfo({
-            room_id: UserInfoData.data.user.room_id_str,
-            web_rid: room_data.owner.web_rid
-          })
+          // room_id 在 amagi 里是 internalParam（不在公开参数类型里）：用变量承载，
+          // 保住原来的 `room_id_str` 查询参数，也不与公开契约的类型检查打架
+          const liveParams = { room_id: UserInfoData.data.user.room_id_str, web_rid: room_data.owner.web_rid }
+          const live_data = await this.amagi.douyin.fetcher.fetchLiveRoomInfo(liveParams)
           const liveItem = live_data.data.data.data[0]
           const user = UserInfoData.data.user
           const streamExtra = liveItem.stream_url?.extra

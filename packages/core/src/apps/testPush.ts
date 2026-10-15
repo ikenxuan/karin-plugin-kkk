@@ -192,10 +192,10 @@ const handleTestPush = wrapWithErrorHandler(
           return true
         }
         const room_data = JSON.parse(user.room_data)
-        const liveInfo = await douyinFetcher.fetchLiveRoomInfo({
-          room_id: user.room_id_str,
-          web_rid: room_data.owner.web_rid
-        })
+        // room_id 在 amagi 里是 internalParam（不在公开参数类型里）：用变量承载，
+        // 保住原来的 `room_id_str` 查询参数，也不与公开契约的类型检查打架
+        const liveParams = { room_id: user.room_id_str, web_rid: room_data.owner.web_rid }
+        const liveInfo = await douyinFetcher.fetchLiveRoomInfo(liveParams)
         const Detail_Data = { user_info: userinfo.data, room_data, live_data: liveInfo.data }
         images = await renderLiveImage({ e, Detail_Data })
         if (!images.length) {

@@ -1549,7 +1549,7 @@ export const parseAdditionalCard = (additional: any) => {
   }
 }
 
-const mapping_table = (type: any): number => {
+const mapping_table = (type: any): 1 | 11 | 12 | 17 | 19 => {
   const Array: Record<string, string[]> = {
     1: ['DYNAMIC_TYPE_AV', 'DYNAMIC_TYPE_PGC', 'DYNAMIC_TYPE_UGC_SEASON'],
     11: ['DYNAMIC_TYPE_DRAW'],
@@ -1559,7 +1559,7 @@ const mapping_table = (type: any): number => {
   }
   for (const key in Array) {
     if (Array[key].includes(type)) {
-      return parseInt(key, 10)
+      return Number(key) as 1 | 11 | 12 | 17 | 19
     }
   }
   return 1

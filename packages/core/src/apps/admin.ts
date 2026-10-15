@@ -7,7 +7,7 @@ import { Common } from '@/module'
 import { Config } from '@/module/utils/Config'
 import { wrapWithErrorHandler } from '@/module/utils/ErrorHandler'
 import { logger } from '@/module/utils/logger'
-import { bilibiliLogin } from '@/platform'
+import { bilibiliLogin, bilibiliRefreshLogin, kuaishouLogin, xiaohongshuLogin } from '@/platform'
 import { douyinLogin } from '@/platform/douyin/login'
 
 // 包装缓存清理任务
@@ -58,6 +58,39 @@ const handleDouyinLogin = wrapWithErrorHandler(
   }
 )
 
+// 包装快手登录命令
+const handleKuaishouLogin = wrapWithErrorHandler(
+  async (e) => {
+    await kuaishouLogin(e)
+    return true
+  },
+  {
+    businessName: '快手登录'
+  }
+)
+
+// 包装小红书登录命令
+const handleXiaohongshuLogin = wrapWithErrorHandler(
+  async (e) => {
+    await xiaohongshuLogin(e)
+    return true
+  },
+  {
+    businessName: '小红书登录'
+  }
+)
+
+// 包装B站登录态续期命令
+const handleBilibiliRefresh = wrapWithErrorHandler(
+  async (e) => {
+    await bilibiliRefreshLogin(e)
+    return true
+  },
+  {
+    businessName: 'B站登录态续期'
+  }
+)
+
 // 包装B站登录命令
 const handlTestWrapWithErrorHandler = wrapWithErrorHandler(
   async (_e) => {
@@ -82,6 +115,21 @@ export const biLogin = karin.command(/^#?(kkk)?\s*B站\s*(扫码)?\s*登录$/i, 
 
 export const dylogin = karin.command(/^#?(kkk)?抖音(扫码)?登录$/, handleDouyinLogin, {
   perm: Config.douyin.loginPerm,
+  name: 'kkk-ck管理'
+})
+
+export const ksLogin = karin.command(/^#?(kkk)?快手(扫码)?登录$/, handleKuaishouLogin, {
+  perm: Config.kuaishou.loginPerm,
+  name: 'kkk-ck管理'
+})
+
+export const xhsLogin = karin.command(/^#?(kkk)?小红书(扫码)?登录$/, handleXiaohongshuLogin, {
+  perm: Config.xiaohongshu.loginPerm,
+  name: 'kkk-ck管理'
+})
+
+export const biRefreshLogin = karin.command(/^#?(kkk)?B站(登录态)?(续期|刷新)$/i, handleBilibiliRefresh, {
+  perm: Config.bilibili.loginPerm,
   name: 'kkk-ck管理'
 })
 

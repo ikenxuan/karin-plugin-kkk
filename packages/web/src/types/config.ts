@@ -23,6 +23,7 @@ export interface ConfigType {
     /** 各平台 Cookies */
     cookies: {
       bilibili: string
+      bilibiliRefreshToken: string
       douyin: string
       kuaishou: string
       xiaohongshu: string
@@ -171,6 +172,7 @@ export interface ConfigType {
   /** 快手配置 */
   kuaishou: {
     switch: boolean
+    loginPerm: 'all' | 'admin' | 'master' | 'group.owner' | 'group.admin'
   }
 
   /** 小红书配置 */
@@ -180,6 +182,7 @@ export interface ConfigType {
     numcomment: number
     videoQuality: 'adapt' | '540p' | '720p' | '1080p' | '2k' | '4k'
     maxAutoVideoSize: number
+    loginPerm: 'all' | 'admin' | 'master' | 'group.owner' | 'group.admin'
   }
 
   /** 推送列表 */

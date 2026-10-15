@@ -1,8 +1,9 @@
+import { permissionOptions } from '../options'
 import { getValue } from '../utils'
 import type { ConfigPageProps } from './pageTypes'
 
 const KuaishouConfigPage = ({ config, renderers, classes }: ConfigPageProps) => {
-  const { renderPageHeader, renderSubSection, renderSwitch, renderTextField } = renderers
+  const { renderPageHeader, renderSelectField, renderSubSection, renderSwitch, renderTextField } = renderers
   const kuaishouEnabled = getValue<boolean>(config, ['kuaishou', 'switch'], false)
   const kuaishouComment = getValue<boolean>(config, ['kuaishou', 'comment'], false)
 
@@ -23,6 +24,10 @@ const KuaishouConfigPage = ({ config, renderers, classes }: ConfigPageProps) => 
             disabled: !kuaishouEnabled || !kuaishouComment
           })}
         </>
+      )}
+      {renderSubSection(
+        '权限设置',
+        <>{renderSelectField(['kuaishou', 'loginPerm'], '谁可以触发扫码登录', '修改后需重启。', permissionOptions)}</>
       )}
     </>
   )

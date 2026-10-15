@@ -1,4 +1,4 @@
-import { qualityOptions, sendContentOptions } from '../options'
+import { permissionOptions, qualityOptions, sendContentOptions } from '../options'
 import { getValue, includesValue } from '../utils'
 import type { ConfigPageProps } from './pageTypes'
 
@@ -51,6 +51,10 @@ const XiaohongshuConfigPage = ({ config, renderers, classes }: ConfigPageProps) 
             }
           )}
         </>
+      )}
+      {renderSubSection(
+        '权限设置',
+        <>{renderSelectField(['xiaohongshu', 'loginPerm'], '谁可以触发扫码登录', '修改后需重启。', permissionOptions)}</>
       )}
     </>
   )

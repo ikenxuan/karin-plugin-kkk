@@ -74,6 +74,20 @@ const noticeOf = (error: AmagiError): string => {
 }
 
 /**
+ * 从 B站扫码登录的响应体里取 refresh_token。
+ *
+ * 官方把续期令牌存在浏览器 `localStorage.ac_time_value`；扫码轮询接口返回的
+ * `data.refresh_token` 就是同一份东西（见 amagi 的 `platforms/bilibili/cookieRefresh.ts`
+ * 与 `endpoints/qrcodeStatus.ts` 的类型）。取不到就续不了期，只能重新扫码。
+ * @param raw - 会话给出的 `credential.raw`（qrcode/status 的响应体）
+ * @returns refresh_token；没有时 undefined
+ */
+const readRefreshToken = (raw: unknown): string | undefined => {
+  const token = (raw as { data?: { refresh_token?: unknown } } | null | undefined)?.data?.refresh_token
+  return typeof token === 'string' && token.trim() !== '' ? token : undefined
+}
+
+/**
  * B站扫码登录。
  *
  * 轮询、退避、超时都在 amagi 的 v7 登录会话里（`client.bilibili.login.qrcode()`），
@@ -108,6 +122,11 @@ export const bilibiliLogin = async (e: Message) => {
 
       onSuccess: async (credential) => {
         await Config.Modify('amagi', 'cookies.bilibili', credential.cookie)
+        // 续期令牌与 cookie 一起存：官方 Web 把它放在 localStorage.ac_time_value，
+        // 我们落到配置里，好让「B站续期」命令不必重新扫码
+        const refreshToken = readRefreshToken(credential.raw)
+        if (refreshToken) await Config.Modify('amagi', 'cookies.bilibiliRefreshToken', refreshToken)
+        else logger.warn('[B站登录] 本次登录未返回 refresh_token，后续无法续期，只能重新扫码')
         const reloaded = reloadAmagiConfig()
         logger.mark(`[B站登录] 登录凭证已保存，Amagi Client ${reloaded ? '已重载' : '配置未变化'}`)
       }
@@ -125,4 +144,43 @@ export const bilibiliLogin = async (e: Message) => {
   } finally {
     await tracker.recallAll()
   }
+}
+
+/**
+ * B站登录态续期（官方四步协议）。
+ *
+ * 与「重新扫码」是两回事：走的是平台正规续期通道，用旧 cookie + 旧 refresh_token 换一份
+ * 新 cookie 与**新的** refresh_token。两者必须整组替换 —— 旧 token 在第四步已被服务端
+ * 作废（amagi 侧的说明见其 `platforms/bilibili/cookieRefresh.ts`）。失败时不动配置，
+ * 用户可重新扫码。
+ * @param e - 消息事件
+ * @returns 固定 true，交回命令框架
+ */
+export const bilibiliRefreshLogin = async (e: Message): Promise<boolean> => {
+  const cookie = Config.amagi.cookies.bilibili
+  const refreshToken = Config.amagi.cookies.bilibiliRefreshToken
+
+  if (!cookie) {
+    await e.reply('还没有配置 B站 cookie，请先执行 B站扫码登录', { reply: true })
+    return true
+  }
+  if (!refreshToken) {
+    await e.reply('没有可用的续期令牌（refresh_token）：请重新执行一次 B站扫码登录，新的登录会把令牌一并保存', { reply: true })
+    return true
+  }
+
+  const result = await getAmagiClient().bilibili.refreshCredential({ cookie, refreshToken })
+
+  if (!result.ok) {
+    logger.warn(`[B站续期] 失败：kind=${result.error.kind} code=${result.error.code} ${result.error.message}`)
+    await e.reply(`B站登录态续期失败：${result.error.message}`, { reply: true })
+    return true
+  }
+
+  await Config.Modify('amagi', 'cookies.bilibili', result.credential.cookie)
+  await Config.Modify('amagi', 'cookies.bilibiliRefreshToken', result.credential.refreshToken)
+  const reloaded = reloadAmagiConfig()
+  logger.mark(`[B站续期] 新 cookie 与 refresh_token 已保存，Amagi Client ${reloaded ? '已重载' : '配置未变化'}`)
+  await e.reply('B站登录态已续期，新的 cookie 与续期令牌已保存', { reply: true })
+  return true
 }

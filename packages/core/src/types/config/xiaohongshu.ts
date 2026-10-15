@@ -21,4 +21,7 @@ export interface xiaohongshuConfig {
 
   /** 视频体积上限，自动画质模式下可接受的最大视频大小（单位：MB），仅在 「videoQuality」 为 'adapt' 时生效 */
   maxAutoVideoSize: number
+
+  /** 谁可以触发扫码登录：all 所有人，admin 管理员，master 主人，group.owner 群主，group.admin 群管理员。修改后需重启 */
+  loginPerm: 'all' | 'admin' | 'master' | 'group.owner' | 'group.admin'
 }

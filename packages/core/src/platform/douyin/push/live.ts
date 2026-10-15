@@ -47,10 +47,10 @@ export async function processLiveStream(
     }
 
     const room_data = JSON.parse(UserInfoData.data.user.room_data)
-    const liveInfo = await amagi.douyin.fetcher.fetchLiveRoomInfo({
-      room_id: UserInfoData.data.user.room_id_str,
-      web_rid: room_data.owner.web_rid
-    })
+    // room_id 在 amagi 里是 internalParam（不在公开参数类型里）：用变量承载，
+    // 保住原来的 `room_id_str` 查询参数，也不与公开契约的类型检查打架
+    const liveParams = { room_id: UserInfoData.data.user.room_id_str, web_rid: room_data.owner.web_rid }
+    const liveInfo = await amagi.douyin.fetcher.fetchLiveRoomInfo(liveParams)
 
     // 如果之前没有直播，现在开播了，需要推送
     if (!liveStatus.living) {
