@@ -2,6 +2,13 @@
 
 # Changelog
 
+## [2.45.1-beta.4](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.45.1-beta.3...v2.45.1-beta.4) (2026-10-17)
+
+
+### 🧰 其他更新
+
+* 添加风控验证处理逻辑，支持失败重放与动态导入 ([ba32b48](https://github.com/ikenxuan/karin-plugin-kkk/commit/ba32b48aa3f79225439522756cc9e702543420d6))
+
 ## [2.45.1-beta.3](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.45.1-beta.2...v2.45.1-beta.3) (2026-10-16)
 
 
