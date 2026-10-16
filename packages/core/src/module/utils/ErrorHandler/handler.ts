@@ -4,6 +4,7 @@ import { type Message } from 'node-karin'
 import { getBuildMetadata } from '@/module'
 import { EmojiReactionManager } from '@/module/utils/EmojiReaction'
 import { logger } from '@/module/utils/logger'
+import { runWithVerifyContext } from '@/module/utils/RiskVerify'
 
 import { renderErrorImage } from './render'
 import { sendErrorToAllMasters, sendErrorToMaster, sendErrorToTrigger } from './sender'
@@ -76,7 +77,10 @@ export const wrapWithErrorHandler = <R>(fn: (e: Message, next: () => unknown) =>
       }, 1500)
     }
 
-    const ctx = logger.runContext(async () => fn(normalizedEvent, normalizedNext))
+    // 风控验证要给主人发码，需要「触发本次解析的事件」——在这个唯一入口把事件存进 RiskVerify 的
+    // ALS 上下文（代理层拿不到 e）；定时推送这类没有原始事件的调用不包，交给它自己放弃自动验证
+    const runHandler = () => fn(normalizedEvent, normalizedNext)
+    const ctx = logger.runContext(async () => (rawEvent ? runWithVerifyContext(rawEvent, runHandler) : runHandler()))
 
     try {
       const result = await ctx.run()

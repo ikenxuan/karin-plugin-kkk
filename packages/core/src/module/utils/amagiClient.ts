@@ -121,28 +121,71 @@ const isThenable = (value: unknown): value is PromiseLike<unknown> =>
   !!value && (typeof value === 'object' || typeof value === 'function') && typeof (value as PromiseLike<unknown>).then === 'function'
 
 /**
+ * 把一次 fetcher 调用的结果收口：成功原样返回，失败信封先给 RiskVerify 一次「发码并轮询」的机会。
+ *
+ * `handleRiskChallenge` 对不带 `challenge.url` 的失败会立刻返回 false（是不是风控由它判定），
+ * 所以这里不用先判。过码成功后按它的契约**再重放一次**原调用，这次的返回值就是结果；
+ * 没放行（超时 / 没有消息上下文 / 达并发上限）则把原错误抛出去。
+ *
+ * RiskVerify 用**动态 import** 取，不能提成顶层静态 import：它的链上有
+ * `Render → @/module（barrel）→ ./utils → Base → amagiClient`，静态边会让「先加载 amagiClient」
+ * 的模块求值顺序撞上 `Base extends AmagiBase` 的 TDZ（dev 下必崩），本文件与 Base 之间就成环了。
+ * 挪到运行期后，这条边只在失败路径、模块图就绪之后才走。
+ * @param returned - 原调用的返回值（已排除同步方法）
+ * @param platform - 平台名，RiskVerify 用它做去重键与提示文案
+ * @param call - 原调用的重放：同一方法、同一参数、同一份 CK
+ */
+const settleFailure = async (returned: PromiseLike<unknown>, platform: PlatformKey, call: () => unknown): Promise<unknown> => {
+  const result = await returned
+  if (!isFailureEnvelope(result)) return result
+
+  const failure = new AmagiError(result)
+  const { handleRiskChallenge } = await import('@/module/utils/RiskVerify')
+  const solved = await handleRiskChallenge(failure, platform, () => probeReplay(call))
+  if (!solved) throw failure
+
+  const replayed = await call()
+  if (isFailureEnvelope(replayed)) throw new AmagiError(replayed)
+  return replayed
+}
+
+/**
+ * 给 RiskVerify 轮询用的重放探针。
+ *
+ * 判定权在它那边：true = 已放行；仍被同一类风控拦住返回 false（继续等）；
+ * 冒出其它失败就抛，RiskVerify 据此停止等待、把错误交回原调用方处理。
+ */
+const probeReplay = async (call: () => unknown): Promise<boolean> => {
+  const result = await call()
+  if (!isFailureEnvelope(result)) return true
+  if (result.error.challenge?.url) return false
+  throw new AmagiError(result)
+}
+
+/**
  * 递归代理一个 fetcher 对象，把失败信封转成 `throw AmagiError`。返回类型与入参同形 ——
  * 「只保留成功分支」是**类型层**由 {@link ThrowingClient} 声明的，这里只管运行时行为。
+ *
+ * 带风控挑战的失败不直接抛：先交给 `RiskVerify` 走完整条验证流程（发二维码给主人 → 轮询重放），
+ * 过码成功就重放拿正常结果，没成功再把原错误抛出去 —— 见 {@link settleFailure}。
  */
-const throwOnFailure = <T extends object>(target: T): T =>
+const throwOnFailure = <T extends object>(target: T, platform: PlatformKey): T =>
   new Proxy(target, {
     get(obj: any, prop: string | symbol) {
       const value = obj[prop]
 
       if (typeof value === 'function') {
         return (...args: unknown[]) => {
-          const returned = value.apply(obj, args)
+          const call = () => value.apply(obj, args)
+          const returned = call()
           // 同步方法原样放行：包成 async 会把返回值套一层 Promise，破坏语义
           if (!isThenable(returned)) return returned
-          return returned.then((result: unknown) => {
-            if (isFailureEnvelope(result)) throw new AmagiError(result)
-            return result
-          })
+          return settleFailure(returned, platform, call)
         }
       }
 
       if (value && typeof value === 'object' && !Array.isArray(value)) {
-        return throwOnFailure(value)
+        return throwOnFailure(value, platform)
       }
 
       return value
@@ -213,10 +256,10 @@ export class AmagiBase {
   protected wrapAmagiClient = (client: AmagiClient): ThrowingClient =>
     ({
       ...client,
-      bilibili: { ...client.bilibili, fetcher: throwOnFailure(client.bilibili.fetcher) },
-      douyin: { ...client.douyin, fetcher: throwOnFailure(client.douyin.fetcher) },
-      kuaishou: { ...client.kuaishou, fetcher: throwOnFailure(client.kuaishou.fetcher) },
-      xiaohongshu: { ...client.xiaohongshu, fetcher: throwOnFailure(client.xiaohongshu.fetcher) }
+      bilibili: { ...client.bilibili, fetcher: throwOnFailure(client.bilibili.fetcher, 'bilibili') },
+      douyin: { ...client.douyin, fetcher: throwOnFailure(client.douyin.fetcher, 'douyin') },
+      kuaishou: { ...client.kuaishou, fetcher: throwOnFailure(client.kuaishou.fetcher, 'kuaishou') },
+      xiaohongshu: { ...client.xiaohongshu, fetcher: throwOnFailure(client.xiaohongshu.fetcher, 'xiaohongshu') }
     }) as ThrowingClient
 }
 
