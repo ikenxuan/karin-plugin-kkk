@@ -2,6 +2,13 @@
 
 # Changelog
 
+## [2.45.1-beta.3](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.45.1-beta.2...v2.45.1-beta.3) (2026-10-16)
+
+
+### ✨ 新功能
+
+* **xiaohongshu:** 添加子评论请求数量配置，支持动态拉取小红书子评论 ([39f96b4](https://github.com/ikenxuan/karin-plugin-kkk/commit/39f96b4ff4012c08d50ba1a0872d1e887c668a6c))
+
 ## [2.45.1-beta.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.45.1-beta.1...v2.45.1-beta.2) (2026-10-15)
 
 
