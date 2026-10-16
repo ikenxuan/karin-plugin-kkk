@@ -10,6 +10,15 @@ export interface xiaohongshuConfig {
   numcomment: number
 
   /**
+   * 子评论（楼中楼）请求数量。
+   *
+   * ≤ 2 时不请求子评论接口 —— 一级评论响应自带的预览就是每条最多 2 条，直接渲染即可；
+   * 大于 2 时对带子评论的一级评论逐条请求，取回后与预览合并去重再渲染。
+   * 仅在配置了小红书 ck 时生效（平台不允许游客拿二级评论）。
+   */
+  subCommentLimit: number
+
+  /**
    * 视频画质偏好设置，'adapt' 为自动根据「maxAutoVideoSize」大小选择，其他为固定画质
    * - '540p': 540P 标清
    * - '720p': 720P 高清

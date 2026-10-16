@@ -222,6 +222,13 @@ export const validateConfig = (config: ConfigType | null): Record<string, string
       disabled: !xiaohongshuEnabled || !includesValue(xiaohongshuSendContent, 'comment')
     },
     {
+      path: ['xiaohongshu', 'subCommentLimit'],
+      label: '子评论请求数量',
+      min: 2,
+      max: 20,
+      disabled: !xiaohongshuEnabled || !includesValue(xiaohongshuSendContent, 'comment')
+    },
+    {
       path: ['xiaohongshu', 'maxAutoVideoSize'],
       label: '视频体积上限（MB）',
       min: 1,

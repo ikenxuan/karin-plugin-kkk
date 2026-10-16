@@ -786,6 +786,19 @@ export const disabledRules: DisabledRule[] = [
     ]
   },
   {
+    path: ['xiaohongshu', 'subCommentLimit'],
+    rules: [
+      {
+        condition: (cfg) => !getValue<boolean>(cfg, ['xiaohongshu', 'switch'], false),
+        message: '修改此配置项需要先将「解析开关」打开'
+      },
+      {
+        condition: (cfg) => !includesValue(getValue(cfg, ['xiaohongshu', 'sendContent'], []), 'comment'),
+        message: '修改此配置项需要在「解析时发送的内容」中勾选「评论图」'
+      }
+    ]
+  },
+  {
     path: ['xiaohongshu', 'videoQuality'],
     rules: [
       {

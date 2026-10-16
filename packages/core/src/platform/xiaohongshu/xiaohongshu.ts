@@ -124,8 +124,11 @@ export class Xiaohongshu extends Base {
       if (!CommentData.data.comments || CommentData.data.comments.length === 0) {
         await this.e.reply('这个笔记没有评论 ~')
       } else {
-        // 使用简化的评论处理函数，直接返回评论数组
-        const processedComments = xiaohongshuComments(CommentData, formattedEmojis)
+        // 使用简化的评论处理函数，直接返回评论数组（配了 ck 且 subCommentLimit > 2 时会一并补齐子评论）
+        const processedComments = await xiaohongshuComments(CommentData, formattedEmojis, {
+          note_id: data.note_id,
+          xsec_token: data.xsec_token
+        })
 
         const commentListImg = await Render(this.e, 'xiaohongshu/comment', {
           Type: NoteData.data.data.items[0].note_card!.video ? '视频' : '图文',

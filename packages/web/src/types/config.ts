@@ -180,6 +180,7 @@ export interface ConfigType {
     switch: boolean
     sendContent: Array<'info' | 'comment' | 'image' | 'video'>
     numcomment: number
+    subCommentLimit: number
     videoQuality: 'adapt' | '540p' | '720p' | '1080p' | '2k' | '4k'
     maxAutoVideoSize: number
     loginPerm: 'all' | 'admin' | 'master' | 'group.owner' | 'group.admin'

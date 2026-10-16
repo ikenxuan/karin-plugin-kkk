@@ -11,12 +11,34 @@ import {
 } from '@kkk/richtext'
 import type { XiaohongshuCommentData } from '@template/template/xiaohongshu/comment/components/types'
 
+import { xiaohongshuFetcher } from '@/module/utils/amagiClient'
 import { Config } from '@/module/utils/Config'
+import { logger } from '@/module/utils/logger'
 
 /** 评论项类型：从模板路由主数据接口逐步索引派生，types.ts 不再单独导出子类型 */
 type XiaohongshuCommentItem = XiaohongshuCommentData['CommentsData'][number]
 /** 子评论类型：同上，由评论项的 sub_comments 字段索引得到 */
 type XiaohongshuSubComment = XiaohongshuCommentItem['sub_comments'][number]
+
+/** 一级评论元素类型（noteComments 端点的响应条目） */
+type NoteComment = XiaohongshuNoteCommentsResponse['data']['comments'][number]
+
+/**
+ * 子评论元素类型。
+ *
+ * 一级评论响应自带的预览（`sub_comments`）与子评论接口的返回是同一套字段，
+ * 只有生成类型把接口那份的 `pictures` / `show_tags` / `at_users` 放宽成了 `unknown[]`。
+ */
+type NoteSubComment = NoteComment['sub_comments'][number]
+
+/** 子评论接口需要的笔记定位信息（笔记 id + 分享链接下发的 xsec_token） */
+interface XiaohongshuNoteRef {
+  note_id: string
+  xsec_token: string
+}
+
+/** 一次最多同时打几条一级评论的子评论请求 */
+const SUB_COMMENT_BATCH = 5
 
 /**
  * 评论里被 @ 的人。
@@ -34,40 +56,124 @@ type NoteTag = string | { name?: string; tag?: string }
  * 处理小红书评论数据。
  *
  * 这里直接输出结构化评论 JSON，正文部分使用 richtext 文档，避免后端拼接 HTML。
+ *
+ * 配了 ck 且 `subCommentLimit > 2` 时，会对带子评论的一级评论逐条请求子评论接口
+ * （见 {@link shouldFetchSubComments}），取回后与响应自带的预览合并去重；
+ * 否则完全用预览，一个额外请求都不发。
  */
-export const xiaohongshuComments = (
+export const xiaohongshuComments = async (
   data: XiaohongshuNoteCommentsResponse,
-  emojiData: RichTextEmojiDefinition[]
-): XiaohongshuCommentItem[] => {
+  emojiData: RichTextEmojiDefinition[],
+  note: XiaohongshuNoteRef
+): Promise<XiaohongshuCommentItem[]> => {
   const rawComments = data?.data?.comments
   if (!Array.isArray(rawComments) || rawComments.length === 0) {
     return []
   }
 
-  const comments = rawComments.map((comment) => {
-    const showTags = normalizeTagNames(comment.show_tags)
+  // 先排序、再按 numcomment 截断、最后才构建：子评论请求只对最终会渲染的那几条一级评论发
+  const ordered = [...rawComments]
+    .sort(
+      (a, b) => Number(normalizeTagNames(b.show_tags).includes('user_top')) - Number(normalizeTagNames(a.show_tags).includes('user_top'))
+    )
+    .slice(0, Config.xiaohongshu.numcomment)
 
-    return {
-      id: comment.id,
-      note_id: comment.note_id,
-      content: buildXiaohongshuRichText(comment.content, emojiData, comment.at_users),
-      user_info: comment.user_info,
-      create_time: comment.create_time,
-      ip_location: comment.ip_location || '未知',
-      like_count: comment.like_count,
-      liked: comment.liked,
-      pictures: Array.isArray(comment.pictures) ? comment.pictures : [],
-      sub_comment_count: comment.sub_comment_count,
-      sub_comments: buildXiaohongshuSubComments(comment.sub_comments, emojiData),
-      show_tags: showTags,
-      at_users: normalizeAtUsers(comment.at_users).map((item) => item.text),
-      status: comment.status
-    }
-  })
+  const fetchEnabled = shouldFetchSubComments()
+  const topLevelIds = new Set(ordered.map((comment) => comment.id))
+  const comments: XiaohongshuCommentItem[] = []
+
+  for (let index = 0; index < ordered.length; index += SUB_COMMENT_BATCH) {
+    comments.push(
+      ...(await Promise.all(
+        ordered.slice(index, index + SUB_COMMENT_BATCH).map(async (comment) => {
+          const preview = Array.isArray(comment.sub_comments) ? comment.sub_comments : []
+          const fetched = fetchEnabled ? await fetchSubComments(comment, note) : []
+          const showTags = normalizeTagNames(comment.show_tags)
+
+          return {
+            id: comment.id,
+            note_id: comment.note_id,
+            content: buildXiaohongshuRichText(comment.content, emojiData, comment.at_users),
+            user_info: comment.user_info,
+            create_time: comment.create_time,
+            ip_location: comment.ip_location || '未知',
+            like_count: comment.like_count,
+            liked: comment.liked,
+            pictures: Array.isArray(comment.pictures) ? comment.pictures : [],
+            sub_comment_count: comment.sub_comment_count,
+            sub_comments: buildXiaohongshuSubComments(mergeSubComments(preview, fetched, topLevelIds), emojiData),
+            show_tags: showTags,
+            at_users: normalizeAtUsers(comment.at_users).map((item) => item.text),
+            status: comment.status
+          }
+        })
+      ))
+    )
+  }
 
   return comments
-    .sort((a, b) => Number(b.show_tags.includes('user_top')) - Number(a.show_tags.includes('user_top')))
-    .slice(0, Config.xiaohongshu.numcomment)
+}
+
+/**
+ * 要不要请求子评论接口。两个条件缺一不可：
+ *
+ * 1. **配了小红书 ck** —— 平台不允许游客拿二级评论，没 ck 请求必然失败；
+ * 2. **`subCommentLimit > 2`** —— 一级评论响应自带的预览就是每条最多 2 条，
+ *    配置 ≤ 2 时请求回来也不会多出任何东西，默认值 2 即「不请求」。
+ */
+const shouldFetchSubComments = (): boolean => Config.xiaohongshu.subCommentLimit > 2 && Config.amagi.cookies.xiaohongshu.trim() !== ''
+
+/**
+ * 取一条一级评论下的子评论（楼中楼）。
+ *
+ * 失败只吞掉这一条并记 debug —— 评论图是尽力而为的展示，一条楼中楼取不到
+ * 不该带崩整张图。本来就没有子评论的（`sub_comment_count` 为 0）直接跳过。
+ * @param comment - 一级评论
+ * @param note - 笔记定位信息
+ * @returns 接口取回的子评论；失败或没有子评论时为空数组
+ */
+const fetchSubComments = async (comment: NoteComment, note: XiaohongshuNoteRef): Promise<NoteSubComment[]> => {
+  if (Number(comment.sub_comment_count) <= 0) return []
+
+  try {
+    const response = await xiaohongshuFetcher.fetchSubComments({
+      note_id: note.note_id,
+      root_comment_id: comment.id,
+      xsec_token: note.xsec_token,
+      number: Config.xiaohongshu.subCommentLimit
+    })
+
+    // 接口返回与预览是同一套字段（生成类型只是把 pictures / show_tags / at_users 放宽成 unknown[]），
+    // 消费路径完全一致，按预览形状直接交给 buildXiaohongshuSubComments
+    const fetched = response.data?.data?.comments
+    return Array.isArray(fetched) ? (fetched as unknown as NoteSubComment[]) : []
+  } catch (error) {
+    logger.debug(`[xiaohongshu] 取子评论失败（${comment.id}）: ${error}`)
+    return []
+  }
+}
+
+/**
+ * 合并预览与接口取回的子评论：**预览在前，新增的追加在后**。
+ *
+ * 两类重复按 id 排除：① 同一条一级评论自带的那几条预览；② 一级评论列表里出现过的 id
+ * —— 楼中楼偶尔会把同一条评论也挂在顶层，两处都渲染就成了重复条目。
+ * @param preview - 一级评论响应自带的子评论
+ * @param fetched - 子评论接口取回的列表
+ * @param topLevelIds - 本次渲染的一级评论 id 集合
+ * @returns 去重后的子评论列表
+ */
+const mergeSubComments = (preview: NoteSubComment[], fetched: NoteSubComment[], topLevelIds: ReadonlySet<string>): NoteSubComment[] => {
+  const seen = new Set<string>([...topLevelIds, ...preview.map((item) => item.id)])
+  const merged = [...preview]
+
+  for (const item of fetched) {
+    if (!item?.id || seen.has(item.id)) continue
+    seen.add(item.id)
+    merged.push(item)
+  }
+
+  return merged
 }
 
 const buildXiaohongshuSubComments = (
