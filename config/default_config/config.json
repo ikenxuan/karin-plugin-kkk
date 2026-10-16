@@ -168,6 +168,7 @@
       "image"
     ],
     "numcomment": 10,
+    "subCommentLimit": 2,
     "videoQuality": "4k",
     "maxAutoVideoSize": 1000,
     "loginPerm": "master"
