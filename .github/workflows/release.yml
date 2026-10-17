@@ -73,7 +73,8 @@ jobs:
             echo "❌ tag $GITHUB_REF_NAME 不是合法 semver 版本" >&2
             exit 1
           fi
-          npm version "$VERSION" --no-git-tag-version
+          # stable 的 tag 树里 version 已被发版脚本钉好，同版本不算错误
+          npm version "$VERSION" --no-git-tag-version --allow-same-version
           echo "✅ 版本已从 tag 注入：$VERSION"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
