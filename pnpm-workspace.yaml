@@ -7,7 +7,7 @@ packages:
 overrides:
   node-karin: 1.18.0
   typescript: 7.0.2
-  vite: 8.3.3
+  vite: 8.3.4
 
 publicHoistPattern:
   - '*sqlite3*'
