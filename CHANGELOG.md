@@ -2,6 +2,13 @@
 
 # Changelog
 
+## [2.45.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.45.0...v2.45.1) (2026-10-17)
+
+
+### 📦 依赖更新
+
+* update ([3435298](https://github.com/ikenxuan/karin-plugin-kkk/commit/343529868a87c0cc73cdbef2ffa31923f275d399))
+
 ## [2.45.1-beta.4](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.45.1-beta.3...v2.45.1-beta.4) (2026-10-17)
 
 
