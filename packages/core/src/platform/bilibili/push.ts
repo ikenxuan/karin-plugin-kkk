@@ -35,7 +35,14 @@ import {
 import { bilibiliFetcher } from '@/module/utils/amagiClient'
 import { Config } from '@/module/utils/Config'
 import { logger } from '@/module/utils/logger'
-import { bilibiliProcessVideos, generateDecorationCard, getvideosize, parseAdditionalCard, TimeFormatter } from '@/platform/bilibili'
+import {
+  bilibiliProcessVideos,
+  generateDecorationCard,
+  getBilibiliStreamUrl,
+  getvideosize,
+  parseAdditionalCard,
+  TimeFormatter
+} from '@/platform/bilibili'
 import {
   buildBilibiliArticleRichText,
   buildBilibiliDynamicRichText,
@@ -862,7 +869,7 @@ export class Bilibilipush extends Base {
                   /** 替换原始的视频信息对象 */
                   playUrlData.data.data.dash.video = simplify
                   /** 没有音频流（如纯视频稿件）时拿不到音频地址，按只统计视频流大小处理 */
-                  const audioUrl = playUrlData.data.data.dash.audio?.[0]?.base_url
+                  const audioUrl = getBilibiliStreamUrl(playUrlData.data.data.dash.audio?.[0])
                   /** 给视频信息对象删除不符合条件的视频流 */
                   correctList = await bilibiliProcessVideos(
                     {
@@ -878,7 +885,7 @@ export class Bilibilipush extends Base {
                   playUrlData.data.data.accept_description = correctList.accept_description
                   /** 获取第一个视频流的大小 */
                   videoSize = await getvideosize(
-                    correctList.videoList[0].base_url,
+                    getBilibiliStreamUrl(correctList.videoList[0])!,
                     audioUrl,
                     data[dynamicId].Dynamic_Data.modules.module_dynamic.major.archive.bvid
                   )
@@ -895,7 +902,7 @@ export class Bilibilipush extends Base {
                   const infoData = await this.amagi.bilibili.fetcher.fetchVideoInfo({
                     bvid: data[dynamicId].Dynamic_Data.modules.module_dynamic.major.archive.bvid
                   })
-                  const mp4File = await downloadFile(playUrlData.data?.data?.dash?.video[0].base_url, {
+                  const mp4File = await downloadFile(getBilibiliStreamUrl(playUrlData.data?.data?.dash?.video[0])!, {
                     title: `Bil_V_${infoData.data.data.bvid}.mp4`,
                     headers: bilibiliBaseHeaders
                   })

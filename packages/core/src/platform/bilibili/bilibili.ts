@@ -56,6 +56,55 @@ import { BilibiliDataTypes } from '@/types'
 let img: ElementTypes[]
 type videoDownloadUrlList = BilibiliVideoStreamResponse['data']['dash']['video']
 
+/** 播放接口返回的流信息里，下载只需要直链和备用直链（兼容 snake_case / camelCase） */
+type BilibiliStreamUrls = {
+  base_url?: string
+  backup_url?: string[] | null
+  baseUrl?: string
+  backupUrl?: string[] | null
+}
+
+/**
+ * B站 PCDN 线路的域名特征。
+ * 这类域名常被代理/去广告规则的 hosts 指向 0.0.0.0，直接请求会 ECONNREFUSED。
+ */
+const BILIBILI_PCDN_HOST_RE = /(?:^|\.)(?:mcdn|pcdn)\.bilivideo\.(?:cn|com)$|(?:^|\.)szbdyd\.com$/i
+
+/** B站自有 CDN 域名，PCDN 之外的线路可作为稳定备选 */
+const BILIBILI_CDN_HOST_RE = /(?:^|\.)bilivideo\.(?:cn|com)$/i
+
+/** 取 URL 的 hostname，非法 URL 返回空串 */
+const getUrlHostname = (url: string) => {
+  try {
+    return new URL(url).hostname
+  } catch {
+    return ''
+  }
+}
+
+/** 判断一条 B站直链是否走 PCDN 线路 */
+const isBilibiliPcdnUrl = (url: string) => BILIBILI_PCDN_HOST_RE.test(getUrlHostname(url))
+
+/** 判断一条 B站直链是否走 B站自有 CDN */
+const isBilibiliCdnUrl = (url: string) => BILIBILI_CDN_HOST_RE.test(getUrlHostname(url))
+
+/**
+ * 从播放接口返回的流信息里选一条可用直链。
+ *
+ * `base_url` 可能落在 PCDN 线路上，而 `backup_url` 里通常还有常规 CDN；
+ * 主直链不是 PCDN 时保持原行为，是 PCDN 时优先换到 B站自有 CDN 的备用直链，
+ * 全部不可用时退回 `base_url`。
+ */
+export const getBilibiliStreamUrl = (stream?: BilibiliStreamUrls | null): string | undefined => {
+  if (!stream) return undefined
+  const baseUrl = stream.base_url ?? stream.baseUrl
+  if (baseUrl && !isBilibiliPcdnUrl(baseUrl)) return baseUrl
+  const backups = (stream.backup_url ?? stream.backupUrl ?? []).filter((url): url is string => Boolean(url))
+  const officialBackup = backups.find((url) => isBilibiliCdnUrl(url) && !isBilibiliPcdnUrl(url))
+  const normalBackup = backups.find((url) => !isBilibiliPcdnUrl(url))
+  return officialBackup ?? normalBackup ?? baseUrl ?? backups[0]
+}
+
 /** 评论请求统一使用匿名态，避免账号 Cookie 改变评论热度池结果。 */
 const bilibiliAnonymousRequestConfig = {
   headers: {
@@ -211,7 +260,7 @@ export class Bilibili extends Base {
           /** 替换原始的视频信息对象 */
           playUrlData.data.data.dash.video = simplify
           /** 没有音频流（如纯视频稿件）时拿不到音频地址，按只统计视频流大小处理 */
-          const audioUrl = playUrlData.data.data.dash.audio?.[0]?.base_url
+          const audioUrl = getBilibiliStreamUrl(playUrlData.data.data.dash.audio?.[0])
           /** 给视频信息对象删除不符合条件的视频流 */
           correctList = await bilibiliProcessVideos(
             {
@@ -225,7 +274,7 @@ export class Bilibili extends Base {
           playUrlData.data.data.dash.video = correctList.videoList
           playUrlData.data.data.accept_description = correctList.accept_description
           /** 获取第一个视频流的大小 */
-          videoSize = await getvideosize(correctList.videoList[0].base_url, audioUrl, infoData.data.data.bvid)
+          videoSize = await getvideosize(getBilibiliStreamUrl(correctList.videoList[0])!, audioUrl, infoData.data.data.bvid)
         } else {
           videoSize = (nockData.data.durl[0].size / (1024 * 1024)).toFixed(2)
         }
@@ -412,7 +461,7 @@ export class Bilibili extends Base {
               qn: Config.bilibili.videoQuality
             },
             simplify,
-            playUrlData.result.dash.audio?.[0]?.base_url
+            getBilibiliStreamUrl(playUrlData.result.dash.audio?.[0])
           )
           playUrlData.result.dash.video = correctList.videoList
           playUrlData.result.cept_description = correctList.accept_description
@@ -1170,7 +1219,9 @@ export class Bilibili extends Base {
       case true: {
         logger.debug(
           '视频 URL:',
-          this.Type === 'one_video' ? playUrlData.data?.dash?.video[0].base_url : playUrlData.result.dash.video[0].base_url
+          this.Type === 'one_video'
+            ? getBilibiliStreamUrl(playUrlData.data?.dash?.video[0])
+            : getBilibiliStreamUrl(playUrlData.result.dash.video[0])
         )
 
         // B站 CDN 需要正确的 Referer
@@ -1179,13 +1230,14 @@ export class Bilibili extends Base {
           Referer: 'https://www.bilibili.com'
         }
 
-        const bmp4Raw = await downloadFile(
-          this.Type === 'one_video' ? playUrlData.data?.dash?.video[0].base_url : playUrlData.result.dash.video[0].base_url,
-          {
-            title: `Bil_V_${this.Type === 'one_video' ? infoData && infoData.data.bvid : infoData && infoData.result.season_id}.m4s`,
-            headers: downloadHeaders
-          }
-        )
+        const videoUrl =
+          this.Type === 'one_video'
+            ? getBilibiliStreamUrl(playUrlData.data?.dash?.video[0])
+            : getBilibiliStreamUrl(playUrlData.result.dash.video[0])
+        const bmp4Raw = await downloadFile(videoUrl!, {
+          title: `Bil_V_${this.Type === 'one_video' ? infoData && infoData.data.bvid : infoData && infoData.result.season_id}.m4s`,
+          headers: downloadHeaders
+        })
 
         // 修复 m4s 文件为标准 MP4
         const videoPath =
@@ -1200,7 +1252,9 @@ export class Bilibili extends Base {
         await Common.removeFile(bmp4Raw.filepath, true)
 
         const audioUrl =
-          this.Type === 'one_video' ? playUrlData.data?.dash?.audio?.[0]?.base_url : playUrlData.result.dash.audio?.[0]?.base_url
+          this.Type === 'one_video'
+            ? getBilibiliStreamUrl(playUrlData.data?.dash?.audio?.[0])
+            : getBilibiliStreamUrl(playUrlData.result.dash.audio?.[0])
         logger.debug('音频 URL:', audioUrl)
 
         /** 没有音频流（如纯视频稿件）时为 undefined，此时无从合成，直接发视频流 */
@@ -1652,7 +1706,7 @@ export const bilibiliProcessVideos = async (
   const results: Record<string, string> = {}
 
   for (const video of videoList) {
-    const size = await getvideosize(video.base_url, audioUrl, qualityOptions.bvid)
+    const size = await getvideosize(getBilibiliStreamUrl(video)!, audioUrl, qualityOptions.bvid)
     results[video.id] = size
   }
 
