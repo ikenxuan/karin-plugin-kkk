@@ -7,18 +7,25 @@ import { wrapWithErrorHandler } from '@/module/utils/ErrorHandler'
 import { logger } from '@/module/utils/logger'
 import { getDouyinID } from '@/platform/douyin/getID'
 import { renderFavoriteImage, renderLiveImage, renderRecommendImage, renderWorkImage } from '@/platform/douyin/push/render'
+import { toDouyinShortUrl } from '@/platform/douyin/shortUrl'
 import { buildDouyinWorkDetail } from '@/platform/douyin/types'
 import type { DouyinWorkDetailData } from '@/platform/douyin/types'
 import { buildDouyinPlayUrl, douyinProcessVideos, type dyVideo } from '@/platform/douyin/videoQuality'
 import { getWorkTypeInfo } from '@/platform/douyin/workType'
 
-/** 构建与生产推送一致的作品二维码链接。 */
-function buildWorkShareLink(aweme: DouyinWorkDetailData, selectedVideo: dyVideo | null): string {
+/** 构建与生产推送一致的作品二维码短链（签发失败回退原链接）。 */
+async function buildWorkShareLink(aweme: DouyinWorkDetailData, selectedVideo: dyVideo | null): Promise<string> {
   const workTypeInfo = getWorkTypeInfo(aweme)
-  if (workTypeInfo.isArticle) return `https://www.douyin.com/article/${aweme.aweme_id}`
-  if (workTypeInfo.isImage) return `https://www.douyin.com/note/${aweme.aweme_id}`
-  const playAddr = selectedVideo?.play_addr ?? aweme.video?.play_addr
-  return playAddr ? buildDouyinPlayUrl(playAddr) : `https://www.douyin.com/video/${aweme.aweme_id}`
+  let target: string
+  if (workTypeInfo.isArticle) {
+    target = `https://www.douyin.com/article/${aweme.aweme_id}`
+  } else if (workTypeInfo.isImage) {
+    target = `https://www.douyin.com/note/${aweme.aweme_id}`
+  } else {
+    const playAddr = selectedVideo?.play_addr ?? aweme.video?.play_addr
+    target = playAddr ? buildDouyinPlayUrl(playAddr) : `https://www.douyin.com/video/${aweme.aweme_id}`
+  }
+  return await toDouyinShortUrl(target)
 }
 
 /**
@@ -74,7 +81,7 @@ const handleTestPush = wrapWithErrorHandler(
         const selectedVideo = aweme.video?.bit_rate?.length
           ? douyinProcessVideos(aweme.video.bit_rate, Config.douyin.videoQuality)[0]
           : null
-        const shareLink = buildWorkShareLink(Detail_Data, selectedVideo)
+        const shareLink = await buildWorkShareLink(Detail_Data, selectedVideo)
         images = await renderWorkImage({
           e,
           Detail_Data,
@@ -116,7 +123,7 @@ const handleTestPush = wrapWithErrorHandler(
         const selectedVideo = aweme.video?.bit_rate?.length
           ? douyinProcessVideos(aweme.video.bit_rate, Config.douyin.videoQuality)[0]
           : null
-        const shareLink = buildWorkShareLink(Detail_Data, selectedVideo)
+        const shareLink = await buildWorkShareLink(Detail_Data, selectedVideo)
         images = await renderFavoriteImage({
           e,
           Detail_Data,
@@ -158,7 +165,7 @@ const handleTestPush = wrapWithErrorHandler(
         const selectedVideo = aweme.video?.bit_rate?.length
           ? douyinProcessVideos(aweme.video.bit_rate, Config.douyin.videoQuality)[0]
           : null
-        const shareLink = buildWorkShareLink(Detail_Data, selectedVideo)
+        const shareLink = await buildWorkShareLink(Detail_Data, selectedVideo)
         images = await renderRecommendImage({
           e,
           Detail_Data,

@@ -37,6 +37,7 @@ import { processPostList } from './push/post'
 import { processRecommendList } from './push/recommend'
 import { renderFavoriteImage, renderLiveImage, renderRecommendImage, renderWorkImage } from './push/render'
 import { type DouyinPushItem, type DouyinWorkPushItem, type WillBePushList } from './push/types'
+import { toDouyinShortUrl } from './shortUrl'
 
 // Re-export types for backward compatibility
 export type { DouyinPushItem, DouyinWorkPushItem }
@@ -286,7 +287,7 @@ export class DouYinpush extends Base {
           if (workTypeInfo.isArticle) {
             workShareLink = `https://www.douyin.com/article/${actualAwemeId}`
           } else if (workTypeInfo.isImage) {
-            // 图文和合辑使用无追踪参数的短链接，降低二维码密度并提高扫描识别率。
+            // 图文和合辑使用无追踪参数的规范链接，降低二维码密度并提高扫描识别率。
             workShareLink = `https://www.douyin.com/note/${actualAwemeId}`
           } else if (Config.douyin.push.shareType === 'web') {
             // 视频同样用无追踪参数的规范链接：share_url 302 之后只是多出一串追踪参数，白搭一次网络请求还会拉高二维码密度
@@ -296,6 +297,8 @@ export class DouYinpush extends Base {
             const playAddr = selectedVideo?.play_addr ?? pushItem.Detail_Data.video?.play_addr
             workShareLink = playAddr ? buildDouyinPlayUrl(playAddr) : `https://www.douyin.com/video/${actualAwemeId}`
           }
+          // 二维码统一换成抖音签发的短链；签发失败时 helper 回退原链接
+          workShareLink = await toDouyinShortUrl(workShareLink)
         }
 
         switch (pushItem.pushType) {
