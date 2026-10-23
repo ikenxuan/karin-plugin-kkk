@@ -2,6 +2,19 @@
 
 # Changelog
 
+## [2.45.2-beta.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.45.1...v2.45.2-beta.0) (2026-10-24)
+
+
+### ✨ 新功能
+
+* **douyin:** 推送二维码改用 amagi 签发的短链 ([e2975a3](https://github.com/ikenxuan/karin-plugin-kkk/commit/e2975a32b26384a6dcf2f1ad982b1b52abcbdbb6))
+
+
+### 🐛 错误修复
+
+* **bilibili:** 下载时避开被代理屏蔽的 PCDN 直链 (#370) ([1c64ace](https://github.com/ikenxuan/karin-plugin-kkk/commit/1c64ace13e9384a45a7e88853251a644229692cb))
+* **xiaohongshu:** 优化合并转发消息上传逻辑 ([e093d05](https://github.com/ikenxuan/karin-plugin-kkk/commit/e093d056455b9d914e7b7728d8d2ad2513c30dbf))
+
 ## [2.45.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.45.0...v2.45.1) (2026-10-17)
 
 
