@@ -2,6 +2,23 @@
 
 # Changelog
 
+## [2.45.2-beta.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.45.2-beta.0...v2.45.2-beta.1) (2026-10-26)
+
+
+### ✨ 新功能
+
+* 初步支持抖音合集、短剧解析 ([0fc91a2](https://github.com/ikenxuan/karin-plugin-kkk/commit/0fc91a2258fd2d1c6fe59defa28883845f51fbba))
+
+
+### 🐛 错误修复
+
+* **douyin:** 设置推送时改用游客接口转换sec_uid ([6ee68fa](https://github.com/ikenxuan/karin-plugin-kkk/commit/6ee68faae634447114721cc4ada5524f074d1663))
+
+
+### 🧰 其他更新
+
+* 优化发版脚本 ([6175b0c](https://github.com/ikenxuan/karin-plugin-kkk/commit/6175b0c4f0815058db0559c22651a943921a846f))
+
 ## [2.45.2-beta.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.45.1...v2.45.2-beta.0) (2026-10-24)
 
 
