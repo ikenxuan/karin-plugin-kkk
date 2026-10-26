@@ -231,6 +231,8 @@ class Tools {
         unit = 1 // 重置单位
       }
     }
+    // 打头的单位前面没有数字（「十二」「十」），口语里省掉的是「一」，补回一个单位值
+    if (unit > 1) temp += unit
     return result + temp
   }
 

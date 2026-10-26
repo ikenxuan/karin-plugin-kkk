@@ -21,6 +21,8 @@ export interface BilibiliDataTypes {
 export interface DouyinDataTypes {
   /** 单个视频 */
   one_work: 'one_work'
+  /** 合集（短剧 / 普通合集），按 mix_id 拉取全部剧集 */
+  mix_work: 'mix_work'
   work_comments: 'work_comments'
   user_mix_videos: 'user_mix_videos'
   user_dynamic: 'user_dynamic'

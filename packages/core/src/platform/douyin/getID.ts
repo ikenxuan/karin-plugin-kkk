@@ -71,6 +71,17 @@ export const getDouyinID = async (event: Message, url: string, log = true): Prom
       break
     }
 
+    // 合集分享链，路径里的数字就是合集 ID：
+    // 短剧 302 到 /share/playlet/detail/<mix_id>/；普通合集 302 到 /share/mix/detail/<mix_id>/，
+    // 非移动端 UA 还会再跳一次到 www.douyin.com/collection/<mix_id>
+    case /\/(?:share\/(?:playlet|mix)\/detail|collection)\/(\d+)/.test(longLink): {
+      const mixMatch = /\/(?:share\/(?:playlet|mix)\/detail|collection)\/(\d+)/.exec(longLink)
+      result = {
+        type: 'mix_work',
+        mix_id: mixMatch ? mixMatch[1] : undefined
+      }
+      break
+    }
     case /video\/(\d+)/.test(longLink):
     case /article\/(\d+)/.test(longLink):
     case /note\/(\d+)/.test(longLink): {

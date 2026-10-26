@@ -28,6 +28,7 @@ import { Config } from '@/module/utils/Config'
 import { EmojiReactionManager, getEmojiId } from '@/module/utils/EmojiReaction'
 import { douyinComments } from '@/platform/douyin'
 import { burnDouyinDanmaku, type DouyinDanmakuElem } from '@/platform/douyin/danmaku'
+import { parseMixEpisode } from '@/platform/douyin/mix'
 import { renderWorkImage } from '@/platform/douyin/push/render'
 import { buildDouyinWorkDetail } from '@/platform/douyin/types'
 import { douyinProcessVideos, type dyVideo, buildDouyinPlayUrl } from '@/platform/douyin/videoQuality'
@@ -649,7 +650,10 @@ export class DouYin extends Base {
               CommentLength: douyinCommentsRes.CommentsData.length ?? 0,
               // 非视频作品没有直链，二维码用 www.douyin.com 的 PC 访问地址；
               // iesdouyin 超长分享链接字节过多，会降低二维码的鲁棒性。
-              share_url: isVideo && selectedVideo ? buildDouyinPlayUrl(selectedVideo.play_addr) : `https://www.douyin.com/${isArticle ? 'article' : 'note'}/${aweme.aweme_id}`,
+              share_url:
+                isVideo && selectedVideo
+                  ? buildDouyinPlayUrl(selectedVideo.play_addr)
+                  : `https://www.douyin.com/${isArticle ? 'article' : 'note'}/${aweme.aweme_id}`,
               VideoSize: mp4size,
               VideoFPS: FPS,
               ImageLength: imagenum,
@@ -878,6 +882,72 @@ export class DouYin extends Base {
             }
           }
         }
+        return true
+      }
+      case 'mix_work': {
+        // 合集和 B站番剧是同一种「先选集再解析」的形态，统计口径沿用番剧
+        this.workType = 'bangumi'
+        /** 单次最多拉取的集数，超出部分不展示 */
+        const episodeLimit = 200
+        const timeoutSeconds = 120
+        const MixData = await this.amagi.douyin.fetcher.fetchMixAweme({ mix_id: data.mix_id, number: episodeLimit })
+        const awemeList = MixData.data.aweme_list
+        const first = awemeList[0]
+        if (!first) {
+          throw new Error('获取合集作品列表失败，可能是因为该合集已被删除或设置为私密。')
+        }
+        const mixInfo = first.mix_info
+        const author = first.author
+        // 只有短剧带计划总集数 total_episode，普通合集只有 updated_to_episode
+        const isPlaylet = typeof mixInfo.statis.total_episode === 'number'
+        const episodes = awemeList.map((aweme) => ({
+          episode: aweme.mix_info.statis.current_episode,
+          aweme_id: aweme.aweme_id,
+          // 末尾的话题标签对选集没用
+          title: aweme.desc.replace(/#\S+/g, '').trim(),
+          duration: aweme.video.duration
+        }))
+
+        const img = await Render(this.e, 'douyin/mix', {
+          kind: isPlaylet ? 'playlet' : 'collection',
+          mix_name: mixInfo.mix_name,
+          image_url: mixInfo.cover_url.url_list[0],
+          // 短剧每集文案都是同一段剧情简介；普通合集每集文案就是各自的标题，没有合集级简介
+          desc: isPlaylet ? episodes[0].title : '',
+          total_episode: isPlaylet ? mixInfo.statis.total_episode : mixInfo.statis.updated_to_episode,
+          updated_to_episode: mixInfo.statis.updated_to_episode,
+          author: {
+            nickname: author.nickname,
+            avatar: author.avatar_thumb.url_list[0],
+            short_id: author.unique_id === '' ? author.short_id : author.unique_id,
+            follower_count: author.follower_count,
+            verified: !!author.custom_verify || !!author.enterprise_verify_reason
+          },
+          statistics: {
+            play_count: awemeList.reduce((sum, aweme) => sum + aweme.statistics.play_count, 0),
+            digg_count: awemeList.reduce((sum, aweme) => sum + aweme.statistics.digg_count, 0),
+            collect_count: awemeList.reduce((sum, aweme) => sum + aweme.statistics.collect_count, 0)
+          },
+          episodes,
+          timeoutSeconds
+        })
+        await this.e.reply([...img, segment.text(`请在${timeoutSeconds}秒内输入 第?集 选择集数`)])
+
+        const context = await karin.ctx(this.e, { reply: true, throwOnTimeout: false, time: timeoutSeconds })
+        if (!context) return true
+        const episode = parseMixEpisode(context.msg)
+        // 按集号找，不按下标：接口会漏掉个别集，下标和集号对不上
+        const target = episode === null ? undefined : episodes.find((item) => item.episode === episode)
+        if (!target) {
+          await this.e.reply(
+            episode === null ? '匹配内容失败，请重新发送链接再次解析' : `第${episode}集不在可解析的剧集里，请重新发送链接再次解析`
+          )
+          return true
+        }
+        await this.e.reply(`收到请求，第${episode}集\n${mixInfo.mix_name}\n正在解析中`)
+
+        const targetData: DouyinIdData = { type: 'one_work', aweme_id: target.aweme_id }
+        await new DouYin(context, targetData, { forceBurnDanmaku: this.forceBurnDanmaku }).DouyinHandler(targetData)
         return true
       }
       case 'music_work': {

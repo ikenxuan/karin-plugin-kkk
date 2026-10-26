@@ -10,7 +10,7 @@ import { logger } from '@/module/utils/logger'
  * 智能主题（Config.app.Theme === 3）目前只对这几个模板生效：
  * 它们的氛围背景直接取自封面（AmbientCover），深浅主题跟随封面明暗观感最好。
  */
-const SMART_THEME_PATHS = new Set(['douyin/video-work', 'douyin/image-work', 'bilibili/dynamic/DYNAMIC_TYPE_LIVE_RCMD'])
+const SMART_THEME_PATHS = new Set(['douyin/video-work', 'douyin/image-work', 'douyin/mix', 'bilibili/dynamic/DYNAMIC_TYPE_LIVE_RCMD'])
 
 type RGB = {
   r: number
@@ -34,7 +34,7 @@ type CoverThemeDecision = {
 const getCoverUrl = (path: string, data: unknown): string => {
   if (!data || typeof data !== 'object') return ''
 
-  if (path === 'douyin/video-work' || path === 'bilibili/dynamic/DYNAMIC_TYPE_LIVE_RCMD') {
+  if (path === 'douyin/video-work' || path === 'douyin/mix' || path === 'bilibili/dynamic/DYNAMIC_TYPE_LIVE_RCMD') {
     const imageUrl = (data as { image_url?: unknown }).image_url
     return typeof imageUrl === 'string' ? imageUrl : ''
   }
