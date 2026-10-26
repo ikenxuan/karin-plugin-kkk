@@ -61,9 +61,8 @@ const handleSetDouyinPush = wrapWithErrorHandler(
     }
 
     // 原有的订阅逻辑
-    const data = await douyinFetcher.searchContent({
-      query,
-      type: 'user'
+    const data = await douyinFetcher.fetchGuestUserInfo({
+      unique_id: query
     })
     await new DouYinpush(e).setting(data.data)
     return true
