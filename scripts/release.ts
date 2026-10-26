@@ -375,5 +375,6 @@ execFileSync('git', ['commit', '-m', `chore: release v${version}`], { stdio: 'in
 execFileSync('git', ['tag', `v${version}`], { stdio: 'inherit' })
 
 console.log(`\n✅ 发版就绪：${version}（commit + tag 已就位，尚未推送）`)
-console.log(`   审计后手动推送：git push origin main && git push origin v${version}`)
 console.log('   tag 推上去即触发 release.yml：changelogithub 建 GitHub Release → build → npm 发布')
+console.log(`\n   ${chalk.dim('审计后手动推送：')}\n`)
+console.log(`   ${chalk.bold.cyan(`git push origin main && git push origin v${version}`)}\n`)
