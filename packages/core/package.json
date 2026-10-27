@@ -70,7 +70,7 @@
     "watch": "ktr sync && cross-env EBV_FILE=\"development.env\" tsx watch --include \"src/**/*.ts\" --include \"ktr/**/*.ts\" --include \"ktr/**/*.tsx\" src/app.ts --trace-deprecation"
   },
   "dependencies": {
-    "@ikenxuan/qrcode": "1.6.0",
+    "@ikenxuan/qrcode": "1.8.1",
     "@lobehub/webfont-geist-mono": "^1.0.0",
     "@lobehub/webfont-harmony-sans-sc": "^1.0.0",
     "emoji-datasource-apple": "16.0.0"
@@ -130,5 +130,5 @@
     "web": "./lib/web.config.js",
     "ts-web": "./src/web.config.ts"
   },
-  "timestamp": "2026-10-27T05:48:02.777Z"
+  "timestamp": "2026-10-27T15:10:03.708Z"
 }

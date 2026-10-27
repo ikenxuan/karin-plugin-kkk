@@ -42,6 +42,7 @@ import {
 import { douyinComments } from '@/platform/douyin'
 import { burnDouyinDanmaku, type DouyinDanmakuElem } from '@/platform/douyin/danmaku'
 import { renderWorkImage } from '@/platform/douyin/push/render'
+import { toDouyinShortUrl } from '@/platform/douyin/shortUrl'
 import { buildDouyinWorkDetail } from '@/platform/douyin/types'
 import { douyinProcessVideos, type dyVideo, buildDouyinPlayUrl } from '@/platform/douyin/videoQuality'
 import { getDouyinLiveImageSendPolicy } from '@/platform/douyin/workType'
@@ -616,11 +617,13 @@ export class DouYin extends Base {
             const userProfile = await this.amagi.douyin.fetcher.fetchUserProfile({
               sec_uid: aweme.author.sec_uid
             })
-            // 非视频作品使用不带追踪参数的规范短链接，避免二维码内容过长影响扫描识别。
-            const shareLink =
+            // 作品详情二维码统一用抖音签发的短链：视频作品用选档后的下载直链、
+            // 图文/文章用规范网页链接，先签发短链再交给 ktr 渲染；签发失败回退原链接。
+            const shareLink = await toDouyinShortUrl(
               isVideo && selectedVideo
                 ? buildDouyinPlayUrl(selectedVideo.play_addr)
                 : `https://www.douyin.com/${isArticle ? 'article' : 'note'}/${aweme.aweme_id}`
+            )
             const workInfoImg = await renderWorkImage({
               e: this.e,
               // 不再向 Detail_Data 里覆盖 video.bit_rate 塞入选档结果：
@@ -660,12 +663,13 @@ export class DouYin extends Base {
               Type: isArticle ? '文章' : isVideo ? '视频' : this.is_slides ? '合辑' : '图集',
               CommentsData: douyinCommentsRes.CommentsData,
               CommentLength: douyinCommentsRes.CommentsData.length ?? 0,
-              // 非视频作品没有直链，二维码用 www.douyin.com 的 PC 访问地址；
-              // iesdouyin 超长分享链接字节过多，会降低二维码的鲁棒性。
-              share_url:
+              // 评论图二维码同样用抖音签发的短链：视频用选档后的下载直链、
+              // 图文/文章用规范网页链接；签发失败回退原链接。
+              share_url: await toDouyinShortUrl(
                 isVideo && selectedVideo
                   ? buildDouyinPlayUrl(selectedVideo.play_addr)
-                  : `https://www.douyin.com/${isArticle ? 'article' : 'note'}/${aweme.aweme_id}`,
+                  : `https://www.douyin.com/${isArticle ? 'article' : 'note'}/${aweme.aweme_id}`
+              ),
               VideoSize: mp4size,
               VideoFPS: FPS,
               ImageLength: imagenum,
