@@ -2,6 +2,14 @@
 
 # Changelog
 
+## [2.45.2-beta.3](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.45.2-beta.2...v2.45.2-beta.3) (2026-10-27)
+
+
+### 🐛 错误修复
+
+* 更新 @ikenxuan/qrcode 依赖至 1.8.1，优化短链接生成逻辑 ([090152d](https://github.com/ikenxuan/karin-plugin-kkk/commit/090152d903e4aeecc019252ea349415e3029b068))
+* **douyin:** 优化短剧和普通合集的回复标题逻辑 ([e693205](https://github.com/ikenxuan/karin-plugin-kkk/commit/e693205882e7c1d16e76654c31d95d9c8e736a18))
+
 ## [2.45.2-beta.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.45.2-beta.1...v2.45.2-beta.2) (2026-10-27)
 
 
