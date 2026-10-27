@@ -14,7 +14,6 @@ vi.mock('node-karin/axios', () => ({
 
 import { Common } from '@/module/utils/Common'
 import { getDouyinID } from '@/platform/douyin/getID'
-import { parseMixEpisode } from '@/platform/douyin/mix'
 
 const event = {} as Message
 
@@ -29,25 +28,6 @@ describe('Common.chineseToArabic', () => {
     ['一百二十', 120]
   ])('%s → %i', (input, expected) => {
     expect(Common.chineseToArabic(input)).toBe(expected)
-  })
-})
-
-describe('parseMixEpisode', () => {
-  it.each([
-    ['第12集', 12],
-    ['第 12 集', 12],
-    ['第十二集', 12],
-    ['我想看第三集', 3],
-    ['12', 12],
-    ['012', 12],
-    ['12集', 12],
-    ['十二', 12]
-  ])('%s → %i', (input, expected) => {
-    expect(parseMixEpisode(input)).toBe(expected)
-  })
-
-  it.each(['', '第几集', '12个', '第0集', '0', 'https://v.douyin.com/eP5y7KTbTik/'])('%j → null', (input) => {
-    expect(parseMixEpisode(input)).toBeNull()
   })
 })
 

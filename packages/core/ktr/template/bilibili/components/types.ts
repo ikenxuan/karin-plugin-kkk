@@ -245,6 +245,8 @@ export interface BangumiBilibiliEpisodeBadgeInfo {
  * 番剧剧集信息接口
  */
 export interface BangumiBilibiliEpisode {
+  /** 实际集号（从 1 开始）；不传时按数组顺序推断 */
+  episode?: number
   /** 剧集封面图片URL */
   cover: string
   /** 视频BV号 */

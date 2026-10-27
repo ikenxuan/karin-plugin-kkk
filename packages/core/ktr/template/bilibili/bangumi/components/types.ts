@@ -29,8 +29,14 @@ export interface BangumiBilibiliData {
   Copyright: string
   /** 统计数据 */
   Stat: BangumiBilibiliStat
-  /** 剧集列表 */
+  /** 剧集列表（按展示顺序传入，最新一集在前） */
   Episodes: BangumiBilibiliEpisode[]
   /** 剧集总数 */
   length: number
+  /** 选集交互方式：text 为回复集数，button 为按钮（QQBot）；不传按 text 处理 */
+  selectionMode?: 'text' | 'button'
+  /** 海报当前页码（从 1 开始），不传按第 1 页处理 */
+  posterPage?: number
+  /** 海报每页展示的剧集数，不传按 15 集处理 */
+  posterPageSize?: number
 }

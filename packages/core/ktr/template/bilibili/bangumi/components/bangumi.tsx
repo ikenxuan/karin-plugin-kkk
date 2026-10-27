@@ -1,13 +1,15 @@
 import { Chip } from '@heroui/react'
-import { Calendar, Clock, Crown, Hash, Play, Share2, Shield, Star, Users } from 'lucide-react'
+import { Crown, Hash, Play, Shield, Star, Users } from 'lucide-react'
 import React from 'react'
 
 import { DefaultLayout } from '../../../components/DefaultLayout'
 import type { PosterProps } from '../../../types/ctx'
-import { cn } from '../../../../utils/cn'
 import { EnhancedImage } from '../../components/shared'
 import type { BangumiBilibiliHeaderProps } from '../../components/types'
 import type { BangumiBilibiliData } from './types'
+
+/** 海报每页展示的集数，和 core 的 EPISODE_SELECTION_PAGE_SIZE 保持一致 */
+const DEFAULT_POSTER_PAGE_SIZE = 15
 
 /**
  * 格式化数字显示
@@ -34,22 +36,6 @@ const formatDateParts = (timestamp: number): { month: string; day: string } => {
   const month = date.toLocaleDateString('zh-CN', { month: 'short' })
   const day = date.getDate().toString().padStart(2, '0')
   return { month, day }
-}
-
-/**
- * 格式化完整日期时间
- * @param timestamp 时间戳
- * @returns 格式化的日期时间字符串
- */
-const formatDateTime = (timestamp: number): string => {
-  const date = new Date(timestamp * 1000)
-  return date.toLocaleDateString('zh-CN', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  })
 }
 
 /**
@@ -150,14 +136,6 @@ const BangumiBilibiliHeader: React.FC<BangumiBilibiliHeaderProps> = (props) => {
               </div>
             </div>
           )}
-          {/** TIP */}
-          <div className="flex text-3xl select-text text-foreground">
-            <span>提示：请在120秒内发送</span>
-            <span className="inline-flex items-center rounded-xl bg-danger/12 px-4 py-1.5 text-[0.95em] font-semibold text-danger">
-              第 ？ 集
-            </span>
-            <span>选择集数</span>
-          </div>
         </div>
 
         <div className="flex flex-col flex-1 justify-between text-foreground">
@@ -250,175 +228,115 @@ const BangumiBilibiliHeader: React.FC<BangumiBilibiliHeaderProps> = (props) => {
   )
 }
 
+/** 文字选集提示里的命令高亮，和海报的强调色保持一致 */
+const CommandChip: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <span className="inline-flex items-center rounded-xl bg-danger px-4 py-1.5 font-semibold text-danger-foreground">
+    {children}
+  </span>
+)
+
 /**
- * B站番剧剧集列表组件
+ * B站番剧剧集列表组件。
+ * 每页最多 15 集，3 列网格展示封面 + 标题；长番剧不会再生成超长截图。
  * @param props 剧集列表组件属性
  */
 const BangumiBilibiliEpisodes: React.FC<BangumiBilibiliData> = (props) => {
-  // 按发布时间倒序排序
-  const sortedEpisodes = [...props.Episodes].sort((a, b) => b.pub_time - a.pub_time)
+  const totalEpisodes = props.length > 0 ? props.length : props.Episodes.length
+  const pageSize = Math.max(1, props.posterPageSize ?? DEFAULT_POSTER_PAGE_SIZE)
+  const pageCount = Math.max(1, Math.ceil(totalEpisodes / pageSize))
+  const page = Math.min(Math.max(1, props.posterPage ?? 1), pageCount)
+  const start = (page - 1) * pageSize
+  const visibleEpisodes = props.Episodes.slice(start, start + pageSize)
+  if (visibleEpisodes.length === 0) return null
 
-  // 按日期分组剧集
-  const groupedEpisodes = sortedEpisodes.reduce(
-    (groups, episode) => {
-      const date = new Date(episode.pub_time * 1000)
-      const dateKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
-
-      if (!groups[dateKey]) {
-        groups[dateKey] = []
-      }
-      groups[dateKey].push(episode)
-      return groups
-    },
-    {} as Record<string, typeof sortedEpisodes>
-  )
-
-  const dateKeys = Object.keys(groupedEpisodes).sort((a, b) => b.localeCompare(a))
-
-  const flattenedEpisodes: Array<{
-    episode: (typeof sortedEpisodes)[0]
-    isFirstOfDate: boolean
-    isLastOfDate: boolean
-    isLastOfAll: boolean
-    dateKey: string
-    episodesInSameDate: number
-  }> = []
-
-  dateKeys.forEach((dateIndex) => {
-    const episodesInDate = groupedEpisodes[dateIndex]
-    episodesInDate.forEach((episode, episodeIndex) => {
-      flattenedEpisodes.push({
-        episode,
-        isFirstOfDate: episodeIndex === 0,
-        isLastOfDate: episodeIndex === episodesInDate.length - 1,
-        isLastOfAll: false,
-        dateKey: dateIndex,
-        episodesInSameDate: episodesInDate.length
-      })
-    })
-  })
-
-  if (flattenedEpisodes.length > 0) {
-    flattenedEpisodes[flattenedEpisodes.length - 1].isLastOfAll = true
-  }
+  const episodeNumbers = visibleEpisodes.map((episode, index) => episode.episode ?? start + index + 1)
+  // Episodes 按展示顺序传入（最新一集在前），范围也用首尾，不能取 min/max
+  const firstEpisode = episodeNumbers[0]
+  const lastEpisode = episodeNumbers[episodeNumbers.length - 1]
+  const range = firstEpisode === lastEpisode ? `第 ${firstEpisode} 集` : `第 ${firstEpisode}–${lastEpisode} 集`
 
   return (
     <div className="px-10">
       {/* 剧集标题 */}
-      <div className="flex gap-8 items-center mb-20 text-5xl font-bold select-text text-foreground">
+      <div className="flex flex-wrap gap-6 items-center mb-16 text-5xl font-bold select-text text-foreground">
         <Play size={46} />
         <span>剧集列表</span>
         <Chip size="lg" color="danger" variant="soft" className="h-18 px-4 py-2 text-4xl select-text">
-          共{sortedEpisodes.length}集
+          共{totalEpisodes}集
         </Chip>
+        <span className="text-3xl font-semibold select-text text-muted">
+          {props.selectionMode === 'button' ? range : `第 ${page}/${pageCount} 页 · ${range}`}
+        </span>
       </div>
 
-      {/* 时间线剧集列表 */}
-      <div>
-        {flattenedEpisodes.map((item) => {
-          const { episode, isFirstOfDate, isLastOfAll, episodesInSameDate, isLastOfDate } = item
+      {/* 文字选集的操作提示；按钮选集由消息正文说明 */}
+      {props.selectionMode !== 'button' && (
+        <div className="flex flex-col gap-4 mb-12 text-3xl select-text text-foreground/80">
+          <div className="flex flex-wrap gap-3 items-center">
+            <span>发送</span>
+            <CommandChip>第?集</CommandChip>
+            <span>选集</span>
+          </div>
+          {pageCount > 1 && (
+            <div className="flex flex-wrap gap-3 items-center">
+              <span>发送</span>
+              <CommandChip>上一页</CommandChip>
+              <span className="text-foreground/30">/</span>
+              <CommandChip>下一页</CommandChip>
+              <span className="text-foreground/30">/</span>
+              <CommandChip>第?页</CommandChip>
+              <span>翻页</span>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* 剧集网格：3 列 × 5 行，卡片更宽，长标题能多显示一些字 */}
+      <div className="grid grid-cols-3 gap-8">
+        {visibleEpisodes.map((episode, index) => {
+          const episodeNumber = episodeNumbers[index]
           const { month, day } = formatDateParts(episode.pub_time)
-          const episodeNumber = sortedEpisodes.findIndex((e) => e.bvid === episode.bvid)
-          const actualEpisodeNumber = sortedEpisodes.length - episodeNumber
 
           return (
-            <div key={episode.bvid} className="flex gap-15">
-              <div className="flex flex-col shrink-0 items-center w-20">
-                {isFirstOfDate ? (
-                  // 日期节点
-                  <>
-                    <div className="text-4xl select-text text-foreground">{month}</div>
-                    <div className="flex justify-center items-center text-7xl font-bold select-text text-foreground">{day}</div>
-                    {!isLastOfAll && <div className={cn('mt-8 w-1 bg-divider', episodesInSameDate > 1 ? 'h-110' : 'h-95')} />}
-                  </>
-                ) : (
-                  // 普通节点
-                  <>
-                    <div className="w-1 h-10 bg-divider" />
-                    <div className="my-2 w-4 h-4 rounded-full bg-divider" />
-                    {(!isLastOfAll || episodesInSameDate > 1) && <div className={cn('w-1 bg-divider', isLastOfDate ? 'h-110' : 'h-130')} />}
-                  </>
+            <div
+              key={`${episodeNumber}-${episode.bvid}`}
+              className="flex flex-col overflow-hidden bg-surface rounded-3xl shadow-large"
+            >
+              {/* 剧集封面 */}
+              <div className="overflow-hidden relative aspect-video">
+                <EnhancedImage
+                  src={episode.cover}
+                  alt={`第${episodeNumber}集 ${episode.long_title}`}
+                  className="object-cover w-full h-full select-text"
+                />
+                <div className="absolute top-4 left-4 px-3 py-1 text-2xl font-bold text-white rounded-xl bg-black/65">
+                  第{episodeNumber}集
+                </div>
+                {episode.badge && (
+                  <Chip
+                    size="sm"
+                    className="absolute top-4 right-4 px-2 py-1 text-lg font-medium select-text"
+                    style={{
+                      backgroundColor: episode.badge_info?.bg_color || '#FB7299',
+                      color: '#FFFFFF'
+                    }}
+                  >
+                    {episode.badge_info?.text || episode.badge}
+                  </Chip>
                 )}
               </div>
 
-              {/* 剧集内容 */}
-              <div className={cn('flex-1 min-w-0', !isLastOfAll && isLastOfDate && 'mb-20')}>
-                {/* UP主信息和第x集 */}
-                <div className="flex justify-between items-center mb-10">
-                  {/* UP主信息 */}
-                  <div className="flex shrink-0 gap-8 items-center">
-                    <div className="relative">
-                      <EnhancedImage
-                        className="w-32 h-32 rounded-full select-text"
-                        src={`https://images.weserv.nl/?url=${encodeURIComponent(props.UPInfo ? props.UPInfo.avatar : props.mainCover)}`}
-                        alt={''}
-                      />
-                    </div>
-                    <div className="flex flex-col gap-6">
-                      <div className="text-4xl font-bold select-text text-foreground/80">
-                        {props.UPInfo ? props.UPInfo.uname : props.Title}
-                      </div>
-                      <div className="flex gap-4 items-center text-3xl select-text text-foreground/70">
-                        <Calendar size={30} />
-                        <span>发布了内容</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* 第x集标题 */}
-                  <div className="shrink-0 pr-20">
-                    <div className="text-5xl font-semibold select-text text-foreground/70">第{actualEpisodeNumber}集</div>
-                  </div>
+              {/* 剧集信息 */}
+              <div className="flex flex-col flex-1 gap-3 p-5">
+                <div className="text-3xl font-semibold leading-snug select-text text-foreground line-clamp-2">
+                  {episode.long_title || `第${episodeNumber}集`}
                 </div>
-                {/* 剧集卡片 */}
-                <div className="overflow-hidden shadow-large bg-surface rounded-4xl">
-                  <div className="flex gap-12 p-12">
-                    {/* 剧集封面 */}
-                    <div className="relative shrink-0">
-                      <div className="overflow-hidden relative h-64 rounded-3xl w-md">
-                        <EnhancedImage
-                          src={episode.cover}
-                          alt={`第${actualEpisodeNumber}集 ${episode.long_title}`}
-                          className="object-cover w-full h-full select-text"
-                        />
-                        {episode.badge && (
-                          <Chip
-                            size="lg"
-                            className="absolute top-6 right-8 rounded-2xl py-1 text-lg font-medium select-text scale-150"
-                            style={{
-                              backgroundColor: episode.badge_info?.bg_color || '#FB7299',
-                              color: '#FFFFFF'
-                            }}
-                          >
-                            {episode.badge_info?.text || episode.badge}
-                          </Chip>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* 剧集信息 */}
-                    <div className="flex flex-col flex-1 justify-center h-64">
-                      <div className="mb-8 text-5xl font-semibold select-text text-foreground line-clamp-2">{episode.long_title}</div>
-
-                      <div className="space-y-4 text-4xl">
-                        <div className="flex gap-6 items-center select-text text-foreground/70">
-                          <Hash size={36} />
-                          <span className="truncate">{episode.bvid}</span>
-                        </div>
-
-                        <div className="flex gap-6 items-center select-text text-foreground/70">
-                          <Clock size={36} />
-                          <span className="whitespace-nowrap">{formatDateTime(episode.pub_time)}</span>
-                        </div>
-
-                        <div className="flex gap-6 items-center select-text text-foreground/70">
-                          <Share2 size={36} />
-                          <span className="truncate">{episode.link}</span>
-                        </div>
-                      </div>
-                    </div>
+                {episode.pub_time > 0 && (
+                  <div className="mt-auto text-2xl select-text text-foreground/60">
+                    {month}
+                    {day}日
                   </div>
-                </div>
+                )}
               </div>
             </div>
           )

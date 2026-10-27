@@ -3,6 +3,23 @@ import karin, { type Message } from 'node-karin'
 import { Common, downloadVideo } from '@/module'
 import { getStatisticsDB, type ParsePlatform, type ParseWorkType } from '@/module/db'
 import { Config } from '@/module/utils/Config'
+import {
+  buildEpisodeSelectionReply,
+  buildEpisodeTargetUrl,
+  canRecallEpisodeSelectionMessage,
+  consumeParseStatSkip,
+  endEpisodeSelection,
+  getEpisodePage,
+  getEpisodeSelection,
+  getEpisodeSelectionPoster,
+  getEpisodeSelectionScope,
+  isButtonSelectionScene,
+  markBilibiliEpisodeAutoSelect,
+  parseEpisodeSelectionAction,
+  resolveEpisodeTarget,
+  setEpisodeSelectionMessage,
+  touchEpisodeSelection
+} from '@/module/utils/EpisodeSelection'
 import { wrapWithErrorHandler } from '@/module/utils/ErrorHandler'
 import { logger } from '@/module/utils/logger'
 import { Bilibili, getBilibiliID } from '@/platform/bilibili'
@@ -95,7 +112,9 @@ const handleDouyin = wrapWithErrorHandler(
     await douyin.DouyinHandler(iddata)
 
     // 记录解析统计
-    await recordParseStat(e, 'douyin', { workType: douyin.workType, durationMs: Date.now() - startedAt })
+    if (!consumeParseStatSkip(e)) {
+      await recordParseStat(e, 'douyin', { workType: douyin.workType, durationMs: Date.now() - startedAt })
+    }
 
     return
   },
@@ -140,7 +159,9 @@ const handleBilibili = wrapWithErrorHandler(
     await bilibili.BilibiliHandler(iddata)
 
     // 记录解析统计
-    await recordParseStat(e, 'bilibili', { workType: bilibili.workType, durationMs: Date.now() - startedAt })
+    if (!consumeParseStatSkip(e)) {
+      await recordParseStat(e, 'bilibili', { workType: bilibili.workType, durationMs: Date.now() - startedAt })
+    }
 
     return
   },
@@ -261,6 +282,96 @@ const xiaohongshu = karin.command(reg.xiaohongshu, handleXiaohongshu, {
 
 export const prefix = karin.command(/^#?(解析|kkk解析|弹幕解析)/, handlePrefix, {
   name: 'kkk-视频功能-引用解析'
+})
+
+const handleEpisodeSelection = wrapWithErrorHandler(
+  async (e, next) => {
+    if (!isButtonSelectionScene(e)) return next()
+
+    const match = /^#选集\s+([A-Za-z0-9_-]+)(?:\s+(.+?))?\s*$/.exec(e.msg)
+    if (!match) return next()
+
+    const [, token, actionText] = match
+    const session = getEpisodeSelection(token, getEpisodeSelectionScope(e))
+    if (!session) {
+      await e.reply('本次选集已结束，请重新发送原链接', { at: true })
+      return true
+    }
+
+    if (!actionText) {
+      await e.reply('请点击下方按钮，或点击「跳转到第x页」输入页码')
+      return true
+    }
+
+    const action = parseEpisodeSelectionAction(actionText)
+    if (!action) {
+      await e.reply('集数或页码格式不正确，请重新选择')
+      return true
+    }
+
+    if (action.type === 'page') {
+      if (!getEpisodePage(session, action.page)) {
+        await e.reply('页码超出范围，请重新选择')
+        return true
+      }
+      const poster = await getEpisodeSelectionPoster(session, action.page)
+      const previousMessageId = session.currentMessageId
+      const sentAt = Date.now()
+      const result = await e.reply(buildEpisodeSelectionReply(session, action.page, poster))
+      const shouldRecall = canRecallEpisodeSelectionMessage(session)
+      setEpisodeSelectionMessage(session, result.messageId, sentAt)
+      if (previousMessageId && shouldRecall) {
+        await e.bot.recallMsg(e.contact, previousMessageId).catch((error) => {
+          logger.debug('[选集] 撤回上一页失败:', error)
+        })
+      }
+      touchEpisodeSelection(token, session.scope)
+      return true
+    }
+
+    const target = resolveEpisodeTarget(session, action.episode)
+    if (!target) {
+      await e.reply(`第${action.episode}集不在可解析的剧集里，请重新选择`)
+      return true
+    }
+    if (target.platform === 'douyin' && !Config.douyin.switch) {
+      endEpisodeSelection(token, session.scope)
+      await e.reply('抖音解析未开启')
+      return true
+    }
+    if (target.platform === 'bilibili' && !Config.bilibili.switch) {
+      endEpisodeSelection(token, session.scope)
+      await e.reply('B站解析未开启')
+      return true
+    }
+
+    // 先原子关闭会话再解析：连点两个集数按钮时只有第一个生效，避免重复下载
+    if (!endEpisodeSelection(token, session.scope)) {
+      await e.reply('本次选集已结束，请重新发送原链接')
+      return true
+    }
+
+    const originalMsg = e.msg
+    e.msg = `${session.forceBurnDanmaku ? '#弹幕解析 ' : '#解析'}${buildEpisodeTargetUrl(target)}`
+    try {
+      if (target.platform === 'douyin') {
+        await handleDouyin(e, () => {})
+      } else {
+        markBilibiliEpisodeAutoSelect(e)
+        await handleBilibili(e, () => {})
+      }
+    } finally {
+      e.msg = originalMsg
+    }
+    return true
+  },
+  {
+    businessName: 'KKK选集'
+  }
+)
+
+export const episodeSelection = karin.command(/^#选集\s+/, handleEpisodeSelection, {
+  name: 'kkk-视频功能-选集'
 })
 
 export const douyinAPP = Config.douyin.switch && douyin

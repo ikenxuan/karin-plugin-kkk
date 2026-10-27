@@ -41,6 +41,20 @@ import {
 } from '@/module/utils'
 import { bilibiliFetcher, isSoftFailure, SOFT_ERROR_CODES, softFetch } from '@/module/utils/amagiClient'
 import { Config } from '@/module/utils/Config'
+import {
+  EPISODE_SELECTION_PAGE_SIZE,
+  EPISODE_SELECTION_TTL_SECONDS,
+  buildEpisodeSelectionReply,
+  canRecallEpisodeMessage,
+  consumeBilibiliEpisodeAutoSelect,
+  createEpisodeSelection,
+  getEpisodeSelectionScope,
+  isButtonSelectionScene,
+  markParseStatSkipped,
+  parseEpisodeNumber,
+  parseEpisodePosterPageAction,
+  setEpisodeSelectionMessage
+} from '@/module/utils/EpisodeSelection'
 import { logger } from '@/module/utils/logger'
 import { bilibiliComments, BilibiliId, checkCk, genParams } from '@/platform/bilibili'
 import { type BiliDanmakuElem, burnBiliDanmaku, getHotDanmaku, mergeAndBurnBili } from '@/platform/bilibili/danmaku'
@@ -380,9 +394,16 @@ export class Bilibili extends Base {
         this.islogin = (await checkCk()).Status === 'isLogin'
         this.isVIP = (await checkCk()).isVIP
 
-        const Episodes = []
-        for (const item of videoInfo.data.result.episodes) {
-          Episodes.push({
+        const sourceEpisodes = videoInfo.data.result.episodes ?? []
+        if (!sourceEpisodes.length) {
+          await this.e.reply('未获取到可解析的剧集，请稍后重试')
+          return true
+        }
+
+        // 接口按集数升序返回；海报和按钮都改成最新一集在前，分页才能从最新往前翻
+        const displayEpisodes = sourceEpisodes
+          .map((item, index) => ({
+            episode: index + 1,
             cover: item.cover,
             bvid: item.bvid,
             link: item.short_link,
@@ -390,55 +411,160 @@ export class Bilibili extends Base {
             pub_time: item.pub_time,
             badge: item.badge === '' ? '限免' : item.badge,
             badge_info: item.badge_info
+          }))
+          .reverse()
+        const episodeTargets = sourceEpisodes
+          .map((item, index) => ({
+            episode: index + 1,
+            target: { platform: 'bilibili' as const, epId: String(item.ep_id) }
+          }))
+          .reverse()
+
+        const autoSelectEpisode = consumeBilibiliEpisodeAutoSelect(this.e)
+        const linkedEpId = iddata.isEpid ? String(iddata.realid).replace(/^ep/i, '') : ''
+        const linkedSourceIndex = linkedEpId ? sourceEpisodes.findIndex((item) => String(item.ep_id) === linkedEpId) : -1
+        const linkedDisplayIndex = linkedSourceIndex >= 0 ? sourceEpisodes.length - 1 - linkedSourceIndex : -1
+        let selectedIndex = autoSelectEpisode ? linkedSourceIndex : -1
+        const buttonSelection = isButtonSelectionScene(this.e)
+        const selectionMode: 'text' | 'button' = buttonSelection ? 'button' : 'text'
+
+        /** 按海报页码渲染：15 集一页，长番剧不会撑爆单张 PNG */
+        const renderPoster = (posterPage: number) =>
+          Render(this.e, 'bilibili/bangumi', {
+            mainCover: videoInfo.data.result.cover,
+            Actors: videoInfo.data.result.actors,
+            Evaluate: videoInfo.data.result.evaluate,
+            Link: videoInfo.data.result.link,
+            newEP: videoInfo.data.result.new_ep,
+            Title: videoInfo.data.result.title,
+            Styles: videoInfo.data.result.styles,
+            seasonID: videoInfo.data.result.season_id,
+            subtitle: videoInfo.data.result.subtitle,
+            UPInfo: videoInfo.data.result.up_info,
+            Copyright: videoInfo.data.result.rights.copyright,
+            Stat: videoInfo.data.result.stat,
+            Episodes: displayEpisodes,
+            length: sourceEpisodes.length,
+            selectionMode,
+            posterPage,
+            posterPageSize: EPISODE_SELECTION_PAGE_SIZE
           })
-        }
-        img = await Render(this.e, 'bilibili/bangumi', {
-          mainCover: videoInfo.data.result.cover,
-          Actors: videoInfo.data.result.actors,
-          Evaluate: videoInfo.data.result.evaluate,
-          Link: videoInfo.data.result.link,
-          newEP: videoInfo.data.result.new_ep,
-          Title: videoInfo.data.result.title,
-          Styles: videoInfo.data.result.styles,
-          seasonID: videoInfo.data.result.season_id,
-          subtitle: videoInfo.data.result.subtitle,
-          UPInfo: videoInfo.data.result.up_info,
-          Copyright: videoInfo.data.result.rights.copyright,
-          Stat: videoInfo.data.result.stat,
-          Episodes,
-          length: videoInfo.data.result.episodes.length
-        })
-        this.e.reply([...img, segment.text('请在120秒内输入 第?集 选择集数')])
-        const context = await karin.ctx(this.e, { reply: true, throwOnTimeout: false })
-        if (!context) return true
-        const regex = /第([一二三四五六七八九十百千万0-9]+)集/.exec(context.msg)
-        let Episode
-        if (regex && regex[1]) {
-          Episode = regex[1]
-          // 检查是否为中文数字，如果是则转换为阿拉伯数字
-          if (/^[一二三四五六七八九十百千万]+$/.test(Episode)) {
-            Episode = Common.chineseToArabic(Episode).toString()
+
+        if (autoSelectEpisode) {
+          if (linkedSourceIndex < 0) {
+            await this.e.reply('未找到该集，请重新发送番剧链接')
+            return true
           }
-          this.downloadfilename = videoInfo.data.result.episodes[Number(Episode) - 1].share_copy
-            .substring(0, 50)
-            .replace(/[\\/:*?"<>|\r\n\s]/g, ' ')
-          this.e.reply(`收到请求，第${Episode}集\n${this.downloadfilename}\n正在下载中`)
+        } else if (buttonSelection) {
+          // 海报和按钮共用 15 集一页的页码，链接指向哪一集就落在哪一页
+          const initialPage = linkedDisplayIndex >= 0 ? Math.floor(linkedDisplayIndex / EPISODE_SELECTION_PAGE_SIZE) + 1 : 1
+          const poster = await renderPoster(initialPage)
+          const session = createEpisodeSelection(getEpisodeSelectionScope(this.e), {
+            title: videoInfo.data.result.title,
+            platform: 'bilibili',
+            scene: this.e.isFriend ? 'friend' : 'group',
+            poster,
+            posterPage: initialPage,
+            renderPoster,
+            episodes: episodeTargets,
+            forceBurnDanmaku: this.forceBurnDanmaku
+          })
+          markParseStatSkipped(this.e)
+          const sentAt = Date.now()
+          const result = await this.e.reply(buildEpisodeSelectionReply(session, initialPage, poster))
+          setEpisodeSelectionMessage(session, result.messageId, sentAt)
+          return true
         } else {
-          logger.debug(Episode)
-          this.e.reply('匹配内容失败，请重新发送链接再次解析')
+          const posterPageCount = Math.ceil(displayEpisodes.length / EPISODE_SELECTION_PAGE_SIZE)
+          let posterPage = linkedDisplayIndex >= 0 ? Math.floor(linkedDisplayIndex / EPISODE_SELECTION_PAGE_SIZE) + 1 : 1
+          /** 上一页海报消息，翻页发送成功后撤回，避免聊天里堆一串过期海报 */
+          let posterMessageId = ''
+          let posterMessageSentAt = 0
+
+          for (;;) {
+            const poster = await renderPoster(posterPage)
+            const start = (posterPage - 1) * EPISODE_SELECTION_PAGE_SIZE
+            const pageEpisodes = displayEpisodes.slice(start, start + EPISODE_SELECTION_PAGE_SIZE)
+            const firstEpisode = pageEpisodes[0]?.episode ?? 0
+            const lastEpisode = pageEpisodes[pageEpisodes.length - 1]?.episode ?? 0
+            const range = firstEpisode === lastEpisode ? `第 ${firstEpisode} 集` : `第 ${firstEpisode}–${lastEpisode} 集`
+
+            const sentAt = Date.now()
+            const result = await this.e.reply([
+              ...poster,
+              segment.text(
+                `《${videoInfo.data.result.title}》\n${range}（共 ${displayEpisodes.length} 集）\n第 ${posterPage}/${posterPageCount} 页\n` +
+                  `发送 第?集 选集${posterPageCount > 1 ? '，发送 上一页 / 下一页 / 第?页 翻页' : ''}（${EPISODE_SELECTION_TTL_SECONDS} 秒内有效）`
+              )
+            ])
+
+            const previousMessageId = posterMessageId
+            const previousMessageSentAt = posterMessageSentAt
+            posterMessageId = result.messageId
+            posterMessageSentAt = result.messageId ? sentAt : 0
+            if (previousMessageId && canRecallEpisodeMessage(previousMessageId, previousMessageSentAt)) {
+              try {
+                await this.e.bot.recallMsg(this.e.contact, previousMessageId)
+              } catch (error) {
+                logger.debug('[选集] 撤回上一页失败:', error)
+              }
+            }
+
+            const context = await karin.ctx(this.e, { reply: true, throwOnTimeout: false, time: EPISODE_SELECTION_TTL_SECONDS })
+            if (!context) return true
+
+            // 用户发了新链接/新命令：结束本轮选集，交给对应处理器，避免两个等待上下文抢同一条消息
+            const replyText = context.msg.trim()
+            if (/^[#/]/.test(replyText) || /(https?:\/\/|b23\.tv|bilibili\.com|douyin\.com|iesdouyin\.com)/i.test(replyText)) {
+              return true
+            }
+
+            const pageAction = parseEpisodePosterPageAction(context.msg)
+            if (pageAction) {
+              const nextPage =
+                pageAction.type === 'prev' ? posterPage - 1 : pageAction.type === 'next' ? posterPage + 1 : pageAction.page
+              if (nextPage < 1 || nextPage > posterPageCount) {
+                await this.e.reply(`页码超出范围，请发送 1-${posterPageCount} 之间的页码`)
+                continue
+              }
+              posterPage = nextPage
+              continue
+            }
+
+            const parsedEpisode = parseEpisodeNumber(context.msg)
+            if (parsedEpisode === null || parsedEpisode > sourceEpisodes.length) {
+              await this.e.reply(
+                parsedEpisode === null
+                  ? '匹配内容失败，请发送 第?集 选择集数，或发送 上一页 / 下一页 / 第?页 翻页'
+                  : `第${parsedEpisode}集不在可解析的剧集里，请重新选择`
+              )
+              continue
+            }
+            selectedIndex = parsedEpisode - 1
+            break
+          }
+        }
+
+        const episodeInfo = sourceEpisodes[selectedIndex]
+        if (!episodeInfo) {
+          await this.e.reply('未找到该集，请重新发送番剧链接')
           return true
         }
+        const displayEpisode = selectedIndex + 1
+        this.downloadfilename = episodeInfo.share_copy.substring(0, 50).replace(/[\\/:*?"<>|\r\n\s]/g, ' ')
+        await this.e.reply(`收到请求，第${displayEpisode}集\n${this.downloadfilename}\n正在下载中`)
+
         const bangumidataBASEURL = bilibiliApiUrls.getBangumiStream({
-          cid: videoInfo.data.result.episodes[Number(Episode) - 1].cid,
-          ep_id: videoInfo.data.result.episodes[Number(Episode) - 1].ep_id.toString()
+          cid: episodeInfo.cid,
+          ep_id: episodeInfo.ep_id.toString()
         })
         const Params = await genParams(bangumidataBASEURL)
-        if (!this.islogin) this.e.reply('B站ck未配置或已失效，无法获取视频流，可尝试【#B站登录】以配置新ck')
+        if (!this.islogin) await this.e.reply('B站ck未配置或已失效，无法获取视频流，可尝试【#B站登录】以配置新ck')
         const playUrlData = await new Networks({
           url: bangumidataBASEURL + Params,
           headers: this.headers
         }).getData()
-        if (videoInfo.data.result.episodes[Number(Episode) - 1].badge === '会员' && !this.isVIP) {
+        if (episodeInfo.badge === '会员' && !this.isVIP) {
           logger.warn('该CK不是大会员，无法获取视频流')
           return true
         }
@@ -472,6 +598,7 @@ export class Bilibili extends Base {
         })
         break
       }
+
       case 'dynamic_info': {
         const dynamicInfo = await this.amagi.bilibili.fetcher.fetchDynamicDetail({
           dynamic_id: iddata.dynamic_id

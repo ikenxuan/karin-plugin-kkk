@@ -4,11 +4,15 @@ import React from 'react'
 import { RiVerifiedBadgeFill } from 'react-icons/ri'
 
 import { isDark } from '../../../../utils/theme'
+import { EnhancedImage } from '../../../bilibili/components/shared'
 import { AmbientCover } from '../../../components/AmbientCover'
 import { DefaultLayout } from '../../../components/DefaultLayout'
 import type { PosterProps } from '../../../types/ctx'
 import { DouyinFavoriteIcon, DouyinLikeIcon } from '../../components/Icons'
 import type { DouyinMixData } from './types'
+
+/** 海报每页展示的集数，和 core 的 EPISODE_SELECTION_PAGE_SIZE 保持一致 */
+const DEFAULT_POSTER_PAGE_SIZE = 15
 
 /** 万/亿 计数，数值与单位分开返回：数字用大号等宽，单位用小号 */
 const splitCount = (count: number): { value: string; unit: string } => {
@@ -200,102 +204,113 @@ const MixSynopsis: React.FC<PosterProps<DouyinMixData>> = ({ data }) => {
   )
 }
 
+/** 文字选集提示里的命令高亮，和 B 站番剧模板保持一致 */
+const CommandChip: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <span className="inline-flex items-center rounded-xl bg-danger px-4 py-1.5 font-semibold text-danger-foreground">
+    {children}
+  </span>
+)
+
 const MixEpisodes: React.FC<PosterProps<DouyinMixData>> = ({ data }) => {
-  const { kind, episodes, total_episode, updated_to_episode, timeoutSeconds } = data
-  const episodeMap = new Map(episodes.map((item) => [item.episode, item]))
-  const lastEpisode = episodes.reduce((max, item) => Math.max(max, item.episode), 0)
-  // 按 1..最大集号 铺满，中间接口没返回的集留虚线占位，用户一眼能看出哪几集选不了
-  const cells = Array.from({ length: lastEpisode }, (_, index) => ({ episode: index + 1, item: episodeMap.get(index + 1) }))
-  const missingCount = cells.filter((cell) => cell.item === undefined).length
-  const padLength = String(lastEpisode).length
-  const listedRange = lastEpisode < updated_to_episode
-  const unit = kind === 'collection' ? '视频' : '剧集'
+  const { kind, episodes, total_episode, updated_to_episode, selectionMode } = data
+  const pageSize = Math.max(1, data.posterPageSize ?? DEFAULT_POSTER_PAGE_SIZE)
+  const pageCount = Math.max(1, Math.ceil(episodes.length / pageSize))
+  const page = Math.min(Math.max(1, data.posterPage ?? 1), pageCount)
+  const start = (page - 1) * pageSize
+  const visibleEpisodes = episodes.slice(start, start + pageSize)
+  if (visibleEpisodes.length === 0) return null
+
+  const firstEpisode = visibleEpisodes[0].episode
+  const lastEpisode = visibleEpisodes[visibleEpisodes.length - 1].episode
+  const range = firstEpisode === lastEpisode ? `第 ${firstEpisode} 集` : `第 ${firstEpisode}–${lastEpisode} 集`
   const countUnit = kind === 'collection' ? '个视频' : '集'
+
+  // 短剧常见中间缺集：列出接口没返回的集号，说明为什么按钮里没有
+  const maxEpisode = episodes.reduce((max, item) => Math.max(max, item.episode), 0)
+  const episodeSet = new Set(episodes.map((item) => item.episode))
+  const missingEpisodes: number[] = []
+  for (let episode = 1; episode <= Math.max(maxEpisode, updated_to_episode); episode++) {
+    if (!episodeSet.has(episode)) missingEpisodes.push(episode)
+  }
 
   return (
     <section className="mt-16">
       <SectionTitle
         extra={
           <span className="text-[30px] font-semibold text-muted">
-            已列出 {episodes.length} / {total_episode} {countUnit}
+            {selectionMode === 'button' ? range : `第 ${page}/${pageCount} 页 · ${range}`}
           </span>
         }
       >
         选集
       </SectionTitle>
 
-      {/* 行动条：选集方式和等待时长，这一页真正要用户做的事 */}
-      <div className="mt-8 flex items-center justify-between gap-10 rounded-4xl border border-foreground/10 bg-foreground/6 px-10 py-8">
-        <div className="flex min-w-0 flex-wrap items-center gap-x-4 gap-y-3 text-[36px] font-semibold leading-tight text-foreground">
-          <span>发送</span>
-          <span className="rounded-2xl bg-foreground px-5 py-2 font-bold text-background">第？集</span>
-          <span>或直接发送集数，解析对应{unit}</span>
-        </div>
-        <div className="shrink-0 text-right">
-          <div className="text-[64px] font-semibold leading-none text-foreground tabular-nums">{timeoutSeconds}s</div>
-          <div className="mt-2 text-[24px] font-semibold text-muted">内有效</div>
-        </div>
-      </div>
-
-      {kind === 'collection' ? (
-        // 普通合集每集是独立作品，只给集号认不出是哪个，按「集号 + 标题」列表排
-        <div className="mt-8 grid grid-cols-2 gap-4">
-          {cells.map((cell) =>
-            cell.item === undefined ? (
-              <div key={cell.episode} className="flex items-center gap-6 rounded-3xl border-2 border-dashed border-foreground/20 px-7 py-6">
-                <span className="shrink-0 text-[40px] font-semibold leading-none text-foreground/25 tabular-nums">
-                  {String(cell.episode).padStart(padLength, '0')}
-                </span>
-                <span className="text-[30px] font-semibold text-foreground/25">缺失</span>
-              </div>
-            ) : (
-              <div key={cell.episode} className="flex items-center gap-6 rounded-3xl border border-foreground/10 bg-foreground/6 px-7 py-6">
-                <span className="shrink-0 text-[40px] font-semibold leading-none text-foreground tabular-nums select-text">
-                  {String(cell.episode).padStart(padLength, '0')}
-                </span>
-                <span
-                  className="line-clamp-2 min-w-0 flex-1 text-[30px] font-semibold leading-[1.35] text-foreground select-text"
-                  style={{ overflowWrap: 'break-word' }}
-                >
-                  {cell.item.title || '无标题'}
-                </span>
-                <span className="shrink-0 text-[24px] text-muted tabular-nums">{formatDuration(cell.item.duration)}</span>
-              </div>
-            )
-          )}
-        </div>
-      ) : (
-        <div className="mt-8 grid grid-cols-10 gap-4">
-          {cells.map((cell) =>
-            cell.item === undefined ? (
-              <div
-                key={cell.episode}
-                className="flex aspect-square flex-col items-center justify-center rounded-3xl border-2 border-dashed border-foreground/20"
-              >
-                <span className="text-[44px] font-semibold leading-none text-foreground/25 tabular-nums">
-                  {String(cell.episode).padStart(padLength, '0')}
-                </span>
-                <span className="mt-2 text-[22px] font-semibold text-foreground/25">缺失</span>
-              </div>
-            ) : (
-              <div
-                key={cell.episode}
-                className="flex aspect-square flex-col items-center justify-center rounded-3xl border border-foreground/10 bg-foreground/6"
-              >
-                <span className="text-[44px] font-semibold leading-none text-foreground tabular-nums select-text">
-                  {String(cell.episode).padStart(padLength, '0')}
-                </span>
-                <span className="mt-2 text-[22px] text-muted tabular-nums">{formatDuration(cell.item.duration)}</span>
-              </div>
-            )
+      {/* 文字选集的操作提示；按钮选集由消息正文说明 */}
+      {selectionMode !== 'button' && (
+        <div className="flex flex-col gap-4 mt-8 text-[32px] select-text text-foreground/80">
+          <div className="flex flex-wrap gap-3 items-center">
+            <span>发送</span>
+            <CommandChip>第?集</CommandChip>
+            <span>选集</span>
+          </div>
+          {pageCount > 1 && (
+            <div className="flex flex-wrap gap-3 items-center">
+              <span>发送</span>
+              <CommandChip>上一页</CommandChip>
+              <span className="text-foreground/30">/</span>
+              <CommandChip>下一页</CommandChip>
+              <span className="text-foreground/30">/</span>
+              <CommandChip>第?页</CommandChip>
+              <span>翻页</span>
+            </div>
           )}
         </div>
       )}
 
-      <div className="mt-8 flex flex-wrap items-center justify-between gap-6 text-[26px] text-muted">
+      {/* 3 列 × 5 行：普通合集用方图 + 标题，短剧用竖版原始帧 + 集号 */}
+      <div className="grid grid-cols-3 gap-8 mt-8">
+        {visibleEpisodes.map((episode) => {
+          const cover =
+            kind === 'collection'
+              ? episode.cover || episode.originCover
+              : episode.originCover || episode.cover
+
+          return (
+            <div
+              key={`${episode.episode}-${episode.aweme_id}`}
+              className="flex flex-col overflow-hidden bg-surface rounded-3xl shadow-large"
+            >
+              <div className={`relative overflow-hidden ${kind === 'collection' ? 'aspect-square' : 'aspect-[3/4]'}`}>
+                <EnhancedImage
+                  src={cover || ''}
+                  alt={`第${episode.episode}集 ${episode.title}`}
+                  className="object-cover w-full h-full select-text"
+                />
+                <div className="absolute top-4 left-4 px-3 py-1 text-2xl font-bold text-white rounded-xl bg-black/65">
+                  第{episode.episode}集
+                </div>
+                <div className="absolute right-4 bottom-4 px-3 py-1 text-xl font-semibold text-white rounded-xl bg-black/65 tabular-nums">
+                  {formatDuration(episode.duration)}
+                </div>
+              </div>
+
+              {kind === 'collection' && (
+                <div className="flex flex-col flex-1 gap-3 p-5">
+                  <div className="text-3xl font-semibold leading-snug select-text text-foreground line-clamp-2">
+                    {episode.title || `第${episode.episode}集`}
+                  </div>
+                </div>
+              )}
+            </div>
+          )
+        })}
+      </div>
+
+      <div className="flex flex-wrap items-center justify-between gap-6 mt-8 text-[26px] text-muted">
         <span>
-          {missingCount > 0 && `虚线格为接口未返回的${unit}（${missingCount} ${kind === 'collection' ? '个' : '集'}），暂不能解析。`}
-          {listedRange && `已列出第 1–${lastEpisode} 集，共更新 ${updated_to_episode} 集。`}
+          已列出 {episodes.length} / {total_episode} {countUnit}
+          {missingEpisodes.length > 0 && `；接口未返回第 ${missingEpisodes.join('、')} ${countUnit}，暂不能解析。`}
+          {updated_to_episode < total_episode && `；已更新至第 ${updated_to_episode} ${countUnit}。`}
         </span>
         <span className="select-text">图片生成于: {format(new Date(), 'yyyy-MM-dd HH:mm:ss')}</span>
       </div>

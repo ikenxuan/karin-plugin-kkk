@@ -1,5 +1,21 @@
 /** 本模板的数据类型（路由 index.tsx 与 components/ 实现共用）。 */
 
+/** 合集里的一集 / 一个视频 */
+export interface DouyinMixEpisode {
+  /** 第几集 */
+  episode: number
+  /** 作品 ID */
+  aweme_id: string
+  /** 本集标题（作品文案，已去掉话题标签；短剧通常每集相同） */
+  title: string
+  /** 时长（毫秒） */
+  duration: number
+  /** 方形封面（普通合集每集不同） */
+  cover?: string
+  /** 竖版原始帧封面（短剧每集不同，方形封面通常相同） */
+  originCover?: string
+}
+
 /**
  * 抖音合集选集页数据（短剧 / 普通合集）
  */
@@ -38,15 +54,14 @@ export interface DouyinMixData {
     /** 总收藏 */
     collect_count: number
   }
-  /** 已拉取到的剧集，顺序同接口返回；接口没返回的集不在这里 */
-  episodes: Array<{
-    /** 第几集 */
-    episode: number
-    /** 本集标题（作品文案，已去掉话题标签；可能为空） */
-    title: string
-    /** 时长（毫秒） */
-    duration: number
-  }>
+  /** 已拉取到的剧集（按展示顺序传入，最新一集在前）；接口没返回的集不在这里 */
+  episodes: DouyinMixEpisode[]
   /** 等待用户选集的秒数（与 core 的 karin.ctx 超时一致） */
   timeoutSeconds: number
+  /** 选集交互方式：text 为回复集数，button 为按钮（QQBot）；不传按 text 处理 */
+  selectionMode?: 'text' | 'button'
+  /** 海报当前页码（从 1 开始），不传按第 1 页处理 */
+  posterPage?: number
+  /** 海报每页展示的集数，不传按 15 集处理 */
+  posterPageSize?: number
 }
