@@ -2,6 +2,13 @@
 
 # Changelog
 
+## [2.45.2-beta.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.45.2-beta.1...v2.45.2-beta.2) (2026-10-27)
+
+
+### 🐛 错误修复
+
+* 优化抖音合集、短剧，B站番剧解析的交互逻辑和部分UI ([122684b](https://github.com/ikenxuan/karin-plugin-kkk/commit/122684b2c427ec3977f9435c6ce8a698a6a0b1c9))
+
 ## [2.45.2-beta.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.45.2-beta.0...v2.45.2-beta.1) (2026-10-26)
 
 
