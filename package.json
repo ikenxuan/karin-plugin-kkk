@@ -78,12 +78,12 @@
     "ts-web": "./src/web.config.ts"
   },
   "dependencies": {
-    "@ikenxuan/qrcode": "1.6.0",
+    "@ikenxuan/qrcode": "1.8.1",
     "@lobehub/webfont-geist-mono": "^1.0.0",
     "@lobehub/webfont-harmony-sans-sc": "^1.0.0",
     "emoji-datasource-apple": "16.0.0"
   },
-  "timestamp": "2026-10-27T05:48:02.777Z",
+  "timestamp": "2026-10-27T15:10:03.708Z",
   "engines": {
     "node": ">=18.0.0"
   }
