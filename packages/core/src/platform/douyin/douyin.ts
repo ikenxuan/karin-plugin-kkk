@@ -1048,7 +1048,9 @@ export class DouYin extends Base {
             )
             continue
           }
-          await this.e.reply(`收到请求，第${episode}集\n${mixInfo.mix_name}\n正在解析中`)
+          // 普通合集每集是独立作品，回复选中的视频标题；短剧每集文案都是同一段简介，用合集名更合适
+          const episodeTitle = (isPlaylet ? mixInfo.mix_name : target.title || mixInfo.mix_name).replace(/\s+/g, ' ').trim()
+          await this.e.reply(`收到请求，第${episode}集\n${episodeTitle}\n正在解析中`)
 
           const targetData: DouyinIdData = { type: 'one_work', aweme_id: target.aweme_id }
           await new DouYin(context, targetData, { forceBurnDanmaku: this.forceBurnDanmaku }).DouyinHandler(targetData)
