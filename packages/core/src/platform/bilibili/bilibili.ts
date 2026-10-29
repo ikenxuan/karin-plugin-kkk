@@ -445,6 +445,7 @@ export class Bilibili extends Base {
             Stat: videoInfo.data.result.stat,
             Episodes: displayEpisodes,
             length: sourceEpisodes.length,
+            timeoutSeconds: EPISODE_SELECTION_TTL_SECONDS,
             selectionMode,
             posterPage,
             posterPageSize: EPISODE_SELECTION_PAGE_SIZE
