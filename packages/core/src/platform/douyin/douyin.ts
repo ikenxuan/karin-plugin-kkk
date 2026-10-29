@@ -94,13 +94,13 @@ export class DouYin extends Base {
 
         /**
          * 根据 aweme_type 判断作品类型
-         * - `0`、`4`、`55`：视频作品；`4` 是剧集合集
+         * - `0`、`4`、`55`、`61`：视频作品；`4` 是剧集合集
          * - `163`：文章作品
          * - `68`：图文作品（含图集、合辑等）
          */
         const aweme_type = VideoData.data.aweme_detail.aweme_type
         const isArticle = aweme_type === 163
-        const isVideo = aweme_type === 0 || aweme_type === 4 || aweme_type === 55
+        const isVideo = aweme_type === 0 || aweme_type === 4 || aweme_type === 55 || aweme_type === 61
 
         const CommentsData = await this.amagi.douyin.fetcher.fetchWorkComments({
           aweme_id: data.aweme_id,
@@ -939,7 +939,7 @@ export class DouYin extends Base {
             mix_name: mixInfo.mix_name,
             image_url: mixInfo.cover_url.url_list[0],
             // 短剧每集文案都是同一段剧情简介；普通合集每集文案就是各自的标题，没有合集级简介
-            desc: isPlaylet ? displayEpisodes[0]?.title ?? '' : '',
+            desc: isPlaylet ? (displayEpisodes[0]?.title ?? '') : '',
             total_episode: totalEpisode,
             updated_to_episode: mixInfo.statis.updated_to_episode,
             author: {
@@ -1033,8 +1033,7 @@ export class DouYin extends Base {
 
           const pageAction = parseEpisodePosterPageAction(context.msg)
           if (pageAction) {
-            const nextPage =
-              pageAction.type === 'prev' ? posterPage - 1 : pageAction.type === 'next' ? posterPage + 1 : pageAction.page
+            const nextPage = pageAction.type === 'prev' ? posterPage - 1 : pageAction.type === 'next' ? posterPage + 1 : pageAction.page
             if (nextPage < 1 || nextPage > posterPageCount) {
               await this.e.reply(`页码超出范围，请发送 1-${posterPageCount} 之间的页码`)
               continue
