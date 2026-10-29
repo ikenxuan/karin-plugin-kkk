@@ -213,12 +213,20 @@ describe('EpisodeSelection 分页与按钮', () => {
     expect(jump.callback).toBeUndefined()
   })
 
-  it('每个按钮都绑定发起人，别人点不了', () => {
+  it('群聊里每个按钮都绑定发起人，别人点不了', () => {
     const session = createSession()
     const buttons = buildEpisodeKeyboardRows(session, 2).flat()
 
     expect(buttons.length).toBeGreaterThan(0)
     for (const button of buttons) expect(button.list).toEqual(['user-1'])
+  })
+
+  it('私聊不加点击权限（QQ 私聊不支持指定用户，且只有对方能看到）', () => {
+    const session = createSession('friend')
+    const buttons = buildEpisodeKeyboardRows(session, 1).flat()
+
+    expect(buttons.length).toBeGreaterThan(0)
+    for (const button of buttons) expect(button.list).toBeUndefined()
   })
 
   it('没有发起人 ID 时不加点击权限', () => {

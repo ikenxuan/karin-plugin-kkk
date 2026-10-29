@@ -329,14 +329,15 @@ export const getEpisodeSelectionPoster = async (
  * 生成 QQBot keyboard 行。
  * 跳转输入行在最上面，集数按钮每行 5 个，翻页按钮单独一行；
  * 15 集一页时正好 1 + 3 + 1 = 5 行，不会超过 QQBot 的上限。
- * 每个按钮都带发起人的点击权限（QQBot 原生 permission），别人点了不生效。
+ * 群聊里每个按钮都带发起人的点击权限（QQBot 原生 permission），别人点了不生效；
+ * 私聊只有对方一人可见，且 QQ 私聊不支持「指定用户」权限，不加 list，靠命令侧校验。
  */
 export const buildEpisodeKeyboardRows = (session: EpisodeSelectionSession, page: number): KarinButton[][] => {
   const data = getEpisodePage(session, page)
   if (!data) return []
 
-  // QQBot 原生按钮权限：只有发起人能点；没有发起人 ID 时不加限制
-  const ownerPermission: Pick<KarinButton, 'list'> = session.ownerId ? { list: [session.ownerId] } : {}
+  // QQBot 原生按钮权限只在群聊里设置：私聊下发 type=0 会被客户端拦掉，按钮直接点不动
+  const ownerPermission: Pick<KarinButton, 'list'> = session.ownerId && session.scene === 'group' ? { list: [session.ownerId] } : {}
   const rows: KarinButton[][] = []
 
   // 指令按钮（不带 callback/link）点击后把 data 填进输入框，用户补页码再发送；
