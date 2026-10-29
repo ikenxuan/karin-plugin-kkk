@@ -969,6 +969,7 @@ export class DouYin extends Base {
             title: mixInfo.mix_name,
             platform: 'douyin',
             scene: this.e.isFriend ? 'friend' : 'group',
+            ownerId: this.e.userId,
             poster,
             posterPage: initialPage,
             renderPoster,
@@ -1020,6 +1021,7 @@ export class DouYin extends Base {
             }
           }
 
+          // karin.ctx 按联系人 + 用户 ID 绑定监听，只有发起人的回复会唤醒
           const context = await karin.ctx(this.e, { reply: true, throwOnTimeout: false, time: timeoutSeconds })
           if (!context) return true
 

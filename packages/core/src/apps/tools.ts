@@ -14,6 +14,7 @@ import {
   getEpisodeSelectionPoster,
   getEpisodeSelectionScope,
   isButtonSelectionScene,
+  isEpisodeSelectionOwner,
   markBilibiliEpisodeAutoSelect,
   parseEpisodeSelectionAction,
   resolveEpisodeTarget,
@@ -295,6 +296,12 @@ const handleEpisodeSelection = wrapWithErrorHandler(
     const session = getEpisodeSelection(token, getEpisodeSelectionScope(e))
     if (!session) {
       await e.reply('本次选集已结束，请重新发送原链接', { at: true })
+      return true
+    }
+
+    // 只有发起人能操作：QQBot 按钮已用原生权限挡住，这里再挡一次手输的 #选集 命令
+    if (!isEpisodeSelectionOwner(session, e.userId)) {
+      await e.reply('这次选集只对发起人生效，请自己发送原链接', { at: true })
       return true
     }
 

@@ -28,6 +28,7 @@ import {
   getEpisodeSelectionPoster,
   getEpisodeSelectionScope,
   isButtonSelectionScene,
+  isEpisodeSelectionOwner,
   markParseStatSkipped,
   markBilibiliEpisodeAutoSelect,
   parseEpisodeNumber,
@@ -46,6 +47,7 @@ const createSession = (
     renderPoster?: (page: number) => Promise<Array<{ type: 'image'; file: string }>>
     episodeCount?: number
     reverse?: boolean
+    ownerId?: string
   } = {}
 ) => {
   const episodeCount = options.episodeCount ?? 45
@@ -53,6 +55,7 @@ const createSession = (
     title: '测试合集',
     platform: 'douyin',
     scene,
+    ownerId: options.ownerId ?? 'user-1',
     pageSize: options.pageSize,
     poster,
     posterPage: options.posterPage,
@@ -122,6 +125,22 @@ describe('EpisodeSelection 会话', () => {
   })
 })
 
+describe('EpisodeSelection 发起人', () => {
+  it('只有发起人本人可以操作', () => {
+    const session = createSession()
+
+    expect(session.ownerId).toBe('user-1')
+    expect(isEpisodeSelectionOwner(session, 'user-1')).toBe(true)
+    expect(isEpisodeSelectionOwner(session, 'user-2')).toBe(false)
+  })
+
+  it('没有记录发起人时不限制（兼容拿不到用户 ID 的适配器）', () => {
+    const session = createSession('group', [], { ownerId: '' })
+
+    expect(isEpisodeSelectionOwner(session, 'anyone')).toBe(true)
+  })
+})
+
 describe('EpisodeSelection 分页与按钮', () => {
   it('45 集按每页 15 集分成 3 页', () => {
     const session = createSession()
@@ -152,12 +171,12 @@ describe('EpisodeSelection 分页与按钮', () => {
     const rows = buildEpisodeKeyboardRows(session, 1)
 
     expect(rows).toHaveLength(5)
-    expect(rows[0]).toEqual([{ text: '跳转到第x页', data: `#选集 ${session.token} page:`, enter: false, style: 1 }])
+    expect(rows[0]).toEqual([{ text: '跳转到第x页', data: `#选集 ${session.token} page:`, enter: false, style: 1, list: ['user-1'] }])
     expect(rows[1]).toHaveLength(5)
     expect(rows[1][0]).toMatchObject({ text: '1', callback: true, data: `#选集 ${session.token} 1` })
     expect(rows[2]).toHaveLength(5)
     expect(rows[3]).toHaveLength(5)
-    expect(rows[4]).toEqual([{ text: '下一页', callback: true, data: `#选集 ${session.token} page:2` }])
+    expect(rows[4]).toEqual([{ text: '下一页', callback: true, data: `#选集 ${session.token} page:2`, list: ['user-1'] }])
   })
 
   it('中间页同时有上一页和下一页', () => {
@@ -165,8 +184,8 @@ describe('EpisodeSelection 分页与按钮', () => {
     const rows = buildEpisodeKeyboardRows(session, 2)
 
     expect(rows.at(-1)).toEqual([
-      { text: '上一页', callback: true, data: `#选集 ${session.token} page:1` },
-      { text: '下一页', callback: true, data: `#选集 ${session.token} page:3` }
+      { text: '上一页', callback: true, data: `#选集 ${session.token} page:1`, list: ['user-1'] },
+      { text: '下一页', callback: true, data: `#选集 ${session.token} page:3`, list: ['user-1'] }
     ])
   })
 
@@ -174,7 +193,7 @@ describe('EpisodeSelection 分页与按钮', () => {
     const session = createSession()
     const rows = buildEpisodeKeyboardRows(session, 3)
 
-    expect(rows.at(-1)).toEqual([{ text: '上一页', callback: true, data: `#选集 ${session.token} page:2` }])
+    expect(rows.at(-1)).toEqual([{ text: '上一页', callback: true, data: `#选集 ${session.token} page:2`, list: ['user-1'] }])
   })
 
   it('只有一页时不生成跳转和翻页行', () => {
@@ -192,6 +211,21 @@ describe('EpisodeSelection 分页与按钮', () => {
 
     expect(jump).toMatchObject({ text: '跳转到第x页', data: `#选集 ${session.token} page:`, enter: false })
     expect(jump.callback).toBeUndefined()
+  })
+
+  it('每个按钮都绑定发起人，别人点不了', () => {
+    const session = createSession()
+    const buttons = buildEpisodeKeyboardRows(session, 2).flat()
+
+    expect(buttons.length).toBeGreaterThan(0)
+    for (const button of buttons) expect(button.list).toEqual(['user-1'])
+  })
+
+  it('没有发起人 ID 时不加点击权限', () => {
+    const session = createSession('group', [], { ownerId: '' })
+    const buttons = buildEpisodeKeyboardRows(session, 1).flat()
+
+    for (const button of buttons) expect(button.list).toBeUndefined()
   })
 
   it('海报页按需渲染并缓存，初始页不重复渲染', async () => {
@@ -262,9 +296,15 @@ describe('EpisodeSelection 命令与提示', () => {
   it('提示文本包含当前页范围、页码和选集提示', () => {
     const group = createSession('group')
     const friend = createSession('friend')
-    const expected = '《测试合集》\n第 1–15 集 · 第 1/3 页\n点击下方按钮选集（120 秒内有效）。'
-    expect(buildEpisodeSelectionText(group, 1)).toBe(expected)
-    expect(buildEpisodeSelectionText(friend, 1)).toBe(expected)
+    expect(buildEpisodeSelectionText(group, 1)).toBe(
+      '《测试合集》\n第 1–15 集 · 第 1/3 页\n点击下方按钮选集（120 秒内有效，仅发起人可操作）。'
+    )
+    expect(buildEpisodeSelectionText(friend, 1)).toBe('《测试合集》\n第 1–15 集 · 第 1/3 页\n点击下方按钮选集（120 秒内有效）。')
+  })
+
+  it('群聊提示按钮仅发起人可操作，私聊不提示', () => {
+    expect(buildEpisodeSelectionText(createSession('group'), 1)).toContain('仅发起人可操作')
+    expect(buildEpisodeSelectionText(createSession('friend'), 1)).not.toContain('仅发起人可操作')
   })
 
   it('解析文字选集的翻页命令', () => {

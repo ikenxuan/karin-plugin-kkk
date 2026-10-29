@@ -47,6 +47,8 @@ export interface CreateEpisodeSelectionOptions {
   title: string
   platform: EpisodeSelectionPlatform
   scene: EpisodeSelectionScene
+  /** 发起选集的用户 ID；只有本人能翻页/选集 */
+  ownerId: string
   poster: ElementTypes[]
   /** 每页集数，默认 15（海报和按钮共用）；抖音合集海报是整张图，可传 5 */
   pageSize?: number
@@ -64,6 +66,8 @@ export interface EpisodeSelectionSession {
   title: string
   platform: EpisodeSelectionPlatform
   scene: EpisodeSelectionScene
+  /** 发起选集的用户 ID；QQBot 按钮据此设置点击权限，命令侧也用它校验 */
+  ownerId: string
   /** 每页集数 */
   pageSize: number
   /** 初始海报（海报第 1 页或创建时指定页） */
@@ -208,6 +212,7 @@ export const createEpisodeSelection = (scope: string, options: CreateEpisodeSele
     title: options.title,
     platform: options.platform,
     scene: options.scene,
+    ownerId: options.ownerId,
     pageSize: Math.max(1, options.pageSize ?? EPISODE_SELECTION_PAGE_SIZE),
     poster: options.poster,
     posterPages: new Map([[options.posterPage ?? 1, options.poster]]),
@@ -239,6 +244,14 @@ export const getEpisodeSelection = (token: string, scope: string): EpisodeSelect
     return null
   }
   return session
+}
+
+/**
+ * 判断用户是否有权操作这次选集。
+ * 只有发起人本人能翻页/选集；没有记录发起人时退回旧行为（不做限制）。
+ */
+export const isEpisodeSelectionOwner = (session: EpisodeSelectionSession, userId: string): boolean => {
+  return !session.ownerId || session.ownerId === userId
 }
 
 /** 翻页成功后重新计算 120 秒有效期。 */
@@ -316,11 +329,14 @@ export const getEpisodeSelectionPoster = async (
  * 生成 QQBot keyboard 行。
  * 跳转输入行在最上面，集数按钮每行 5 个，翻页按钮单独一行；
  * 15 集一页时正好 1 + 3 + 1 = 5 行，不会超过 QQBot 的上限。
+ * 每个按钮都带发起人的点击权限（QQBot 原生 permission），别人点了不生效。
  */
 export const buildEpisodeKeyboardRows = (session: EpisodeSelectionSession, page: number): KarinButton[][] => {
   const data = getEpisodePage(session, page)
   if (!data) return []
 
+  // QQBot 原生按钮权限：只有发起人能点；没有发起人 ID 时不加限制
+  const ownerPermission: Pick<KarinButton, 'list'> = session.ownerId ? { list: [session.ownerId] } : {}
   const rows: KarinButton[][] = []
 
   // 指令按钮（不带 callback/link）点击后把 data 填进输入框，用户补页码再发送；
@@ -331,7 +347,8 @@ export const buildEpisodeKeyboardRows = (session: EpisodeSelectionSession, page:
         text: '跳转到第x页',
         data: `#选集 ${session.token} page:`,
         enter: false,
-        style: 1
+        style: 1,
+        ...ownerPermission
       }
     ])
   }
@@ -343,17 +360,18 @@ export const buildEpisodeKeyboardRows = (session: EpisodeSelectionSession, page:
         show: String(item.episode),
         callback: true,
         data: `#选集 ${session.token} ${item.episode}`,
-        style: 1
+        style: 1,
+        ...ownerPermission
       }))
     )
   }
 
   const navigation: KarinButton[] = []
   if (data.page > 1) {
-    navigation.push({ text: '上一页', callback: true, data: `#选集 ${session.token} page:${data.page - 1}` })
+    navigation.push({ text: '上一页', callback: true, data: `#选集 ${session.token} page:${data.page - 1}`, ...ownerPermission })
   }
   if (data.page < data.pageCount) {
-    navigation.push({ text: '下一页', callback: true, data: `#选集 ${session.token} page:${data.page + 1}` })
+    navigation.push({ text: '下一页', callback: true, data: `#选集 ${session.token} page:${data.page + 1}`, ...ownerPermission })
   }
   if (navigation.length) rows.push(navigation)
 
@@ -366,10 +384,12 @@ export const buildEpisodeSelectionText = (session: EpisodeSelectionSession, page
   if (!data) return ''
   const range =
     data.firstEpisode === data.lastEpisode ? `第 ${data.firstEpisode} 集` : `第 ${data.firstEpisode}–${data.lastEpisode} 集`
+  // 群聊里所有人都看得到海报和按钮，提前说明按钮只对发起人生效
+  const ownerHint = session.scene === 'group' ? '，仅发起人可操作' : ''
   return (
     `《${session.title}》\n` +
     `${range} · 第 ${data.page}/${data.pageCount} 页\n` +
-    `点击下方按钮选集（${EPISODE_SELECTION_TTL_SECONDS} 秒内有效）。`
+    `点击下方按钮选集（${EPISODE_SELECTION_TTL_SECONDS} 秒内有效${ownerHint}）。`
   )
 }
 

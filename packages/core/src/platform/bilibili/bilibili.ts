@@ -464,6 +464,7 @@ export class Bilibili extends Base {
             title: videoInfo.data.result.title,
             platform: 'bilibili',
             scene: this.e.isFriend ? 'friend' : 'group',
+            ownerId: this.e.userId,
             poster,
             posterPage: initialPage,
             renderPoster,
@@ -511,6 +512,7 @@ export class Bilibili extends Base {
               }
             }
 
+            // karin.ctx 按联系人 + 用户 ID 绑定监听，只有发起人的回复会唤醒
             const context = await karin.ctx(this.e, { reply: true, throwOnTimeout: false, time: EPISODE_SELECTION_TTL_SECONDS })
             if (!context) return true
 
