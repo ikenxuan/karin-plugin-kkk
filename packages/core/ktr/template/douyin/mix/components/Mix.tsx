@@ -13,7 +13,7 @@ import type { DouyinMixData } from './types'
 /*
  * 抖音合集 / 短剧选集海报（杂志编辑排版，和 B 站番剧选集是兄弟模板）
  * 刊头 → 专题 hero（封面 + 大标题 + 导语 + 署名）→ 数据栏 → 目录页（巨型集号区间 + 操作说明）→ 选集网格 → 版权栏。
- * 秩序靠字体层级、细线和留白建立；唯一强调色是抖音红，只用在眉题、章节方块和命令 chip 上。
+ * 秩序靠字体层级和留白建立，不使用分隔线；唯一强调色是抖音红，只用在眉题、章节方块和命令 chip 上。
  * 操作说明按 selectionMode 区分：button 对应 QQBot 键盘，text 只列出当前页真正能用的命令。
  */
 
@@ -123,9 +123,9 @@ const PosterBackground: React.FC<{ src: string; ctx: PosterContext }> = ({ src, 
   </div>
 )
 
-/** 刊头：栏目名 + 平台 logo，下压一条粗线 */
+/** 刊头：栏目名 + 平台 logo，靠字距和留白收束 */
 const Masthead: React.FC<{ label: string; ctx: PosterContext }> = ({ label, ctx }) => (
-  <header className="flex items-center justify-between border-b-4 border-foreground pb-7">
+  <header className="flex items-center justify-between pb-7">
     <div className="flex items-center gap-5 text-[26px] font-bold tracking-[0.32em] text-foreground">
       <span className="h-5 w-5" style={{ backgroundColor: ACCENT }} />
       <span>{label}</span>
@@ -146,11 +146,11 @@ const Kicker: React.FC<{ items: string[] }> = ({ items }) => (
   </div>
 )
 
-/** 数据栏：四格细线分隔，小标签 + 粗体大数字 + 小单位 */
+/** 数据栏：四格铺在浅色面板上，用留白代替分隔线，小标签 + 粗体大数字 + 小单位 */
 const Ledger: React.FC<{ items: { label: string; value: string; unit: string }[] }> = ({ items }) => (
-  <div className="grid grid-cols-4 border-t-2 border-foreground">
-    {items.map((item, index) => (
-      <div key={item.label} className={index === 0 ? 'pt-6 pr-6' : 'border-l border-foreground/15 pt-6 pr-4 pl-6'}>
+  <div className="grid grid-cols-4 gap-x-10 rounded-3xl bg-foreground/5 px-10 py-8">
+    {items.map((item) => (
+      <div key={item.label}>
         <div className="text-[24px] font-medium text-foreground/65">{item.label}</div>
         <div className="mt-1 flex items-baseline gap-1.5 text-foreground">
           <span className="text-[60px] leading-none font-black tabular-nums">{item.value}</span>
@@ -197,7 +197,7 @@ const Hero: React.FC<{ data: DouyinMixData }> = ({ data }) => {
 
   return (
     <div className="flex items-stretch gap-16">
-      {/* 封面随右栏拉伸到同高，底边和署名线对齐；最小高度保证短剧竖版、合集方图的基本比例 */}
+      {/* 封面随右栏拉伸到同高；最小高度保证短剧竖版、合集方图的基本比例 */}
       <div
         className={
           isPlaylet
@@ -219,10 +219,8 @@ const Hero: React.FC<{ data: DouyinMixData }> = ({ data }) => {
             {data.desc}
           </p>
         )}
-        <div className="mt-auto pt-10">
-          <div className="border-t border-foreground/15 pt-8">
-            <Byline avatar={data.author.avatar} name={data.author.nickname} verified={data.author.verified} meta={authorMeta} />
-          </div>
+        <div className="mt-auto pt-18">
+          <Byline avatar={data.author.avatar} name={data.author.nickname} verified={data.author.verified} meta={authorMeta} />
         </div>
       </div>
     </div>
@@ -288,7 +286,7 @@ const SketchKey: React.FC<{ children: React.ReactNode; quiet?: boolean; small?: 
     className={
       quiet
         ? 'flex h-11 flex-1 items-center justify-center rounded-lg border-2 border-foreground/20 text-[24px] font-bold text-foreground/60'
-        : `flex h-11 flex-1 items-center justify-center rounded-lg border-2 border-foreground/45 font-bold text-foreground tabular-nums ${small ? 'text-[20px]' : 'text-[24px]'}`
+        : `flex h-11 flex-1 items-center justify-center rounded-lg border-2 border-foreground/45 font-bold text-foreground tabular-nums ${small ? 'text-[18px]' : 'text-[24px]'}`
     }
   >
     {children}
@@ -303,7 +301,7 @@ const KeySketch: React.FC<{ episodes: number[]; page: number; pageCount: number 
   const small = episodes.some((episode) => episode >= 1000)
 
   return (
-    <div className="flex w-82.5 shrink-0 flex-col gap-1.5 self-start rounded-3xl border border-foreground/10 bg-surface/60 p-3">
+    <div className="flex w-82.5 shrink-0 flex-col gap-1.5 self-start rounded-3xl bg-surface/60 p-3">
       {pageCount > 1 && <SketchKey>跳转到第x页</SketchKey>}
       {rows.map((row) => (
         <div key={row[0]} className="flex gap-1.5">
@@ -350,7 +348,7 @@ const ButtonGuide: React.FC<{ episodes: number[]; page: number; pageCount: numbe
   </div>
 )
 
-/** 目录页开篇：章节线 + 巨型区间数字 + 操作说明 */
+/** 目录页开篇：巨型区间数字 + 操作说明 */
 const Contents: React.FC<{
   episodes: MixEpisode[]
   missingNote: string
@@ -366,13 +364,13 @@ const Contents: React.FC<{
 
   return (
     <section>
-      <div className="flex items-end justify-between border-t-4 border-foreground pt-7">
+      <div className="flex items-end justify-between">
         <div className="flex items-baseline gap-5">
           <span className="h-6 w-6 self-center" style={{ backgroundColor: ACCENT }} />
           <h2 className="text-[72px] leading-none font-black text-foreground">选集</h2>
           <span className="text-[24px] font-bold tracking-[0.3em] text-foreground/55">CONTENTS</span>
         </div>
-        <div className="text-[40px] font-bold text-foreground tabular-nums">
+        <div className="rounded-full bg-foreground/10 px-7 py-2 text-[34px] font-bold text-foreground tabular-nums">
           第 {page} / {pageCount} 页
         </div>
       </div>
@@ -391,7 +389,7 @@ const Contents: React.FC<{
           </div>
           {missingNote && <div className="mt-2 text-[26px] leading-snug text-foreground/65">{missingNote}</div>}
         </div>
-        <div className="min-w-0 flex-1 border-l border-foreground/15 pl-10">
+        <div className="min-w-0 flex-1 pl-10">
           {mode === 'button' ? (
             <ButtonGuide episodes={episodes.map((episode) => episode.episode)} page={page} pageCount={pageCount} seconds={seconds} />
           ) : (
@@ -403,7 +401,7 @@ const Contents: React.FC<{
   )
 }
 
-/** 短剧单元：每集文案都是同一段简介，只留集号 + 时长，像目录条目一样用引线连起来 */
+/** 短剧单元：每集文案都是同一段简介，只留集号 + 时长，像目录条目一样左右分列 */
 const PlayletCell: React.FC<{ episode: MixEpisode; numberClassName: string }> = ({ episode, numberClassName }) => (
   <div className="min-w-0">
     <div className="aspect-3/4 overflow-hidden rounded-3xl bg-surface-secondary shadow-lg shadow-black/10">
@@ -415,14 +413,13 @@ const PlayletCell: React.FC<{ episode: MixEpisode; numberClassName: string }> = 
     </div>
     <div className="mt-4 flex items-baseline gap-3">
       <span className={`leading-none font-black tracking-tight text-foreground tabular-nums ${numberClassName}`}>{episode.episode}</span>
-      <span className="h-0.5 min-w-3 flex-1 bg-foreground/20" />
       <span className="font-mono text-[26px] text-foreground/65">{formatDuration(episode.duration)}</span>
     </div>
   </div>
 )
 
-/** 短剧集号字号：5 列单元只有约 230px 宽，4 位集号降一档，给时长留位置 */
-const PLAYLET_NUMBER_CLASS = ['text-[72px]', 'text-[72px]', 'text-[72px]', 'text-[56px]'] as const
+/** 短剧集号字号：5 列单元只有约 230px 宽，4 位集号降一档，给时长留位置；min-w 让同页时长列对齐 */
+const PLAYLET_NUMBER_CLASS = ['min-w-14 text-[72px]', 'min-w-24 text-[72px]', 'min-w-32 text-[72px]', 'min-w-34 text-[56px]'] as const
 
 /** 合集集号栏：按本页最大位数取宽度，同一页标题左缘对齐；4 位集号降字号，不挤占标题 */
 const COLLECTION_NUMBER_CLASS = [
@@ -446,7 +443,7 @@ const CollectionCell: React.FC<{ episode: MixEpisode; numberClassName: string }>
       <span className={`shrink-0 leading-[0.9] font-black tracking-tight text-foreground tabular-nums ${numberClassName}`}>
         {episode.episode}
       </span>
-      <div className="line-clamp-3 min-w-0 flex-1 pt-0.5 text-[30px] leading-tight font-bold text-foreground">
+      <div className="line-clamp-3 min-w-0 flex-1 pt-0.5 text-[30px] leading-tight font-bold text-pretty text-foreground">
         {episode.title || '未命名视频'}
       </div>
     </div>
@@ -461,14 +458,14 @@ const EndCard: React.FC<{ span: number; noun: string; countText: string; pageCou
   pageCount,
   mode
 }) => (
-  <div className={`${COL_SPAN[span] ?? 'col-span-1'} flex flex-col self-stretch rounded-3xl bg-foreground/5 p-9 ring-1 ring-foreground/10`}>
+  <div className={`${COL_SPAN[span] ?? 'col-span-1'} flex flex-col justify-center self-stretch rounded-3xl bg-foreground/5 p-9`}>
     <div className="flex items-center gap-4 text-[40px] leading-tight font-black text-foreground">
       <span className="h-5 w-5 shrink-0" style={{ backgroundColor: ACCENT }} />
       <span>{pageCount > 1 ? '已是最后一页' : '只有这一页'}</span>
     </div>
     <p className="mt-4 text-[28px] leading-normal text-foreground/75">{pageCount > 1 ? `最新的${noun}在第 1 页` : countText}</p>
     {pageCount > 1 && (
-      <div className="mt-auto flex flex-wrap items-center gap-3 pt-8 text-[28px] text-foreground/70">
+      <div className="flex flex-wrap items-center gap-3 pt-6 text-[28px] text-foreground/70">
         {mode === 'button' ? (
           <span>点键盘「上一页」往回翻</span>
         ) : (
@@ -524,7 +521,7 @@ const EpisodeGrid: React.FC<{
 
 /** 版权栏：左侧列出数量与缺集说明，右侧生成时间 */
 const Colophon: React.FC<{ notes: string[] }> = ({ notes }) => (
-  <footer className="flex items-start justify-between gap-10 border-t border-foreground/15 pt-7 text-[24px] leading-relaxed text-foreground/65">
+  <footer className="flex items-start justify-between gap-10 pt-7 text-[24px] leading-relaxed text-foreground/65">
     <div className="min-w-0">{notes.join(' · ')}</div>
     <div className="shrink-0 select-text">图片生成于: {format(new Date(), 'yyyy-MM-dd HH:mm:ss')}</div>
   </footer>

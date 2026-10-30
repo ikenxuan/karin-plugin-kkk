@@ -12,7 +12,7 @@ import type { BangumiBilibiliData } from './types'
 /*
  * B 站番剧选集海报（杂志编辑排版，和抖音合集选集是兄弟模板）
  * 刊头 → 专题 hero（封面 + 大标题 + 导语 + 演职员栏）→ 数据栏 → 目录页（巨型集号区间 + 操作说明）→ 选集网格 → 版权栏。
- * 唯一强调色是 B 站粉：浅色主题压深一档保证眉题可读，命令 chip 用更深的覆盆子粉保证白字对比度。
+ * 秩序靠字体层级和留白建立，不使用分隔线；唯一强调色是 B 站粉：浅色主题压深一档保证眉题可读，命令 chip 用更深的覆盆子粉保证白字对比度。
  * 操作说明按 selectionMode 区分：button 对应 QQBot 键盘，text 只列出当前页真正能用的命令。
  */
 
@@ -140,9 +140,9 @@ const PosterBackground: React.FC<{ src: string; ctx: PosterContext }> = ({ src, 
   </div>
 )
 
-/** 刊头：栏目名 + 平台 logo，下压一条粗线 */
+/** 刊头：栏目名 + 平台 logo，靠字距和留白收束 */
 const Masthead: React.FC<{ label: string; ctx: PosterContext }> = ({ label, ctx }) => (
-  <header className="flex items-center justify-between border-b-4 border-foreground pb-7">
+  <header className="flex items-center justify-between pb-7">
     <div className="flex items-center gap-5 text-[26px] font-bold tracking-[0.32em] text-foreground">
       <span className={`h-5 w-5 ${ACCENT_BG}`} />
       <span>{label}</span>
@@ -163,11 +163,11 @@ const Kicker: React.FC<{ items: string[] }> = ({ items }) => (
   </div>
 )
 
-/** 数据栏：四格细线分隔，小标签 + 粗体大数字 + 小单位 */
+/** 数据栏：四格铺在浅色面板上，用留白代替分隔线，小标签 + 粗体大数字 + 小单位 */
 const Ledger: React.FC<{ items: { label: string; value: string; unit: string }[] }> = ({ items }) => (
-  <div className="grid grid-cols-4 border-t-2 border-foreground">
-    {items.map((item, index) => (
-      <div key={item.label} className={index === 0 ? 'pt-6 pr-6' : 'border-l border-foreground/15 pt-6 pr-4 pl-6'}>
+  <div className="grid grid-cols-4 gap-x-10 rounded-3xl bg-foreground/5 px-10 py-8">
+    {items.map((item) => (
+      <div key={item.label}>
         <div className="text-[24px] font-medium text-foreground/65">{item.label}</div>
         <div className="mt-1 flex items-baseline gap-1.5 text-foreground">
           <span className="text-[60px] leading-none font-black tabular-nums">{item.value}</span>
@@ -216,7 +216,7 @@ const Hero: React.FC<{ data: BangumiBilibiliData }> = ({ data }) => {
         {data.Evaluate && <p className="mt-5 line-clamp-3 text-[30px] leading-[1.55] font-light text-foreground/80">{data.Evaluate}</p>}
         {(shownCount > 0 || credits.staff.length > 0) && (
           <div className="mt-auto pt-8">
-            <dl className="flex flex-col gap-2.5 border-t border-foreground/15 pt-6">
+            <dl className="flex flex-col gap-2.5 pt-6">
               {shownCount > 0 && (
                 <CreditRow label="声优">
                   <span className="flex flex-wrap gap-x-7">
@@ -308,7 +308,7 @@ const SketchKey: React.FC<{ children: React.ReactNode; quiet?: boolean; small?: 
     className={
       quiet
         ? 'flex h-11 flex-1 items-center justify-center rounded-lg border-2 border-foreground/20 text-[24px] font-bold text-foreground/60'
-        : `flex h-11 flex-1 items-center justify-center rounded-lg border-2 border-foreground/45 font-bold text-foreground tabular-nums ${small ? 'text-[20px]' : 'text-[24px]'}`
+        : `flex h-11 flex-1 items-center justify-center rounded-lg border-2 border-foreground/45 font-bold text-foreground tabular-nums ${small ? 'text-[18px]' : 'text-[24px]'}`
     }
   >
     {children}
@@ -323,7 +323,7 @@ const KeySketch: React.FC<{ numbers: number[]; page: number; pageCount: number }
   const small = numbers.some((number) => number >= 1000)
 
   return (
-    <div className="flex w-82.5 shrink-0 flex-col gap-1.5 self-start rounded-3xl border border-foreground/10 bg-surface/60 p-3">
+    <div className="flex w-82.5 shrink-0 flex-col gap-1.5 self-start rounded-3xl bg-surface/60 p-3">
       {pageCount > 1 && <SketchKey>跳转到第x页</SketchKey>}
       {rows.map((row) => (
         <div key={row[0]} className="flex gap-1.5">
@@ -370,7 +370,7 @@ const ButtonGuide: React.FC<{ numbers: number[]; page: number; pageCount: number
   </div>
 )
 
-/** 目录页开篇：章节线 + 巨型区间数字 + 操作说明 */
+/** 目录页开篇：巨型区间数字 + 操作说明 */
 const Contents: React.FC<{ items: NumberedEpisode[]; page: number; pageCount: number; mode: SelectionMode; seconds: number }> = ({
   items,
   page,
@@ -385,13 +385,13 @@ const Contents: React.FC<{ items: NumberedEpisode[]; page: number; pageCount: nu
 
   return (
     <section>
-      <div className="flex items-end justify-between border-t-4 border-foreground pt-7">
+      <div className="flex items-end justify-between">
         <div className="flex items-baseline gap-5">
           <span className={`h-6 w-6 self-center ${ACCENT_BG}`} />
           <h2 className="text-[72px] leading-none font-black text-foreground">选集</h2>
           <span className="text-[24px] font-bold tracking-[0.3em] text-foreground/55">CONTENTS</span>
         </div>
-        <div className="text-[40px] font-bold text-foreground tabular-nums">
+        <div className="rounded-full bg-foreground/10 px-7 py-2 text-[34px] font-bold text-foreground tabular-nums">
           第 {page} / {pageCount} 页
         </div>
       </div>
@@ -409,7 +409,7 @@ const Contents: React.FC<{ items: NumberedEpisode[]; page: number; pageCount: nu
             <span>最新在前</span>
           </div>
         </div>
-        <div className="min-w-0 flex-1 border-l border-foreground/15 pl-10">
+        <div className="min-w-0 flex-1 pl-10">
           {mode === 'button' ? (
             <ButtonGuide numbers={items.map((item) => item.number)} page={page} pageCount={pageCount} seconds={seconds} />
           ) : (
@@ -453,7 +453,7 @@ const BangumiCell: React.FC<{ item: NumberedEpisode; dark: boolean; numberClassN
       <div className="mt-4 flex gap-4">
         <span className={`shrink-0 leading-[0.9] font-black tracking-tight text-foreground tabular-nums ${numberClassName}`}>{number}</span>
         <div className="min-w-0 flex-1 pt-0.5">
-          <div className="line-clamp-2 text-[30px] leading-tight font-bold text-foreground">{episode.long_title || `第 ${number} 集`}</div>
+          <div className="line-clamp-2 text-[30px] leading-tight font-bold text-pretty text-foreground">{episode.long_title || `第 ${number} 集`}</div>
           <div className="mt-1 font-mono text-[26px] leading-tight text-foreground/65">{formatPubDate(episode.pub_time)}</div>
         </div>
       </div>
@@ -463,14 +463,14 @@ const BangumiCell: React.FC<{ item: NumberedEpisode; dark: boolean; numberClassN
 
 /** 最后一页不满一行时的收尾块：说明最新剧集在哪一页，并给出往回翻的方式 */
 const EndCard: React.FC<{ span: number; listed: number; pageCount: number; mode: SelectionMode }> = ({ span, listed, pageCount, mode }) => (
-  <div className={`${COL_SPAN[span] ?? 'col-span-1'} flex flex-col self-stretch rounded-3xl bg-foreground/5 p-9 ring-1 ring-foreground/10`}>
+  <div className={`${COL_SPAN[span] ?? 'col-span-1'} flex flex-col justify-center self-stretch rounded-3xl bg-foreground/5 p-9`}>
     <div className="flex items-center gap-4 text-[40px] leading-tight font-black text-foreground">
       <span className={`h-5 w-5 shrink-0 ${ACCENT_BG}`} />
       <span>{pageCount > 1 ? '已是最后一页' : '只有这一页'}</span>
     </div>
     <p className="mt-4 text-[28px] leading-normal text-foreground/75">{pageCount > 1 ? '最新的剧集在第 1 页' : `共 ${listed} 集`}</p>
     {pageCount > 1 && (
-      <div className="mt-auto flex flex-wrap items-center gap-3 pt-8 text-[28px] text-foreground/70">
+      <div className="flex flex-wrap items-center gap-3 pt-6 text-[28px] text-foreground/70">
         {mode === 'button' ? (
           <span>点键盘「上一页」往回翻</span>
         ) : (
@@ -512,7 +512,7 @@ const EpisodeGrid: React.FC<{
 
 /** 版权栏：左侧列出数量、UP 主与 season 号，右侧生成时间 */
 const Colophon: React.FC<{ notes: string[] }> = ({ notes }) => (
-  <footer className="flex items-start justify-between gap-10 border-t border-foreground/15 pt-7 text-[24px] leading-relaxed text-foreground/65">
+  <footer className="flex items-start justify-between gap-10 pt-7 text-[24px] leading-relaxed text-foreground/65">
     <div className="min-w-0">{notes.join(' · ')}</div>
     <div className="shrink-0 select-text">图片生成于: {format(new Date(), 'yyyy-MM-dd HH:mm:ss')}</div>
   </footer>
