@@ -520,12 +520,16 @@ const EpisodeGrid: React.FC<{
 }
 
 /** 版权栏：左侧列出数量与缺集说明，右侧生成时间 */
-const Colophon: React.FC<{ notes: string[] }> = ({ notes }) => (
-  <footer className="flex items-start justify-between gap-10 pt-7 text-[24px] leading-relaxed text-foreground/65">
-    <div className="min-w-0">{notes.join(' · ')}</div>
-    <div className="shrink-0 select-text">图片生成于: {format(new Date(), 'yyyy-MM-dd HH:mm:ss')}</div>
-  </footer>
-)
+const Colophon: React.FC<{ notes: string[] }> = ({ notes }) => {
+  // 生成时间只在挂载时取一次：渲染期直接调用 new Date() 会被 React Compiler 判为不纯
+  const [generatedAt] = React.useState(() => format(new Date(), 'yyyy-MM-dd HH:mm:ss'))
+  return (
+    <footer className="flex items-start justify-between gap-10 pt-7 text-[24px] leading-relaxed text-foreground/65">
+      <div className="min-w-0">{notes.join(' · ')}</div>
+      <div className="shrink-0 select-text">图片生成于: {generatedAt}</div>
+    </footer>
+  )
+}
 
 export const DouyinMix: React.FC<PosterProps<DouyinMixData>> = React.memo((props) => {
   const { data, ctx } = props

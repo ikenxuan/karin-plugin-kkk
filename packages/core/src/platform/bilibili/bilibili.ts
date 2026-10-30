@@ -444,6 +444,7 @@ export class Bilibili extends Base {
             seasonID: videoInfo.data.result.season_id,
             subtitle: videoInfo.data.result.subtitle,
             UPInfo: videoInfo.data.result.up_info,
+            Staff: videoInfo.data.result.staff,
             Copyright: videoInfo.data.result.rights.copyright,
             Stat: videoInfo.data.result.stat,
             Episodes: displayEpisodes,

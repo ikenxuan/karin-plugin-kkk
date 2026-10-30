@@ -92,6 +92,18 @@ const parseCredits = (raw: string) => {
   return { cast, staff, extras, voiceCount }
 }
 
+/** 版权番剧没有 up_info 时，从制作人员里取制作公司：优先「动画制作」，其次「制作/製作」 */
+const parseMaker = (raw: string): string => {
+  let fallback = ''
+  for (const line of (raw || '').split(/\r?\n/)) {
+    const match = /^\s*(动画制作公司|动画制作|制作公司|制作|製作)[：:]\s*(.+?)\s*$/.exec(line)
+    if (!match) continue
+    if (/动画制作/.test(match[1])) return match[2]
+    if (!fallback) fallback = match[2]
+  }
+  return fallback
+}
+
 /** 发布日期统一写成 2026.10.24，等宽数字列对齐，跨年也不歧义 */
 const formatPubDate = (seconds: number): string => (seconds > 0 ? format(new Date(seconds * 1000), 'yyyy.MM.dd') : '')
 
@@ -511,12 +523,16 @@ const EpisodeGrid: React.FC<{
 }
 
 /** 版权栏：左侧列出数量、UP 主与 season 号，右侧生成时间 */
-const Colophon: React.FC<{ notes: string[] }> = ({ notes }) => (
-  <footer className="flex items-start justify-between gap-10 pt-7 text-[24px] leading-relaxed text-foreground/65">
-    <div className="min-w-0">{notes.join(' · ')}</div>
-    <div className="shrink-0 select-text">图片生成于: {format(new Date(), 'yyyy-MM-dd HH:mm:ss')}</div>
-  </footer>
-)
+const Colophon: React.FC<{ notes: string[] }> = ({ notes }) => {
+  // 生成时间只在挂载时取一次：渲染期直接调用 new Date() 会被 React Compiler 判为不纯
+  const [generatedAt] = React.useState(() => format(new Date(), 'yyyy-MM-dd HH:mm:ss'))
+  return (
+    <footer className="flex items-start justify-between gap-10 pt-7 text-[24px] leading-relaxed text-foreground/65">
+      <div className="min-w-0">{notes.join(' · ')}</div>
+      <div className="shrink-0 select-text">图片生成于: {generatedAt}</div>
+    </footer>
+  )
+}
 
 export const BangumiBilibili: React.FC<PosterProps<BangumiBilibiliData>> = React.memo((props) => {
   const { data, ctx } = props
@@ -539,9 +555,14 @@ export const BangumiBilibili: React.FC<PosterProps<BangumiBilibiliData>> = React
     { label: '弹幕', ...splitCount(data.Stat.danmakus) },
     { label: '投币', ...splitCount(data.Stat.coins) }
   ]
+  // 版权番剧的接口不返回 up_info，用制作公司和系列追番数兜底
+  const maker = data.UPInfo ? '' : parseMaker(data.Staff ?? '')
+  const upNote = data.UPInfo
+    ? `UP 主 ${data.UPInfo.uname} · 粉丝 ${Object.values(splitCount(data.UPInfo.follower)).join('')}`
+    : [maker && `制作 ${maker}`, data.Stat.follow_text].filter(Boolean).join(' · ')
   const notes = [
     `已列出 ${numbered.length} 集`,
-    `UP 主 ${data.UPInfo.uname} · 粉丝 ${Object.values(splitCount(data.UPInfo.follower)).join('')}`,
+    ...(upNote ? [upNote] : []),
     ...(data.seasonID ? [`ss${data.seasonID}`] : [])
   ]
 
