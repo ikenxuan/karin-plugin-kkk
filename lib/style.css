@@ -15034,16 +15034,24 @@
     min-width: 0;
   }
 
-  .min-w-3 {
-    min-width: calc(var(--spacing) * 3);
-  }
-
   .min-w-14 {
     min-width: calc(var(--spacing) * 14);
   }
 
+  .min-w-24 {
+    min-width: calc(var(--spacing) * 24);
+  }
+
   .min-w-26 {
     min-width: calc(var(--spacing) * 26);
+  }
+
+  .min-w-32 {
+    min-width: calc(var(--spacing) * 32);
+  }
+
+  .min-w-34 {
+    min-width: calc(var(--spacing) * 34);
   }
 
   .min-w-37 {
@@ -15886,11 +15894,6 @@
     border-block-width: 1px;
   }
 
-  .border-t {
-    border-top-style: var(--tw-border-style);
-    border-top-width: 1px;
-  }
-
   .border-t-2 {
     border-top-style: var(--tw-border-style);
     border-top-width: 2px;
@@ -15944,11 +15947,6 @@
   .border-b-20 {
     border-bottom-style: var(--tw-border-style);
     border-bottom-width: 20px;
-  }
-
-  .border-l {
-    border-left-style: var(--tw-border-style);
-    border-left-width: 1px;
   }
 
   .border-l-2 {
@@ -16135,16 +16133,6 @@
   @supports (color: color-mix(in lab, red, red)) {
     .border-foreground\/10 {
       border-color: color-mix(in oklab, var(--foreground) 10%, transparent);
-    }
-  }
-
-  .border-foreground\/15 {
-    border-color: var(--foreground);
-  }
-
-  @supports (color: color-mix(in lab, red, red)) {
-    .border-foreground\/15 {
-      border-color: color-mix(in oklab, var(--foreground) 15%, transparent);
     }
   }
 
@@ -16616,13 +16604,13 @@
     }
   }
 
-  .bg-foreground\/20 {
+  .bg-foreground\/10 {
     background-color: var(--foreground);
   }
 
   @supports (color: color-mix(in lab, red, red)) {
-    .bg-foreground\/20 {
-      background-color: color-mix(in oklab, var(--foreground) 20%, transparent);
+    .bg-foreground\/10 {
+      background-color: color-mix(in oklab, var(--foreground) 10%, transparent);
     }
   }
 
@@ -17905,6 +17893,10 @@
     font-size: 15px;
   }
 
+  .text-\[18px\] {
+    font-size: 18px;
+  }
+
   .text-\[20px\] {
     font-size: 20px;
   }
@@ -18400,6 +18392,10 @@
 
   .text-balance {
     text-wrap: balance;
+  }
+
+  .text-pretty {
+    text-wrap: pretty;
   }
 
   .wrap-break-word {
@@ -19191,11 +19187,6 @@
 
   .shadow-xl {
     --tw-shadow: 0 20px 25px -5px var(--tw-shadow-color, #0000001a), 0 8px 10px -6px var(--tw-shadow-color, #0000001a);
-    box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
-  }
-
-  .ring-1 {
-    --tw-ring-shadow: var(--tw-ring-inset, ) 0 0 0 calc(1px + var(--tw-ring-offset-width)) var(--tw-ring-color, currentcolor);
     box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
   }
 
