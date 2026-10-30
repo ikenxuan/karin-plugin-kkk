@@ -2,6 +2,13 @@
 
 # Changelog
 
+## [2.45.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.45.1...v2.45.2) (2026-10-30)
+
+
+### 🐛 错误修复
+
+* 修复部分版权番剧缺少 up_info 时海报渲染失败 ([8480cec](https://github.com/ikenxuan/karin-plugin-kkk/commit/8480cecec639db79eaad1c74e7c1e4a1533eda20))
+
 ## [2.45.2-beta.4](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.45.2-beta.3...v2.45.2-beta.4) (2026-10-30)
 
 
