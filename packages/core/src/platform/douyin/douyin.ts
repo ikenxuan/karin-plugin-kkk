@@ -25,7 +25,7 @@ import {
   uploadFile
 } from '@/module/utils'
 import { Config } from '@/module/utils/Config'
-import { EmojiReactionManager, getEmojiId } from '@/module/utils/EmojiReaction'
+import { createEmojiReactionFlow, type EmojiReactionFlow, settleEmojiReaction } from '@/module/utils/EmojiReaction'
 import {
   EPISODE_SELECTION_PAGE_SIZE,
   EPISODE_SELECTION_TTL_SECONDS,
@@ -864,14 +864,8 @@ export class DouYin extends Base {
         if (context) {
           const num = parseInt(context.msg.trim())
           if (!isNaN(num) && num >= 1 && num <= displayVideos.length) {
-            const emojiManager = new EmojiReactionManager(context)
-            let processingTimer: NodeJS.Timeout | null = null
-            let successTimer: NodeJS.Timeout | null = null
-
-            await emojiManager.add('EYES')
-            processingTimer = setTimeout(() => {
-              emojiManager.add('PROCESSING').catch(() => {})
-            }, 1500)
+            const emojiFlow = createEmojiReactionFlow(context)
+            await emojiFlow.begin()
 
             try {
               const target = displayVideos[num - 1]
@@ -881,19 +875,9 @@ export class DouYin extends Base {
               }
               const dy = new DouYin(context, targetData)
               await dy.DouyinHandler(targetData)
-
-              successTimer = setTimeout(() => {
-                emojiManager.replace('PROCESSING', 'SUCCESS').catch(() => {})
-              }, 1500)
+              await emojiFlow.succeed()
             } catch (error) {
-              if (processingTimer) clearTimeout(processingTimer)
-              if (successTimer) clearTimeout(successTimer)
-
-              const processingEmojiId = getEmojiId(context, 'PROCESSING')
-              if (emojiManager.has(processingEmojiId)) {
-                await emojiManager.remove('PROCESSING')
-              }
-              await emojiManager.add('ERROR')
+              await emojiFlow.fail()
               throw error
             }
           }
@@ -991,75 +975,106 @@ export class DouYin extends Base {
         /** 上一页海报消息，翻页发送成功后撤回，避免聊天里堆一串过期海报 */
         let posterMessageId = ''
         let posterMessageSentAt = 0
+        /** 子上下文消息的表情反馈流程：翻页时留到新海报发出后再算成功 */
+        let emojiFlow: EmojiReactionFlow | null = null
 
-        for (;;) {
-          const poster = await renderPoster(posterPage)
-          const start = (posterPage - 1) * EPISODE_SELECTION_PAGE_SIZE
-          const pageEpisodes = displayEpisodes.slice(start, start + EPISODE_SELECTION_PAGE_SIZE)
-          const firstEpisode = pageEpisodes[0]?.episode ?? 0
-          const lastEpisode = pageEpisodes[pageEpisodes.length - 1]?.episode ?? 0
-          const range = firstEpisode === lastEpisode ? `第 ${firstEpisode} 集` : `第 ${firstEpisode}–${lastEpisode} 集`
+        try {
+          for (;;) {
+            const poster = await renderPoster(posterPage)
+            const start = (posterPage - 1) * EPISODE_SELECTION_PAGE_SIZE
+            const pageEpisodes = displayEpisodes.slice(start, start + EPISODE_SELECTION_PAGE_SIZE)
+            const firstEpisode = pageEpisodes[0]?.episode ?? 0
+            const lastEpisode = pageEpisodes[pageEpisodes.length - 1]?.episode ?? 0
+            const range = firstEpisode === lastEpisode ? `第 ${firstEpisode} 集` : `第 ${firstEpisode}–${lastEpisode} 集`
 
-          const sentAt = Date.now()
-          const result = await this.e.reply([
-            ...poster,
-            segment.text(
-              `《${mixInfo.mix_name}》\n${range}（共 ${totalEpisode} 集，已列出 ${displayEpisodes.length} 集）\n第 ${posterPage}/${posterPageCount} 页\n` +
-                `发送 第?集 选集${posterPageCount > 1 ? '，发送 上一页 / 下一页 / 第?页 翻页' : ''}（${timeoutSeconds} 秒内有效）`
-            )
-          ])
+            const sentAt = Date.now()
+            const result = await this.e.reply([
+              ...poster,
+              segment.text(
+                `《${mixInfo.mix_name}》\n${range}（共 ${totalEpisode} 集，已列出 ${displayEpisodes.length} 集）\n第 ${posterPage}/${posterPageCount} 页\n` +
+                  `发送 第?集 选集${posterPageCount > 1 ? '，发送 上一页 / 下一页 / 第?页 翻页' : ''}（${timeoutSeconds} 秒内有效）`
+              )
+            ])
 
-          const previousMessageId = posterMessageId
-          const previousMessageSentAt = posterMessageSentAt
-          posterMessageId = result.messageId
-          posterMessageSentAt = result.messageId ? sentAt : 0
-          if (previousMessageId && canRecallEpisodeMessage(previousMessageId, previousMessageSentAt)) {
-            try {
-              await this.e.bot.recallMsg(this.e.contact, previousMessageId)
-            } catch (error) {
-              logger.debug('[选集] 撤回上一页失败:', error)
+            // 上一轮翻页的新海报已经发出，那条消息才算处理完成
+            if (emojiFlow) {
+              await emojiFlow.succeed()
+              // 这一轮子上下文处理完了，父消息（原链接）的 ⏳ 也收尾
+              void settleEmojiReaction(this.e)
+              emojiFlow = null
             }
-          }
 
-          // karin.ctx 按联系人 + 用户 ID 绑定监听，只有发起人的回复会唤醒
-          const context = await karin.ctx(this.e, { reply: true, throwOnTimeout: false, time: timeoutSeconds })
-          if (!context) return true
+            const previousMessageId = posterMessageId
+            const previousMessageSentAt = posterMessageSentAt
+            posterMessageId = result.messageId
+            posterMessageSentAt = result.messageId ? sentAt : 0
+            if (previousMessageId && canRecallEpisodeMessage(previousMessageId, previousMessageSentAt)) {
+              try {
+                await this.e.bot.recallMsg(this.e.contact, previousMessageId)
+              } catch (error) {
+                logger.debug('[选集] 撤回上一页失败:', error)
+              }
+            }
 
-          // 用户发了新链接/新命令：结束本轮选集，交给对应处理器，避免两个等待上下文抢同一条消息
-          const replyText = context.msg.trim()
-          if (/^[#/]/.test(replyText) || /(https?:\/\/|b23\.tv|bilibili\.com|douyin\.com|iesdouyin\.com)/i.test(replyText)) {
-            return true
-          }
+            // karin.ctx 按联系人 + 用户 ID 绑定监听，只有发起人的回复会唤醒
+            const context = await karin.ctx(this.e, { reply: true, throwOnTimeout: false, time: timeoutSeconds })
+            if (!context) return true
 
-          const pageAction = parseEpisodePosterPageAction(context.msg)
-          if (pageAction) {
-            const nextPage = pageAction.type === 'prev' ? posterPage - 1 : pageAction.type === 'next' ? posterPage + 1 : pageAction.page
-            if (nextPage < 1 || nextPage > posterPageCount) {
-              await this.e.reply(`页码超出范围，请发送 1-${posterPageCount} 之间的页码`)
+            // 用户发了新链接/新命令：结束本轮选集，交给对应处理器，避免两个等待上下文抢同一条消息
+            const replyText = context.msg.trim()
+            if (/^[#/]/.test(replyText) || /(https?:\/\/|b23\.tv|bilibili\.com|douyin\.com|iesdouyin\.com)/i.test(replyText)) {
+              return true
+            }
+
+            // 子上下文消息不经过错误处理器，单独接一套表情反馈：👀 → ⏳ → ✅/❌
+            emojiFlow = createEmojiReactionFlow(context)
+            await emojiFlow.begin()
+
+            const pageAction = parseEpisodePosterPageAction(context.msg)
+            if (pageAction) {
+              const nextPage = pageAction.type === 'prev' ? posterPage - 1 : pageAction.type === 'next' ? posterPage + 1 : pageAction.page
+              if (nextPage < 1 || nextPage > posterPageCount) {
+                await this.e.reply(`页码超出范围，请发送 1-${posterPageCount} 之间的页码`)
+                await emojiFlow.fail()
+                void settleEmojiReaction(this.e)
+                emojiFlow = null
+                continue
+              }
+              // 新海报在下一轮发出后再把这条消息算成功
+              posterPage = nextPage
               continue
             }
-            posterPage = nextPage
-            continue
-          }
 
-          const episode = parseEpisodeNumber(context.msg)
-          // 按集号找，不按下标：接口会漏掉个别集，下标和集号对不上
-          const target = episode === null ? undefined : displayEpisodes.find((item) => item.episode === episode)
-          if (!target) {
-            await this.e.reply(
-              episode === null
-                ? '匹配内容失败，请发送 第?集 选择集数，或发送 上一页 / 下一页 / 第?页 翻页'
-                : `第${episode}集不在可解析的剧集里，请重新选择`
-            )
-            continue
-          }
-          // 普通合集每集是独立作品，回复选中的视频标题；短剧每集文案都是同一段简介，用合集名更合适
-          const episodeTitle = (isPlaylet ? mixInfo.mix_name : target.title || mixInfo.mix_name).replace(/\s+/g, ' ').trim()
-          await this.e.reply(`收到请求，第${episode}集\n${episodeTitle}\n正在解析中`)
+            const episode = parseEpisodeNumber(context.msg)
+            // 按集号找，不按下标：接口会漏掉个别集，下标和集号对不上
+            const target = episode === null ? undefined : displayEpisodes.find((item) => item.episode === episode)
+            if (!target) {
+              await this.e.reply(
+                episode === null
+                  ? '匹配内容失败，请发送 第?集 选择集数，或发送 上一页 / 下一页 / 第?页 翻页'
+                  : `第${episode}集不在可解析的剧集里，请重新选择`
+              )
+              await emojiFlow.fail()
+              void settleEmojiReaction(this.e)
+              emojiFlow = null
+              continue
+            }
+            // 普通合集每集是独立作品，回复选中的视频标题；短剧每集文案都是同一段简介，用合集名更合适
+            const episodeTitle = (isPlaylet ? mixInfo.mix_name : target.title || mixInfo.mix_name).replace(/\s+/g, ' ').trim()
+            await this.e.reply(`收到请求，第${episode}集\n${episodeTitle}\n正在解析中`)
 
-          const targetData: DouyinIdData = { type: 'one_work', aweme_id: target.aweme_id }
-          await new DouYin(context, targetData, { forceBurnDanmaku: this.forceBurnDanmaku }).DouyinHandler(targetData)
-          return true
+            const targetData: DouyinIdData = { type: 'one_work', aweme_id: target.aweme_id }
+            await new DouYin(context, targetData, { forceBurnDanmaku: this.forceBurnDanmaku }).DouyinHandler(targetData)
+            await emojiFlow.succeed()
+            // 这一轮子上下文处理完了，父消息（原链接）的 ⏳ 也收尾
+            void settleEmojiReaction(this.e)
+            emojiFlow = null
+            return true
+          }
+        } catch (error) {
+          // 子上下文消息不经过错误处理器，异常路径也要给它一个结果表情
+          if (emojiFlow) await emojiFlow.fail()
+          throw error
         }
       }
       case 'music_work': {

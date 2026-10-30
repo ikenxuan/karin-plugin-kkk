@@ -16,6 +16,12 @@ const runtime = vi.hoisted(() => {
     kuaishou: { fetcher: {} },
     xiaohongshu: { fetcher: { fetchThing: xiaohongshuFetchThing } }
   }
+  /** 命令入口的表情流程：用例里只关心 begin/succeed/fail 有没有被调用 */
+  const emojiFlow = {
+    begin: vi.fn(async () => {}),
+    succeed: vi.fn(),
+    fail: vi.fn(async () => {})
+  }
 
   return {
     queue,
@@ -24,7 +30,10 @@ const runtime = vi.hoisted(() => {
     xiaohongshuFetchThing,
     createClient: vi.fn(() => client),
     handleRiskChallenge: vi.fn(),
-    runWithVerifyContext: vi.fn(<T>(_event: unknown, fn: () => T): T => fn())
+    runWithVerifyContext: vi.fn(<T>(_event: unknown, fn: () => T): T => fn()),
+    isPushTask: vi.fn(() => false),
+    emojiFlow,
+    createEmojiFlow: vi.fn(() => emojiFlow)
   }
 })
 
@@ -62,13 +71,7 @@ vi.mock('@/module/utils/RiskVerify', () => ({
 vi.mock('@/module', () => ({ getBuildMetadata: vi.fn(() => ({})) }))
 
 vi.mock('@/module/utils/EmojiReaction', () => ({
-  EmojiReactionManager: class {
-    add = vi.fn(async () => {})
-    replace = vi.fn(async () => {})
-    remove = vi.fn(async () => {})
-    has = vi.fn(() => false)
-    getPlatformEmojiId = vi.fn(() => 'emoji-id')
-  }
+  createEmojiReactionFlow: runtime.createEmojiFlow
 }))
 
 vi.mock('@/module/utils/ErrorHandler/render', () => ({ renderErrorImage: vi.fn(async () => ({})) }))
@@ -83,7 +86,7 @@ vi.mock('@/module/utils/ErrorHandler/strategy', () => ({ getStrategies: vi.fn(()
 
 vi.mock('@/module/utils/ErrorHandler/utils', () => ({
   injectBotToEventForPushTask: vi.fn(async (event: unknown) => event),
-  isPushTask: vi.fn(() => false),
+  isPushTask: runtime.isPushTask,
   parseLogsToStructured: vi.fn(() => [])
 }))
 
@@ -233,5 +236,63 @@ describe('风控验证接线：命令入口的 ALS 上下文', () => {
 
     expect(await handler(undefined, () => undefined)).toBe('ok')
     expect(runtime.runWithVerifyContext).not.toHaveBeenCalled()
+  })
+})
+
+describe('命令入口的表情反馈', () => {
+  const resetFlow = () => {
+    runtime.createEmojiFlow.mockClear()
+    runtime.emojiFlow.begin.mockClear()
+    runtime.emojiFlow.succeed.mockClear()
+    runtime.emojiFlow.fail.mockClear()
+  }
+
+  it('处理失败时走失败收尾', async () => {
+    resetFlow()
+    const event = { reply: vi.fn(), isPrivate: false }
+    const handler = wrapWithErrorHandler(
+      async () => {
+        throw new Error('boom')
+      },
+      { businessName: 'test' } as never
+    )
+
+    await expect(handler(event as never, () => undefined)).rejects.toThrow('boom')
+
+    expect(runtime.emojiFlow.begin).toHaveBeenCalledTimes(1)
+    expect(runtime.emojiFlow.fail).toHaveBeenCalledTimes(1)
+    expect(runtime.emojiFlow.succeed).not.toHaveBeenCalled()
+  })
+
+  it('处理成功时走成功收尾', async () => {
+    resetFlow()
+    const event = { reply: vi.fn() }
+    const handler = wrapWithErrorHandler(async () => 'ok', { businessName: 'test' } as never)
+
+    expect(await handler(event as never, () => undefined)).toBe('ok')
+
+    expect(runtime.emojiFlow.begin).toHaveBeenCalledTimes(1)
+    expect(runtime.emojiFlow.succeed).toHaveBeenCalledTimes(1)
+    expect(runtime.emojiFlow.fail).not.toHaveBeenCalled()
+  })
+
+  it('没有事件的调用（定时推送）不创建表情流程', async () => {
+    resetFlow()
+    const handler = wrapWithErrorHandler(async () => 'ok', { businessName: 'push' } as never)
+
+    expect(await handler(undefined, () => undefined)).toBe('ok')
+    expect(runtime.emojiFlow.begin).not.toHaveBeenCalled()
+  })
+
+  it('推送相关命令（isPushTask）不创建表情流程', async () => {
+    resetFlow()
+    runtime.isPushTask.mockReturnValueOnce(true)
+    const event = { reply: vi.fn() }
+    const handler = wrapWithErrorHandler(async () => 'ok', { businessName: '#推送测试' } as never)
+
+    expect(await handler(event as never, () => undefined)).toBe('ok')
+
+    expect(runtime.createEmojiFlow).not.toHaveBeenCalled()
+    expect(runtime.emojiFlow.begin).not.toHaveBeenCalled()
   })
 })

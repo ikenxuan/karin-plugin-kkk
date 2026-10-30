@@ -99,6 +99,9 @@ export function getEmojiId(e: Message, type: EmojiType): string | number {
  */
 export const EMOJI_IDS = PLATFORM_EMOJI_IDS.qq
 
+/** 同一条消息上的表情写操作按发起顺序串行执行：适配器并发处理时，后发的 remove 不能先于先发的 add 生效 */
+const reactionChains = new WeakMap<Message, Promise<boolean>>()
+
 /**
  * 设置消息表情回复
  * @param e 消息事件对象
@@ -117,14 +120,22 @@ export async function setEmojiReaction(e: Message, emojiId: string | number, isS
     return false
   }
 
-  try {
-    await e.bot.setMsgReaction(e.contact, e.messageId, emojiId, isSet)
-    return true
-  } catch (err) {
-    // 始终忽略错误，不影响主流程
-    logger.debug('[EmojiReaction] 设置表情回复失败（已忽略）:', err)
-    return false
+  const write = async (): Promise<boolean> => {
+    try {
+      await e.bot.setMsgReaction(e.contact, e.messageId, emojiId, isSet)
+      return true
+    } catch (err) {
+      // 始终忽略错误，不影响主流程
+      logger.debug('[EmojiReaction] 设置表情回复失败（已忽略）:', err)
+      return false
+    }
   }
+
+  // 串到上一条写操作之后：add/remove 交错发出时服务端处理顺序不保证，可能留下残影
+  const previous = reactionChains.get(e)
+  const current = previous ? previous.then(write, write) : write()
+  reactionChains.set(e, current)
+  return current
 }
 
 /**
@@ -267,4 +278,120 @@ export class EmojiReactionManager {
   count(): number {
     return this.emojiIds.size
   }
+}
+
+/** 表情反馈节奏：收到消息 1.5 秒后补「处理中」，结束时再把「处理中」换成结果 */
+const EMOJI_PROCESSING_DELAY_MS = 1500
+const EMOJI_RESULT_DELAY_MS = 1500
+
+/** 已由业务侧收尾的消息及结果；失败结果可以覆盖先前的成功，成功不会覆盖失败 */
+const settledEvents = new WeakMap<Message, 'SUCCESS' | 'ERROR'>()
+
+/** 这条消息最近一次收尾的完整过程；成功收尾前要等它落地，确认业务侧是否真的收尾成功 */
+const settleTasks = new WeakMap<Message, Promise<void>>()
+
+/**
+ * 给一条消息的表情收尾：撤掉「处理中」，补上结果表情。
+ *
+ * 子上下文处理完成后用它把父消息也收尾；收尾过的消息会被标记，
+ * 外层 `wrapWithErrorHandler` 之后不会再改它的表情。
+ * 失败可以覆盖先前的成功（先撤掉 ✅ 再补 ❌），成功不会覆盖失败。
+ * @param e 需要收尾的消息
+ * @param type 结果表情，默认 SUCCESS
+ */
+export const settleEmojiReaction = async (e: Message, type: 'SUCCESS' | 'ERROR' = 'SUCCESS'): Promise<void> => {
+  const settled = settledEvents.get(e)
+  if (settled === 'ERROR' || settled === type) return
+  settledEvents.set(e, type)
+  const task = (async () => {
+    await setEmojiReaction(e, getEmojiId(e, 'PROCESSING'), false)
+    // 从成功降级为失败时先撤掉 ✅，避免同一条消息上同时挂着 ✅ 和 ❌
+    if (settled === 'SUCCESS') {
+      await setEmojiReaction(e, getEmojiId(e, 'SUCCESS'), false)
+    }
+    const applied = await setEmojiReaction(e, getEmojiId(e, type), true)
+    // 结果表情没挂上（适配器瞬时失败）时撤回标记，外层命令入口还有机会补一次
+    if (!applied && settledEvents.get(e) === type) {
+      settledEvents.delete(e)
+    }
+  })()
+  settleTasks.set(e, task)
+  await task
+}
+
+/** 等这条消息上最近一次收尾过程落地（没有收尾过则立即返回）。 */
+const waitForSettle = async (e: Message): Promise<void> => {
+  const task = settleTasks.get(e)
+  if (task) await task
+}
+
+/** 这条消息的表情是否已经由业务侧收尾。 */
+export const isEmojiReactionSettled = (e: Message): boolean => settledEvents.has(e)
+
+/**
+ * 一条消息从「收到」到「处理结束」的表情反馈流程。
+ *
+ * 节奏与命令入口一致：收到消息先加 👀，1.5 秒后补 ⏳；
+ * 处理成功把 ⏳ 换成 ✅（👀 保留），处理失败撤掉 ⏳ 补 ❌。
+ * 命令入口（`wrapWithErrorHandler`）和 `karin.ctx` 拿到的子上下文消息共用这一套。
+ */
+export interface EmojiReactionFlow {
+  /** 消息已收到：加 👀，并开始计时补 ⏳ */
+  begin: () => Promise<void>
+  /** 处理成功：1.5 秒后加 ✅ 并撤掉 ⏳ */
+  succeed: () => Promise<void>
+  /** 处理失败：撤掉 ⏳，补 ❌ */
+  fail: () => Promise<void>
+}
+
+/**
+ * 给一条消息创建表情反馈流程。
+ * @param e 触发本次处理的消息
+ */
+export const createEmojiReactionFlow = (e: Message): EmojiReactionFlow => {
+  const manager = new EmojiReactionManager(e)
+  let processingTimer: NodeJS.Timeout | null = null
+  /** 定时器补 ⏳ 的请求；失败时要等它落地再撤，否则本地还没记录会漏撤 */
+  let processingAdd: Promise<boolean> | null = null
+  let finished = false
+
+  const begin = async (): Promise<void> => {
+    await manager.add('EYES')
+    processingTimer = setTimeout(() => {
+      // 业务侧可能已经收尾（如选集子上下文处理完先更新了父消息），不再补「处理中」
+      if (isEmojiReactionSettled(e)) return
+      processingAdd = manager.add('PROCESSING')
+    }, EMOJI_PROCESSING_DELAY_MS)
+  }
+
+  const succeed = async (): Promise<void> => {
+    if (finished) return
+    // 等业务侧已发起的收尾落地：收尾失败会撤回标记，这里仍有机会补 ✅
+    await waitForSettle(e)
+    // 业务侧已经收尾过的消息不再重复收尾
+    if (finished || isEmojiReactionSettled(e)) return
+    finished = true
+    setTimeout(() => {
+      manager.replace('PROCESSING', 'SUCCESS').catch(() => {})
+    }, EMOJI_RESULT_DELAY_MS)
+  }
+
+  const fail = async (): Promise<void> => {
+    if (finished) return
+    finished = true
+    if (processingTimer) clearTimeout(processingTimer)
+    // 定时器已经触发时，等补 ⏳ 的请求落地，避免 ⏳ 和 ❌ 同时挂在消息上
+    if (processingAdd) await processingAdd
+    // 业务侧已经把这条消息收尾成成功（如选集翻页后的父消息），失败时要纠正成 ❌
+    if (settledEvents.get(e) === 'SUCCESS') {
+      await settleEmojiReaction(e, 'ERROR')
+      return
+    }
+    if (manager.has(getEmojiId(e, 'PROCESSING'))) {
+      await manager.remove('PROCESSING')
+    }
+    await manager.add('ERROR')
+  }
+
+  return { begin, succeed, fail }
 }

@@ -2,7 +2,7 @@ import type { ApiErrorData } from '@template/template/other/handlerError/compone
 import { type Message } from 'node-karin'
 
 import { getBuildMetadata } from '@/module'
-import { EmojiReactionManager } from '@/module/utils/EmojiReaction'
+import { createEmojiReactionFlow } from '@/module/utils/EmojiReaction'
 import { logger } from '@/module/utils/logger'
 import { runWithVerifyContext } from '@/module/utils/RiskVerify'
 
@@ -66,16 +66,10 @@ export const wrapWithErrorHandler = <R>(fn: (e: Message, next: () => unknown) =>
     const normalizedEvent = await injectBotToEventForPushTask(rawEvent, options.businessName)
     const normalizedNext = next ?? (() => undefined)
     const shouldHandleEmoji = Boolean(rawEvent) && !isPushTask(rawEvent, options.businessName)
-    const emojiManager = shouldHandleEmoji ? new EmojiReactionManager(rawEvent as Message) : undefined
-    let processingTimer: NodeJS.Timeout | null = null
-    let successTimer: NodeJS.Timeout | null = null
+    const emojiFlow = shouldHandleEmoji ? createEmojiReactionFlow(rawEvent as Message) : undefined
 
-    if (emojiManager) {
-      await emojiManager.add('EYES')
-      processingTimer = setTimeout(() => {
-        emojiManager.add('PROCESSING').catch(() => {})
-      }, 1500)
-    }
+    // 命令入口和 karin.ctx 子上下文共用同一套表情节奏：👀 → ⏳ → ✅/❌
+    if (emojiFlow) await emojiFlow.begin()
 
     // 风控验证要给主人发码，需要「触发本次解析的事件」——在这个唯一入口把事件存进 RiskVerify 的
     // ALS 上下文（代理层拿不到 e）；定时推送这类没有原始事件的调用不包，交给它自己放弃自动验证
@@ -85,24 +79,13 @@ export const wrapWithErrorHandler = <R>(fn: (e: Message, next: () => unknown) =>
     try {
       const result = await ctx.run()
 
-      if (emojiManager) {
-        successTimer = setTimeout(() => {
-          emojiManager.replace('PROCESSING', 'SUCCESS').catch(() => {})
-        }, 1500)
-      }
+      // 业务侧可能已经收尾（如选集子上下文处理完先更新了父消息），流程内部会跳过
+      await emojiFlow?.succeed()
 
       return result
     } catch (error) {
-      if (processingTimer) clearTimeout(processingTimer)
-      if (successTimer) clearTimeout(successTimer)
-
-      if (emojiManager) {
-        const processingEmojiId = emojiManager['getPlatformEmojiId']('PROCESSING')
-        if (emojiManager.has(processingEmojiId)) {
-          await emojiManager.remove('PROCESSING')
-        }
-        await emojiManager.add('ERROR')
-      }
+      // 业务侧可能已把父消息收尾成成功（选集翻页），失败时流程内部会纠正成 ❌
+      await emojiFlow?.fail()
 
       await new Promise((resolve) => setTimeout(resolve, 100))
       const structuredLogs = parseLogsToStructured(ctx.logs())
