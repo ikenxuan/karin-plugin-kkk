@@ -2,6 +2,13 @@
 
 # Changelog
 
+## [2.45.3](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.45.2...v2.45.3) (2026-11-11)
+
+
+### 🧰 其他更新
+
+* 更新命令正则，支持「#订阅xx推送」 ([b342faa](https://github.com/ikenxuan/karin-plugin-kkk/commit/b342faa0b074ebe775feeac50abdc65474b0bed7))
+
 ## [2.45.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.45.1...v2.45.2) (2026-10-30)
 
 
