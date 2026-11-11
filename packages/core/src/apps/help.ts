@@ -77,13 +77,13 @@ const HELP_MENU_CONFIG: RoleMenuGroup[] = [
         title: '在群聊中再发送一次即可取消订阅',
         items: [
           {
-            title: '#设置抖音推送 + 抖音号',
+            title: '#设置/订阅抖音推送 + 抖音号',
             description: '在群聊中发送以对该群订阅该抖音博主的作品更新',
             icon: 'ph:bell-fill',
             roles: Config.douyin.push.permission === 'all' ? ['member', 'master'] : ['master']
           },
           {
-            title: '#设置B站推送 + UP主UID',
+            title: '#设置/订阅B站推送 + UID',
             description: '在群聊中发送以对该群订阅该B站UP主的稿件/动态更新',
             icon: 'ph:bell-fill',
             roles: Config.bilibili.push.permission === 'all' ? ['member', 'master'] : ['master']

@@ -92,14 +92,20 @@ const parseCredits = (raw: string) => {
   return { cast, staff, extras, voiceCount }
 }
 
+/** staff 上游偶尔缺换行，把下一个职务粘在公司名后面（如「SUNRISE舞台设定」），截掉常见职务后缀 */
+const GLUED_STAFF_ROLE =
+  /(总作画监督|作画监督|美术监督|摄影监督|音响监督|系列构成|舞台设定|人物设定|角色设定|人物设计|角色设计|色彩设计|制作人|制片人|监督|导演|脚本|编剧|分镜|演出|编集|编辑|企划|设定|设计)$/
+
 /** 版权番剧没有 up_info 时，从制作人员里取制作公司：优先「动画制作」，其次「制作/製作」 */
 const parseMaker = (raw: string): string => {
   let fallback = ''
   for (const line of (raw || '').split(/\r?\n/)) {
     const match = /^\s*(动画制作公司|动画制作|制作公司|制作|製作)[：:]\s*(.+?)\s*$/.exec(line)
     if (!match) continue
-    if (/动画制作/.test(match[1])) return match[2]
-    if (!fallback) fallback = match[2]
+    const name = match[2].replace(GLUED_STAFF_ROLE, '').trim()
+    if (!name) continue
+    if (/动画制作/.test(match[1])) return name
+    if (!fallback) fallback = name
   }
   return fallback
 }

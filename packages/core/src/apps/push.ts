@@ -49,7 +49,7 @@ const handleForcePush = wrapWithErrorHandler(
 // 包装设置抖音推送命令
 const handleSetDouyinPush = wrapWithErrorHandler(
   async (e) => {
-    const query = e.msg.replace(/^#设置抖音推送/, '').trim()
+    const query = e.msg.replace(/^#(?:设置|订阅)抖音推送/, '').trim()
 
     // 检查是否是开启/关闭命令
     if (query === '开启' || query === '关闭') {
@@ -76,7 +76,7 @@ const handleSetDouyinPush = wrapWithErrorHandler(
 const handleSetBilibiliPush = wrapWithErrorHandler(
   async (e) => {
     const query = e.msg
-      .replace(/^#设置[bB]站推送/, '')
+      .replace(/^#(?:设置|订阅)[bB]站推送/, '')
       .replace(/^(?:[Uu][Ii][Dd]:)?/, '')
       .trim()
 
@@ -241,13 +241,13 @@ export const forcePush = karin.command(/#(抖音|B站)(全部)?强制推送/, ha
   event: 'message.group'
 })
 
-export const setdyPush = karin.command(/^#设置抖音推送/, handleSetDouyinPush, {
+export const setdyPush = karin.command(/^#(?:设置|订阅)抖音推送/, handleSetDouyinPush, {
   name: 'kkk-推送功能-设置',
   event: 'message.group',
   perm: Config.douyin.push.permission
 })
 
-export const setbiliPush = karin.command(/^#设置[bB]站推送/, handleSetBilibiliPush, {
+export const setbiliPush = karin.command(/^#(?:设置|订阅)[bB]站推送/, handleSetBilibiliPush, {
   name: 'kkk-推送功能-设置',
   event: 'message.group',
   perm: Config.bilibili.push.permission

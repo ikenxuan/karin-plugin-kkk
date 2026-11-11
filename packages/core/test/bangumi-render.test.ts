@@ -114,6 +114,18 @@ describe('B站番剧海报', () => {
     expect(html).not.toContain('UP 主')
   })
 
+  it('制作行缺换行把职务粘在公司名后面时截掉职务', async () => {
+    const html = await render(
+      React.createElement(BangumiBilibili, {
+        data: { ...seasonData, Staff: '原作：高桥留美子\n监督：池田成\n制作：读卖电视台、SUNRISE舞台设定' },
+        ctx
+      })
+    )
+
+    expect(html).toContain('制作 读卖电视台、SUNRISE')
+    expect(html).not.toContain('SUNRISE舞台设定')
+  })
+
   it('有 up_info 时保持原来的 UP 主与粉丝数', async () => {
     const html = await render(
       React.createElement(BangumiBilibili, {

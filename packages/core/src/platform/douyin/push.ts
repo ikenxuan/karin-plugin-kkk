@@ -941,7 +941,7 @@ export class DouYinpush extends Base {
 
     try {
       // 获取用户输入的抖音号
-      const inputDouyinId = this.e.msg.replace(/^#设置抖音推送/, '').trim()
+      const inputDouyinId = this.e.msg.replace(/^#(?:设置|订阅)抖音推送/, '').trim()
 
       /** 处理抖音号 */
       const user_shortid = data.user_info.unique_id === '' ? data.user_info.short_id : data.user_info.unique_id
