@@ -7,9 +7,10 @@ import { stripTypeScriptTypes, syncBuiltinESMExports } from 'node:module'
 import type { AddressInfo } from 'node:net'
 import os from 'node:os'
 import path from 'node:path'
-import { after, before, beforeEach, describe, it, mock } from 'node:test'
 import { fileURLToPath } from 'node:url'
 import vm from 'node:vm'
+
+import { afterAll, beforeAll, beforeEach, describe, it, vi } from 'vitest'
 
 import * as api from '../src/platform/bilibili/cdn'
 import * as transfer from '../src/platform/bilibili/cdn-transfer'
@@ -28,7 +29,7 @@ for (let index = 0; index < payload.length; index++) payload[index] = index % 25
 const expectedHash = createHash('sha256').update(payload).digest('hex')
 const timers = new Set<ReturnType<typeof setTimeout>>()
 
-before(async () => {
+beforeAll(async () => {
   temporary = await mkdtemp(path.join(os.tmpdir(), 'kkk-cdn-extension-'))
   server = http.createServer((request, response) => {
     active++
@@ -112,7 +113,7 @@ beforeEach(() => {
   partialFailures = 0
 })
 
-after(async () => {
+afterAll(async () => {
   for (const timer of timers) clearTimeout(timer)
   server.closeAllConnections()
   await new Promise<void>((resolve, reject) => server.close((error) => (error ? reject(error) : resolve())))
@@ -240,7 +241,7 @@ describe('CDN 分段、恢复与换线', () => {
   for (const code of ['ENOSPC', 'EACCES']) {
     it(`分段文件操作遇到 ${code} 时立即抛出，不降级下载`, async () => {
       const failure = Object.assign(new Error(code), { code })
-      const mockedOpen = mock.method(fs, 'open', async () => {
+      const mockedOpen = vi.spyOn(fs, 'open').mockImplementation(async () => {
         throw failure
       })
       syncBuiltinESMExports()
@@ -254,7 +255,7 @@ describe('CDN 分段、恢复与换线', () => {
           (error) => error === failure
         )
       } finally {
-        mockedOpen.mock.restore()
+        mockedOpen.mockRestore()
         syncBuiltinESMExports()
       }
     })
@@ -363,7 +364,7 @@ describe('Network 下载入口接入', () => {
     progress: (bytes: number, total: number) => void,
     retryCount?: number
   ) => Promise<{ filepath: string; totalBytes: number }>
-  before(async () => {
+  beforeAll(async () => {
     const target = path.join(root, 'src/module/utils/Network/Network.ts')
     const raw = await readFile(target, 'utf8')
     const start = raw.indexOf('async downloadStream(')

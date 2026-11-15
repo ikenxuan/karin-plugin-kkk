@@ -70,7 +70,7 @@ import { BilibiliDataTypes } from '@/types'
 
 import { getBilibiliStreamUrl, selectBilibiliStreamUrl } from './cdn'
 
-export { getBilibiliStreamUrl, selectBilibiliStreamUrl }
+export * from './cdn'
 
 let img: ElementTypes[]
 type videoDownloadUrlList = BilibiliVideoStreamResponse['data']['dash']['video']

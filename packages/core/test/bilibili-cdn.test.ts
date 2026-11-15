@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict'
 import http from 'node:http'
 import type { AddressInfo } from 'node:net'
-import { after, before, beforeEach, describe, it } from 'node:test'
+
+import { afterAll, beforeAll, beforeEach, describe, it } from 'vitest'
 
 import * as api from '../src/platform/bilibili/cdn'
 
@@ -64,7 +65,7 @@ describe('真实 HTTP 短请求选线', () => {
   const requests: Array<{ url?: string; range?: string; referer?: string }> = []
   const timers = new Set<ReturnType<typeof setTimeout>>()
 
-  before(async () => {
+  beforeAll(async () => {
     server = http.createServer((request, response) => {
       requests.push({ url: request.url, range: request.headers.range, referer: request.headers.referer })
       const payload = Buffer.alloc(32 * 1024, 1)
@@ -104,7 +105,7 @@ describe('真实 HTTP 短请求选线', () => {
     requests.length = 0
   })
 
-  after(async () => {
+  afterAll(async () => {
     for (const timer of timers) clearTimeout(timer)
     server.closeAllConnections()
     await new Promise<void>((resolve, reject) => server.close((error) => (error ? reject(error) : resolve())))

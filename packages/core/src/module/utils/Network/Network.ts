@@ -113,6 +113,7 @@ export class Network {
    * @param retryCount 重试次数（内部使用）
    */
   async downloadStream(progressCallback: ProgressCallback, retryCount = 0): Promise<DownloadResult> {
+    // 仅播放接口已登记的 B站地址启用换线；其他请求沿用原下载器。
     const candidates = getBilibiliDownloadCandidates(this.url)
     if (candidates.length > 0) {
       return downloadBilibiliCdn({

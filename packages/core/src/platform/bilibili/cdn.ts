@@ -4,7 +4,8 @@ import type { Readable } from 'node:stream'
 
 import axios, { type AxiosRequestConfig } from 'node-karin/axios'
 
-export type BilibiliStreamUrls = {
+/** B站播放接口的主、备用地址，兼容 snake_case、camelCase 和未登录 durl。 */
+type BilibiliStreamUrls = {
   base_url?: string
   backup_url?: string[] | null
   baseUrl?: string
@@ -23,7 +24,11 @@ const CDN_HISTORY_LIMIT = 128
 let activeConnections = 0
 const connectionQueue: Array<() => void> = []
 
-export const withBilibiliCdnConnection = async <Result>(action: () => Promise<Result>): Promise<Result> => {
+/**
+ * 共享探测和下载的连接配额，最多同时建立四条连接。
+ * 等待任务按入队顺序接替已释放的配额。
+ */
+const withBilibiliCdnConnection = async <Result>(action: () => Promise<Result>): Promise<Result> => {
   if (activeConnections >= 4) await new Promise<void>((resolve) => connectionQueue.push(resolve))
   else activeConnections++
   try {
@@ -35,7 +40,8 @@ export const withBilibiliCdnConnection = async <Result>(action: () => Promise<Re
   }
 }
 
-export type BilibiliCdnMeasure = {
+/** CDN 样本测速结果；speed 为字节/秒，latency 为毫秒，total 为文件总字节数。 */
+type BilibiliCdnMeasure = {
   url: string
   speed: number
   latency: number
@@ -54,6 +60,7 @@ type HostHealth = {
   updatedAt: number
 }
 
+/** 用请求头摘要区分测速缓存，避免不同 Cookie 或 Referer 复用结果。 */
 const requestIdentity = (headers: AxiosRequestConfig['headers']) =>
   createHash('sha256')
     .update(JSON.stringify(headers ?? {}))
@@ -68,9 +75,14 @@ const getUrlHostname = (url: string) => {
   }
 }
 
-export const isBilibiliPcdnUrl = (url: string) => BILIBILI_PCDN_HOST_RE.test(getUrlHostname(url))
+/** 按完整域名后缀识别已知 PCDN，不匹配名称相似的其他域名。 */
+const isBilibiliPcdnUrl = (url: string) => BILIBILI_PCDN_HOST_RE.test(getUrlHostname(url))
 
-export const getBilibiliStreamUrls = (stream?: BilibiliStreamUrls | null): string[] => {
+/**
+ * 提取并去重播放接口的有效 HTTP 地址，将 PCDN 排在普通线路之后。
+ * 保留原始签名、端口和查询参数，不替换主机名。
+ */
+const getBilibiliStreamUrls = (stream?: BilibiliStreamUrls | null): string[] => {
   if (!stream) return []
   const baseUrl = stream.base_url ?? stream.baseUrl ?? stream.url
   const urls = [...new Set([baseUrl, ...(stream.backup_url ?? stream.backupUrl ?? [])])].filter(
@@ -84,8 +96,13 @@ export const getBilibiliStreamUrls = (stream?: BilibiliStreamUrls | null): strin
   return urls.sort((left, right) => priority(left) - priority(right))
 }
 
-export const getBilibiliStreamUrl = (stream?: BilibiliStreamUrls | null): string | undefined => getBilibiliStreamUrls(stream)[0]
+/** 同步返回排序后的首选地址，不发起测速请求。 */
+const getBilibiliStreamUrl = (stream?: BilibiliStreamUrls | null): string | undefined => getBilibiliStreamUrls(stream)[0]
 
+/**
+ * 读取最多 32 KiB 样本，测量吞吐与首字节延迟，并检查 Range 响应。
+ * 服务端忽略 Range 时，达到样本上限便关闭响应流。
+ */
 const probeBilibiliStreamUrl = async (url: string, headers: AxiosRequestConfig['headers']): Promise<BilibiliCdnMeasure> => {
   const controller = new AbortController()
   const timeout = setTimeout(() => controller.abort(), CDN_PROBE_TIMEOUT)
@@ -140,7 +157,11 @@ const probeBilibiliStreamUrl = async (url: string, headers: AxiosRequestConfig['
   }
 }
 
-export class BilibiliCdnSelector {
+/**
+ * 管理 CDN 测速缓存、主机健康记录和播放接口返回的下载候选。
+ * 网络地址变化后清空旧记录，避免沿用上一个网络的测速结果。
+ */
+class BilibiliCdnSelector {
   private now: () => number
   private preferredHost: string
   private identity = ''
@@ -158,12 +179,14 @@ export class BilibiliCdnSelector {
     this.preferredHost = (options.preferredHost ?? process.env.KKK_BILIBILI_CDN_HOST ?? '').toLowerCase()
   }
 
+  /** 清空旧网络状态；正在执行的旧探测不会再写回缓存。 */
   networkChanged(identity: string) {
     if (identity === this.identity) return
     this.identity = identity
     this.reset()
   }
 
+  /** 清空测速、候选和健康记录，并使旧探测结果失效。 */
   reset() {
     this.generation++
     this.health.clear()
@@ -178,6 +201,7 @@ export class BilibiliCdnSelector {
     while (entries.size > CDN_HISTORY_LIMIT) entries.delete(entries.keys().next().value!)
   }
 
+  /** 依次按失败冷却、主机偏好和近期吞吐排序。 */
   rank(candidates: string[]) {
     const now = this.now()
     const score = (url: string) => {
@@ -195,6 +219,7 @@ export class BilibiliCdnSelector {
     })
   }
 
+  /** 记录失败并删除该 URL 的测速缓存；429、412 使用更长的冷却时间。 */
   failure(url: string, error?: unknown) {
     const now = this.now()
     const host = new URL(url).host
@@ -216,6 +241,7 @@ export class BilibiliCdnSelector {
     this.trim(this.cooldowns)
   }
 
+  /** 用近期吞吐平滑更新主机记录，并解除当前 URL 的失败冷却。 */
   success(url: string, speed: number, latency = 0) {
     const host = new URL(url).host
     const previous = this.health.get(host)
@@ -232,11 +258,13 @@ export class BilibiliCdnSelector {
     this.trim(this.health)
   }
 
+  /** 读取与请求头匹配、且仍在有效期内的测速结果。 */
   measure(url: string, headers: AxiosRequestConfig['headers'] = {}) {
     const result = this.measures.get(`${requestIdentity(headers)}:${url}`)
     return result && result.expiresAt > this.now() ? result.measure : undefined
   }
 
+  /** 优先复用测速缓存；下载阶段可要求抛出探测错误，由调用方决定回退。 */
   async probe(url: string, headers: AxiosRequestConfig['headers'] = {}, throwOnFailure = false) {
     const cached = this.measure(url, headers)
     if (cached) return cached
@@ -256,12 +284,14 @@ export class BilibiliCdnSelector {
     }
   }
 
+  /** 仅返回已登记且未过期的播放候选；其他 URL 不进入扩展下载器。 */
   downloadCandidates(url: string) {
     const route = this.routes.get(url)
     if (!route || route.expiresAt <= this.now()) return []
     return [url, ...this.rank(route.candidates).filter((candidate) => candidate !== url)]
   }
 
+  /** 返回缓存命中数和主机健康记录，避免暴露完整签名 URL。 */
   diagnostics() {
     return {
       cacheHits: this.cacheHits,
@@ -271,6 +301,10 @@ export class BilibiliCdnSelector {
     }
   }
 
+  /**
+   * 合并相同播放候选的并发选线，最多探测三个候选。
+   * 有普通线路时跳过 PCDN；测速失败时保留首选地址供下载阶段继续尝试。
+   */
   async select(stream?: BilibiliStreamUrls | null, headers: AxiosRequestConfig['headers'] = {}): Promise<string | undefined> {
     const now = this.now()
     if (now - this.checkedNetworkAt > 30000) {
@@ -320,12 +354,42 @@ export class BilibiliCdnSelector {
 }
 
 const defaultSelector = new BilibiliCdnSelector()
-export const selectBilibiliStreamUrl = (stream?: BilibiliStreamUrls | null, headers: AxiosRequestConfig['headers'] = {}) =>
+
+/** 使用共享选择器测速并登记播放候选。 */
+const selectBilibiliStreamUrl = (stream?: BilibiliStreamUrls | null, headers: AxiosRequestConfig['headers'] = {}) =>
   defaultSelector.select(stream, headers)
-export const getBilibiliDownloadCandidates = (url: string) => defaultSelector.downloadCandidates(url)
-export const getBilibiliCdnDiagnostics = () => defaultSelector.diagnostics()
-export const resetBilibiliCdnState = () => defaultSelector.reset()
-export const recordBilibiliCdnFailure = (url: string, error?: unknown) => defaultSelector.failure(url, error)
-export const recordBilibiliCdnSuccess = (url: string, speed: number, latency = 0) => defaultSelector.success(url, speed, latency)
-export const probeBilibiliCdn = (url: string, headers: AxiosRequestConfig['headers'] = {}, throwOnFailure = false) =>
+
+/** 获取共享选择器中已登记的下载候选。 */
+const getBilibiliDownloadCandidates = (url: string) => defaultSelector.downloadCandidates(url)
+
+/** 获取共享选择器的主机健康记录和缓存命中数。 */
+const getBilibiliCdnDiagnostics = () => defaultSelector.diagnostics()
+
+/** 清空共享选择器的状态。 */
+const resetBilibiliCdnState = () => defaultSelector.reset()
+
+/** 将下载失败反馈到共享选择器。 */
+const recordBilibiliCdnFailure = (url: string, error?: unknown) => defaultSelector.failure(url, error)
+
+/** 将实际下载吞吐反馈到共享选择器；speed 为字节/秒，latency 为毫秒。 */
+const recordBilibiliCdnSuccess = (url: string, speed: number, latency = 0) => defaultSelector.success(url, speed, latency)
+
+/** 获取共享测速结果；throwOnFailure 为 true 时将探测错误交给下载器处理。 */
+const probeBilibiliCdn = (url: string, headers: AxiosRequestConfig['headers'] = {}, throwOnFailure = false) =>
   defaultSelector.probe(url, headers, throwOnFailure)
+
+export type { BilibiliCdnMeasure, BilibiliStreamUrls }
+export {
+  BilibiliCdnSelector,
+  getBilibiliCdnDiagnostics,
+  getBilibiliDownloadCandidates,
+  getBilibiliStreamUrl,
+  getBilibiliStreamUrls,
+  isBilibiliPcdnUrl,
+  probeBilibiliCdn,
+  recordBilibiliCdnFailure,
+  recordBilibiliCdnSuccess,
+  resetBilibiliCdnState,
+  selectBilibiliStreamUrl,
+  withBilibiliCdnConnection
+}

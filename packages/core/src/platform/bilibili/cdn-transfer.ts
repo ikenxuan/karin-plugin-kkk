@@ -3,6 +3,8 @@ import type { Readable } from 'node:stream'
 
 import axios, { type AxiosRequestConfig } from 'node-karin/axios'
 
+import type { DownloadResult, ProgressCallback } from '@/module/utils/Network/types'
+
 import {
   type BilibiliCdnMeasure,
   probeBilibiliCdn,
@@ -11,14 +13,14 @@ import {
   withBilibiliCdnConnection
 } from './cdn'
 
-type DownloadResult = { filepath: string; totalBytes: number }
+/** CDN 下载参数；fallback 复用原下载器的重试、限速和进度通知。 */
 type DownloadOptions = {
   url: string
   candidates: string[]
   filepath: string
   headers: AxiosRequestConfig['headers']
   limited?: boolean
-  progress: (bytes: number, total: number) => void
+  progress: ProgressCallback
   report: (message: string) => void
   fallback: (url: string) => Promise<DownloadResult>
 }
@@ -27,6 +29,7 @@ const WINDOW_BYTES = 1024 * 1024
 const PARALLEL_MIN_BYTES = 4 * 1024 * 1024
 const STALL_TIMEOUT = 10000
 
+/** 清空半成品再交给原下载器，避免把未验证片段用于断点续传。 */
 const resetPartialFile = async (filepath: string) => {
   try {
     await truncate(filepath, 0)
@@ -35,6 +38,10 @@ const resetPartialFile = async (filepath: string) => {
   }
 }
 
+/**
+ * 下载并校验指定字节区间，仅接收匹配的 206 响应。
+ * 十秒没有新数据便取消请求；分段内容校验通过后才交给写入步骤。
+ */
 const readRange = (url: string, start: number, end: number, measure: BilibiliCdnMeasure, options: DownloadOptions, signal: AbortSignal) =>
   withBilibiliCdnConnection(async () => {
     if (signal.aborted) throw new Error('CDN 分段已取消')
@@ -93,6 +100,7 @@ const readRange = (url: string, start: number, end: number, measure: BilibiliCdn
     }
   })
 
+/** 文件系统可能短写，循环写完当前片段后再推进下载偏移。 */
 const writeEntireBuffer = async (file: Awaited<ReturnType<typeof open>>, content: Buffer, position: number) => {
   let written = 0
   while (written < content.length) {
@@ -102,16 +110,20 @@ const writeEntireBuffer = async (file: Awaited<ReturnType<typeof open>>, content
   }
 }
 
+/**
+ * 大文件按连续区间双连接下载，失败时尝试备用线路或原下载器。
+ * 只有强 ETag、总长度和文件路径一致时，才沿用上一条线路已完成的片段。
+ */
 export const downloadBilibiliCdn = async (options: DownloadOptions): Promise<DownloadResult> => {
   const candidates = [...new Set([options.url, ...options.candidates])].slice(0, 6)
   let offset = 0
   let previous: BilibiliCdnMeasure | undefined
   let lastError: unknown
   let singleConnectionFallback: BilibiliCdnMeasure | undefined
+  const parallel = !options.limited && process.env.KKK_BILIBILI_CDN_PARALLEL !== '0'
   for (const [index, url] of candidates.entries()) {
     const host = new URL(url).host
     if (index > 0) options.report(`CDN 自动换线：${host}`)
-    const parallel = !options.limited && process.env.KKK_BILIBILI_CDN_PARALLEL !== '0'
     let measure: BilibiliCdnMeasure | undefined
     if (parallel) {
       try {
