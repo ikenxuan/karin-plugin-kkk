@@ -184,15 +184,26 @@ export const downloadBilibiliCdn = async (options: DownloadOptions): Promise<Dow
               readRange(url, secondStart, Math.min(secondStart + WINDOW_BYTES - 1, measure.total - 1), measure, options, controller.signal)
             )
           }
-          const results = await Promise.allSettled(tasks)
-          const failure = results.find((result) => result.status === 'rejected')
+          let failure: unknown
+          const results = await Promise.allSettled(
+            tasks.map((task) =>
+              task.catch((error) => {
+                // 先记录失败原因再取消同批请求，避免取消错误覆盖风控状态。
+                if (!controller.signal.aborted) {
+                  failure = error
+                  controller.abort()
+                }
+                throw error
+              })
+            )
+          )
           for (const result of results) {
             if (result.status !== 'fulfilled') break
             await writeEntireBuffer(file, result.value, offset)
             offset += result.value.length
             options.progress(offset, measure.total)
           }
-          if (failure?.status === 'rejected') throw failure.reason
+          if (controller.signal.aborted) throw failure
         }
         if ((await file.stat()).size !== measure.total) throw new Error('CDN 下载文件长度不匹配')
         recordBilibiliCdnSuccess(url, (remainingBytes * 1000) / Math.max(1, performance.now() - started), measure.latency)

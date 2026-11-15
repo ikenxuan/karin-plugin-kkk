@@ -294,6 +294,7 @@ export class Downloader {
     } catch (error) {
       clearTimeout(timeoutId)
       if (intervalId) clearInterval(intervalId)
+      if ((error as NodeJS.ErrnoException).code === 'ENOSPC' || (error as NodeJS.ErrnoException).code === 'EACCES') throw error
 
       const isRecoverable = isRecoverableNetworkError(error)
       const isThrottling = isThrottlingError(error)

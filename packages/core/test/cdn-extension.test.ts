@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict'
 import { createHash } from 'node:crypto'
+import nodeFs from 'node:fs'
 import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import fs from 'node:fs/promises'
 import http from 'node:http'
@@ -7,9 +8,12 @@ import { stripTypeScriptTypes, syncBuiltinESMExports } from 'node:module'
 import type { AddressInfo } from 'node:net'
 import os from 'node:os'
 import path from 'node:path'
+import { Transform, Writable } from 'node:stream'
+import { pipeline } from 'node:stream/promises'
 import { fileURLToPath } from 'node:url'
 import vm from 'node:vm'
 
+import axios, { AxiosError } from 'node-karin/axios'
 import { afterAll, beforeAll, beforeEach, describe, it, vi } from 'vitest'
 
 import * as api from '../src/platform/bilibili/cdn'
@@ -62,6 +66,31 @@ beforeAll(async () => {
         'Content-Length': end - start + 1
       })
       return response.end(payload.subarray(0, end - start + 1))
+    }
+    if ((route === '/cancel-first' || route === '/cancel-second') && end > 32767) {
+      const failedStart = route === '/cancel-first' ? 0 : 1024 * 1024
+      if (start === failedStart) {
+        response.writeHead(route === '/cancel-first' ? 429 : 412)
+        return response.end()
+      }
+      response.writeHead(206, {
+        'Content-Type': 'video/mp4',
+        'Content-Range': `bytes ${start}-${end}/${payload.length}`,
+        ETag: '"fixture"',
+        'Content-Length': end - start + 1
+      })
+      response.write(payload.subarray(start, start + 1))
+      const trickle = setInterval(() => response.write(Buffer.alloc(1)), 50)
+      const deadline = setTimeout(() => response.destroy(), 1500)
+      timers.add(trickle)
+      timers.add(deadline)
+      response.once('close', () => {
+        clearInterval(trickle)
+        clearTimeout(deadline)
+        timers.delete(trickle)
+        timers.delete(deadline)
+      })
+      return
     }
     if (route === '/stall' && end > 32767) {
       response.writeHead(206, {
@@ -268,6 +297,16 @@ describe('CDN 分段、恢复与换线', () => {
     assert.equal(result.progress.at(-1)?.bytes, payload.length)
   })
 
+  for (const route of ['/cancel-first', '/cancel-second']) {
+    it(`任一分段触发风控时立即取消仍在传输的另一段，并保留长冷却：${route}`, async () => {
+      const started = performance.now()
+      await download(`${route.slice(1)}.bin`, [`${origin}/stream?route=${route}`, `${origin}/stream?route=/fast`])
+      assert.ok(performance.now() - started < 800)
+      assert.ok(requests.some((entry) => entry.route === '/fast' && entry.start === 0 && entry.end > 32767))
+      assert.ok(api.getBilibiliCdnDiagnostics().hosts.some((host) => host.cooldownUntil > Date.now() + 110000))
+    })
+  }
+
   it('中途断流换 CDN，相同强 ETag 可从连续完成位置续传', async () => {
     const result = await download('resume.bin', [`${origin}/stream?route=/partial`, `${origin}/stream?route=/fast`])
     assert.ok(partialFailures > 0)
@@ -348,12 +387,69 @@ describe('CDN 分段、恢复与换线', () => {
     assert.ok(maxActive <= 4)
   })
 
-  it('响应开始后停止传输十秒，会取消请求并改用备用 CDN', async () => {
+  it('响应开始后停止传输十秒，会取消请求并改用备用 CDN', { timeout: 20000 }, async () => {
     const started = performance.now()
     const result = await download('stall.bin', [`${origin}/stall`, `${origin}/fast`])
     assert.ok(result.events.some((message) => message.includes('自动换线')))
     assert.ok(performance.now() - started >= 9900 && performance.now() - started < 13000)
   })
+})
+
+describe('原 Downloader 单连接回退', () => {
+  for (const code of ['ENOSPC', 'EACCES']) {
+    it(`${code} 写入失败保留原错误，不重试也不换 CDN`, async () => {
+      const source = await readFile(path.join(root, 'src/module/utils/Network/Downloader.ts'), 'utf8')
+      const start = source.indexOf('export class Downloader')
+      assert.ok(start > 0)
+      const classSource = source.slice(start).replace('export class Downloader', 'class Downloader')
+      const diskError = Object.assign(new Error(code), { code })
+      const noop = () => {}
+      // 只加载原类，隔离 helpers 和 logger 导入时的网络请求与配置初始化。
+      const DownloaderClass = vm.runInNewContext(`${stripTypeScriptTypes(classSource, { mode: 'transform' })}\nDownloader`, {
+        fs: {
+          ...nodeFs,
+          createWriteStream: () =>
+            new Writable({
+              write(_chunk, _encoding, callback) {
+                callback(diskError)
+              }
+            })
+        },
+        Transform,
+        pipeline,
+        AxiosError,
+        AbortController,
+        setTimeout,
+        clearTimeout,
+        setInterval,
+        clearInterval,
+        logger: { debug: noop, warn: noop, error: noop },
+        formatBytes: String,
+        getErrorDescription: (error: Error) => error.message,
+        isRecoverableNetworkError: () => false,
+        isThrottlingError: () => false,
+        sanitizeHeaders: (headers: unknown) => headers,
+        calculateBackoffDelay: () => 0,
+        DEFAULT_THROTTLE_CONFIG: { enabled: false, maxSpeed: 1048576, minSpeed: 1024 }
+      })
+      const filepath = path.join(temporary, `${code}.bin`)
+      const error = await transfer
+        .downloadBilibiliCdn({
+          url: `${origin}/fast`,
+          candidates: [`${origin}/different`],
+          filepath,
+          headers: {},
+          limited: true,
+          progress: noop,
+          report: noop,
+          fallback: (url) => new DownloaderClass(axios, url, filepath, {}, 15000, 1).download(noop)
+        })
+        .catch((error: unknown) => error)
+      assert.equal(error, diskError)
+      assert.equal(requests.length, 1)
+      assert.equal(requests[0].route, '/fast')
+    })
+  }
 })
 
 describe('Network 下载入口接入', () => {
