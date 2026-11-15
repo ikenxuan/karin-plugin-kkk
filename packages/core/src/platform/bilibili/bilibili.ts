@@ -68,57 +68,12 @@ import {
 } from '@/platform/bilibili/dynamic-text'
 import { BilibiliDataTypes } from '@/types'
 
+import { getBilibiliStreamUrl, selectBilibiliStreamUrl } from './cdn'
+
+export { getBilibiliStreamUrl, selectBilibiliStreamUrl }
+
 let img: ElementTypes[]
 type videoDownloadUrlList = BilibiliVideoStreamResponse['data']['dash']['video']
-
-/** 播放接口返回的流信息里，下载只需要直链和备用直链（兼容 snake_case / camelCase） */
-type BilibiliStreamUrls = {
-  base_url?: string
-  backup_url?: string[] | null
-  baseUrl?: string
-  backupUrl?: string[] | null
-}
-
-/**
- * B站 PCDN 线路的域名特征。
- * 这类域名常被代理/去广告规则的 hosts 指向 0.0.0.0，直接请求会 ECONNREFUSED。
- */
-const BILIBILI_PCDN_HOST_RE = /(?:^|\.)(?:mcdn|pcdn)\.bilivideo\.(?:cn|com)$|(?:^|\.)szbdyd\.com$/i
-
-/** B站自有 CDN 域名，PCDN 之外的线路可作为稳定备选 */
-const BILIBILI_CDN_HOST_RE = /(?:^|\.)bilivideo\.(?:cn|com)$/i
-
-/** 取 URL 的 hostname，非法 URL 返回空串 */
-const getUrlHostname = (url: string) => {
-  try {
-    return new URL(url).hostname
-  } catch {
-    return ''
-  }
-}
-
-/** 判断一条 B站直链是否走 PCDN 线路 */
-const isBilibiliPcdnUrl = (url: string) => BILIBILI_PCDN_HOST_RE.test(getUrlHostname(url))
-
-/** 判断一条 B站直链是否走 B站自有 CDN */
-const isBilibiliCdnUrl = (url: string) => BILIBILI_CDN_HOST_RE.test(getUrlHostname(url))
-
-/**
- * 从播放接口返回的流信息里选一条可用直链。
- *
- * `base_url` 可能落在 PCDN 线路上，而 `backup_url` 里通常还有常规 CDN；
- * 主直链不是 PCDN 时保持原行为，是 PCDN 时优先换到 B站自有 CDN 的备用直链，
- * 全部不可用时退回 `base_url`。
- */
-export const getBilibiliStreamUrl = (stream?: BilibiliStreamUrls | null): string | undefined => {
-  if (!stream) return undefined
-  const baseUrl = stream.base_url ?? stream.baseUrl
-  if (baseUrl && !isBilibiliPcdnUrl(baseUrl)) return baseUrl
-  const backups = (stream.backup_url ?? stream.backupUrl ?? []).filter((url): url is string => Boolean(url))
-  const officialBackup = backups.find((url) => isBilibiliCdnUrl(url) && !isBilibiliPcdnUrl(url))
-  const normalBackup = backups.find((url) => !isBilibiliPcdnUrl(url))
-  return officialBackup ?? normalBackup ?? baseUrl ?? backups[0]
-}
 
 /** 评论请求统一使用匿名态，避免账号 Cookie 改变评论热度池结果。 */
 const bilibiliAnonymousRequestConfig = {
@@ -1387,23 +1342,18 @@ export class Bilibili extends Base {
     logger.debug('是否登录:', this.islogin)
     switch (this.islogin) {
       case true: {
-        logger.debug(
-          '视频 URL:',
-          this.Type === 'one_video'
-            ? getBilibiliStreamUrl(playUrlData.data?.dash?.video[0])
-            : getBilibiliStreamUrl(playUrlData.result.dash.video[0])
-        )
-
         // B站 CDN 需要正确的 Referer
         const downloadHeaders = {
           ...this.headers,
           Referer: 'https://www.bilibili.com'
         }
 
-        const videoUrl =
-          this.Type === 'one_video'
-            ? getBilibiliStreamUrl(playUrlData.data?.dash?.video[0])
-            : getBilibiliStreamUrl(playUrlData.result.dash.video[0])
+        const streams = this.Type === 'one_video' ? playUrlData.data?.dash : playUrlData.result.dash
+        const [videoUrl, audioUrl] = await Promise.all([
+          selectBilibiliStreamUrl(streams?.video[0], downloadHeaders),
+          selectBilibiliStreamUrl(streams?.audio?.[0], downloadHeaders)
+        ])
+        logger.debug('视频 URL:', videoUrl)
         const bmp4Raw = await downloadFile(videoUrl!, {
           title: `Bil_V_${this.Type === 'one_video' ? infoData && infoData.data.bvid : infoData && infoData.result.season_id}.m4s`,
           headers: downloadHeaders
@@ -1421,10 +1371,6 @@ export class Bilibili extends Base {
         // 删除原始 m4s 文件
         await Common.removeFile(bmp4Raw.filepath, true)
 
-        const audioUrl =
-          this.Type === 'one_video'
-            ? getBilibiliStreamUrl(playUrlData.data?.dash?.audio?.[0])
-            : getBilibiliStreamUrl(playUrlData.result.dash.audio?.[0])
         logger.debug('音频 URL:', audioUrl)
 
         /** 没有音频流（如纯视频稿件）时为 undefined，此时无从合成，直接发视频流 */
@@ -1517,10 +1463,11 @@ export class Bilibili extends Base {
       }
       case false: {
         /** 没登录（没配置ck）情况下直接发直链，传直链在DownLoadVideo()处理 */
-        logger.debug('视频 URL:', playUrlData.data.durl[0].url)
+        const videoUrl = await selectBilibiliStreamUrl(playUrlData.data.durl[0], this.headers)
+        logger.debug('视频 URL:', videoUrl)
         // 如果需要烧录弹幕，先下载视频再烧录
         if ((this.forceBurnDanmaku || Config.bilibili.burnDanmaku) && danmakuList.length > 0) {
-          const videoFile = await downloadFile(playUrlData.data.durl[0].url, {
+          const videoFile = await downloadFile(videoUrl!, {
             title: `Bil_V_tmp_${Date.now()}.mp4`,
             headers: this.headers
           })
@@ -1553,7 +1500,8 @@ export class Bilibili extends Base {
           }
         } else {
           await downloadVideo(this.e, {
-            video_url: playUrlData.data.durl[0].url,
+            video_url: videoUrl!,
+            headers: this.headers,
             title: { timestampTitle: `tmp_${Date.now()}.mp4`, originTitle: `${this.downloadfilename}.mp4` }
           })
         }

@@ -2,6 +2,8 @@ import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, ResponseType } f
 import axios, { AxiosError } from 'node-karin/axios'
 
 import { logger } from '@/module/utils/logger'
+import { getBilibiliDownloadCandidates } from '@/platform/bilibili/cdn'
+import { downloadBilibiliCdn } from '@/platform/bilibili/cdn-transfer'
 import { NetworksConfigType } from '@/types'
 
 import { BASE_HEADERS } from './constants'
@@ -111,6 +113,28 @@ export class Network {
    * @param retryCount 重试次数（内部使用）
    */
   async downloadStream(progressCallback: ProgressCallback, retryCount = 0): Promise<DownloadResult> {
+    const candidates = getBilibiliDownloadCandidates(this.url)
+    if (candidates.length > 0) {
+      return downloadBilibiliCdn({
+        url: this.url,
+        candidates,
+        filepath: this.filepath,
+        headers: this.headers,
+        limited: this.throttleConfig?.enabled,
+        progress: progressCallback,
+        report: (message) => logger.debug(message),
+        fallback: (url) =>
+          new Downloader(
+            this.axiosInstance,
+            url,
+            this.filepath,
+            this.headers,
+            this.timeout,
+            candidates.length > 1 ? 0 : this.maxRetries,
+            this.throttleConfig
+          ).download(progressCallback, retryCount)
+      })
+    }
     const downloader = new Downloader(
       this.axiosInstance,
       this.url,
