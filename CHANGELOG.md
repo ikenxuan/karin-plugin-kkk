@@ -2,6 +2,18 @@
 
 # Changelog
 
+## [2.46.0-beta.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.45.3...v2.46.0-beta.0) (2026-11-17)
+
+
+### ✨ 新功能
+
+* **douyin:** 实验性新增口令解析与相关配置 (#374) ([4eb9bc7](https://github.com/ikenxuan/karin-plugin-kkk/commit/4eb9bc712dd407d211328ecf13aada7d141c0b14))
+
+
+### 🐛 错误修复
+
+* **bilibili:** 修复视频质量判断条件，确保正确处理清晰度设置 fix #372 ([00cf2d8](https://github.com/ikenxuan/karin-plugin-kkk/commit/00cf2d8b8141605cfaa4fff759394a00becb946e))
+
 ## [2.45.3](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.45.2...v2.45.3) (2026-11-11)
 
 
