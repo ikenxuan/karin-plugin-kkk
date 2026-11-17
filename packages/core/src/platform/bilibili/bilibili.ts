@@ -263,7 +263,7 @@ export class Bilibili extends Base {
           videoList: videoDownloadUrlList
         }
 
-        if (this.islogin && (Config.bilibili.videoQuality > 64 || Config.bilibili.videoQuality === 0)) {
+        if (this.islogin && (Config.bilibili.videoQuality >= 64 || Config.bilibili.videoQuality === 0)) {
           /** 提取出视频流信息对象，并排除清晰度重复的视频流 */
           const simplify = playUrlData.data.data.dash.video.filter((item: { id: number }, index: any, self: any[]) => {
             return (
