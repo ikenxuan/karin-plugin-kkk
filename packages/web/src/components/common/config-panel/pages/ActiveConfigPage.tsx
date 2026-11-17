@@ -4,6 +4,7 @@ import AppConfigPage from './AppConfigPage'
 import BilibiliConfigPage from './BilibiliConfigPage'
 import DouyinConfigPage from './DouyinConfigPage'
 import KuaishouConfigPage from './KuaishouConfigPage'
+import LaboratoryConfigPage from './LaboratoryConfigPage'
 import type { ConfigPageProps } from './pageTypes'
 import PushlistConfigPage from './PushlistConfigPage'
 import XiaohongshuConfigPage from './XiaohongshuConfigPage'
@@ -28,6 +29,8 @@ const ActiveConfigPage = (props: ActiveConfigPageProps) => {
       return <XiaohongshuConfigPage {...props} />
     case 'pushlist':
       return <PushlistConfigPage {...props} />
+    case 'laboratory':
+      return <LaboratoryConfigPage {...props} />
   }
 }
 

@@ -1,4 +1,4 @@
-import karin, { type Message } from 'node-karin'
+import karin, { hooks, type Message } from 'node-karin'
 
 import { Common, downloadVideo } from '@/module'
 import { getStatisticsDB, type ParsePlatform, type ParseWorkType } from '@/module/db'
@@ -25,6 +25,7 @@ import { wrapWithErrorHandler } from '@/module/utils/ErrorHandler'
 import { logger } from '@/module/utils/logger'
 import { Bilibili, getBilibiliID } from '@/platform/bilibili'
 import { DouYin, getDouyinID } from '@/platform/douyin'
+import { extractDouyinShareCommand, resolveDouyinShareCommand } from '@/platform/douyin/shareCommand'
 import { fetchKuaishouData, getKuaishouID, Kuaishou } from '@/platform/kuaishou'
 import { getXiaohongshuID, Xiaohongshu } from '@/platform/xiaohongshu'
 
@@ -38,6 +39,9 @@ const reg = {
 // 管理类命令本身内嵌平台链接（如 #kkk推送全局忽略{url}），需放行给对应命令处理，
 // 否则会被「默认解析」(videoTool 开启时优先级为 -Infinity) 的解析器抢先消费
 const passthroughCommandReg = /^#kkk推送全局忽略/
+
+// 口令 hook 只补充消息文本，解析仍走 Karin 的命令分发、权限检查和现有错误处理。
+const douyinCommandResults = new WeakMap<Message, { url: string; awemeId: string; startedAt: number }>()
 
 /**
  * 从消息中提取并校验抖音 CDN 播放直链。
@@ -107,8 +111,11 @@ const handleDouyin = wrapWithErrorHandler(
       return next()
     }
     const url = String(urlMatch[0])
-    const startedAt = Date.now()
-    const iddata = await getDouyinID(e, url)
+    const commandResult = douyinCommandResults.get(e)
+    douyinCommandResults.delete(e)
+    const resolvedCommand = commandResult?.url === url ? commandResult : undefined
+    const startedAt = resolvedCommand?.startedAt ?? Date.now()
+    const iddata = resolvedCommand ? { type: 'one_work' as const, aweme_id: resolvedCommand.awemeId } : await getDouyinID(e, url)
     const douyin = new DouYin(e, iddata, { forceBurnDanmaku })
     await douyin.DouyinHandler(iddata)
 
@@ -385,3 +392,44 @@ export const douyinAPP = Config.douyin.switch && douyin
 export const bilibiliAPP = Config.bilibili.switch && bilibili
 export const kuaishouAPP = Config.kuaishou.switch && kuaishou
 export const xiaohongshuAPP = Config.xiaohongshu.switch && xiaohongshu
+
+/** 实验室消息 hook：抖音 App 分享口令转作品链接，交回正常命令流程解析。 */
+export const douyinMessageHook = hooks.message(
+  async (e, next) => {
+    const messageHooks = Config.laboratory?.messageHooks
+    if (
+      !messageHooks?.switch ||
+      !Config.douyin.switch ||
+      reg.douyin.test(e.msg) ||
+      e.msg.startsWith('#测试') ||
+      passthroughCommandReg.test(e.msg)
+    ) {
+      next()
+      return
+    }
+    const command = extractDouyinShareCommand(e.msg)
+    if (!command) {
+      next()
+      return
+    }
+
+    const startedAt = Date.now()
+    try {
+      const awemeId = await resolveDouyinShareCommand(command, messageHooks.signUrl)
+      const url = `https://www.douyin.com/video/${awemeId}`
+      douyinCommandResults.set(e, { url, awemeId, startedAt })
+      e.msg = `${e.msg}\n${url}`
+    } catch (error) {
+      const message = error instanceof Error ? error.message : '未知错误'
+      logger.warn(`[实验室] 抖音口令解析失败：${message}`)
+      try {
+        await e.reply(`抖音口令解析失败：${message}`, { at: true })
+      } catch {
+        logger.debug('[实验室] 无法发送抖音口令解析失败提示')
+      }
+    } finally {
+      next()
+    }
+  },
+  { priority: 100 }
+)

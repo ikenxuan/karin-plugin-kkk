@@ -22,6 +22,7 @@ import { Callout } from 'fumadocs-ui/components/callout'
 | 视频上传和下载相关 | 文件发送链路   | 本地文件（`videoSendMode`）、Base64、群文件上传、压缩视频（`compress`）、下载限速（`downloadThrottle`）      |
 | 解析库请求配置相关 | 网络请求       | 超时时间（`timeout`）、User-Agent、代理                                                                      |
 | 推送列表相关       | 订阅目标       | 绑定群聊、机器人账号、推送类型与过滤条件                                                                     |
+| 实验室             | 实验功能       | 抖音 App 分享口令解析（`messageHooks.switch`）、App 签名地址（`messageHooks.signUrl`）                       |
 
 ## 哪些改动通常需要重启
 
@@ -88,6 +89,14 @@ B站额外还有：
 ```
 
 只有在批量迁移、修复群号或机器人 ID 时，才建议回头手动看 YAML。
+
+## 实验室：抖音分享口令解析
+
+在 WebUI 的“实验室”分区开启“抖音口令解析”，并填写 App 签名接口的完整地址，例如 `https://example.com/v1/app/sign`。开关和地址保存后即时生效，同时需要保持抖音解析开启。
+
+此功能默认关闭。开启后，插件会识别 `ˇˇe4ZUoR0Gkb9ŠŠ` 这类 App 分享口令，通过签名服务换取作品 ID，再使用现有抖音解析流程发送视频、图集或文章。已有抖音链接的消息继续按普通链接解析。
+
+签名接口需接受 JSON POST，返回 `ok: true` 和包含 `url`、`method`、`headers` 的 `signObject`。插件会原样使用签名 URL 和请求头；这一步不使用抖音 Web Cookie，作品详情仍沿用接口库中配置的登录态。
 
 ## 手动配置只作为兜底
 

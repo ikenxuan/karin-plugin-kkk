@@ -35,16 +35,11 @@
       "overlayMiddleOpacity": 0.2
     },
     "RenderWaitTime": 120,
-    "UpdateNotifyChannels": [
-      "stable"
-    ],
+    "UpdateNotifyChannels": ["stable"],
     "EmojiReply": true,
     "parseTip": false,
     "fakeForward": true,
-    "errorLogSendTo": [
-      "trigger",
-      "allMasters"
-    ],
+    "errorLogSendTo": ["trigger", "allMasters"],
     "multiPageRender": true,
     "multiPageHeight": 12000,
     "livePhotoSystem": "oppo",
@@ -68,13 +63,15 @@
     "APIServerPort": 4567,
     "APIServerMount": true
   },
+  "laboratory": {
+    "messageHooks": {
+      "switch": false,
+      "signUrl": ""
+    }
+  },
   "douyin": {
     "switch": true,
-    "sendContent": [
-      "info",
-      "comment",
-      "video"
-    ],
+    "sendContent": ["info", "comment", "video"],
     "numcomment": 3,
     "subCommentLimit": 7,
     "commentImageCollection": true,
@@ -83,13 +80,7 @@
     "maxAutoVideoSize": 1000,
     "loginPerm": "master",
     "videoInfoMode": "image",
-    "displayContent": [
-      "author",
-      "desc",
-      "stats",
-      "cover",
-      "title"
-    ],
+    "displayContent": ["author", "desc", "stats", "cover", "title"],
     "burnDanmaku": false,
     "danmakuArea": 0.5,
     "danmakuFontSize": "medium",
@@ -111,11 +102,7 @@
   },
   "bilibili": {
     "switch": true,
-    "sendContent": [
-      "info",
-      "video",
-      "comment"
-    ],
+    "sendContent": ["info", "video", "comment"],
     "numcomment": 15,
     "realCommentCount": false,
     "commentImageCollection": true,
@@ -124,13 +111,7 @@
     "loginPerm": "master",
     "imageLayout": "auto",
     "videoInfoMode": "image",
-    "displayContent": [
-      "author",
-      "stats",
-      "cover",
-      "title",
-      "desc"
-    ],
+    "displayContent": ["author", "stats", "cover", "title", "desc"],
     "showDanmakuInVideoInfo": true,
     "burnDanmaku": false,
     "danmakuArea": 0.5,
@@ -143,11 +124,7 @@
       "permission": "all",
       "cron": "*/10 * * * *",
       "parsedynamic": true,
-      "parseDynamicTypes": [
-        "DYNAMIC_TYPE_AV",
-        "DYNAMIC_TYPE_DRAW",
-        "DYNAMIC_TYPE_ARTICLE"
-      ],
+      "parseDynamicTypes": ["DYNAMIC_TYPE_AV", "DYNAMIC_TYPE_DRAW", "DYNAMIC_TYPE_ARTICLE"],
       "pushVideoQuality": 120,
       "pushMaxAutoVideoSize": 1000
     }
@@ -161,12 +138,7 @@
   "xiaohongshu": {
     "switch": true,
     "watermark": false,
-    "sendContent": [
-      "comment",
-      "info",
-      "video",
-      "image"
-    ],
+    "sendContent": ["comment", "info", "video", "image"],
     "numcomment": 10,
     "subCommentLimit": 2,
     "videoQuality": "4k",
