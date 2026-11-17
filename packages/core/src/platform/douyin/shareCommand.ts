@@ -8,10 +8,13 @@ export const extractDouyinShareCommand = (message: string): string | undefined =
   const decorated = message.match(/(?<!ˇ)ˇ{1,2}([0-9A-Za-z]{11,14})Š{1,2}(?!Š)/)?.[1]
   if (decorated) return `ˇ${decorated}Š`
 
-  // 装饰符损坏时不猜口令；无装饰符的分享文本须包含抖音和分享提示，避免匹配普通聊天。
-  if (/[ˇŠ]/.test(message) || !message.includes('抖音') || !/复制|打开|口令/.test(message)) return undefined
-  const token = message.match(/\b[0-9A-Za-z]{11,14}\b/g)?.at(-1)
-  return token ? `ˇ${token}Š` : undefined
+  // 装饰符字符不可枚举（ˇ、ǚ、※ 都可能出现）：无 ˇ…Š 外壳时只从连贯分享文案筛唯一完整候选，有效性交给官方接口确认。
+  if (!/复制[，,\s]*打开抖音(?:[，,\s]|$)/.test(message)) return undefined
+  // 分享文案把作者名和标题放在【】里；先剔除，避免其中的英文串形成第二候选。
+  const plain = message.replace(/【[^】]*】/g, ' ')
+  const tokens = plain.match(/[0-9A-Za-z]+/g)?.filter((token) => token.length >= 11 && token.length <= 14) ?? []
+  const candidates = [...new Set(tokens)]
+  return candidates.length === 1 ? `ˇ${candidates[0]}Š` : undefined
 }
 
 const asRecord = (value: unknown): Record<string, unknown> | undefined =>
