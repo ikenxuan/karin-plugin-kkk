@@ -60,7 +60,7 @@ export type NumberValidationRule = {
 export type DeviceLayout = 'desktop' | 'mobile'
 
 /** 配置面板可编辑的配置文件分组 key。 */
-export type ConfigFileKey = 'amagi' | 'app' | 'douyin' | 'bilibili' | 'kuaishou' | 'xiaohongshu' | 'pushlist'
+export type ConfigFileKey = 'amagi' | 'app' | 'douyin' | 'bilibili' | 'kuaishou' | 'xiaohongshu' | 'pushlist' | 'laboratory'
 
 /** 配置项帮助内容，支持纯 React 节点或带桌面/移动端详情的结构化说明。 */
 export type ConfigDescription = ReactNode | ConfigHelp

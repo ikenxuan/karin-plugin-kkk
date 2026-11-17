@@ -239,6 +239,16 @@ export const validateConfig = (config: ConfigType | null): Record<string, string
 
   numberRules.forEach((rule) => addNumberValidation(errors, config, rule))
 
+  if (getValue<boolean>(config, ['laboratory', 'messageHooks', 'switch'], false)) {
+    const signUrl = getValue<string>(config, ['laboratory', 'messageHooks', 'signUrl'], '').trim()
+    try {
+      const url = new URL(signUrl)
+      if (url.protocol !== 'http:' && url.protocol !== 'https:') throw new Error('invalid protocol')
+    } catch {
+      errors['laboratory.messageHooks.signUrl'] = '开启抖音口令解析时，请填写有效的 HTTP 或 HTTPS 签名地址'
+    }
+  }
+
   if (appLivePhotoMode === 'video_only') {
     delete errors['app.livePhotoSystem']
   }

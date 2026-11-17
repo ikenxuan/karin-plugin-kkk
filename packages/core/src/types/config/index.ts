@@ -4,6 +4,7 @@ import { bilibiliConfig } from './bilibili'
 import { cookiesConfig } from './cookies'
 import { douyinConfig } from './douyin'
 import { kuaishouConfig } from './kuaishou'
+import { laboratoryConfig } from './laboratory'
 import { pushlistConfig } from './pushlist'
 import { requestConfig } from './request'
 import { uploadConfig } from './upload'
@@ -15,6 +16,8 @@ export interface ConfigType {
   amagi: amagiConfig
   /** 插件应用设置 */
   app: appConfig
+  /** 实验室功能 */
+  laboratory: laboratoryConfig
   /** bilibili 相关设置 */
   bilibili: bilibiliConfig
   /** 抖音相关设置 */
@@ -34,6 +37,7 @@ export type {
   cookiesConfig,
   douyinConfig,
   kuaishouConfig,
+  laboratoryConfig,
   pushlistConfig,
   requestConfig,
   uploadConfig,

@@ -89,5 +89,6 @@ export const configFiles: Array<{ key: ConfigFileKey; label: string; description
   { key: 'bilibili', label: '哔哩哔哩', description: '解析与推送' },
   { key: 'kuaishou', label: '快手', description: '快手解析' },
   { key: 'xiaohongshu', label: '小红书', description: '小红书解析' },
-  { key: 'pushlist', label: '推送列表', description: '订阅 JSON' }
+  { key: 'pushlist', label: '推送列表', description: '订阅 JSON' },
+  { key: 'laboratory', label: '实验室', description: '实验功能' }
 ]

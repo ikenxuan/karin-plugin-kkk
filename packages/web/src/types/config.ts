@@ -109,6 +109,17 @@ export interface ConfigType {
     downloadMinSpeed: number
   }
 
+  /** 实验室功能 */
+  laboratory: {
+    /** 抖音 App 分享口令消息 hook */
+    messageHooks: {
+      /** 功能开关，保存后即时生效 */
+      switch: boolean
+      /** App 签名接口的完整地址 */
+      signUrl: string
+    }
+  }
+
   /** 抖音配置 */
   douyin: {
     switch: boolean
