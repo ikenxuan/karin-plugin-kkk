@@ -41,6 +41,7 @@ import {
   getBilibiliStreamUrl,
   getvideosize,
   parseAdditionalCard,
+  selectBilibiliStreamUrl,
   TimeFormatter
 } from '@/platform/bilibili'
 import {
@@ -902,12 +903,16 @@ export class Bilibilipush extends Base {
                   const infoData = await this.amagi.bilibili.fetcher.fetchVideoInfo({
                     bvid: data[dynamicId].Dynamic_Data.modules.module_dynamic.major.archive.bvid
                   })
-                  const mp4File = await downloadFile(getBilibiliStreamUrl(playUrlData.data?.data?.dash?.video[0])!, {
+                  const [videoUrl, downloadAudioUrl] = await Promise.all([
+                    selectBilibiliStreamUrl(playUrlData.data?.data?.dash?.video[0], bilibiliBaseHeaders),
+                    selectBilibiliStreamUrl(playUrlData.data?.data?.dash?.audio?.[0], bilibiliBaseHeaders)
+                  ])
+                  const mp4File = await downloadFile(videoUrl!, {
                     title: `Bil_V_${infoData.data.data.bvid}.mp4`,
                     headers: bilibiliBaseHeaders
                   })
-                  const mp3File = audioUrl
-                    ? await downloadFile(audioUrl, {
+                  const mp3File = downloadAudioUrl
+                    ? await downloadFile(downloadAudioUrl, {
                         title: `Bil_A_${infoData.data.data.bvid}.mp3`,
                         headers: bilibiliBaseHeaders
                       })
