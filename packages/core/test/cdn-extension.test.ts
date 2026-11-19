@@ -1,36 +1,40 @@
 import assert from 'node:assert/strict'
-import { createHash } from 'node:crypto'
 import nodeFs from 'node:fs'
 import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import fs from 'node:fs/promises'
 import http from 'node:http'
-import { stripTypeScriptTypes, syncBuiltinESMExports } from 'node:module'
+import { syncBuiltinESMExports } from 'node:module'
 import type { AddressInfo } from 'node:net'
 import os from 'node:os'
 import path from 'node:path'
-import { Transform, Writable } from 'node:stream'
-import { pipeline } from 'node:stream/promises'
-import { fileURLToPath } from 'node:url'
-import vm from 'node:vm'
+import { Writable } from 'node:stream'
 
-import axios, { AxiosError } from 'node-karin/axios'
-import { afterAll, beforeAll, beforeEach, describe, it, vi } from 'vitest'
+import { afterAll, afterEach, beforeAll, beforeEach, describe, it, vi } from 'vitest'
 
+import { Network } from '../src/module/utils/Network/Network'
 import * as api from '../src/platform/bilibili/cdn'
 import * as transfer from '../src/platform/bilibili/cdn-transfer'
 
+vi.mock('../src/module/utils/logger', () => ({ logger: { debug: vi.fn(), warn: vi.fn(), error: vi.fn() } }))
+vi.mock('../src/module/utils/Network/constants', async (importOriginal) => {
+  const { default: client } = await import('node-karin/axios')
+  const request = vi.spyOn(client, 'get').mockResolvedValue({ data: {} })
+  try {
+    return await importOriginal()
+  } finally {
+    request.mockRestore()
+  }
+})
+
 type DownloadOptions = Parameters<typeof transfer.downloadBilibiliCdn>[0]
-const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 let server: http.Server
 let origin: string
 let temporary: string
 let active = 0
 let maxActive = 0
-let partialFailures = 0
-const requests: Array<{ route: string; start: number; end: number; range?: string }> = []
+const requests: Array<{ route: string; start: number; end: number; range?: string; referer?: string }> = []
 const payload = Buffer.alloc(5 * 1024 * 1024 + 37)
 for (let index = 0; index < payload.length; index++) payload[index] = index % 251
-const expectedHash = createHash('sha256').update(payload).digest('hex')
 const timers = new Set<ReturnType<typeof setTimeout>>()
 
 beforeAll(async () => {
@@ -44,15 +48,16 @@ beforeAll(async () => {
     const range = /^bytes=(\d+)-(\d+)$/.exec(request.headers.range ?? '')
     const start = range ? Number(range[1]) : 0
     const end = range ? Math.min(Number(range[2]), payload.length - 1) : payload.length - 1
-    requests.push({ route, start, end, range: request.headers.range })
+    requests.push({ route, start, end, range: request.headers.range, referer: request.headers.referer })
     if (range && start >= 1024 * 1024 && route === '/single-reset') return response.destroy()
     if (range && start >= 1024 * 1024 && route === '/single-ignore-range') {
       response.writeHead(200, { 'Content-Type': 'video/mp4', 'Content-Length': payload.length })
       return response.end(payload)
     }
     if (route === '/forbidden') return response.writeHead(403).end()
-    if (route === '/rate-limit') return response.writeHead(429).end()
-    if (route === '/hang') return
+    if (route === '/rate-limit') return response.writeHead(Number(parsed.searchParams.get('status') ?? 429)).end()
+    if (route === '/unavailable' && !range) return response.writeHead(503).end()
+    if (route === '/blocked-range' && end > 32767) return response.writeHead(Number(parsed.searchParams.get('status'))).end()
     if (route === '/range-rejected' && range) return response.writeHead(416).end()
     if (route === '/no-range' || route === '/no-range-partial') {
       response.writeHead(200, { 'Content-Type': 'video/mp4', 'Content-Length': payload.length, ETag: '"fixture"' })
@@ -110,7 +115,6 @@ beforeAll(async () => {
       ETag: etag
     })
     if (route === '/partial' && start >= 2 * 1024 * 1024) {
-      partialFailures++
       response.write(payload.subarray(start, Math.min(start + 4096, end + 1)))
       return response.destroy()
     }
@@ -136,10 +140,14 @@ beforeAll(async () => {
 })
 
 beforeEach(() => {
-  api.resetBilibiliCdnState?.()
+  api.bilibiliCdn.reset()
   requests.length = 0
   maxActive = 0
-  partialFailures = 0
+})
+
+afterEach(() => {
+  vi.restoreAllMocks()
+  syncBuiltinESMExports()
 })
 
 afterAll(async () => {
@@ -156,7 +164,6 @@ describe('CDN 健康与缓存', () => {
     const count = requests.length
     await api.selectBilibiliStreamUrl(stream)
     assert.equal(requests.length, count)
-    assert.equal(api.getBilibiliCdnDiagnostics().cacheHits, 1)
   })
 
   it('同时选择同一流共享一次探测', async () => {
@@ -170,15 +177,17 @@ describe('CDN 健康与缓存', () => {
     await api.selectBilibiliStreamUrl(stream, { Cookie: 'first' })
     await api.selectBilibiliStreamUrl(stream, { Cookie: 'second' })
     assert.equal(requests.length, 2)
-    const diagnostics = JSON.stringify(api.getBilibiliCdnDiagnostics())
-    assert.ok(!diagnostics.includes('Cookie') && !diagnostics.includes('first'))
   })
 
-  it('429 和连接失败记录冷却，并允许剩余候选继续工作', async () => {
-    await api.selectBilibiliStreamUrl({ base_url: `${origin}/rate-limit`, backup_url: [`${origin}/fast`] })
-    const diagnostics = api.getBilibiliCdnDiagnostics()
-    assert.ok(diagnostics.hosts.some((host) => host.failures > 0))
-    assert.ok(diagnostics.hosts.some((host) => host.cooldownUntil > Date.now()))
+  it.each([412, 429])('HTTP %s 线路在两分钟冷却结束前排在备用线路之后', async (status) => {
+    let now = Date.now()
+    const selector = new api.BilibiliCdnSelector({ now: () => now })
+    const candidates = [`${origin}/rate-limit?status=${status}`, `${origin}/fast`]
+    assert.equal(await selector.select({ base_url: candidates[0], backup_url: [candidates[1]] }), candidates[1])
+    now += 119999
+    assert.deepEqual(selector.rank(candidates), [candidates[1], candidates[0]])
+    now++
+    assert.deepEqual(selector.rank(candidates), candidates)
   })
 
   it('健康记录过期与网络标识变化会重新探测', async () => {
@@ -203,8 +212,8 @@ describe('CDN 健康与缓存', () => {
 
   it('已登记的签名 URL 才能进入扩展下载器', async () => {
     await api.selectBilibiliStreamUrl({ base_url: `${origin}/fast`, backup_url: [`${origin}/slow`] })
-    assert.deepEqual(api.getBilibiliDownloadCandidates(`${origin}/unregistered`), [])
-    assert.equal(api.getBilibiliDownloadCandidates(`${origin}/fast`).length, 2)
+    assert.deepEqual(api.bilibiliCdn.downloadCandidates(`${origin}/unregistered`), [])
+    assert.equal(api.bilibiliCdn.downloadCandidates(`${origin}/fast`).length, 2)
   })
 
   it('网络切换时正在执行的旧探测不阻止新网络重新测速', async () => {
@@ -222,14 +231,13 @@ describe('CDN 分段、恢复与换线', () => {
     const filepath = path.join(temporary, name)
     let fallbackCalls = 0
     const progress: Array<{ bytes: number; total: number }> = []
-    const events: string[] = []
     const result = await transfer.downloadBilibiliCdn({
       url: candidates[0],
       candidates,
       filepath,
       headers: { Referer: 'https://www.bilibili.com' },
       progress: (bytes, total) => progress.push({ bytes, total }),
-      report: (message) => events.push(message),
+      report: () => {},
       fallback: async (url) => {
         fallbackCalls++
         const response = await fetch(url)
@@ -240,10 +248,9 @@ describe('CDN 分段、恢复与换线', () => {
       },
       ...overrides
     })
-    const content = await readFile(filepath)
-    assert.equal(createHash('sha256').update(content).digest('hex'), expectedHash)
+    assert.deepEqual(await readFile(filepath), payload)
     assert.equal(result.totalBytes, payload.length)
-    return { result, fallbackCalls, progress, events }
+    return { fallbackCalls, progress }
   }
 
   for (const route of ['/single-reset', '/single-ignore-range']) {
@@ -270,65 +277,56 @@ describe('CDN 分段、恢复与换线', () => {
   for (const code of ['ENOSPC', 'EACCES']) {
     it(`分段文件操作遇到 ${code} 时立即抛出，不降级下载`, async () => {
       const failure = Object.assign(new Error(code), { code })
-      const mockedOpen = vi.spyOn(fs, 'open').mockImplementation(async () => {
+      vi.spyOn(fs, 'open').mockImplementation(async () => {
         throw failure
       })
       syncBuiltinESMExports()
-      try {
-        await assert.rejects(
-          download(`${code}.bin`, [`${origin}/fast`], {
-            fallback: async () => {
-              throw new Error('磁盘错误不应触发单连接下载')
-            }
-          }),
-          (error) => error === failure
-        )
-      } finally {
-        mockedOpen.mockRestore()
-        syncBuiltinESMExports()
-      }
+      await assert.rejects(
+        download(`${code}.bin`, [`${origin}/fast`], {
+          fallback: async () => {
+            throw new Error('磁盘错误不应触发单连接下载')
+          }
+        }),
+        (error) => error === failure
+      )
     })
   }
 
-  it('大文件使用两条连接分段并按序写入，最终内容 SHA256 一致', async () => {
+  it('大文件使用两条连接分段并按序写入，最终内容一致', async () => {
     const result = await download('parallel.bin', [`${origin}/fast`])
     assert.equal(result.fallbackCalls, 0)
-    assert.ok(maxActive >= 2 && maxActive <= 2)
+    assert.equal(maxActive, 2)
     assert.equal(result.progress.at(-1)?.bytes, payload.length)
   })
 
   for (const route of ['/cancel-first', '/cancel-second']) {
-    it(`任一分段触发风控时立即取消仍在传输的另一段，并保留长冷却：${route}`, async () => {
+    it(`任一分段触发风控时立即取消另一段并换线：${route}`, async () => {
       const started = performance.now()
-      await download(`${route.slice(1)}.bin`, [`${origin}/stream?route=${route}`, `${origin}/stream?route=/fast`])
+      const candidates = [`${origin}/stream?route=${route}`, `${origin}/stream?route=/fast`]
+      await download(`${route.slice(1)}.bin`, candidates)
       assert.ok(performance.now() - started < 800)
       assert.ok(requests.some((entry) => entry.route === '/fast' && entry.start === 0 && entry.end > 32767))
-      assert.ok(api.getBilibiliCdnDiagnostics().hosts.some((host) => host.cooldownUntil > Date.now() + 110000))
+      assert.deepEqual(api.bilibiliCdn.rank(candidates), [candidates[1], candidates[0]])
     })
   }
 
   it('中途断流换 CDN，相同强 ETag 可从连续完成位置续传', async () => {
-    const result = await download('resume.bin', [`${origin}/stream?route=/partial`, `${origin}/stream?route=/fast`])
-    assert.ok(partialFailures > 0)
-    assert.ok(requests.some((entry) => entry.route === '/fast' && entry.start >= 2 * 1024 * 1024))
-    assert.ok(result.events.some((message) => message.includes('续传')))
+    await download('resume.bin', [`${origin}/stream?route=/partial`, `${origin}/stream?route=/fast`])
+    const backupSegments = requests.filter((entry) => entry.route === '/fast' && entry.end > 32767)
+    assert.equal(Math.min(...backupSegments.map((entry) => entry.start)), 2 * 1024 * 1024)
   })
 
-  it('备用 CDN 的 ETag 不同则从头下载，不混合旧数据', async () => {
-    const result = await download('different.bin', [`${origin}/stream?route=/partial`, `${origin}/stream?route=/different`])
-    assert.ok(requests.some((entry) => entry.route === '/different' && entry.start === 0 && entry.end > 32767))
-    assert.ok(result.events.some((message) => message.includes('重新下载')))
-  })
-
-  it('即使 ETag 相同，文件路径不同也从头下载', async () => {
-    const result = await download('path-changed.bin', [`${origin}/partial`, `${origin}/fast`])
-    assert.ok(requests.some((entry) => entry.route === '/fast' && entry.start === 0 && entry.end > 32767))
-    assert.ok(result.events.some((message) => message.includes('重新下载')))
+  it.each([
+    ['/stream?route=/partial', '/stream?route=/different', '/different'],
+    ['/partial', '/fast', '/fast']
+  ])('ETag 或文件路径不同必须重新下载：%s → %s', async (primary, backup, route) => {
+    await download('changed.bin', [`${origin}${primary}`, `${origin}${backup}`])
+    assert.ok(requests.some((entry) => entry.route === route && entry.start === 0 && entry.end > 32767))
   })
 
   it('单连接回退也失败后，不能把未经校验的半成品当成已完成分段', async () => {
     const filepath = path.join(temporary, 'native-partial.bin')
-    const result = await download(
+    await download(
       'native-partial.bin',
       [`${origin}/stream?route=/partial`, `${origin}/stream?route=/no-range-partial`, `${origin}/stream?route=/fast`],
       {
@@ -339,15 +337,10 @@ describe('CDN 分段、恢复与换线', () => {
       }
     )
     assert.ok(requests.some((entry) => entry.route === '/fast' && entry.start === 0 && entry.end > 32767))
-    assert.ok(result.events.some((message) => message.includes('自动换线')))
   })
 
-  it('服务器不支持 Range 时使用原下载器', async () => {
-    assert.equal((await download('no-range.bin', [`${origin}/no-range`])).fallbackCalls, 1)
-  })
-
-  it('探测 Range 被拒绝但普通 GET 可用时，仍能使用原下载器', async () => {
-    assert.equal((await download('range-rejected.bin', [`${origin}/range-rejected`])).fallbackCalls, 1)
+  it.each(['/no-range', '/range-rejected'])('不支持 Range 时使用原下载器：%s', async (route) => {
+    assert.equal((await download(`${route.slice(1)}.bin`, [`${origin}${route}`])).fallbackCalls, 1)
   })
 
   it('开启限速时继续使用原下载器，不进行分段加速', async () => {
@@ -364,6 +357,12 @@ describe('CDN 分段、恢复与换线', () => {
     await download('status.bin', [`${origin}/forbidden`, `${origin}/rate-limit`, `${origin}/fast`])
     assert.equal(requests.filter((entry) => entry.route === '/forbidden').length, 1)
     assert.equal(requests.filter((entry) => entry.route === '/rate-limit').length, 1)
+  })
+
+  it.each([403, 429, 412])('分段返回 HTTP %s 后不降级重试同一线路', async (status) => {
+    await assert.rejects(download(`blocked-${status}.bin`, [`${origin}/blocked-range?status=${status}`]), /全部 1 条 CDN 线路下载失败/)
+    assert.ok(requests.some((entry) => entry.range && entry.end > 32767))
+    assert.ok(requests.every((entry) => entry.range))
   })
 
   it('所有 CDN 都失败时抛出错误且诊断不泄漏完整签名', async () => {
@@ -389,159 +388,71 @@ describe('CDN 分段、恢复与换线', () => {
 
   it('响应开始后停止传输十秒，会取消请求并改用备用 CDN', { timeout: 20000 }, async () => {
     const started = performance.now()
-    const result = await download('stall.bin', [`${origin}/stall`, `${origin}/fast`])
-    assert.ok(result.events.some((message) => message.includes('自动换线')))
+    await download('stall.bin', [`${origin}/stall`, `${origin}/fast`])
+    assert.ok(requests.some((entry) => entry.route === '/fast'))
     assert.ok(performance.now() - started >= 9900 && performance.now() - started < 13000)
   })
 })
 
-describe('原 Downloader 单连接回退', () => {
-  for (const code of ['ENOSPC', 'EACCES']) {
-    it(`${code} 写入失败保留原错误，不重试也不换 CDN`, async () => {
-      const source = await readFile(path.join(root, 'src/module/utils/Network/Downloader.ts'), 'utf8')
-      const start = source.indexOf('export class Downloader')
-      assert.ok(start > 0)
-      const classSource = source.slice(start).replace('export class Downloader', 'class Downloader')
-      const diskError = Object.assign(new Error(code), { code })
-      const noop = () => {}
-      // 只加载原类，隔离 helpers 和 logger 导入时的网络请求与配置初始化。
-      const DownloaderClass = vm.runInNewContext(`${stripTypeScriptTypes(classSource, { mode: 'transform' })}\nDownloader`, {
-        fs: {
-          ...nodeFs,
-          createWriteStream: () =>
-            new Writable({
-              write(_chunk, _encoding, callback) {
-                callback(diskError)
-              }
-            })
-        },
-        Transform,
-        pipeline,
-        AxiosError,
-        AbortController,
-        setTimeout,
-        clearTimeout,
-        setInterval,
-        clearInterval,
-        logger: { debug: noop, warn: noop, error: noop },
-        formatBytes: String,
-        getErrorDescription: (error: Error) => error.message,
-        isRecoverableNetworkError: () => false,
-        isThrottlingError: () => false,
-        sanitizeHeaders: (headers: unknown) => headers,
-        calculateBackoffDelay: () => 0,
-        DEFAULT_THROTTLE_CONFIG: { enabled: false, maxSpeed: 1048576, minSpeed: 1024 }
-      })
-      const filepath = path.join(temporary, `${code}.bin`)
-      const error = await transfer
-        .downloadBilibiliCdn({
-          url: `${origin}/fast`,
-          candidates: [`${origin}/different`],
-          filepath,
-          headers: {},
-          limited: true,
-          progress: noop,
-          report: noop,
-          fallback: (url) => new DownloaderClass(axios, url, filepath, {}, 15000, 1).download(noop)
-        })
-        .catch((error: unknown) => error)
-      assert.equal(error, diskError)
-      assert.equal(requests.length, 1)
-      assert.equal(requests[0].route, '/fast')
-    })
-  }
-})
-
 describe('Network 下载入口接入', () => {
-  let downloadStream: (
-    bindings: Record<string, unknown>
-  ) => (
-    this: ReturnType<typeof networkOptions>,
-    progress: (bytes: number, total: number) => void,
-    retryCount?: number
-  ) => Promise<{ filepath: string; totalBytes: number }>
-  beforeAll(async () => {
-    const target = path.join(root, 'src/module/utils/Network/Network.ts')
-    const raw = await readFile(target, 'utf8')
-    const start = raw.indexOf('async downloadStream(')
-    const end = raw.indexOf('async getfetch(', start)
-    assert.ok(start > 0 && end > start)
-    const method = `({ ${raw.slice(start, end)} })`
-    downloadStream = (bindings) =>
-      vm.runInNewContext(stripTypeScriptTypes(method), {
-        getBilibiliDownloadCandidates: api.getBilibiliDownloadCandidates,
-        downloadBilibiliCdn: transfer.downloadBilibiliCdn,
-        logger: { debug() {} },
-        logger$1: { debug() {} },
-        ...bindings
-      }).downloadStream
-  })
-
   const networkOptions = (filename: string) => ({
     url: `${origin}/fast`,
     filepath: path.join(temporary, filename),
     headers: { Referer: 'https://www.bilibili.com' },
-    axiosInstance: {},
     timeout: 15000,
     maxRetries: 3
   })
 
-  it('未登记的其他平台链接继续调用原下载器', async () => {
-    const options = networkOptions('other.bin')
-    const expected = { filepath: options.filepath, totalBytes: 10 }
-    let calls = 0
-    const entry = downloadStream({
-      Downloader: class {
-        constructor(...args: unknown[]) {
-          calls++
-          assert.equal(args[1], options.url)
-          assert.equal(args[5], options.maxRetries)
-        }
-        async download() {
-          return expected
-        }
-      }
-    })
-    assert.equal(await entry.call(options, () => {}), expected)
-    assert.equal(calls, 1)
-    assert.equal(requests.length, 0)
+  it.each([false, true])('不限速时仅已登记的地址使用分段下载：登记=%s', async (registered) => {
+    const options = networkOptions(`network-${registered}.bin`)
+    if (registered) await api.selectBilibiliStreamUrl({ base_url: options.url }, options.headers)
+    requests.length = 0
+    const progress = vi.fn()
+    const result = await new Network(options).downloadStream(progress)
+    assert.deepEqual(await readFile(result.filepath), payload)
+    assert.equal(result.totalBytes, payload.length)
+    if (registered) assert.equal(progress.mock.lastCall?.[0], payload.length)
+    assert.equal(
+      requests.some((request) => Boolean(request.range)),
+      registered
+    )
+    assert.ok(requests.every((request) => request.referer === options.headers.Referer))
   })
 
-  it('已登记的 B站链接通过真实下载入口完成分段下载', async () => {
-    const options = networkOptions('network.bin')
-    await api.selectBilibiliStreamUrl({ base_url: options.url }, options.headers)
-    const entry = downloadStream({
-      Downloader: class {
-        constructor() {
-          throw new Error('Unexpected native fallback')
-        }
-      }
-    })
-    const result = await entry.call(options, () => {})
-    const content = await readFile(result.filepath)
-    assert.equal(createHash('sha256').update(content).digest('hex'), expectedHash)
+  it('限速下载换线时不重试坏线路，并报告备用线路的下载进度', async () => {
+    const options = { ...networkOptions('limited-fallback.bin'), url: `${origin}/unavailable`, maxRetries: 1 }
+    await api.selectBilibiliStreamUrl({ base_url: options.url, backup_url: [`${origin}/fast`] }, options.headers)
+    requests.length = 0
+    const progress = vi.fn<DownloadOptions['progress']>()
+    const result = await new Network({ ...options, throttle: { enabled: true, maxSpeed: 2 * 1024 * 1024 } }).downloadStream(progress)
+    assert.deepEqual(
+      requests.map((request) => request.route),
+      ['/unavailable', '/fast']
+    )
+    assert.ok(requests.every((request) => !request.range && request.referer === options.headers.Referer))
+    assert.ok(progress.mock.calls.some(([bytes, total]) => bytes > 0 && bytes < total && total === payload.length))
+    assert.deepEqual(await readFile(result.filepath), payload)
+    assert.equal(result.totalBytes, payload.length)
   })
 
-  it('原下载器回退保留请求头、限速和进度回调，多个候选不反复重试坏线路', async () => {
-    const options = { ...networkOptions('native.bin'), throttleConfig: { enabled: true, bytesPerSecond: 1024 } }
-    await api.selectBilibiliStreamUrl({ base_url: options.url, backup_url: [`${origin}/slow`] }, options.headers)
-    const progress = () => {}
-    let calls = 0
-    const entry = downloadStream({
-      Downloader: class {
-        constructor(...args: unknown[]) {
-          calls++
-          assert.equal(args[3], options.headers)
-          assert.equal(args[5], 0)
-          assert.equal(args[6], options.throttleConfig)
-        }
-        async download(callback: unknown) {
-          assert.equal(callback, progress)
-          return { filepath: options.filepath, totalBytes: payload.length }
-        }
-      }
-    })
-    assert.equal((await entry.call(options, progress)).totalBytes, payload.length)
-    assert.equal(calls, 1)
+  it.each(['ENOSPC', 'EACCES'])('单连接写入失败保留 %s，不重试也不换线', async (code) => {
+    const options = networkOptions(`native-${code}.bin`)
+    await api.selectBilibiliStreamUrl({ base_url: options.url, backup_url: [`${origin}/different`] }, options.headers)
+    requests.length = 0
+    const diskError = Object.assign(new Error(code), { code })
+    vi.spyOn(nodeFs, 'createWriteStream').mockImplementation(
+      () =>
+        new Writable({
+          write(_chunk, _encoding, callback) {
+            callback(diskError)
+          }
+        }) as nodeFs.WriteStream
+    )
+    await assert.rejects(
+      new Network({ ...options, throttle: { enabled: true } }).downloadStream(() => {}),
+      (error) => error === diskError
+    )
+    assert.equal(requests.length, 1)
+    assert.equal(requests[0].route, '/fast')
   })
 })

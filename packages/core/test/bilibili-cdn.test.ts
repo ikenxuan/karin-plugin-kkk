@@ -11,22 +11,15 @@ const edge = 'https://b-test.edge.mountaintoys.cn:4483/video.m4s?deadline=123&si
 const smt = 'https://video.h2.smtcdns.net:4483/video.m4s'
 
 describe('PCDN 备用线路回归', () => {
-  it('edge.mountaintoys.cn 的主链接改选原始签名 CDN 备用链接', () => {
-    assert.equal(api.getBilibiliStreamUrl({ base_url: edge, backup_url: [official] }), official)
-  })
-
-  it('h2.smtcdns.net 的主链接改选普通 CDN', () => {
-    assert.equal(api.getBilibiliStreamUrl({ base_url: smt, backup_url: [official] }), official)
-  })
-
-  it('原有 mcdn 识别行为保持兼容', () => {
-    assert.equal(api.getBilibiliStreamUrl({ base_url: 'https://video.mcdn.bilivideo.com/video', backup_url: [official] }), official)
-  })
-
-  it('兼容更多已知 PCDN 域名，仍保留服务器原始备用地址', () => {
-    for (const host of ['video.qrstuvwxyzab.com', 'video.zhenidc.cn', 'video.mountaintoys.cn']) {
-      assert.equal(api.getBilibiliStreamUrl({ base_url: `https://${host}/video`, backup_url: [official] }), official)
-    }
+  it.each([
+    edge,
+    smt,
+    'https://video.mcdn.bilivideo.com/video',
+    'https://video.qrstuvwxyzab.com/video',
+    'https://video.zhenidc.cn/video',
+    'https://video.mountaintoys.cn/video'
+  ])('PCDN 主链接改选原始签名备用链接：%s', (url) => {
+    assert.equal(api.getBilibiliStreamUrl({ base_url: url, backup_url: [official] }), official)
   })
 
   it('不将相似但不同的域名误判为 PCDN', () => {
@@ -34,12 +27,11 @@ describe('PCDN 备用线路回归', () => {
     assert.equal(api.getBilibiliStreamUrl({ base_url: normal, backup_url: [official] }), normal)
   })
 
-  it('兼容 camelCase 字段', () => {
-    assert.equal(api.getBilibiliStreamUrl({ baseUrl: edge, backupUrl: [official] }), official)
-  })
-
-  it('兼容未登录 durl 字段', () => {
-    assert.equal(api.getBilibiliStreamUrl({ url: edge, backup_url: [official] }), official)
+  it.each([
+    { baseUrl: edge, backupUrl: [official] },
+    { url: edge, backup_url: [official] }
+  ])('兼容播放地址字段：%o', (stream) => {
+    assert.equal(api.getBilibiliStreamUrl(stream), official)
   })
 
   it('空音频不创建请求', () => {
@@ -101,7 +93,7 @@ describe('真实 HTTP 短请求选线', () => {
   })
 
   beforeEach(() => {
-    api.resetBilibiliCdnState()
+    api.bilibiliCdn.reset()
     requests.length = 0
   })
 
@@ -111,12 +103,8 @@ describe('真实 HTTP 短请求选线', () => {
     await new Promise<void>((resolve, reject) => server.close((error) => (error ? reject(error) : resolve())))
   })
 
-  it('较快的健康备用链接优先于较慢主链接', async () => {
-    assert.equal(await api.selectBilibiliStreamUrl({ base_url: `${origin}/slow`, backup_url: [`${origin}/fast`] }), `${origin}/fast`)
-  })
-
-  it('主链接拒绝访问时自动选择备用链接', async () => {
-    assert.equal(await api.selectBilibiliStreamUrl({ base_url: `${origin}/forbidden`, backup_url: [`${origin}/fast`] }), `${origin}/fast`)
+  it.each(['/slow', '/forbidden', '/empty', '/html', '/bad-range'])('慢速或无效主线路改选健康备用：%s', async (route) => {
+    assert.equal(await api.selectBilibiliStreamUrl({ base_url: `${origin}${route}`, backup_url: [`${origin}/fast`] }), `${origin}/fast`)
   })
 
   it('PCDN 有正常备用时不参与探测', async () => {
@@ -133,13 +121,6 @@ describe('真实 HTTP 短请求选线', () => {
 
   it('服务器忽略 Range 时达到样本上限便停止接收', async () => {
     assert.equal(await api.selectBilibiliStreamUrl({ base_url: `${origin}/ignore-range` }), `${origin}/ignore-range`)
-  })
-
-  it('空响应、HTML 错误页面与错误 Content-Range 不参与成功排序', async () => {
-    for (const route of ['/empty', '/html', '/bad-range']) {
-      api.resetBilibiliCdnState()
-      assert.equal(await api.selectBilibiliStreamUrl({ base_url: `${origin}${route}`, backup_url: [`${origin}/fast`] }), `${origin}/fast`)
-    }
   })
 
   it('探测超时在限定时间内退出并选择正常备用', async () => {

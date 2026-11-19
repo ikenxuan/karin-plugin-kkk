@@ -1,4 +1,6 @@
 export * from './bilibili'
+export * from './cdn'
+export * from './cdn-transfer'
 export * from './comments'
 export * from './danmaku'
 export * from './genParams'

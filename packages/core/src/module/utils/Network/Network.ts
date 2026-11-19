@@ -2,7 +2,7 @@ import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, ResponseType } f
 import axios, { AxiosError } from 'node-karin/axios'
 
 import { logger } from '@/module/utils/logger'
-import { getBilibiliDownloadCandidates } from '@/platform/bilibili/cdn'
+import { bilibiliCdn } from '@/platform/bilibili/cdn'
 import { downloadBilibiliCdn } from '@/platform/bilibili/cdn-transfer'
 import { NetworksConfigType } from '@/types'
 
@@ -114,7 +114,7 @@ export class Network {
    */
   async downloadStream(progressCallback: ProgressCallback, retryCount = 0): Promise<DownloadResult> {
     // 仅播放接口已登记的 B站地址启用换线；其他请求沿用原下载器。
-    const candidates = getBilibiliDownloadCandidates(this.url)
+    const candidates = bilibiliCdn.downloadCandidates(this.url)
     if (candidates.length > 0) {
       return downloadBilibiliCdn({
         url: this.url,

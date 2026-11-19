@@ -5,13 +5,7 @@ import axios, { type AxiosRequestConfig } from 'node-karin/axios'
 
 import type { DownloadResult, ProgressCallback } from '@/module/utils/Network/types'
 
-import {
-  type BilibiliCdnMeasure,
-  probeBilibiliCdn,
-  recordBilibiliCdnFailure,
-  recordBilibiliCdnSuccess,
-  withBilibiliCdnConnection
-} from './cdn'
+import { bilibiliCdn, type BilibiliCdnMeasure, withBilibiliCdnConnection } from './cdn'
 
 /** CDN 下载参数；fallback 复用原下载器的重试、限速和进度通知。 */
 type DownloadOptions = {
@@ -28,6 +22,8 @@ type DownloadOptions = {
 const WINDOW_BYTES = 1024 * 1024
 const PARALLEL_MIN_BYTES = 4 * 1024 * 1024
 const STALL_TIMEOUT = 10000
+
+const isAccessDenied = (error: unknown) => error instanceof Error && /\bHTTP (?:403|412|429)\b/.test(error.message)
 
 /** 清空半成品再交给原下载器，避免把未验证片段用于断点续传。 */
 const resetPartialFile = async (filepath: string) => {
@@ -119,7 +115,7 @@ export const downloadBilibiliCdn = async (options: DownloadOptions): Promise<Dow
   let offset = 0
   let previous: BilibiliCdnMeasure | undefined
   let lastError: unknown
-  let singleConnectionFallback: BilibiliCdnMeasure | undefined
+  let singleConnectionFallback: string | undefined
   const parallel = !options.limited && process.env.KKK_BILIBILI_CDN_PARALLEL !== '0'
   for (const [index, url] of candidates.entries()) {
     const host = new URL(url).host
@@ -127,10 +123,10 @@ export const downloadBilibiliCdn = async (options: DownloadOptions): Promise<Dow
     let measure: BilibiliCdnMeasure | undefined
     if (parallel) {
       try {
-        measure = await probeBilibiliCdn(url, options.headers, true)
+        measure = await bilibiliCdn.probe(url, options.headers, true)
       } catch (error) {
         lastError = error
-        if (/HTTP (?:403|429|412)/.test(error instanceof Error ? error.message : '')) {
+        if (isAccessDenied(error)) {
           options.report(`CDN 拒绝访问或触发风控：${host}，尝试其余候选`)
           continue
         }
@@ -151,7 +147,7 @@ export const downloadBilibiliCdn = async (options: DownloadOptions): Promise<Dow
           downloadStarted = performance.now()
           return options.fallback(url)
         })
-        recordBilibiliCdnSuccess(url, (result.totalBytes * 1000) / Math.max(1, performance.now() - downloadStarted), measure?.latency)
+        bilibiliCdn.success(url, (result.totalBytes * 1000) / Math.max(1, performance.now() - downloadStarted))
         return result
       }
       if (offset > 0) {
@@ -206,7 +202,7 @@ export const downloadBilibiliCdn = async (options: DownloadOptions): Promise<Dow
           if (controller.signal.aborted) throw failure
         }
         if ((await file.stat()).size !== measure.total) throw new Error('CDN 下载文件长度不匹配')
-        recordBilibiliCdnSuccess(url, (remainingBytes * 1000) / Math.max(1, performance.now() - started), measure.latency)
+        bilibiliCdn.success(url, (remainingBytes * 1000) / Math.max(1, performance.now() - started))
         options.report(`CDN 下载完成：${host}`)
         return { filepath: options.filepath, totalBytes: measure.total }
       } finally {
@@ -216,22 +212,22 @@ export const downloadBilibiliCdn = async (options: DownloadOptions): Promise<Dow
     } catch (error) {
       previous = measure
       lastError = error
-      recordBilibiliCdnFailure(url, error)
+      bilibiliCdn.failure(url, error)
       if ((error as NodeJS.ErrnoException).code === 'ENOSPC' || (error as NodeJS.ErrnoException).code === 'EACCES') throw error
-      if (parallel && measure?.supportsRange && measure.total >= PARALLEL_MIN_BYTES) singleConnectionFallback = measure
+      if (measure?.supportsRange && measure.total >= PARALLEL_MIN_BYTES && !isAccessDenied(error)) singleConnectionFallback = url
       options.report(`CDN 线路失败：${host}，尝试其余候选`)
     }
   }
   // 先保留跨线路分段续传，全部失败后再用原下载器重新下载。
   if (singleConnectionFallback) {
-    const { url, latency } = singleConnectionFallback
+    const url = singleConnectionFallback
     try {
       await resetPartialFile(options.filepath)
       options.report(`CDN 分段下载失败，降级单连接：${new URL(url).host}`)
       return await withBilibiliCdnConnection(async () => {
         const started = performance.now()
         const result = await options.fallback(url)
-        recordBilibiliCdnSuccess(url, (result.totalBytes * 1000) / Math.max(1, performance.now() - started), latency)
+        bilibiliCdn.success(url, (result.totalBytes * 1000) / Math.max(1, performance.now() - started))
         return result
       })
     } catch (error) {
