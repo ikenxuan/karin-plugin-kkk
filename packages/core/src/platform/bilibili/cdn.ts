@@ -13,16 +13,20 @@ type BilibiliStreamUrls = {
   url?: string
 }
 
+/** 已知 PCDN 域名；有普通线路时不参与测速。 */
 const BILIBILI_PCDN_HOST_RE =
   /(?:^|\.)(?:(?:mcdn|pcdn)\.bilivideo\.(?:cn|com)|szbdyd\.com|mountaintoys\.cn|h2\.smtcdns\.net|qrstuvwxyzab\.com|zhenidc\.cn)$/i
+/** 排除 PCDN 后，bilivideo 备用地址排在其他备用地址之前。 */
 const BILIBILI_CDN_HOST_RE = /(?:^|\.)bilivideo\.(?:cn|com)$/i
-const CDN_SAMPLE_BYTES = 32 * 1024
-const CDN_PROBE_TIMEOUT = 3000
-const CDN_PROBE_LIMIT = 3
-const CDN_CACHE_TTL = 120000
-const CDN_HISTORY_LIMIT = 128
-let activeConnections = 0
-const connectionQueue: Array<() => void> = []
+
+const CDN_SAMPLE_BYTES = 32 * 1024 // 每次测速最多读取文件开头的 32 KiB
+const CDN_PROBE_TIMEOUT = 3000 // 单次测速的总时限（毫秒），含读取响应体
+const CDN_PROBE_LIMIT = 3 // 每轮选线最多测速的候选数，不是全局连接上限
+const CDN_CACHE_TTL = 120000 // 测速结果和主机评分的有效期（毫秒）
+const CDN_HISTORY_LIMIT = 128 // 每张记录表单独计数，超过上限时淘汰最早插入的条目
+
+let activeConnections = 0 // 测速和下载共用的已占用连接数
+const connectionQueue: Array<() => void> = [] // 配额用尽时排队；连接释放后唤醒队首任务
 
 /**
  * 共享探测和下载的连接配额，最多同时建立四条连接。
