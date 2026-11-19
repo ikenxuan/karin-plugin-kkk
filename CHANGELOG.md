@@ -2,6 +2,13 @@
 
 # Changelog
 
+## [2.46.0-beta.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.46.0-beta.0...v2.46.0-beta.1) (2026-11-18)
+
+
+### 🐛 错误修复
+
+* **douyin:** 修复分享口令漏解析与普通聊天误触发 ([84b9cbc](https://github.com/ikenxuan/karin-plugin-kkk/commit/84b9cbc1d077d0c3e8de7698b849abdbfd1ce8f4))
+
 ## [2.46.0-beta.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.45.3...v2.46.0-beta.0) (2026-11-17)
 
 
