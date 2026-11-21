@@ -216,9 +216,7 @@ const createRuntime = (config = readClientConfig(), configSignature = JSON.strin
     douyin: {
       web: { cookie: cookies.douyin, request: webRequest },
       app: {
-        ...(signerBaseUrl
-          ? { signerBaseUrl, sessionFile: prepareDouyinShareDataFile('douyin-app-session.json') }
-          : { session: false as const }),
+        ...(signerBaseUrl ? { signerBaseUrl, sessionFile: prepareDouyinShareDataFile('douyin-app-session.json') } : {}),
         request: { timeout: amagi.timeout, proxy: false }
       }
     },

@@ -175,7 +175,7 @@ describe('默认工厂接入', () => {
         request: { timeout: 30000 },
         douyin: {
           web: { cookie: 'old-douyin-cookie', request: { headers: { 'User-Agent': 'web-test-agent' }, proxy: false } },
-          app: { session: false, request: { timeout: 30000, proxy: false } }
+          app: { request: { timeout: 30000, proxy: false } }
         },
         bilibili: { cookie: 'bilibili-cookie' },
         kuaishou: { cookie: 'kuaishou-cookie' },
@@ -246,10 +246,12 @@ describe('Amagi Client 热重载', () => {
     runtime.config.amagi.timeout = previous + 1
     try {
       expect(reloadAmagiConfig()).toBe(true)
-      expect(runtime.createClient.mock.calls.at(-1)?.[0]).toMatchObject({
+      const options = runtime.createClient.mock.calls.at(-1)?.[0]
+      expect(options).toMatchObject({
         debug: true,
-        douyin: { app: { session: false } }
+        douyin: { app: { request: { timeout: runtime.config.amagi.timeout, proxy: false } } }
       })
+      expect(options).not.toHaveProperty('douyin.app.session')
     } finally {
       runtime.config.amagi.timeout = previous
       reloadAmagiConfig()

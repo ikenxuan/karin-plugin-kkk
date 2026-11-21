@@ -28,7 +28,7 @@ const createPlatformRouters = () => {
   return {
     bilibili: createBilibiliRoutes(Config.amagi.cookies.bilibili, requestConfig),
     // API Server 不使用实验室签名地址，也不加载实验室的 App 游客会话。
-    douyin: createDouyinRoutes(Config.amagi.cookies.douyin, requestConfig, { session: false }),
+    douyin: createDouyinRoutes(Config.amagi.cookies.douyin, requestConfig),
     kuaishou: createKuaishouRoutes(Config.amagi.cookies.kuaishou, requestConfig),
     xiaohongshu: createXiaohongshuRoutes(Config.amagi.cookies.xiaohongshu, requestConfig)
   }
