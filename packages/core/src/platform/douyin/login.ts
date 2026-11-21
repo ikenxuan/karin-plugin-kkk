@@ -161,7 +161,7 @@ const noticeOf = (error: AmagiError): string => {
 /**
  * 抖音扫码登录。
  *
- * 协议与轮询编排都在 amagi 的 v7 登录会话里（`client.douyin.login.qrcode()`）：
+ * 协议与轮询编排都在 amagi 的 v7 登录会话里（`client.douyin.web.auth.qrcode()`）：
  * 取码、轮询、退避、限频加倍、challenge 编排、`expire_time` 秒转毫秒全由引擎负责。
  * 这里只做三件与用户交互的事 —— 渲染二维码、收短信验证码、把凭证落库。
  * @param e - 消息事件
@@ -176,7 +176,7 @@ export const douyinLogin = async (e: Message) => {
   let scanTimer: ReturnType<typeof setTimeout> | undefined
 
   try {
-    const session = getAmagiClient().douyin.login.qrcode()
+    const session = getAmagiClient().douyin.web.auth.qrcode()
 
     const outcome = await session.watch({
       signal: controller.signal,

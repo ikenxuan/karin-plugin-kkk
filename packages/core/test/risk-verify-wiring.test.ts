@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 /**
  * 可变运行时：`vi.mock` 的工厂在模块加载时就固化，用例之间只能靠改这个对象切场景。
  *
- * 假 amagi client 的四个平台各挂一个 `fetcher`，douyin / xiaohongshu 上放了 `fetchThing`，
+ * 假 amagi client 使用默认工厂的新门面，douyin.web / xiaohongshu 上放了 `fetchThing`，
  * 调用结果按 `queue` 顺序吐出（失败信封 / 成功信封），用来驱动代理里的重放逻辑。
  */
 const runtime = vi.hoisted(() => {
@@ -11,10 +11,10 @@ const runtime = vi.hoisted(() => {
   const douyinFetchThing = vi.fn(async () => queue.shift())
   const xiaohongshuFetchThing = vi.fn(async () => queue.shift())
   const client = {
-    bilibili: { fetcher: {} },
-    douyin: { fetcher: { fetchThing: douyinFetchThing } },
-    kuaishou: { fetcher: {} },
-    xiaohongshu: { fetcher: { fetchThing: xiaohongshuFetchThing } }
+    bilibili: {},
+    douyin: { web: { fetchThing: douyinFetchThing }, app: {} },
+    kuaishou: {},
+    xiaohongshu: { fetchThing: xiaohongshuFetchThing }
   }
   /** 命令入口的表情流程：用例里只关心 begin/succeed/fail 有没有被调用 */
   const emojiFlow = {
@@ -90,7 +90,7 @@ vi.mock('@/module/utils/ErrorHandler/utils', () => ({
   parseLogsToStructured: vi.fn(() => [])
 }))
 
-import { AmagiError, douyinFetcher, xiaohongshuFetcher } from '@/module/utils/amagiClient'
+import { AmagiError, douyinWebApi, xiaohongshuApi } from '@/module/utils/amagiClient'
 import { wrapWithErrorHandler } from '@/module/utils/ErrorHandler/handler'
 
 /** 绕过类型看运行时行为：`fetchThing` 只存在于本用例的假 client 上 */
@@ -136,7 +136,7 @@ describe('风控验证接线：失败代理', () => {
       async (_error: unknown, _platform: string, replay: () => Promise<boolean>) => await replay()
     )
 
-    const result = await probe(douyinFetcher).fetchThing()
+    const result = await probe(douyinWebApi).fetchThing()
 
     expect(runtime.handleRiskChallenge).toHaveBeenCalledTimes(1)
     expect(runtime.handleRiskChallenge.mock.calls[0][1]).toBe('douyin')
@@ -152,7 +152,7 @@ describe('风控验证接线：失败代理', () => {
       async (_error: unknown, _platform: string, replay: () => Promise<boolean>) => await replay()
     )
 
-    await probe(xiaohongshuFetcher).fetchThing()
+    await probe(xiaohongshuApi).fetchThing()
 
     expect(runtime.handleRiskChallenge.mock.calls[0][1]).toBe('xiaohongshu')
   })
@@ -163,7 +163,7 @@ describe('风控验证接线：失败代理', () => {
       async (_error: unknown, _platform: string, replay: () => Promise<boolean>) => await replay()
     )
 
-    await expect(probe(douyinFetcher).fetchThing()).rejects.toThrow('需要人机验证')
+    await expect(probe(douyinWebApi).fetchThing()).rejects.toThrow('需要人机验证')
 
     expect(runtime.douyinFetchThing).toHaveBeenCalledTimes(2)
   })
@@ -178,7 +178,7 @@ describe('风控验证接线：失败代理', () => {
       }
     })
 
-    const failure = await probe(douyinFetcher)
+    const failure = await probe(douyinWebApi)
       .fetchThing()
       .catch((error: unknown) => error)
 
@@ -190,7 +190,7 @@ describe('风控验证接线：失败代理', () => {
     runtime.queue.push(challengeEnvelope())
     runtime.handleRiskChallenge.mockResolvedValue(false)
 
-    await expect(probe(douyinFetcher).fetchThing()).rejects.toThrow('需要人机验证')
+    await expect(probe(douyinWebApi).fetchThing()).rejects.toThrow('需要人机验证')
 
     expect(runtime.handleRiskChallenge).toHaveBeenCalledTimes(1)
     expect(runtime.douyinFetchThing).toHaveBeenCalledTimes(1)
@@ -200,7 +200,7 @@ describe('风控验证接线：失败代理', () => {
     runtime.queue.push(otherFailureEnvelope())
     runtime.handleRiskChallenge.mockResolvedValue(false)
 
-    await expect(probe(douyinFetcher).fetchThing()).rejects.toThrow('别的错误')
+    await expect(probe(douyinWebApi).fetchThing()).rejects.toThrow('别的错误')
 
     expect(runtime.handleRiskChallenge).toHaveBeenCalledTimes(1)
   })
@@ -208,7 +208,7 @@ describe('风控验证接线：失败代理', () => {
   it('成功结果原样返回，不经过 RiskVerify', async () => {
     runtime.queue.push(successEnvelope())
 
-    const result = await probe(douyinFetcher).fetchThing()
+    const result = await probe(douyinWebApi).fetchThing()
 
     expect(result).toMatchObject({ success: true })
     expect(runtime.handleRiskChallenge).not.toHaveBeenCalled()

@@ -17,7 +17,7 @@ import type { ExtendedKuaishouOptionsType, KuaishouDataTypes } from '@/types'
  *
  * 图集 / 单图作品这两处都是空的（原图在 `atlas` / `single`，本插件目前只解析视频），
  * 所以取不到时返回空串，交给调用方走原有的「不支持解析」分支，而不是拿空串去发请求。
- * @param work - `fetchVideoWork` 的响应体
+ * @param work - `kuaishouApi.work` 的响应体
  * @returns 视频直链；取不到时为空串
  */
 const pickVideoUrl = (work: KuaishouVideoWorkResponse): string => {

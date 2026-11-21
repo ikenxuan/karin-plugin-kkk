@@ -1,6 +1,6 @@
-import { wbi_sign } from '@ikenxuan/amagi'
+import { tools } from '@ikenxuan/amagi'
 
-import { bilibiliFetcher } from '@/module/utils/amagiClient'
+import { bilibiliApi } from '@/module/utils/amagiClient'
 import { Config } from '@/module/utils/Config'
 
 /**
@@ -10,8 +10,8 @@ import { Config } from '@/module/utils/Config'
  */
 export const genParams = async (apiURL: string): Promise<string> => {
   if (Config.amagi.cookies.bilibili === '' || Config.amagi.cookies.bilibili === null) return '&platform=html5'
-  const loginInfo = await bilibiliFetcher.fetchLoginStatus()
-  const genSign = await wbi_sign(apiURL, Config.amagi.cookies.bilibili)
+  const loginInfo = await bilibiliApi.auth.status()
+  const genSign = await tools.bilibili.sign.wbi(apiURL, Config.amagi.cookies.bilibili)
 
   const qn = [6, 16, 32, 64, 74, 80, 112, 116, 120, 125, 126, 127]
   const isvip = loginInfo.data.data?.vipStatus === 1
@@ -22,7 +22,7 @@ export const genParams = async (apiURL: string): Promise<string> => {
 
 export const checkCk = async (): Promise<{ Status: 'isLogin' | '!isLogin'; isVIP: boolean }> => {
   if (Config.amagi.cookies.bilibili === '' || Config.amagi.cookies.bilibili === null) return { Status: '!isLogin', isVIP: false }
-  const loginInfo = await bilibiliFetcher.fetchLoginStatus()
+  const loginInfo = await bilibiliApi.auth.status()
   const isVIP = loginInfo.data.data?.vipStatus === 1
   if (isVIP) {
     return { Status: 'isLogin', isVIP }

@@ -1,6 +1,6 @@
+import { tools } from '@ikenxuan/amagi'
 import axios from 'node-karin/axios'
 
-import { bilibiliFetcher } from '@/module/utils/amagiClient'
 import { logger } from '@/module/utils/logger'
 import type { BilibiliDataTypes } from '@/types'
 
@@ -82,10 +82,8 @@ export const getBilibiliID = async (url: string) => {
 
       if (bvid && bvid.toLowerCase().startsWith('av')) {
         const avid = parseInt(bvid.replace(/^av/i, ''))
-        // v7 的 avToBv 是纯本地计算端点，data 直接就是 `{ bvid }` ——
-        // 不再是 v6 那层 `{ code, data: { bvid }, message }` 的 API 信封
-        const convertResult = await bilibiliFetcher.convertAvToBv({ avid })
-        bvid = convertResult.data.bvid
+        // 包根工具同步返回 BV 字符串，不带请求结果信封
+        bvid = tools.bilibili.avToBv(avid)
       }
 
       result = {

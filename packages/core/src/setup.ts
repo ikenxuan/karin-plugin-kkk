@@ -5,7 +5,9 @@ import { karinPathBase } from 'node-karin/root'
 
 import { Common, Render, Root } from '@/module'
 import { initAllDatabases } from '@/module/db'
+import { Config } from '@/module/utils/Config'
 import { logger } from '@/module/utils/logger'
+import { initializeDouyinShareCommandPatterns } from '@/platform/douyin/shareCommand'
 
 import { isSemverGreater } from './module/utils/semver'
 
@@ -74,5 +76,14 @@ await initAllDatabases().catch((err) => {
 
 // ------------------- MAIN INIT -------------------
 mkdirSync(`${karinPathBase}/${Root.pluginName}/data`)
+mkdirSync(Common.tempDri.default)
 mkdirSync(Common.tempDri.images)
 mkdirSync(Common.tempDri.video)
+
+if (Config.douyin.switch && Config.laboratory?.messageHooks?.switch) {
+  void initializeDouyinShareCommandPatterns(Config.laboratory.messageHooks.signUrl)
+    .then((patterns) => logger.info(`[实验室] 启动时已加载 ${patterns.length} 条抖音分享规则`))
+    .catch((error) => {
+      logger.warn(`[实验室] 启动时加载抖音分享规则失败：${error instanceof Error ? error.message : '未知错误'}`)
+    })
+}

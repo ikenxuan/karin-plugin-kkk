@@ -32,7 +32,7 @@ import {
   Render,
   uploadFile
 } from '@/module'
-import { bilibiliFetcher } from '@/module/utils/amagiClient'
+import { bilibiliApi } from '@/module/utils/amagiClient'
 import { Config } from '@/module/utils/Config'
 import { logger } from '@/module/utils/logger'
 import {
@@ -244,7 +244,7 @@ export class Bilibilipush extends Base {
     for (const item of liveSubscriptions) {
       let liveStatus: BilibiliUserLiveStatusResponse['data']
       try {
-        const liveStatusResult = await this.amagi.bilibili.fetcher.fetchUserLiveStatus({
+        const liveStatusResult = await this.amagi.bilibili.userLiveStatus({
           host_mid: item.host_mid
         })
         liveStatus = liveStatusResult.data.data
@@ -261,7 +261,7 @@ export class Bilibilipush extends Base {
       }
 
       try {
-        const liveInfoResult = await this.amagi.bilibili.fetcher.fetchLiveRoomInfo({
+        const liveInfoResult = await this.amagi.bilibili.liveRoom({
           room_id: String(liveStatus.roomid)
         })
         const liveInfo = liveInfoResult.data.data
@@ -313,7 +313,7 @@ export class Bilibilipush extends Base {
     try {
       const liveData = JSON.parse(dynamic.modules.module_dynamic.major.live_rcmd.content)
       const roomId = Number(liveData.live_play_info.room_id)
-      const liveInfo = await this.amagi.bilibili.fetcher.fetchLiveRoomInfo({
+      const liveInfo = await this.amagi.bilibili.liveRoom({
         room_id: String(roomId)
       })
       const cacheId = buildBilibiliLiveSessionId(hostMid, liveInfo.data.data.room_id, liveInfo.data.data.live_time)
@@ -363,7 +363,7 @@ export class Bilibilipush extends Base {
       this.injectBotToEventForRender(data[dynamicId].targets)
 
       if (!skip) {
-        const userINFO = await this.amagi.bilibili.fetcher.fetchUserCard({
+        const userINFO = await this.amagi.bilibili.userCard({
           host_mid: data[dynamicId].host_mid
         })
         switch (data[dynamicId].dynamic_type) {
@@ -465,7 +465,7 @@ export class Bilibilipush extends Base {
           case DynamicType.AV: {
             if (data[dynamicId].Dynamic_Data.modules.module_dynamic.major?.type === 'MAJOR_TYPE_ARCHIVE') {
               const bvid = data[dynamicId].Dynamic_Data?.modules.module_dynamic.major?.archive?.bvid ?? ''
-              const INFODATA = await bilibiliFetcher.fetchVideoInfo({ bvid })
+              const INFODATA = await bilibiliApi.videoInfo({ bvid })
 
               /** 特殊字段，只有番剧和影视才会有，如果是该类型视频，默认不发送 */
               if (INFODATA.data.data.redirect_url) {
@@ -740,10 +740,10 @@ export class Bilibilipush extends Base {
           }
           /** 文章/专栏动态 */
           case DynamicType.ARTICLE: {
-            const articleInfoBase = await this.amagi.bilibili.fetcher.fetchArticleInfo({
+            const articleInfoBase = await this.amagi.bilibili.article({
               id: data[dynamicId].Dynamic_Data.basic.rid_str
             })
-            const articleInfo = await this.amagi.bilibili.fetcher.fetchArticleContent({
+            const articleInfo = await this.amagi.bilibili.articleContent({
               id: data[dynamicId].Dynamic_Data.basic.rid_str
             })
 
@@ -852,10 +852,10 @@ export class Bilibilipush extends Base {
                     videoList: BilibiliVideoStreamResponse['data']['dash']['video']
                   }
                   let videoSize = ''
-                  const videoInfo = await this.amagi.bilibili.fetcher.fetchVideoInfo({
+                  const videoInfo = await this.amagi.bilibili.videoInfo({
                     bvid: data[dynamicId].Dynamic_Data.modules.module_dynamic.major.archive.bvid
                   })
-                  const playUrlData = await this.amagi.bilibili.fetcher.fetchVideoStreamUrl({
+                  const playUrlData = await this.amagi.bilibili.videoStream({
                     avid: parseInt(data[dynamicId].Dynamic_Data.modules.module_dynamic.major.archive.aid),
                     cid: videoInfo.data.data.cid
                   })
@@ -900,7 +900,7 @@ export class Bilibilipush extends Base {
                     break
                   }
                   logger.mark(`当前处于自动推送状态，解析到的视频大小为 ${logger.yellow(Number(videoSize))} MB`)
-                  const infoData = await this.amagi.bilibili.fetcher.fetchVideoInfo({
+                  const infoData = await this.amagi.bilibili.videoInfo({
                     bvid: data[dynamicId].Dynamic_Data.modules.module_dynamic.major.archive.bvid
                   })
                   const [videoUrl, downloadAudioUrl] = await Promise.all([
@@ -1087,10 +1087,10 @@ export class Bilibilipush extends Base {
               case 'DYNAMIC_TYPE_ARTICLE': {
                 let payload = articleForwardPayload
                 if (!payload) {
-                  const articleInfoBase = await this.amagi.bilibili.fetcher.fetchArticleInfo({
+                  const articleInfoBase = await this.amagi.bilibili.article({
                     id: data[dynamicId].Dynamic_Data.basic.rid_str
                   })
-                  const articleInfo = await this.amagi.bilibili.fetcher.fetchArticleContent({
+                  const articleInfo = await this.amagi.bilibili.articleContent({
                     id: data[dynamicId].Dynamic_Data.basic.rid_str
                   })
                   // 生成类型里 `data` 可空，没正文就没什么可转发的
@@ -1160,7 +1160,7 @@ export class Bilibilipush extends Base {
 
         await common.sleep(2000)
         logger.debug(`[Bilibili 推送] 开始获取UP: ${item.remark}（${item.host_mid}） 的动态列表`)
-        const dynamic_list = await this.amagi.bilibili.fetcher.fetchUserDynamicList({
+        const dynamic_list = await this.amagi.bilibili.userDynamics({
           host_mid: item.host_mid
         })
         // 生成树这条响应没按动态类型分形状，推送链路要的是判别联合（见 DataItem 的说明），这里换一次
@@ -1399,7 +1399,7 @@ export class Bilibilipush extends Base {
     if (abclist.length > 0) {
       for (const i of abclist) {
         // 从外部数据源获取用户备注信息
-        const resp = await this.amagi.bilibili.fetcher.fetchUserCard({ host_mid: i.host_mid })
+        const resp = await this.amagi.bilibili.userCard({ host_mid: i.host_mid })
         const remark = resp.data.data.card.name
         // 在配置文件中找到对应的用户，并更新其备注信息
         const matchingItemIndex = config.bilibili.findIndex((item) => item.host_mid === i.host_mid)
@@ -1474,7 +1474,7 @@ export class Bilibilipush extends Base {
     // 获取所有订阅UP主的信息
     for (const subscription of subscriptions) {
       const host_mid = subscription.host_mid
-      const userInfo = await this.amagi.bilibili.fetcher.fetchUserCard({ host_mid })
+      const userInfo = await this.amagi.bilibili.userCard({ host_mid })
 
       // 查找配置文件中对应的全局开关状态
       const configItem = Config.pushlist.bilibili?.find((item: bilibiliPushItem) => item.host_mid === host_mid)

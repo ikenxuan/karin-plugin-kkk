@@ -11,7 +11,7 @@ import {
 } from '@kkk/richtext'
 import type { XiaohongshuCommentData } from '@template/template/xiaohongshu/comment/components/types'
 
-import { xiaohongshuFetcher } from '@/module/utils/amagiClient'
+import { xiaohongshuApi } from '@/module/utils/amagiClient'
 import { Config } from '@/module/utils/Config'
 import { logger } from '@/module/utils/logger'
 
@@ -136,7 +136,7 @@ const fetchSubComments = async (comment: NoteComment, note: XiaohongshuNoteRef):
   if (Number(comment.sub_comment_count) <= 0) return []
 
   try {
-    const response = await xiaohongshuFetcher.fetchSubComments({
+    const response = await xiaohongshuApi.commentReplies({
       note_id: note.note_id,
       root_comment_id: comment.id,
       xsec_token: note.xsec_token,

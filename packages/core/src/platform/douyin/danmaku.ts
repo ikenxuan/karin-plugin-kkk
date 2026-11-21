@@ -13,7 +13,7 @@ import type { DouyinEmojiListResponse } from '@ikenxuan/amagi'
 import { ffmpeg, ffprobe, render } from 'node-karin'
 
 import { Common } from '@/module/utils'
-import { douyinFetcher } from '@/module/utils/amagiClient'
+import { douyinWebApi } from '@/module/utils/amagiClient'
 import { logger } from '@/module/utils/logger'
 
 // ==================== 类型定义 ====================
@@ -374,7 +374,7 @@ export async function getDouyinResolution(path: string): Promise<{ width: number
  */
 async function fetchDouyinEmojiList(): Promise<DouyinEmojiInfo[]> {
   try {
-    const res = await douyinFetcher.fetchEmojiList()
+    const res = await douyinWebApi.emojis()
     const list: DouyinEmojiListResponse['emoji_list'] = res.data?.emoji_list ?? []
     return list
       .map((item) => ({ name: item.display_name, url: item.emoji_url?.url_list?.[0] ?? '' }))

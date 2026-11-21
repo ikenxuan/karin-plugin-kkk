@@ -1,7 +1,7 @@
 import karin from 'node-karin'
 
 import { bilibiliDB, douyinDB } from '@/module/db'
-import { bilibiliFetcher, douyinFetcher } from '@/module/utils/amagiClient'
+import { bilibiliApi, douyinWebApi } from '@/module/utils/amagiClient'
 import { Config } from '@/module/utils/Config'
 import { wrapWithErrorHandler } from '@/module/utils/ErrorHandler'
 import { logger } from '@/module/utils/logger'
@@ -61,7 +61,7 @@ const handleSetDouyinPush = wrapWithErrorHandler(
     }
 
     // 原有的订阅逻辑
-    const data = await douyinFetcher.fetchGuestUserInfo({
+    const data = await douyinWebApi.guestUserInfo({
       unique_id: query
     })
     await new DouYinpush(e).setting(data.data)
@@ -96,7 +96,7 @@ const handleSetBilibiliPush = wrapWithErrorHandler(
     }
     const match = /^(\d+)$/.exec(query)
     if (match && match[1]) {
-      const data = await bilibiliFetcher.fetchUserCard({
+      const data = await bilibiliApi.userCard({
         host_mid: Number(match[1])
       })
       await new Bilibilipush(e).setting(data.data)
@@ -154,7 +154,7 @@ const handleGlobalIgnore = wrapWithErrorHandler(
       }
 
       // 获取作品详情以获取 sec_uid
-      const workInfo = await douyinFetcher.parseWork({ aweme_id: idData.aweme_id })
+      const workInfo = await douyinWebApi.work({ aweme_id: idData.aweme_id })
       const sec_uid = workInfo.data?.aweme_detail?.author?.sec_uid
 
       if (!sec_uid) {
@@ -190,7 +190,7 @@ const handleGlobalIgnore = wrapWithErrorHandler(
       }
 
       // 获取动态详情以获取 host_mid
-      const dynamicInfo = await bilibiliFetcher.fetchDynamicDetail({
+      const dynamicInfo = await bilibiliApi.dynamic({
         dynamic_id: idData.dynamic_id
       })
       const host_mid = dynamicInfo.data.data.item.modules.module_author.mid

@@ -12,7 +12,7 @@ import { format, fromUnixTime } from 'date-fns'
 import type { ImageElement, Message } from 'node-karin'
 
 import { Count, Render } from '@/module/utils'
-import { douyinFetcher } from '@/module/utils/amagiClient'
+import { douyinWebApi } from '@/module/utils/amagiClient'
 import type { DouyinAwemeImage, DouyinLiveDetailData, DouyinTextExtra, DouyinWorkDetailData } from '@/platform/douyin/types'
 import { type dyVideo, formatDouyinQualityLabel } from '@/platform/douyin/videoQuality'
 
@@ -325,7 +325,7 @@ async function resolveMentionTokens(
     uniqueSecUids.map(async (secUid) => {
       if (mentionCache.has(secUid)) return
       try {
-        const userInfo = await douyinFetcher.fetchUserProfile({ sec_uid: secUid })
+        const userInfo = await douyinWebApi.userProfile({ sec_uid: secUid })
         const user = userInfo.data.user
         const nickname = user.nickname?.trim()
         mentionCache.set(secUid, user.sec_uid === secUid && nickname ? `@${nickname}` : null)

@@ -90,7 +90,7 @@ const readRefreshToken = (raw: unknown): string | undefined => {
 /**
  * B站扫码登录。
  *
- * 轮询、退避、超时都在 amagi 的 v7 登录会话里（`client.bilibili.login.qrcode()`），
+ * 轮询、退避、超时都在 amagi 的 v7 登录会话里（`client.bilibili.auth.qrcode()`），
  * 这里只负责渲染二维码与落库。相比 v6 的手写轮询有两处行为变好：
  *
  * - **cookie 串是干净的。** 原先把响应的 `set-cookie` 数组直接 `join('; ')`，
@@ -106,7 +106,7 @@ export const bilibiliLogin = async (e: Message) => {
   let scanned = false
 
   try {
-    const session = getAmagiClient().bilibili.login.qrcode()
+    const session = getAmagiClient().bilibili.auth.qrcode()
 
     const outcome = await session.watch({
       onQrcode: async (qrcode) => {
@@ -169,7 +169,7 @@ export const bilibiliRefreshLogin = async (e: Message): Promise<boolean> => {
     return true
   }
 
-  const result = await getAmagiClient().bilibili.refreshCredential({ cookie, refreshToken })
+  const result = await getAmagiClient().bilibili.auth.refresh({ cookie, refreshToken })
 
   if (!result.ok) {
     logger.warn(`[B站续期] 失败：kind=${result.error.kind} code=${result.error.code} ${result.error.message}`)

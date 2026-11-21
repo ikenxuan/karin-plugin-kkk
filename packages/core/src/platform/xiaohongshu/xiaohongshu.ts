@@ -62,18 +62,18 @@ export class Xiaohongshu extends Base {
   /**
    * 取够配置条数的笔记评论。
    *
-   * v7 的 `noteComments` 端点自带声明式翻页：只传目标条数 `number`，游标由管线
+   * v7 的 `comments` API 自带声明式翻页：只传目标条数 `number`，游标由管线
    * 携带、跨页条目由端点的 `normalize` 回填到最后一页原位 —— 所以这里不再手写
    * cursor 循环（v6 时代那 30 行）。
    *
    * 这条端点在 amagi 那边还没有生成响应类型（声明回退 `any`），形状仍按手写快照树的
    * `NoteComments` 断言；等它补上样本、生成类型之后换成生成的那份。
    * @param data - 笔记 id 与 xsec_token
-   * @returns 响应体（fetcher 失败即抛），`data.comments` 已是合并后的全部评论
+   * @returns 响应体（业务 API 失败即抛），`data.comments` 已是合并后的全部评论
    */
   private async fetchConfiguredNoteComments(data: XiaohongshuIdData): Promise<XiaohongshuNoteCommentsResponse> {
     return (
-      await this.amagi.xiaohongshu.fetcher.fetchNoteComments({
+      await this.amagi.xiaohongshu.comments({
         note_id: data.note_id,
         xsec_token: data.xsec_token,
         number: Math.max(1, Config.xiaohongshu.numcomment)
@@ -88,13 +88,13 @@ export class Xiaohongshu extends Base {
     if (Config.app.parseTip) {
       await this.e.reply('检测到小红书链接，开始解析')
     }
-    const NoteData = await this.amagi.xiaohongshu.fetcher.fetchNoteDetail({
+    const NoteData = await this.amagi.xiaohongshu.note({
       note_id: data.note_id,
       xsec_token: data.xsec_token
     })
     // 统计用的内容形态：有视频流算视频笔记，否则算图文（与 noteInfo/comment 模板里的判定一致）
     this.workType = NoteData.data.data.items[0].note_card!.video ? 'video' : 'gallery'
-    const EmojiList = await this.amagi.xiaohongshu.fetcher.fetchEmojiList()
+    const EmojiList = await this.amagi.xiaohongshu.emojis()
     const formattedEmojis = XiaohongshuEmoji(EmojiList.data)
 
     // 笔记信息
@@ -542,7 +542,7 @@ export const xiaohongshuProcessVideos = (streamData: unknown, videoQuality: stri
 
 /**
  * 格式化小红书表情列表
- * @param data 表情接口的响应体（`fetchEmojiList` 的 `data`）
+ * @param data 表情接口的响应体（`emojis` 的 `data`）
  * @returns 格式化后的表情数组
  */
 export const XiaohongshuEmoji = (data: XiaohongshuEmojiListResponse): RichTextEmojiDefinition[] => {

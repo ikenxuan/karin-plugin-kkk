@@ -15,7 +15,7 @@ import decode from 'heic-decode'
 import jpeg from 'jpeg-js'
 
 import { Networks } from '@/module/utils'
-import { douyinFetcher } from '@/module/utils/amagiClient'
+import { douyinWebApi } from '@/module/utils/amagiClient'
 import { Config } from '@/module/utils/Config'
 
 /** 一级评论（`douyin.comments` 的元素） */
@@ -128,7 +128,7 @@ const resolveMentionTokens = async (userIds: string[] | null): Promise<DouyinMen
   const mentionTokens = await Promise.all(
     uniqueUserIds.map(async (secUid) => {
       try {
-        const userInfo = await douyinFetcher.fetchUserProfile({ sec_uid: secUid })
+        const userInfo = await douyinWebApi.userProfile({ sec_uid: secUid })
         const nickname = userInfo.data.user.nickname?.trim()
 
         if (!nickname || userInfo.data.user.sec_uid !== secUid) {
@@ -267,7 +267,7 @@ const processCommentImage = async (imageUrl: string | null): Promise<string | nu
 
 /**
  *
- * @param {*} data 评论接口的响应体（`fetchWorkComments` 的 `data.data`）
+ * @param {*} data 评论接口的响应体（`comments` 的 `data.data`）
  * @param {*} emojidata 处理过后的emoji列表
  * @returns obj
  */
@@ -313,7 +313,7 @@ export const douyinComments = async (data: DouyinCommentsResponse, emojidata: Ri
       imageUrls.push(sticker)
     }
 
-    const replyComment = await douyinFetcher.fetchCommentReplies({
+    const replyComment = await douyinWebApi.commentReplies({
       aweme_id,
       comment_id: cid,
       number: Config.douyin.subCommentLimit

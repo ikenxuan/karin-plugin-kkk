@@ -1,7 +1,7 @@
 import type { DouyinUserProfileResponse } from '@ikenxuan/amagi'
 import karin, { type ImageElement } from 'node-karin'
 
-import { douyinFetcher } from '@/module/utils/amagiClient'
+import { douyinWebApi } from '@/module/utils/amagiClient'
 import { Config } from '@/module/utils/Config'
 import { wrapWithErrorHandler } from '@/module/utils/ErrorHandler'
 import { logger } from '@/module/utils/logger'
@@ -69,13 +69,13 @@ const handleTestPush = wrapWithErrorHandler(
           return true
         }
         logger.mark(`[测试抖音推送] 开始解析作品: ${iddata.aweme_id}`)
-        const workData = await douyinFetcher.parseWork({ aweme_id: iddata.aweme_id })
+        const workData = await douyinWebApi.work({ aweme_id: iddata.aweme_id })
         if (!workData.data.aweme_detail) {
           e.reply('获取作品详情失败，作品可能已被删除或设为私密')
           return true
         }
         const aweme = workData.data.aweme_detail
-        const userinfo = await douyinFetcher.fetchUserProfile({ sec_uid: aweme.author.sec_uid })
+        const userinfo = await douyinWebApi.userProfile({ sec_uid: aweme.author.sec_uid })
         const Detail_Data = buildDouyinWorkDetail(aweme, { user_info: userinfo.data })
         // 与生产推送一致：先按画质配置选档，二维码链接和卡片清晰度都从选中那一路视频源派生
         const selectedVideo = aweme.video?.bit_rate?.length
@@ -103,8 +103,8 @@ const handleTestPush = wrapWithErrorHandler(
           return true
         }
         logger.mark(`[测试抖音推送] 开始获取喜欢列表: sec_uid=${iddata.sec_uid}`)
-        const userinfo = await douyinFetcher.fetchUserProfile({ sec_uid: iddata.sec_uid })
-        const favoriteData = await douyinFetcher.fetchUserFavoriteList({
+        const userinfo = await douyinWebApi.userProfile({ sec_uid: iddata.sec_uid })
+        const favoriteData = await douyinWebApi.userLikes({
           sec_uid: iddata.sec_uid,
           number: 1
         })
@@ -115,7 +115,7 @@ const handleTestPush = wrapWithErrorHandler(
         const aweme = favoriteData.data.aweme_list[0]
         let authorUserInfo: DouyinUserProfileResponse | undefined
         try {
-          authorUserInfo = (await douyinFetcher.fetchUserProfile({ sec_uid: aweme.author.sec_uid })).data
+          authorUserInfo = (await douyinWebApi.userProfile({ sec_uid: aweme.author.sec_uid })).data
         } catch {
           /* ignore */
         }
@@ -145,8 +145,8 @@ const handleTestPush = wrapWithErrorHandler(
           return true
         }
         logger.mark(`[测试抖音推送] 开始获取推荐列表: sec_uid=${iddata.sec_uid}`)
-        const userinfo = await douyinFetcher.fetchUserProfile({ sec_uid: iddata.sec_uid })
-        const recommendData = await douyinFetcher.fetchUserRecommendList({
+        const userinfo = await douyinWebApi.userProfile({ sec_uid: iddata.sec_uid })
+        const recommendData = await douyinWebApi.userRecommendations({
           sec_uid: iddata.sec_uid,
           number: 1
         })
@@ -157,7 +157,7 @@ const handleTestPush = wrapWithErrorHandler(
         const aweme = recommendData.data.aweme_list[0]
         let authorUserInfo: DouyinUserProfileResponse | undefined
         try {
-          authorUserInfo = (await douyinFetcher.fetchUserProfile({ sec_uid: aweme.author.sec_uid })).data
+          authorUserInfo = (await douyinWebApi.userProfile({ sec_uid: aweme.author.sec_uid })).data
         } catch {
           /* ignore */
         }
@@ -188,7 +188,7 @@ const handleTestPush = wrapWithErrorHandler(
         }
         const sec_uid = iddata.sec_uid
         logger.mark(`[测试抖音推送] 开始检查直播状态: sec_uid=${sec_uid}`)
-        const userinfo = await douyinFetcher.fetchUserProfile({ sec_uid })
+        const userinfo = await douyinWebApi.userProfile({ sec_uid })
         const user = userinfo.data.user
         if (user.live_status !== 1) {
           e.reply(`${user.nickname} 当前未在直播`)
@@ -202,7 +202,7 @@ const handleTestPush = wrapWithErrorHandler(
         // room_id 在 amagi 里是 internalParam（不在公开参数类型里）：用变量承载，
         // 保住原来的 `room_id_str` 查询参数，也不与公开契约的类型检查打架
         const liveParams = { room_id: user.room_id_str, web_rid: room_data.owner.web_rid }
-        const liveInfo = await douyinFetcher.fetchLiveRoomInfo(liveParams)
+        const liveInfo = await douyinWebApi.liveRoom(liveParams)
         const Detail_Data = { user_info: userinfo.data, room_data, live_data: liveInfo.data }
         images = await renderLiveImage({ e, Detail_Data })
         if (!images.length) {

@@ -140,7 +140,7 @@ const noticeOf = (error: AmagiError): string => {
 /**
  * 快手扫码登录。
  *
- * 协议与轮询编排都在 amagi 的 v7 登录会话里（`client.kuaishou.login.qrcode()`）：
+ * 协议与轮询编排都在 amagi 的 v7 登录会话里（`client.kuaishou.auth.qrcode()`）：
  * 本地生成 did、取码、两段 long-poll（先等扫码、再等手机确认）、退避、二次验证
  * 全部由引擎负责。这里只做三件与用户交互的事 —— 渲染二维码、把验证页转给人、
  * 把凭证落库。
@@ -156,7 +156,7 @@ export const kuaishouLogin = async (e: Message): Promise<boolean> => {
   let scanTimer: ReturnType<typeof setTimeout> | undefined
 
   try {
-    const session = getAmagiClient().kuaishou.login.qrcode()
+    const session = getAmagiClient().kuaishou.auth.qrcode()
 
     const outcome = await session.watch({
       signal: controller.signal,

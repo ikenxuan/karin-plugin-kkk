@@ -9,14 +9,14 @@ const runtime = vi.hoisted(() => ({
     xiaohongshu: { numcomment: 10, subCommentLimit: 2 },
     amagi: { cookies: { xiaohongshu: '' } }
   },
-  fetchSubComments: vi.fn()
+  commentReplies: vi.fn()
 }))
 
 vi.mock('@/module/utils/Config', () => ({ Config: runtime.config }))
 
 vi.mock('@/module/utils/logger', () => ({ logger: { debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn() } }))
 
-vi.mock('@/module/utils/amagiClient', () => ({ xiaohongshuFetcher: { fetchSubComments: runtime.fetchSubComments } }))
+vi.mock('@/module/utils/amagiClient', () => ({ xiaohongshuApi: { commentReplies: runtime.commentReplies } }))
 
 import { xiaohongshuComments } from '@/platform/xiaohongshu/comments'
 
@@ -71,6 +71,15 @@ const noteCommentsResponse = (comments: any[]): any => ({
 /** 子评论接口的成功信封，`data.data.comments` 是合并后的子评论列表 */
 const fetchedEnvelope = (ids: string[]): any => ({
   success: true,
+  message: '获取成功',
+  meta: {
+    requestId: 'test-sub-comments',
+    clientId: 'test-client',
+    platform: 'xiaohongshu',
+    endpoint: 'xiaohongshu.subComments',
+    durationMs: 0,
+    attempts: 1
+  },
   data: {
     code: 0,
     success: true,
@@ -87,7 +96,7 @@ describe('小红书子评论拉取', () => {
     runtime.config.xiaohongshu.numcomment = 10
     runtime.config.xiaohongshu.subCommentLimit = 2
     runtime.config.amagi.cookies.xiaohongshu = ''
-    runtime.fetchSubComments.mockReset()
+    runtime.commentReplies.mockReset()
   })
 
   it('默认配置（subCommentLimit 为 2）即使配了 ck 也不请求子评论接口', async () => {
@@ -95,7 +104,7 @@ describe('小红书子评论拉取', () => {
 
     const result = await xiaohongshuComments(noteCommentsResponse([level1Comment('c1', ['s1', 's2'])]), [], note)
 
-    expect(runtime.fetchSubComments).not.toHaveBeenCalled()
+    expect(runtime.commentReplies).not.toHaveBeenCalled()
     expect(subIds(result)).toEqual(['s1', 's2'])
   })
 
@@ -104,19 +113,19 @@ describe('小红书子评论拉取', () => {
 
     const result = await xiaohongshuComments(noteCommentsResponse([level1Comment('c1', ['s1', 's2'])]), [], note)
 
-    expect(runtime.fetchSubComments).not.toHaveBeenCalled()
+    expect(runtime.commentReplies).not.toHaveBeenCalled()
     expect(subIds(result)).toEqual(['s1', 's2'])
   })
 
   it('有 ck 且 subCommentLimit 大于 2 时按配置数量请求，并与预览合并', async () => {
     runtime.config.amagi.cookies.xiaohongshu = CONFIGURED_CK
     runtime.config.xiaohongshu.subCommentLimit = 5
-    runtime.fetchSubComments.mockResolvedValue(fetchedEnvelope(['s1', 's2', 's3', 's4', 's5']))
+    runtime.commentReplies.mockResolvedValue(fetchedEnvelope(['s1', 's2', 's3', 's4', 's5']))
 
     const result = await xiaohongshuComments(noteCommentsResponse([level1Comment('c1', ['s1', 's2'])]), [], note)
 
-    expect(runtime.fetchSubComments).toHaveBeenCalledTimes(1)
-    expect(runtime.fetchSubComments.mock.calls[0][0]).toMatchObject({
+    expect(runtime.commentReplies).toHaveBeenCalledTimes(1)
+    expect(runtime.commentReplies).toHaveBeenCalledWith({
       note_id: 'note-1',
       root_comment_id: 'c1',
       xsec_token: 'note-token',
@@ -129,7 +138,7 @@ describe('小红书子评论拉取', () => {
     runtime.config.amagi.cookies.xiaohongshu = CONFIGURED_CK
     runtime.config.xiaohongshu.subCommentLimit = 5
     // s1 与预览重复，s2 同时出现在一级评论列表里，s9 才是新增的
-    runtime.fetchSubComments.mockResolvedValue(fetchedEnvelope(['s1', 's2', 's9']))
+    runtime.commentReplies.mockResolvedValue(fetchedEnvelope(['s1', 's2', 's9']))
 
     const result = await xiaohongshuComments(noteCommentsResponse([level1Comment('c1', ['s1']), level1Comment('s2', [])]), [], note)
 
@@ -139,7 +148,7 @@ describe('小红书子评论拉取', () => {
   it('接口失败时只丢这一条的子评论，预览照常渲染', async () => {
     runtime.config.amagi.cookies.xiaohongshu = CONFIGURED_CK
     runtime.config.xiaohongshu.subCommentLimit = 5
-    runtime.fetchSubComments.mockRejectedValue(new Error('boom'))
+    runtime.commentReplies.mockRejectedValue(new Error('boom'))
 
     const result = await xiaohongshuComments(noteCommentsResponse([level1Comment('c1', ['s1', 's2'])]), [], note)
 
@@ -152,19 +161,19 @@ describe('小红书子评论拉取', () => {
 
     await xiaohongshuComments(noteCommentsResponse([level1Comment('c1', [], 0)]), [], note)
 
-    expect(runtime.fetchSubComments).not.toHaveBeenCalled()
+    expect(runtime.commentReplies).not.toHaveBeenCalled()
   })
 
   it('只对最终会渲染的一级评论请求（numcomment 截断之后）', async () => {
     runtime.config.amagi.cookies.xiaohongshu = CONFIGURED_CK
     runtime.config.xiaohongshu.subCommentLimit = 5
     runtime.config.xiaohongshu.numcomment = 1
-    runtime.fetchSubComments.mockResolvedValue(fetchedEnvelope(['s1', 's2', 's3']))
+    runtime.commentReplies.mockResolvedValue(fetchedEnvelope(['s1', 's2', 's3']))
 
     const result = await xiaohongshuComments(noteCommentsResponse([level1Comment('c1', ['s1']), level1Comment('c2', ['s1'])]), [], note)
 
-    expect(runtime.fetchSubComments).toHaveBeenCalledTimes(1)
-    expect(runtime.fetchSubComments.mock.calls[0][0]).toMatchObject({ root_comment_id: 'c1' })
+    expect(runtime.commentReplies).toHaveBeenCalledTimes(1)
+    expect(runtime.commentReplies.mock.calls[0][0]).toMatchObject({ root_comment_id: 'c1' })
     expect(result).toHaveLength(1)
   })
 })

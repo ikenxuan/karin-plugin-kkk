@@ -171,6 +171,7 @@ const buildErrorPrefix = async (ctx: ErrorContext, isPush: boolean, botId: strin
   }
 
   const groupId = event && 'groupId' in event ? event.groupId : ''
+  if (!groupId) return `${options.businessName} 任务执行出错\n请尽快解决以消除警告`
   const groupInfo = await karin.getBot(botId)?.getGroupInfo(groupId)
   const groupName = groupInfo?.groupName || '未知'
 

@@ -144,7 +144,7 @@ const noticeOf = (error: AmagiError): string => {
 /**
  * 小红书扫码登录。
  *
- * 协议与轮询编排都在 amagi 的 v7 登录会话里（`client.xiaohongshu.login.qrcode()`）：
+ * 协议与轮询编排都在 amagi 的 v7 登录会话里（`client.xiaohongshu.auth.qrcode()`）：
  * 游客冷启动（a1 / webId / SSK）→ 取码 → 轮询 codeStatus → 换正式 web_session，
  * 以及风控二次验证的挑战中转都由引擎负责。这里只做三件与用户交互的事 ——
  * 渲染二维码、把验证页转给人、把凭证落库。
@@ -160,7 +160,7 @@ export const xiaohongshuLogin = async (e: Message): Promise<boolean> => {
   let scanTimer: ReturnType<typeof setTimeout> | undefined
 
   try {
-    const session = getAmagiClient().xiaohongshu.login.qrcode()
+    const session = getAmagiClient().xiaohongshu.auth.qrcode()
 
     const outcome = await session.watch({
       signal: controller.signal,

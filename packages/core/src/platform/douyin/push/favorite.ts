@@ -1,7 +1,7 @@
 import { DouyinUserProfileResponse } from '@ikenxuan/amagi'
 
 import { douyinDB } from '@/module'
-import { douyinFetcher } from '@/module/utils/amagiClient'
+import { douyinWebApi } from '@/module/utils/amagiClient'
 import { logger } from '@/module/utils/logger'
 import { buildDouyinWorkDetail, type DouyinListItem } from '@/platform/douyin/types'
 import { douyinPushItem } from '@/types/config/pushlist'
@@ -60,7 +60,7 @@ export async function processFavoriteList(
     try {
       if (aweme.author?.sec_uid) {
         authorUserInfo = (
-          await douyinFetcher.fetchUserProfile({
+          await douyinWebApi.userProfile({
             sec_uid: aweme.author.sec_uid
           })
         ).data

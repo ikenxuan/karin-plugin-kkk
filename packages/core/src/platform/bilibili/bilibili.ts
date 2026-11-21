@@ -5,13 +5,13 @@ import {
   BilibiliArticleContentResponse,
   BilibiliBangumiInfoResponse,
   BilibiliBangumiStreamResponse,
-  bilibiliApiUrls,
   BiliBiliVideoPlayurlNoLogin,
   BilibiliDynamicDetailResponse,
   BilibiliVideoInfoResponse,
   BilibiliVideoStreamResponse,
   DynamicType,
-  DynamicTypeDraw
+  DynamicTypeDraw,
+  tools
 } from '@ikenxuan/amagi'
 import type { BilibiliForwardOriginalContentProps } from '@template/template/bilibili/dynamic/types'
 import { DecorationCardData } from '@template/template/bilibili/dynamic/types'
@@ -39,7 +39,7 @@ import {
   Render,
   uploadFile
 } from '@/module/utils'
-import { bilibiliFetcher, isSoftFailure, SOFT_ERROR_CODES, softFetch } from '@/module/utils/amagiClient'
+import { bilibiliApi, isSoftFailure, SOFT_ERROR_CODES, softFetch } from '@/module/utils/amagiClient'
 import { Config } from '@/module/utils/Config'
 import { createEmojiReactionFlow, type EmojiReactionFlow, settleEmojiReaction } from '@/module/utils/EmojiReaction'
 import {
@@ -127,12 +127,11 @@ export class Bilibili extends Base {
     }
     switch (this.Type) {
       case 'one_video': {
-        const infoData = await this.amagi.bilibili.fetcher.fetchVideoInfo({ bvid: iddata.bvid })
-        const playUrlData = await this.amagi.bilibili.fetcher.fetchVideoStreamUrl({
+        const infoData = await this.amagi.bilibili.videoInfo({ bvid: iddata.bvid })
+        const playUrlData = await this.amagi.bilibili.videoStream({
           avid: infoData.data.data.aid,
           cid: iddata.p ? (infoData.data.data.pages[iddata.p - 1]?.cid ?? infoData.data.data.cid) : infoData.data.data.cid
         })
-        // const playUrl = bilibiliApiUrls.视频流信息({ avid: infoData.data.aid, cid: infoData.data.cid })
         this.islogin = (await checkCk()).Status === 'isLogin'
 
         this.downloadfilename = infoData.data.data.title.substring(0, 50).replace(/[\\/:*?"<>|\r\n\s]/g, ' ')
@@ -143,7 +142,7 @@ export class Bilibili extends Base {
          */
         const nockData = (await new Networks({
           url:
-            bilibiliApiUrls.getVideoStream({
+            tools.bilibili.apiUrls.getVideoStream({
               avid: infoData.data.data.aid,
               cid: iddata.p ? (infoData.data.data.pages[iddata.p - 1]?.cid ?? infoData.data.data.cid) : infoData.data.data.cid
             }) + '&platform=html5',
@@ -176,7 +175,7 @@ export class Bilibili extends Base {
             }
           } else {
             // 渲染为图片
-            const userProfileData = await this.amagi.bilibili.fetcher.fetchUserCard({
+            const userProfileData = await this.amagi.bilibili.userCard({
               host_mid: infoData.data.data.owner.mid
             })
             // 获取弹幕并统计出现次数最多的几条，用于模板展示（仅当配置开启时）
@@ -249,7 +248,7 @@ export class Bilibili extends Base {
         if (Config.bilibili.sendContent.some((content) => content === 'comment')) {
           const commentsData = await softFetch(
             () =>
-              this.amagi.bilibili.fetcher.fetchComments(
+              this.amagi.bilibili.comments(
                 {
                   number: Config.bilibili.numcomment,
                   type: 1,
@@ -342,7 +341,7 @@ export class Bilibili extends Base {
         break
       }
       case 'bangumi_video_info': {
-        const videoInfo = await this.amagi.bilibili.fetcher.fetchBangumiInfo({
+        const videoInfo = await this.amagi.bilibili.bangumi({
           [iddata.isEpid ? 'ep_id' : 'season_id']: iddata.realid
         })
         this.islogin = (await checkCk()).Status === 'isLogin'
@@ -542,7 +541,7 @@ export class Bilibili extends Base {
           this.downloadfilename = episodeInfo.share_copy.substring(0, 50).replace(/[\\/:*?"<>|\r\n\s]/g, ' ')
           await this.e.reply(`收到请求，第${displayEpisode}集\n${this.downloadfilename}\n正在下载中`)
 
-          const bangumidataBASEURL = bilibiliApiUrls.getBangumiStream({
+          const bangumidataBASEURL = tools.bilibili.apiUrls.getBangumiStream({
             cid: episodeInfo.cid,
             ep_id: episodeInfo.ep_id.toString()
           })
@@ -596,7 +595,7 @@ export class Bilibili extends Base {
       }
 
       case 'dynamic_info': {
-        const dynamicInfo = await this.amagi.bilibili.fetcher.fetchDynamicDetail({
+        const dynamicInfo = await this.amagi.bilibili.dynamic({
           dynamic_id: iddata.dynamic_id
         })
         /**
@@ -608,7 +607,7 @@ export class Bilibili extends Base {
          * 转成枚举后各支照旧按运行时的 `type` 字符串走，字段读取仍走每层的索引签名。
          */
         const dynamicType = String(dynamicInfo.data.data.item.type) as DynamicType
-        const userProfileData = await this.amagi.bilibili.fetcher.fetchUserCard({
+        const userProfileData = await this.amagi.bilibili.userCard({
           host_mid: dynamicInfo.data.data.item.modules.module_author.mid
         })
 
@@ -976,7 +975,7 @@ export class Bilibili extends Base {
               // 其他类型动态未适配
               default: {
                 logger.warn(
-                  `UP主：${userProfileData.data.data.card.name}的${logger.green('转发动态')}转发的原动态类型为「${logger.yellow(dynamicInfo.data.item.orig.type)}」暂未支持解析`
+                  `UP主：${userProfileData.data.data.card.name}的${logger.green('转发动态')}转发的原动态类型为「${logger.yellow(dynamicInfo.data.data.item.orig.type)}」暂未支持解析`
                 )
                 break
               }
@@ -1010,7 +1009,7 @@ export class Bilibili extends Base {
           case DynamicType.AV: {
             if (dynamicInfo.data.data.item.modules.module_dynamic.major.type === 'MAJOR_TYPE_ARCHIVE') {
               const bvid = dynamicInfo.data.data.item.modules.module_dynamic.major.archive.bvid
-              const INFODATA = await bilibiliFetcher.fetchVideoInfo({ bvid })
+              const INFODATA = await bilibiliApi.videoInfo({ bvid })
 
               // 处理共创者信息
               let staff = undefined
@@ -1082,7 +1081,7 @@ export class Bilibili extends Base {
           }
           /** 直播动态 */
           case DynamicType.LIVE_RCMD: {
-            const userINFO = await bilibiliFetcher.fetchUserCard({
+            const userINFO = await bilibiliApi.userCard({
               host_mid: dynamicInfo.data.data.item.modules.module_author.mid
             })
             const liveInfo = JSON.parse(dynamicInfo.data.data.item.modules.module_dynamic.major.live_rcmd.content)
@@ -1104,10 +1103,10 @@ export class Bilibili extends Base {
           }
           /** 文章/专栏动态 */
           case DynamicType.ARTICLE: {
-            const articleInfoBase = await this.amagi.bilibili.fetcher.fetchArticleInfo({
+            const articleInfoBase = await this.amagi.bilibili.article({
               id: dynamicInfo.data.data.item.basic.rid_str
             })
-            const articleInfo = await this.amagi.bilibili.fetcher.fetchArticleContent({
+            const articleInfo = await this.amagi.bilibili.articleContent({
               id: dynamicInfo.data.data.item.basic.rid_str
             })
 
@@ -1195,7 +1194,7 @@ export class Bilibili extends Base {
         if (Config.bilibili.sendContent.some((content) => content === 'comment') && dynamicType !== DynamicType.LIVE_RCMD) {
           const commentsData = await softFetch(
             () =>
-              this.amagi.bilibili.fetcher.fetchComments(
+              this.amagi.bilibili.comments(
                 {
                   type: mapping_table(dynamicType),
                   oid: oid(dynamicType, dynamicInfo.data),
@@ -1266,13 +1265,13 @@ export class Bilibili extends Base {
         break
       }
       case 'live_room_detail': {
-        const liveInfo = await this.amagi.bilibili.fetcher.fetchLiveRoomInfo({
+        const liveInfo = await this.amagi.bilibili.liveRoom({
           room_id: iddata.room_id
         })
-        const roomInitInfo = await this.amagi.bilibili.fetcher.fetchLiveRoomInitInfo({
+        const roomInitInfo = await this.amagi.bilibili.liveRoomInit({
           room_id: iddata.room_id
         })
-        const userProfileData = await this.amagi.bilibili.fetcher.fetchUserCard({
+        const userProfileData = await this.amagi.bilibili.userCard({
           host_mid: roomInitInfo.data.data.uid
         })
 
@@ -1312,8 +1311,8 @@ export class Bilibili extends Base {
       const segmentCount = Math.ceil(duration / 360) // 360秒 = 6分钟
       logger.debug(`视频时长: ${duration}秒, 需要获取 ${segmentCount} 个弹幕分段`)
       const danmakuPromises = Array.from({ length: segmentCount }, (_, i) =>
-        this.amagi.bilibili.fetcher
-          .fetchVideoDanmaku({ cid, segment_index: i + 1 })
+        this.amagi.bilibili
+          .danmaku({ cid, segment_index: i + 1 })
           .then((res) => res.data?.data?.elems || [])
           .catch(() => [] as BiliDanmakuElem[])
       )

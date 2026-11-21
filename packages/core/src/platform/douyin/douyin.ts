@@ -4,7 +4,7 @@ import { type DouyinEmojiListResponse, DouyinVideoWorkResponse } from '@ikenxuan
 import type { RichTextEmojiDefinition } from '@kkk/richtext'
 import type { DouyinUserVideoListData } from '@template/template/douyin/user_profile/components/types'
 import { format } from 'date-fns'
-import karin, { type Elements, common, logger, Message, mkdirSync, segment, SendMessage } from 'node-karin'
+import karin, { type Elements, common, Message, mkdirSync, segment, SendMessage } from 'node-karin'
 
 import type { ParseWorkType } from '@/module/db'
 import {
@@ -25,6 +25,7 @@ import {
   uploadFile
 } from '@/module/utils'
 import { Config } from '@/module/utils/Config'
+import { logger } from '@/module/utils/logger'
 import { createEmojiReactionFlow, type EmojiReactionFlow, settleEmojiReaction } from '@/module/utils/EmojiReaction'
 import {
   EPISODE_SELECTION_PAGE_SIZE,
@@ -40,6 +41,7 @@ import {
   setEpisodeSelectionMessage
 } from '@/module/utils/EpisodeSelection'
 import { douyinComments } from '@/platform/douyin'
+import { sendDouyinCommentImages } from '@/platform/douyin/commentImages'
 import { burnDouyinDanmaku, type DouyinDanmakuElem } from '@/platform/douyin/danmaku'
 import { renderWorkImage } from '@/platform/douyin/push/render'
 import { toDouyinShortUrl } from '@/platform/douyin/shortUrl'
@@ -82,7 +84,7 @@ export class DouYin extends Base {
     }
     switch (this.type) {
       case 'one_work': {
-        const VideoData = await this.amagi.douyin.fetcher.parseWork({
+        const VideoData = await this.amagi.douyin.web.work({
           aweme_id: data.aweme_id
         })
 
@@ -102,7 +104,7 @@ export class DouYin extends Base {
         const isArticle = aweme_type === 163
         const isVideo = aweme_type === 0 || aweme_type === 4 || aweme_type === 55 || aweme_type === 61
 
-        const CommentsData = await this.amagi.douyin.fetcher.fetchWorkComments({
+        const CommentsData = await this.amagi.douyin.web.comments({
           aweme_id: data.aweme_id,
           number: Config.douyin.numcomment
         })
@@ -614,7 +616,7 @@ export class DouYin extends Base {
             }
           } else {
             const aweme = VideoData.data.aweme_detail
-            const userProfile = await this.amagi.douyin.fetcher.fetchUserProfile({
+            const userProfile = await this.amagi.douyin.web.userProfile({
               sec_uid: aweme.author.sec_uid
             })
             // 作品详情二维码统一用抖音签发的短链：视频作品用选档后的下载直链、
@@ -640,7 +642,7 @@ export class DouYin extends Base {
         }
 
         if (Config.douyin.sendContent.includes('comment')) {
-          const EmojiData = await this.amagi.douyin.fetcher.fetchEmojiList()
+          const EmojiData = await this.amagi.douyin.web.emojis()
           const list = Emoji(EmojiData.data)
           const douyinCommentsRes = await douyinComments(CommentsData.data, list)
           if (!douyinCommentsRes.CommentsData.length) {
@@ -693,19 +695,9 @@ export class DouYin extends Base {
                 const imageUrl = await processImageUrl(v, VideoData.data.aweme_detail.desc, index)
                 messageElements.push(segment.image(imageUrl))
               }
-              const res = common.makeForward(
-                messageElements,
-                Config.app.fakeForward ? this.e.sender.userId : this.e.bot.account.selfId,
-                Config.app.fakeForward ? this.e.sender.nick : this.e.bot.account.name
-              )
-              await this.e.bot.sendForwardMsg(this.e.contact, res, {
-                source: '评论图片收集',
-                summary: `查看${messageElements.length}张图片`,
-                prompt: '抖音评论解析结果',
-                news: [{ text: '点击查看解析结果' }]
-              })
+              await sendDouyinCommentImages(this.e, messageElements)
             }
-            this.e.reply(img)
+            await this.e.reply(img)
           }
         }
 
@@ -717,7 +709,7 @@ export class DouYin extends Base {
             try {
               const duration = video.duration // 视频时长（毫秒）
               logger.debug(`[抖音] 视频时长: ${duration}ms, 开始获取弹幕数据`)
-              const danmakuData = await this.amagi.douyin.fetcher.fetchDanmakuList({
+              const danmakuData = await this.amagi.douyin.web.danmaku({
                 aweme_id: data.aweme_id,
                 duration
               })
@@ -789,10 +781,10 @@ export class DouYin extends Base {
 
       case 'user_dynamic': {
         this.workType = 'dynamic'
-        const rawData = await this.amagi.douyin.fetcher.fetchUserVideoList({
+        const rawData = await this.amagi.douyin.web.userWorks({
           sec_uid: data.sec_uid
         })
-        const userProfileData = await this.amagi.douyin.fetcher.fetchUserProfile({
+        const userProfileData = await this.amagi.douyin.web.userProfile({
           sec_uid: data.sec_uid
         })
 
@@ -890,7 +882,7 @@ export class DouYin extends Base {
         /** 单次最多拉取的集数，超出部分不展示 */
         const episodeLimit = 200
         const timeoutSeconds = EPISODE_SELECTION_TTL_SECONDS
-        const MixData = await this.amagi.douyin.fetcher.fetchMixAweme({ mix_id: data.mix_id, number: episodeLimit })
+        const MixData = await this.amagi.douyin.web.mixWorks({ mix_id: data.mix_id, number: episodeLimit })
         const awemeList = MixData.data.aweme_list
         const first = awemeList[0]
         if (!first) {
@@ -1079,7 +1071,7 @@ export class DouYin extends Base {
       }
       case 'music_work': {
         this.workType = 'music'
-        const MusicData = await this.amagi.douyin.fetcher.fetchMusicInfo({
+        const MusicData = await this.amagi.douyin.web.music({
           music_id: data.music_id
         })
         // 生成类型里 `music_info` 可空（样本里有一条就是 null），先兜住再往下读
@@ -1089,7 +1081,7 @@ export class DouYin extends Base {
           return true
         }
         const sec_uid = musicInfo.sec_uid
-        const UserData = await this.amagi.douyin.fetcher.fetchUserProfile({ sec_uid })
+        const UserData = await this.amagi.douyin.web.userProfile({ sec_uid })
         // if (UserData.data.status_code === 2) {
         //   const new_UserData.data = await getDouyinData('搜索数据', Config.cookies.douyin, { query: data.music_info.author })
         //   if (new_UserData.data.data[0].type === 4 && new_UserData.data.data[0].card_unique_name === 'user') {
@@ -1135,7 +1127,7 @@ export class DouYin extends Base {
       }
       case 'live_room_detail': {
         this.workType = 'live'
-        const UserInfoData = await this.amagi.douyin.fetcher.fetchUserProfile({
+        const UserInfoData = await this.amagi.douyin.web.userProfile({
           sec_uid: data.sec_uid
         })
         if (UserInfoData.data.user.live_status === 1) {
@@ -1155,7 +1147,7 @@ export class DouYin extends Base {
           // room_id 在 amagi 里是 internalParam（不在公开参数类型里）：用变量承载，
           // 保住原来的 `room_id_str` 查询参数，也不与公开契约的类型检查打架
           const liveParams = { room_id: UserInfoData.data.user.room_id_str, web_rid: room_data.owner.web_rid }
-          const live_data = await this.amagi.douyin.fetcher.fetchLiveRoomInfo(liveParams)
+          const live_data = await this.amagi.douyin.web.liveRoom(liveParams)
           const liveItem = live_data.data.data.data[0]
           const user = UserInfoData.data.user
           const streamExtra = liveItem.stream_url?.extra

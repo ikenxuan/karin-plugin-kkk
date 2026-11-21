@@ -127,7 +127,7 @@ export class DouYinpush extends Base {
       if (!item.sec_uid && item.short_id) {
         try {
           logger.info(`自动获取用户 ${item.remark || item.short_id} 的 sec_uid`)
-          const searchResult = await this.amagi.douyin.fetcher.searchContent({
+          const searchResult = await this.amagi.douyin.web.search({
             query: item.short_id,
             type: 'user'
           })
@@ -814,7 +814,7 @@ export class DouYinpush extends Base {
 
         logger.debug(`开始获取用户：${item.remark}（${sec_uid}）的内容，推送类型：${pushTypes.join(', ')}`)
 
-        const userinfo = await this.amagi.douyin.fetcher.fetchUserProfile({ sec_uid })
+        const userinfo = await this.amagi.douyin.web.userProfile({ sec_uid })
 
         const targets = item.group_id.map((groupWithBot) => {
           const [groupId, botId] = groupWithBot.split(':')
@@ -850,7 +850,7 @@ export class DouYinpush extends Base {
           switch (pushType) {
             case 'post':
               listName = '作品列表'
-              const videolist = await this.amagi.douyin.fetcher.fetchUserVideoList({
+              const videolist = await this.amagi.douyin.web.userWorks({
                 sec_uid,
                 number: 15
               })
@@ -858,7 +858,7 @@ export class DouYinpush extends Base {
               break
             case 'favorite':
               listName = '喜欢列表'
-              const favoritelist = await this.amagi.douyin.fetcher.fetchUserFavoriteList({
+              const favoritelist = await this.amagi.douyin.web.userLikes({
                 sec_uid,
                 number: 15
               })
@@ -868,7 +868,7 @@ export class DouYinpush extends Base {
               break
             case 'recommend':
               listName = '推荐列表'
-              const recommendlist = await this.amagi.douyin.fetcher.fetchUserRecommendList({
+              const recommendlist = await this.amagi.douyin.web.userRecommendations({
                 sec_uid,
                 number: 15
               })
@@ -1067,7 +1067,7 @@ export class DouYinpush extends Base {
 
     for (const subscription of subscriptions) {
       const sec_uid = subscription.sec_uid
-      const userInfo = await this.amagi.douyin.fetcher.fetchUserProfile({ sec_uid })
+      const userInfo = await this.amagi.douyin.web.userProfile({ sec_uid })
 
       // 查找配置文件中对应的全局开关状态
       const configItem = Config.pushlist.douyin?.find((item: douyinPushItem) => item.sec_uid === sec_uid)
@@ -1161,7 +1161,7 @@ export class DouYinpush extends Base {
     if (updateList.length > 0) {
       for (const i of updateList) {
         // 从外部数据源获取用户备注信息
-        const userinfo = await this.amagi.douyin.fetcher.fetchUserProfile({ sec_uid: i.sec_uid })
+        const userinfo = await this.amagi.douyin.web.userProfile({ sec_uid: i.sec_uid })
         const remark = userinfo.data.user.nickname
 
         // 在配置文件中找到对应的用户，并更新其备注信息

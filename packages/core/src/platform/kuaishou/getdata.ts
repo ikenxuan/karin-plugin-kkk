@@ -5,7 +5,7 @@ import type {
   KuaishouVideoWorkResponse
 } from '@ikenxuan/amagi'
 
-import { kuaishouFetcher } from '@/module/utils/amagiClient'
+import { kuaishouApi } from '@/module/utils/amagiClient'
 import { KuaishouDataTypes, type ExtendedKuaishouOptionsType } from '@/types'
 
 /**
@@ -14,7 +14,7 @@ import { KuaishouDataTypes, type ExtendedKuaishouOptionsType } from '@/types'
  * 抽成命名类型是给 `KuaishouHandler` 用的：它的入参一直是 `any`，快手换成 H5 REST
  * 之后响应形状整个变了（少了 `data.visionVideoDetail` 两层），靠 `any` 读错字段
  * tsc 一声不响 —— 有了这个类型，处理函数里那几处取值才有编译期兜底。
- * 存的是响应体本身（fetcher 失败即抛，信封没人读）。
+ * 存的是响应体本身（业务 API 失败即抛，信封没人读）。
  */
 export type KuaishouOneWorkPayload = {
   /** 作品详情（H5 `photo/info`，字段都在顶层） */
@@ -52,23 +52,23 @@ export const fetchKuaishouData = async <T extends keyof KuaishouDataTypes>(
 ): Promise<KuaishouDataResult> => {
   switch (type) {
     case 'one_work': {
-      const VideoData = await kuaishouFetcher.fetchVideoWork({
+      const VideoData = await kuaishouApi.work({
         photoId: (opt as KuaishouDataOptionsMap['videoWork']['opt']).photoId
       })
-      const CommentsData = await kuaishouFetcher.fetchWorkComments({
+      const CommentsData = await kuaishouApi.comments({
         photoId: (opt as KuaishouDataOptionsMap['comments']['opt']).photoId
       })
-      const EmojiData = await kuaishouFetcher.fetchEmojiList()
+      const EmojiData = await kuaishouApi.emojis()
       return { VideoData: VideoData.data, CommentsData: CommentsData.data, EmojiData: EmojiData.data }
     }
     case 'work_comments': {
-      const CommentsData = await kuaishouFetcher.fetchWorkComments({
+      const CommentsData = await kuaishouApi.comments({
         photoId: (opt as KuaishouDataOptionsMap['comments']['opt']).photoId
       })
       return CommentsData.data
     }
     case 'emoji_list': {
-      const EmojiData = await kuaishouFetcher.fetchEmojiList()
+      const EmojiData = await kuaishouApi.emojis()
       return EmojiData.data
     }
     default: {

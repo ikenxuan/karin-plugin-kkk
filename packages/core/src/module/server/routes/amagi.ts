@@ -11,7 +11,7 @@ import { logger } from '@/module/utils/logger'
  * `createXxxRoutes(cookie, requestConfig?)` 的第二参与 client 的
  * `ClientOptions.request` 是同一个东西 —— 原先只传了 cookie，于是 HTTP API
  * 这一路绕开了插件配置里的代理、超时与 UA，行为与 SDK 那一路不一致。
- * @returns 与 `AmagiBase.createAmagiClient` 同源的请求配置
+ * @returns 与共享 Amagi 客户端同源的请求配置
  */
 const requestConfigOf = () => {
   const amagi = Config.amagi
@@ -27,7 +27,8 @@ const createPlatformRouters = () => {
   const requestConfig = requestConfigOf()
   return {
     bilibili: createBilibiliRoutes(Config.amagi.cookies.bilibili, requestConfig),
-    douyin: createDouyinRoutes(Config.amagi.cookies.douyin, requestConfig),
+    // API Server 不使用实验室签名地址，也不加载实验室的 App 游客会话。
+    douyin: createDouyinRoutes(Config.amagi.cookies.douyin, requestConfig, { session: false }),
     kuaishou: createKuaishouRoutes(Config.amagi.cookies.kuaishou, requestConfig),
     xiaohongshu: createXiaohongshuRoutes(Config.amagi.cookies.xiaohongshu, requestConfig)
   }

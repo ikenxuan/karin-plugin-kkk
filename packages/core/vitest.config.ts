@@ -7,10 +7,9 @@ const root = path.dirname(fileURLToPath(import.meta.url))
 
 export default defineConfig({
   resolve: {
+    // 与生产构建一致，测试当前安装（含本地 link）的 SDK，而不是固定指向另一份子模块源码。
+    conditions: ['node', 'import', 'module'],
     alias: {
-      // 与 tsconfig 的 paths 保持一致：amagi 以源码形式被引用，其内部用的是 amagi/* 自别名
-      '@ikenxuan/amagi': path.resolve(root, '../amagi/packages/core/src/index.ts'),
-      amagi: path.resolve(root, '../amagi/packages/core/src'),
       '@': path.resolve(root, 'src')
     }
   },

@@ -1,7 +1,7 @@
 import type { DouyinUserProfileResponse } from '@ikenxuan/amagi'
 
 import { douyinDB } from '@/module'
-import type { douyinFetcher } from '@/module/utils/amagiClient'
+import type { douyinWebApi } from '@/module/utils/amagiClient'
 import { logger } from '@/module/utils/logger'
 import type { douyinPushItem } from '@/types/config/pushlist'
 
@@ -17,7 +17,7 @@ export async function processLiveStream(
   userinfo: DouyinUserProfileResponse,
   item: douyinPushItem,
   targets: Array<{ groupId: string; botId: string }>,
-  amagi: { douyin: { fetcher: typeof douyinFetcher } }
+  amagi: { douyin: { web: typeof douyinWebApi } }
 ): Promise<DouyinLivePushItem | null> {
   // 获取缓存的直播状态
   const liveStatus = await douyinDB.getLiveStatus(sec_uid)
@@ -32,7 +32,7 @@ export async function processLiveStream(
       return null
     }
 
-    const UserInfoData = await amagi.douyin.fetcher.fetchUserProfile({
+    const UserInfoData = await amagi.douyin.web.userProfile({
       sec_uid: userinfo.user.sec_uid
     })
 
@@ -50,7 +50,7 @@ export async function processLiveStream(
     // room_id 在 amagi 里是 internalParam（不在公开参数类型里）：用变量承载，
     // 保住原来的 `room_id_str` 查询参数，也不与公开契约的类型检查打架
     const liveParams = { room_id: UserInfoData.data.user.room_id_str, web_rid: room_data.owner.web_rid }
-    const liveInfo = await amagi.douyin.fetcher.fetchLiveRoomInfo(liveParams)
+    const liveInfo = await amagi.douyin.web.liveRoom(liveParams)
 
     // 如果之前没有直播，现在开播了，需要推送
     if (!liveStatus.living) {

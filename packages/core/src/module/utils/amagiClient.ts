@@ -1,39 +1,31 @@
-import Client, {
+import Amagi, {
+  type AmagiClient as AmagiSdkClient,
   type AmagiError as AmagiErrorContract,
   type AmagiFailure,
   type AmagiSuccess,
-  type SuccessBilibiliFetcher,
-  type SuccessDouyinFetcher,
-  type SuccessKuaishouFetcher,
-  type SuccessXiaohongshuFetcher
+  type SuccessAmagiClient
 } from '@ikenxuan/amagi'
 
 import { logger } from '@/module/utils/logger'
+import { getDouyinAppSignerBaseUrl } from '@/platform/douyin/appSignerUrl'
+import { prepareDouyinShareDataFile } from '@/platform/douyin/shareStorage'
 
 import { Config } from './Config'
 
-/** v7 客户端实例 */
-export type AmagiClient = ReturnType<typeof Client>
+/** 默认工厂返回的 Amagi v7 门面；抖音按 Web/App 分端，其余平台直接提供业务方法。 */
+export type AmagiClient = AmagiSdkClient
 
 /** 四个平台的键，用来在类型层重建 client 形状 */
 type PlatformKey = 'bilibili' | 'douyin' | 'kuaishou' | 'xiaohongshu'
 
-/** 把一个平台模块的 `fetcher` 换成「只保留成功分支」的那份类型 */
-type WithSuccessFetcher<M, F> = Omit<M, 'fetcher'> & { fetcher: F }
-
 /**
- * 失败必抛的 client：四个平台的 `fetcher` 换成成功信封形态，其余键原样。
+ * 失败必抛的 client：业务方法与 auth 端点只返回成功信封，非信封能力保持原类型。
  *
  * 运行时由 {@link throwOnFailure} 保证「失败一律抛」，类型上必须同步声明成成功分支 —— 否则
- * 未收窄的 `AmagiResult` 让每一处 `.data` 都带 `| undefined`。`Success*Fetcher` 只能用 amagi
- * 提供的那份：fetcher 方法是泛型签名，自己 infer 会按约束实例化类型参数，默认值丢失，`data` 退化成 `unknown`。
+ * 未收窄的 `AmagiResult` 让每一处 `.data` 都带 `| undefined`。必须使用 amagi 从端点声明派生的类型：
+ * 业务方法是泛型签名，下游自己 infer 会丢失泛型默认值，使 `data` 退化成 `unknown`。
  */
-type ThrowingClient = Omit<AmagiClient, PlatformKey> & {
-  bilibili: WithSuccessFetcher<AmagiClient['bilibili'], SuccessBilibiliFetcher>
-  douyin: WithSuccessFetcher<AmagiClient['douyin'], SuccessDouyinFetcher>
-  kuaishou: WithSuccessFetcher<AmagiClient['kuaishou'], SuccessKuaishouFetcher>
-  xiaohongshu: WithSuccessFetcher<AmagiClient['xiaohongshu'], SuccessXiaohongshuFetcher>
-}
+type ThrowingClient = SuccessAmagiClient
 
 /**
  * 平台业务码。v7 的三种码各归各位：平台业务码 `error.platform.code`、HTTP 状态 `error.http.status`、
@@ -121,7 +113,7 @@ const isThenable = (value: unknown): value is PromiseLike<unknown> =>
   !!value && (typeof value === 'object' || typeof value === 'function') && typeof (value as PromiseLike<unknown>).then === 'function'
 
 /**
- * 把一次 fetcher 调用的结果收口：成功原样返回，失败信封先给 RiskVerify 一次「发码并轮询」的机会。
+ * 把一次业务调用的结果收口：成功原样返回，失败信封先给 RiskVerify 一次「发码并轮询」的机会。
  *
  * `handleRiskChallenge` 对不带 `challenge.url` 的失败会立刻返回 false（是不是风控由它判定），
  * 所以这里不用先判。过码成功后按它的契约**再重放一次**原调用，这次的返回值就是结果；
@@ -163,16 +155,19 @@ const probeReplay = async (call: () => unknown): Promise<boolean> => {
 }
 
 /**
- * 递归代理一个 fetcher 对象，把失败信封转成 `throw AmagiError`。返回类型与入参同形 ——
+ * 代理业务 API 与 auth 端点，把失败信封转成 `throw AmagiError`。返回类型与入参同形 ——
  * 「只保留成功分支」是**类型层**由 {@link ThrowingClient} 声明的，这里只管运行时行为。
  *
  * 带风控挑战的失败不直接抛：先交给 `RiskVerify` 走完整条验证流程（发二维码给主人 → 轮询重放），
  * 过码成功就重放拿正常结果，没成功再把原错误抛出去 —— 见 {@link settleFailure}。
+ * request 有独立的信封/axios 双轨，guest 是游客会话管理器，两者必须保留原始语义。
  */
 const throwOnFailure = <T extends object>(target: T, platform: PlatformKey): T =>
   new Proxy(target, {
     get(obj: any, prop: string | symbol) {
       const value = obj[prop]
+
+      if (prop === 'request' || prop === 'guest') return value
 
       if (typeof value === 'function') {
         return (...args: unknown[]) => {
@@ -192,75 +187,69 @@ const throwOnFailure = <T extends object>(target: T, platform: PlatformKey): T =
     }
   })
 
-/** 解析库基类 */
-export class AmagiBase {
-  /**
-   * 原始 v7 客户端。
-   *
-   * `events` / `on` / `once` / `login` / `startServer` 从这里取 —— 它们不是 fetcher，
-   * 不该被「失败必抛」的代理碰（`on` 返回退订函数，包成 async 就废了）。
-   */
-  rawAmagi: AmagiClient
-  /** 解析库实例，四个平台的 fetcher 失败即抛 */
-  amagi: ThrowingClient
-  /** 当前客户端使用的配置快照，用于避免文件监听与显式重载造成重复初始化 */
-  private configSignature: string
-
-  constructor() {
-    const client = this.createAmagiClient()
-    this.rawAmagi = client
-    this.amagi = this.wrapAmagiClient(client)
-    this.configSignature = this.getConfigSignature()
-  }
-
-  /** 获取会影响 Amagi 运行状态的配置快照 */
-  private getConfigSignature = () => JSON.stringify(Config.amagi)
-
-  /** 创建解析库实例 */
-  protected createAmagiClient = (): AmagiClient => {
-    const amagi = Config.amagi
-    return Client({
-      cookies: amagi.cookies || {},
-      request: {
-        timeout: amagi.timeout,
-        headers: { 'User-Agent': amagi['User-Agent'] },
-        proxy: amagi.proxy?.switch ? amagi.proxy : false
-      },
-      // B站风控要读失败响应里的 `v_voucher`，而 v7 只在 debug 下才填 `error.raw`
-      // —— 不开的话 `AmagiError.data` 连键都没有，整条风控验证流程静默失效
-      debug: true
-    })
-  }
-
-  /**
-   * 重载配置 - 重新创建 Amagi Client 实例
-   * @returns 配置发生变化并完成重载时返回 true
-   */
-  reloadConfig() {
-    const nextConfigSignature = this.getConfigSignature()
-    if (nextConfigSignature === this.configSignature) {
-      logger.debug('[AmagiClient] 配置未变化，跳过重复重载')
-      return false
+/** 快照包含 SDK 设置与规范化的签名 base URL；等价的根地址写法不会重复重建。 */
+const readClientConfig = () => {
+  const amagi = Config.amagi
+  const hooks = Config.laboratory?.messageHooks
+  let signerBaseUrl: string | undefined
+  if (hooks?.switch && Config.douyin?.switch) {
+    try {
+      signerBaseUrl = getDouyinAppSignerBaseUrl(hooks.signUrl)
+    } catch {
+      // 签名地址错误由口令功能报告，不影响其他平台初始化。
     }
+  }
+  return { amagi, signerBaseUrl }
+}
 
-    logger.debug('[AmagiClient] 检测到配置变化，正在重载...')
-    const client = this.createAmagiClient()
-    this.rawAmagi = client
-    this.amagi = this.wrapAmagiClient(client)
-    this.configSignature = nextConfigSignature
-    logger.debug('[AmagiClient] 配置重载完成')
-    return true
+/** 唯一的 SDK 构造入口。只有生效的配置变化才会替换当前客户端。 */
+const createRuntime = (config = readClientConfig(), configSignature = JSON.stringify(config)) => {
+  const { amagi, signerBaseUrl } = config
+  const cookies = amagi.cookies || {}
+  const webRequest = {
+    headers: { 'User-Agent': amagi['User-Agent'] },
+    proxy: amagi.proxy?.switch ? amagi.proxy : (false as const)
+  }
+  const rawAmagi = Amagi({
+    // 新门面会从外到内合并请求配置；全局只放两端共用的超时，浏览器身份留在 Web 平台内。
+    request: { timeout: amagi.timeout },
+    douyin: {
+      web: { cookie: cookies.douyin, request: webRequest },
+      app: {
+        ...(signerBaseUrl
+          ? { signerBaseUrl, sessionFile: prepareDouyinShareDataFile('douyin-app-session.json') }
+          : { session: false as const }),
+        request: { timeout: amagi.timeout, proxy: false }
+      }
+    },
+    bilibili: { cookie: cookies.bilibili, request: webRequest },
+    kuaishou: { cookie: cookies.kuaishou, request: webRequest },
+    xiaohongshu: { cookie: cookies.xiaohongshu, request: webRequest },
+    // B站风控要读失败响应里的 `v_voucher`，而 v7 只在 debug 下才填 `error.raw`。
+    debug: true
+  })
+  const client = {
+    ...rawAmagi,
+    bilibili: throwOnFailure(rawAmagi.bilibili, 'bilibili'),
+    douyin: {
+      web: throwOnFailure(rawAmagi.douyin.web, 'douyin'),
+      app: throwOnFailure(rawAmagi.douyin.app, 'douyin')
+    },
+    kuaishou: throwOnFailure(rawAmagi.kuaishou, 'kuaishou'),
+    xiaohongshu: throwOnFailure(rawAmagi.xiaohongshu, 'xiaohongshu')
+  } as ThrowingClient
+  return { rawAmagi, amagi: client, configSignature }
+}
+
+/** 解析和推送处理器只读取共享客户端；构造处理器或调用 getter 都不会创建客户端。 */
+export class AmagiBase {
+  get rawAmagi(): AmagiClient {
+    return getAmagiClient()
   }
 
-  /** 只把四个平台的 fetcher 换成失败必抛形态，client 的其余键原样带过去 */
-  protected wrapAmagiClient = (client: AmagiClient): ThrowingClient =>
-    ({
-      ...client,
-      bilibili: { ...client.bilibili, fetcher: throwOnFailure(client.bilibili.fetcher, 'bilibili') },
-      douyin: { ...client.douyin, fetcher: throwOnFailure(client.douyin.fetcher, 'douyin') },
-      kuaishou: { ...client.kuaishou, fetcher: throwOnFailure(client.kuaishou.fetcher, 'kuaishou') },
-      xiaohongshu: { ...client.xiaohongshu, fetcher: throwOnFailure(client.xiaohongshu.fetcher, 'xiaohongshu') }
-    }) as ThrowingClient
+  get amagi(): ThrowingClient {
+    return amagiClientInstance.amagi
+  }
 }
 
 /** 软错误码：命中这些平台业务码时不抛异常，按失败信封返回。Bilibili `12061` - UP主已关闭评论区 */
@@ -275,7 +264,7 @@ export type SoftFailure = AmagiFailure & { code: number }
 export type SoftResult<T> = AmagiSuccess<T> | SoftFailure
 
 /**
- * 调用 amagi fetcher 方法，允许特定平台业务码以失败信封返回而不是抛异常。
+ * 调用 amagi 业务方法，允许特定平台业务码以失败信封返回而不是抛异常。
  * @param fn - 经过代理包装的 amagi 方法调用
  * @param allowedCodes - 不应抛出异常的平台业务码列表
  * @returns 成功信封，或命中 `allowedCodes` 的软失败
@@ -300,7 +289,7 @@ export const softFetch = async <T>(fn: () => Promise<AmagiSuccess<T>>, allowedCo
 export const isSoftFailure = <T>(result: SoftResult<T>, ...codes: number[]): result is SoftFailure =>
   !result.success && codes.includes(result.code)
 
-const amagiClientInstance = new AmagiBase()
+let amagiClientInstance = createRuntime()
 
 type AmagiReloadListener = () => void
 
@@ -318,21 +307,23 @@ export const registerAmagiReloadListener = (listener: AmagiReloadListener) => {
 }
 
 /**
- * 四个平台的「失败必抛」fetcher。
+ * 各平台及端的「失败必抛」业务 API，随配置重载保持 ESM 实时绑定。
  *
- * 类型必须显式标注：不标的话 TS 要在声明产物里展开 fetcher 的结构，而响应类型桶只导出
+ * 类型必须显式标注：不标的话 TS 要在声明产物里展开业务 API 的结构，而响应类型桶只导出
  * `BilibiliVideoInfoResponse` 这样的具名别名、不导出底层的 `*_V0`，展开时叫不出名来报 TS2883。
  */
-export let bilibiliFetcher: SuccessBilibiliFetcher = amagiClientInstance.amagi.bilibili.fetcher
+export let bilibiliApi: SuccessAmagiClient['bilibili'] = amagiClientInstance.amagi.bilibili
 
-export let douyinFetcher: SuccessDouyinFetcher = amagiClientInstance.amagi.douyin.fetcher
+export let douyinWebApi: SuccessAmagiClient['douyin']['web'] = amagiClientInstance.amagi.douyin.web
 
-export let kuaishouFetcher: SuccessKuaishouFetcher = amagiClientInstance.amagi.kuaishou.fetcher
+export let douyinAppApi: SuccessAmagiClient['douyin']['app'] = amagiClientInstance.amagi.douyin.app
 
-export let xiaohongshuFetcher: SuccessXiaohongshuFetcher = amagiClientInstance.amagi.xiaohongshu.fetcher
+export let kuaishouApi: SuccessAmagiClient['kuaishou'] = amagiClientInstance.amagi.kuaishou
+
+export let xiaohongshuApi: SuccessAmagiClient['xiaohongshu'] = amagiClientInstance.amagi.xiaohongshu
 
 /**
- * 原始 v7 客户端。扫码登录会话（`douyin.login` / `bilibili.login`）、实例级事件总线
+ * 原始 v7 客户端。扫码登录会话（`douyin.web.auth` / `bilibili.auth`）、实例级事件总线
  * （`events` / `on` / `once`）与 `startServer` 都从这里取。
  *
  * 返回类型显式写成 {@link AmagiClient}：不写的话 TS 要在声明产物里展开这个结构，
@@ -341,13 +332,22 @@ export let xiaohongshuFetcher: SuccessXiaohongshuFetcher = amagiClientInstance.a
 export const getAmagiClient = (): AmagiClient => amagiClientInstance.rawAmagi
 
 export const reloadAmagiConfig = () => {
-  if (!amagiClientInstance.reloadConfig()) return false
+  const nextConfig = readClientConfig()
+  const nextConfigSignature = JSON.stringify(nextConfig)
+  if (nextConfigSignature === amagiClientInstance.configSignature) {
+    logger.debug('[AmagiClient] 配置未变化，跳过重复重载')
+    return false
+  }
+
+  logger.debug('[AmagiClient] 检测到配置变化，正在重载...')
+  amagiClientInstance = createRuntime(nextConfig, nextConfigSignature)
 
   // ESM 的 `export let` 是实时绑定：Client 重建后要同步替换，否则调用方还持有旧实例截取的引用
-  bilibiliFetcher = amagiClientInstance.amagi.bilibili.fetcher
-  douyinFetcher = amagiClientInstance.amagi.douyin.fetcher
-  kuaishouFetcher = amagiClientInstance.amagi.kuaishou.fetcher
-  xiaohongshuFetcher = amagiClientInstance.amagi.xiaohongshu.fetcher
+  bilibiliApi = amagiClientInstance.amagi.bilibili
+  douyinWebApi = amagiClientInstance.amagi.douyin.web
+  douyinAppApi = amagiClientInstance.amagi.douyin.app
+  kuaishouApi = amagiClientInstance.amagi.kuaishou
+  xiaohongshuApi = amagiClientInstance.amagi.xiaohongshu
 
   for (const listener of amagiReloadListeners) {
     try {
@@ -357,5 +357,6 @@ export const reloadAmagiConfig = () => {
     }
   }
 
+  logger.debug('[AmagiClient] 配置重载完成')
   return true
 }

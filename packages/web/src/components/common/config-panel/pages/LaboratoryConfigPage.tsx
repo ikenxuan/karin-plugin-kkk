@@ -17,9 +17,9 @@ const LaboratoryConfigPage = ({ renderers }: ConfigPageProps) => {
           {renderTextField(
             ['laboratory', 'messageHooks', 'signUrl'],
             '签名地址',
-            '填写可访问的 App 签名接口完整地址，包含 /v1/app/sign 路径。',
+            '填写支持客户端身份协议的 App 签名服务 base URL，仅填协议、主机和端口，不带接口路径。',
             {
-              placeholder: 'https://example.com/v1/app/sign'
+              placeholder: 'http://127.0.0.1:8787'
             }
           )}
         </>

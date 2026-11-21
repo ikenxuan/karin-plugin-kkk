@@ -25,7 +25,7 @@ import { wrapWithErrorHandler } from '@/module/utils/ErrorHandler'
 import { logger } from '@/module/utils/logger'
 import { Bilibili, getBilibiliID } from '@/platform/bilibili'
 import { DouYin, getDouyinID } from '@/platform/douyin'
-import { extractDouyinShareCommand, resolveDouyinShareCommand } from '@/platform/douyin/shareCommand'
+import { extractDouyinShareCommand, getDouyinShareCommandPatterns, resolveDouyinShareCommand } from '@/platform/douyin/shareCommand'
 import { fetchKuaishouData, getKuaishouID, Kuaishou } from '@/platform/kuaishou'
 import { getXiaohongshuID, Xiaohongshu } from '@/platform/xiaohongshu'
 
@@ -407,7 +407,17 @@ export const douyinMessageHook = hooks.message(
       next()
       return
     }
-    const command = extractDouyinShareCommand(e.msg)
+    let commandPatterns: readonly string[]
+    try {
+      commandPatterns = await getDouyinShareCommandPatterns(messageHooks.signUrl)
+    } catch (error) {
+      const message = error instanceof Error ? error.message : '未知错误'
+      logger.warn(`[实验室] 抖音分享规则加载失败：${message}`)
+      next()
+      return
+    }
+
+    const command = extractDouyinShareCommand(e.msg, commandPatterns)
     if (!command) {
       next()
       return
@@ -415,7 +425,7 @@ export const douyinMessageHook = hooks.message(
 
     const startedAt = Date.now()
     try {
-      const awemeId = await resolveDouyinShareCommand(command, messageHooks.signUrl)
+      const awemeId = await resolveDouyinShareCommand(command)
       const url = `https://www.douyin.com/video/${awemeId}`
       douyinCommandResults.set(e, { url, awemeId, startedAt })
       e.msg = `${e.msg}\n${url}`

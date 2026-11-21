@@ -4,7 +4,7 @@ export interface laboratoryConfig {
   messageHooks: {
     /** 功能开关，保存后即时生效。 */
     switch: boolean
-    /** App 签名接口的完整 HTTP 或 HTTPS 地址。 */
+    /** App 签名服务的 HTTP(S) base URL，仅填写服务根地址，不带接口路径。 */
     signUrl: string
   }
 }

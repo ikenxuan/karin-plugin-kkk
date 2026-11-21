@@ -1,4 +1,4 @@
-import { douyinFetcher } from '@/module/utils/amagiClient'
+import { douyinWebApi } from '@/module/utils/amagiClient'
 import { logger } from '@/module/utils/logger'
 
 /**
@@ -12,7 +12,7 @@ import { logger } from '@/module/utils/logger'
  */
 export const toDouyinShortUrl = async (target: string): Promise<string> => {
   try {
-    const result = await douyinFetcher.fetchShortUrl({ target })
+    const result = await douyinWebApi.shortUrl({ target })
     const shortUrl = result.data?.data
     return typeof shortUrl === 'string' && shortUrl.length > 0 ? shortUrl : target
   } catch (error) {

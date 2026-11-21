@@ -50,8 +50,8 @@ export const updateAllConfig = async (req: Request, res: Response) => {
         const success = await Config.ModifyPro(moduleName, config)
         results.push({ module, success })
 
-        // amagi 配置变化需要重载客户端
-        if (success && moduleName === 'amagi') {
+        // 抖音与实验室的开关决定是否为共享客户端启用 App 会话。
+        if (success && (moduleName === 'amagi' || moduleName === 'douyin' || moduleName === 'laboratory')) {
           needReloadAmagi = true
         }
       } catch (error: any) {

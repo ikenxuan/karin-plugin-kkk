@@ -60,10 +60,16 @@ class Cfg {
     // 4. 监听 config.json 变化
     setTimeout(() => {
       if (fs.existsSync(this.jsonConfigPath)) {
-        watch(this.jsonConfigPath, (old, now) => {
-          // @ts-ignore
-          if (old?.amagi !== now?.amagi) {
-            logger.debug('[Config] 检测到 amagi 配置变化，正在重载 Amagi Client...')
+        watch<Partial<ConfigType> | undefined>(this.jsonConfigPath, (old, now) => {
+          const oldHooks = old?.laboratory?.messageHooks
+          const newHooks = now?.laboratory?.messageHooks
+          if (
+            old?.amagi !== now?.amagi ||
+            old?.douyin?.switch !== now?.douyin?.switch ||
+            oldHooks?.switch !== newHooks?.switch ||
+            oldHooks?.signUrl !== newHooks?.signUrl
+          ) {
+            logger.debug('[Config] 检测到 Amagi 客户端相关配置变化，正在重载...')
             import('./amagiClient')
               .then(({ reloadAmagiConfig }) => reloadAmagiConfig())
               .catch((error) => logger.error(`[Config] 重载 Amagi Client 失败: ${error}`))

@@ -243,9 +243,11 @@ export const validateConfig = (config: ConfigType | null): Record<string, string
     const signUrl = getValue<string>(config, ['laboratory', 'messageHooks', 'signUrl'], '').trim()
     try {
       const url = new URL(signUrl)
-      if (url.protocol !== 'http:' && url.protocol !== 'https:') throw new Error('invalid protocol')
+      if (!/^https?:\/\/[^/?#]+\/?$/i.test(signUrl) || url.username || url.password || url.search || url.hash || url.pathname !== '/') {
+        throw new Error('invalid signer URL')
+      }
     } catch {
-      errors['laboratory.messageHooks.signUrl'] = '开启抖音口令解析时，请填写有效的 HTTP 或 HTTPS 签名地址'
+      errors['laboratory.messageHooks.signUrl'] = '请填写 HTTP(S) 签名服务的 base URL，不支持接口路径、自定义路径前缀、查询参数或凭据'
     }
   }
 
