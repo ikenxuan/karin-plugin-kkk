@@ -22,7 +22,12 @@ const getNumberError = (value: unknown, rule: NumberValidationRule): string => {
 
 const addNumberValidation = (errors: Record<string, string>, config: ConfigType, rule: NumberValidationRule) => {
   if (rule.disabled) return
-  const error = getNumberError(getValue(config, rule.path, 0), rule)
+
+  // 缺失字段由默认配置兜底，不能按 0 校验：旧配置添加新字段后会在用户看不到的页签里报错并锁死保存按钮
+  const value = getValue<unknown>(config, rule.path, undefined)
+  if (value === undefined || value === null) return
+
+  const error = getNumberError(value, rule)
   if (error) errors[toPathKey(rule.path)] = error
 }
 

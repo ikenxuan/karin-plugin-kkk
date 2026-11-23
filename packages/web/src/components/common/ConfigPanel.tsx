@@ -20,7 +20,7 @@ import { getLayoutClasses } from './config-panel/layout'
 import { configFiles } from './config-panel/options'
 import ActiveConfigPage from './config-panel/pages/ActiveConfigPage'
 import type { ConfigFileKey, ConfigPath, DeviceLayout } from './config-panel/types'
-import { normalizeConfigArrays, setValue } from './config-panel/utils'
+import { getValue, normalizeConfigArrays, setValue } from './config-panel/utils'
 import { validateConfig } from './config-panel/validation'
 
 interface ConfigPanelProps {
@@ -74,13 +74,30 @@ const ConfigPanel = ({ device = 'desktop' }: ConfigPanelProps) => {
     return validateConfig(config)
   }, [config])
 
-  const hasValidationError = useMemo(() => {
-    return Object.values(validationErrors).some(Boolean)
-  }, [validationErrors])
+  const savedValidationErrors = useMemo(() => {
+    return validateConfig(savedConfig)
+  }, [savedConfig])
+
+  /**
+   * 只拦截本次编辑引入的校验错误。
+   * 已保存配置里本来就存在的错误（旧版本遗留值、用户暂未处理的字段）不应锁死保存按钮，
+   * 否则任意页签的修改都会被一个不在当前页的报错挡住。
+   */
+  const hasBlockingValidationError = useMemo(() => {
+    if (!config || !savedConfig) return false
+
+    return Object.entries(validationErrors).some(([path, message]) => {
+      if (!message) return false
+      if (!savedValidationErrors[path]) return true
+
+      const keys = path.split('.')
+      return !equal(getValue<unknown>(config, keys, undefined), getValue<unknown>(savedConfig, keys, undefined))
+    })
+  }, [config, savedConfig, validationErrors, savedValidationErrors])
 
   const saveActionActive = useMemo(() => {
-    return hasChanges && !hasValidationError && !loading
-  }, [hasChanges, hasValidationError, loading])
+    return hasChanges && !hasBlockingValidationError && !loading
+  }, [hasChanges, hasBlockingValidationError, loading])
 
   const updateConfigValue = useMemoizedFn((path: ConfigPath, value: unknown) => {
     setPanelState((current) => {
@@ -90,7 +107,7 @@ const ConfigPanel = ({ device = 'desktop' }: ConfigPanelProps) => {
   })
 
   const handleSave = useMemoizedFn(() => {
-    if (!config || hasValidationError) return
+    if (!config || hasBlockingValidationError) return
 
     const nextConfig = config
     const savePromise = submitConfig(nextConfig).then(() => {
