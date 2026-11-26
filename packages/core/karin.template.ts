@@ -1,13 +1,17 @@
+import { readFileSync } from 'node:fs'
+import { createRequire } from 'node:module'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 import { defineConfig } from '@karinjs/template-react'
 import type { ViteDevServer } from 'vite'
 
+import { APPLE_EMOJI_ASSET_PATH, isAppleEmojiFilename } from './ktr/utils/appleEmoji'
 import { AVATAR_PROXY_PATH, isProxyableAvatarUrl } from './ktr/utils/avatarProxy'
 import { templateFonts } from './src/module/utils/templateFonts'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const require = createRequire(import.meta.url)
 
 /** 代理上游的超时，比模板侧 loadQRCodeAvatar 的 5s 略宽，让超时判定落在模板侧 */
 const AVATAR_PROXY_TIMEOUT_MS = 8000
@@ -58,6 +62,44 @@ const avatarProxyPlugin = () => {
   }
 }
 
+/** 按需从已安装的数据包提供 Apple emoji PNG，KTR sandbox 与模板同源加载。 */
+const appleEmojiAssetPlugin = () => ({
+  name: 'kkk-apple-emoji-assets-plugin',
+  configureServer(server: ViteDevServer) {
+    server.middlewares.use(APPLE_EMOJI_ASSET_PATH, (req, res) => {
+      if (req.method !== 'GET' && req.method !== 'HEAD') {
+        res.statusCode = 405
+        res.end()
+        return
+      }
+
+      const pathname = new URL(req.url ?? '/', 'http://localhost').pathname
+      const match = /^\/([0-9a-f]+(?:-[0-9a-f]+)*)\.png$/.exec(pathname)
+      const filename = match?.[1]
+      if (!filename || !isAppleEmojiFilename(filename)) {
+        res.statusCode = 404
+        res.end()
+        return
+      }
+
+      try {
+        const packageRoot = path.dirname(require.resolve('emoji-datasource-apple/package.json'))
+        const assetPath = path.join(packageRoot, 'img', 'apple', '64', `${filename}.png`)
+        const asset = readFileSync(assetPath)
+        res.statusCode = 200
+        res.setHeader('Content-Type', 'image/png')
+        res.setHeader('Cache-Control', 'public, max-age=3600')
+        res.setHeader('Content-Length', asset.byteLength)
+        if (req.method === 'HEAD') res.end()
+        else res.end(asset)
+      } catch {
+        res.statusCode = 404
+        res.end()
+      }
+    })
+  }
+})
+
 /**
  * 开发面板的模板字体：
  * 面板预览跑在浏览器里（/__ktr/sandbox），模板 CSS 里只有字体家族名——
@@ -84,7 +126,7 @@ export default defineConfig({
     open: false
   },
   vite: ({ command }) => ({
-    plugins: command === 'serve' ? [avatarProxyPlugin(), fontLinkPlugin()] : [],
+    plugins: command === 'serve' ? [avatarProxyPlugin(), appleEmojiAssetPlugin(), fontLinkPlugin()] : [],
     resolve: {
       alias: [{ find: '@kkk/richtext', replacement: path.resolve(__dirname, '../richtext/src/index.ts') }]
     }

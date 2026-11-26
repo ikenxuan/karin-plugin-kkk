@@ -2,8 +2,10 @@ import { UserPlusIcon, UsersThreeIcon } from '@phosphor-icons/react'
 import { format } from 'date-fns'
 import { BookOpenText, Clock3, Hash } from 'lucide-react'
 import React from 'react'
-import ReactMarkdown from 'react-markdown'
+import ReactMarkdown, { defaultUrlTransform } from 'react-markdown'
 
+import { setUnicodeEmojiSrcResolver, splitUnicodeEmoji } from '@kkk/richtext'
+import { APPLE_EMOJI_MARKER, getAppleEmojiAssetUrl } from '../../../../utils/appleEmoji'
 import { isDark } from '../../../../utils/theme'
 import { DefaultLayout } from '../../../components/DefaultLayout'
 import { QRCodeWithAvatar } from '../../../components/QRCodeWithAvatar'
@@ -23,6 +25,47 @@ const getArticleImageUrl = (image?: DouyinArticleWorkData['images'][number]): st
 
 const preprocessMarkdown = (markdown: string): string =>
   markdown.replace(/!\[([^\]]*)\]\(([^\s)]+)(?:\s+width=\d+)?(?:\s+height=\d+)?\)/g, '![$1]($2)')
+
+interface MarkdownTree {
+  type: string
+  value?: string
+  tagName?: string
+  properties?: Record<string, unknown>
+  children?: MarkdownTree[]
+}
+
+// KTR 开发面板在浏览器中渲染，不经过 core 的 Render/index.ts；给它注册一个同源 Apple PNG 资源地址。
+if (typeof window !== 'undefined' && window.location.pathname.startsWith('/__ktr/')) {
+  setUnicodeEmojiSrcResolver(getAppleEmojiAssetUrl)
+}
+
+/** 把 Markdown 文本节点中的 Unicode emoji 转为带标记的图片节点，跳过代码内容。 */
+const rehypeArticleAppleEmoji = () => (tree: MarkdownTree) => {
+  const codeTags = new Set(['code', 'pre', 'script', 'style', 'textarea'])
+  const visit = (node: MarkdownTree) => {
+    if (!node.children || (node.tagName && codeTags.has(node.tagName))) return
+
+    node.children = node.children.flatMap((child): MarkdownTree[] => {
+      if (child.type !== 'text' || !child.value) {
+        visit(child)
+        return [child]
+      }
+
+      return splitUnicodeEmoji(child.value).map((part): MarkdownTree =>
+        part.kind === 'emoji'
+          ? {
+              type: 'element',
+              tagName: 'img',
+              properties: { src: part.src, alt: part.sequence, className: [APPLE_EMOJI_MARKER] },
+              children: []
+            }
+          : { ...child, value: part.text }
+      )
+    })
+  }
+
+  visit(tree)
+}
 
 const DouyinDiffuseBackground: React.FC<PosterProps<DouyinArticleWorkData>> = ({ data }) => {
   const coverUrl = getArticleImageUrl(data.images[0])
@@ -130,6 +173,15 @@ const DouyinArticleContent: React.FC<PosterProps<DouyinArticleWorkData>> = ({ da
   return (
     <section className="mt-12 select-text">
       <ReactMarkdown
+        rehypePlugins={[rehypeArticleAppleEmoji]}
+        urlTransform={(url, key, node) => {
+          const className = node.properties.className
+          const isAppleEmoji = node.tagName === 'img' && Array.isArray(className) && className.includes(APPLE_EMOJI_MARKER)
+
+          // react-markdown 默认会移除 data:；仅放行由本插件标记的本地 Apple PNG，其他 Markdown URL 仍使用默认安全规则。
+          if (key === 'src' && isAppleEmoji && url.startsWith('data:image/png;base64,')) return url
+          return defaultUrlTransform(url)
+        }}
         components={{
           h1: ({ children }) => <h2 className="mt-14 text-[56px] font-bold leading-tight text-foreground">{children}</h2>,
           h2: ({ children }) => <h2 className="mt-12 text-[50px] font-bold leading-tight text-foreground">{children}</h2>,
@@ -149,7 +201,20 @@ const DouyinArticleContent: React.FC<PosterProps<DouyinArticleWorkData>> = ({ da
             <blockquote className="my-10 pl-7 text-[40px] font-medium leading-[1.62] text-muted">{children}</blockquote>
           ),
           code: ({ children }) => <code className="font-mono text-[34px] text-foreground/80">{children}</code>,
-          img: ({ src, alt }) => {
+          img: ({ src, alt, className }) => {
+            if (className?.split(/\s+/).includes(APPLE_EMOJI_MARKER)) {
+              return (
+                <img
+                  src={src}
+                  alt={alt || ''}
+                  className="mx-1 inline-block object-contain mb-4"
+                  style={{ height: '1.2em', width: '1.2em' }}
+                  referrerPolicy="no-referrer"
+                  crossOrigin="anonymous"
+                />
+              )
+            }
+
             const imageUrl = src ? imageMap.get(src) || src : ''
             if (!imageUrl) return null
 
