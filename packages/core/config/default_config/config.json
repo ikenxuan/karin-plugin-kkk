@@ -64,9 +64,11 @@
     "APIServerMount": true
   },
   "laboratory": {
-    "messageHooks": {
-      "switch": false,
-      "signUrl": ""
+    "douyinApp": {
+      "signUrl": "",
+      "commandParse": false,
+      "dailyWork": false,
+      "appComments": false
     }
   },
   "douyin": {

@@ -29,8 +29,8 @@ const invalidBaseUrls = [
 
 const configWithSigner = (signUrl: string): ConfigType => {
   const config = structuredClone(defaultConfig) as unknown as ConfigType
-  config.laboratory.messageHooks.switch = true
-  config.laboratory.messageHooks.signUrl = signUrl
+  config.laboratory.douyinApp.commandParse = true
+  config.laboratory.douyinApp.signUrl = signUrl
   return config
 }
 
@@ -43,19 +43,19 @@ describe('抖音签名地址使用 base URL', () => {
     expect(() => getDouyinAppSignerBaseUrl(input)).toThrow(/base URL/)
   })
 
-  it.each(validBaseUrls)('WebUI 接受 $input，保持原 signUrl 字段', ({ input }) => {
+  it.each(validBaseUrls)('WebUI 接受 $input，保持 signUrl 字段', ({ input }) => {
     const config = configWithSigner(input)
-    expect(validateConfig(config)).not.toHaveProperty('laboratory.messageHooks.signUrl')
-    expect(config.laboratory.messageHooks.signUrl).toBe(input)
+    expect(validateConfig(config)).not.toHaveProperty('laboratory.douyinApp.signUrl')
+    expect(config.laboratory.douyinApp.signUrl).toBe(input)
   })
 
   it.each(invalidBaseUrls)('WebUI 将 %s 的错误挂到原配置字段', (input) => {
-    expect(validateConfig(configWithSigner(input))).toHaveProperty('laboratory.messageHooks.signUrl', expect.stringMatching(/base URL/))
+    expect(validateConfig(configWithSigner(input))).toHaveProperty('laboratory.douyinApp.signUrl', expect.stringMatching(/base URL/))
   })
 
   it('功能关闭时仍允许空的签名地址', () => {
     const config = configWithSigner('')
-    config.laboratory.messageHooks.switch = false
-    expect(validateConfig(config)).not.toHaveProperty('laboratory.messageHooks.signUrl')
+    config.laboratory.douyinApp.commandParse = false
+    expect(validateConfig(config)).not.toHaveProperty('laboratory.douyinApp.signUrl')
   })
 })

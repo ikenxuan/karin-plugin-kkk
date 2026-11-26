@@ -190,13 +190,13 @@ const throwOnFailure = <T extends object>(target: T, platform: PlatformKey): T =
 /** 快照包含 SDK 设置与规范化的签名 base URL；等价的根地址写法不会重复重建。 */
 const readClientConfig = () => {
   const amagi = Config.amagi
-  const hooks = Config.laboratory?.messageHooks
+  const douyinApp = Config.laboratory?.douyinApp
   let signerBaseUrl: string | undefined
-  if (hooks?.switch && Config.douyin?.switch) {
+  if (douyinApp?.signUrl) {
     try {
-      signerBaseUrl = getDouyinAppSignerBaseUrl(hooks.signUrl)
+      signerBaseUrl = getDouyinAppSignerBaseUrl(douyinApp.signUrl)
     } catch {
-      // 签名地址错误由口令功能报告，不影响其他平台初始化。
+      // 签名地址错误由对应 App 功能报告，不影响其他平台初始化。
     }
   }
   return { amagi, signerBaseUrl }

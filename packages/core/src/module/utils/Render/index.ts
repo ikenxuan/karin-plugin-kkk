@@ -14,7 +14,7 @@ import '@/module/utils/emojiAssets'
 import { parseReleaseChannel } from '../releaseChannel'
 import { isSemverGreater } from '../semver'
 import { templateFonts } from '../templateFonts'
-import { resolveUseDarkTheme } from './coverTheme'
+import { resolveCoverTheme } from './coverTheme'
 
 type ImageMetadata = {
   width?: number
@@ -77,7 +77,7 @@ export const Render = async <P extends keyof LoadedRegistry>(
   }
 
   // 智能主题（Theme=3）下指定模板按封面明暗决定深浅色，其余走 Common.useDarkTheme()
-  const useDarkTheme = await resolveUseDarkTheme(path, data)
+  const { useDarkTheme, coverColor } = await resolveCoverTheme(path, data)
 
   // kkk 的模板上下文字段（version）由 ktr 原样透传，
   // defineKkkTemplate 适配器再映射回组件 props。浅色不传 theme，与旧外壳输出保持一致。
@@ -85,6 +85,7 @@ export const Render = async <P extends keyof LoadedRegistry>(
   const ctx: Parameters<ReturnType<typeof createTemplateRenderer>>[2] = {
     scale: Math.min(2, Math.max(0.5, Number(Config.app.renderScale) / 100)),
     theme: { mode: useDarkTheme ? 'dark' : 'light' },
+    ...(coverColor ? { coverColor } : {}),
     version: {
       plugin: 'karin-plugin',
       pluginName: 'kkk',

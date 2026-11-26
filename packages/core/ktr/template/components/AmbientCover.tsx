@@ -26,7 +26,7 @@ const overlayGradient = (color: string, edge: number, middle: number) =>
  * 各模板在此之上再叠加自己的杂色纹理层。
  * 贡献度参数优先取 ctx.ambientCover（core 注入的用户配置），缺省用模块内默认值。
  */
-export const AmbientCover: React.FC<{ src: string; ctx?: PosterContext }> = React.memo(({ src, ctx }) => {
+export const AmbientCover: React.FC<{ src: string; ctx?: PosterContext; coverColor?: string }> = React.memo(({ src, ctx, coverColor }) => {
   const coverOpacity = ctx?.ambientCover?.coverOpacity ?? AMBIENT_COVER_OPACITY
   const edge = ctx?.ambientCover?.overlayEdgeOpacity ?? AMBIENT_OVERLAY_OPACITY.edge
   const middle = ctx?.ambientCover?.overlayMiddleOpacity ?? AMBIENT_OVERLAY_OPACITY.middle
@@ -41,8 +41,14 @@ export const AmbientCover: React.FC<{ src: string; ctx?: PosterContext }> = Reac
         referrerPolicy="no-referrer"
         crossOrigin="anonymous"
       />
-      <div className="absolute inset-0 dark:hidden" style={{ background: overlayGradient('var(--background)', edge, middle) }} />
-      <div className="absolute inset-0 hidden dark:block" style={{ background: overlayGradient('#000', edge, middle) }} />
+      {coverColor ? (
+        <div className="absolute inset-0" style={{ background: overlayGradient(coverColor, edge, middle) }} />
+      ) : (
+        <>
+          <div className="absolute inset-0 dark:hidden" style={{ background: overlayGradient('var(--background)', edge, middle) }} />
+          <div className="absolute inset-0 hidden dark:block" style={{ background: overlayGradient('#000', edge, middle) }} />
+        </>
+      )}
     </>
   )
 })

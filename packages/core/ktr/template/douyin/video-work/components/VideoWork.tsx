@@ -306,9 +306,7 @@ const DouyinCoCreatorList: React.FC<PosterProps<DouyinVideoWorkData> & { coCreat
               crossOrigin="anonymous"
             />
             <div className="min-w-0">
-              <div className="truncate text-[28px] font-bold leading-tight text-foreground select-text">
-                {creator.nickname || '未提供'}
-              </div>
+              <div className="truncate text-[28px] font-bold leading-tight text-foreground select-text">{creator.nickname || '未提供'}</div>
               <div className="mt-1 truncate text-[23px] font-semibold text-muted select-text">{creator.role_title || '共创者'}</div>
             </div>
           </div>

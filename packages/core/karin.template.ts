@@ -62,6 +62,12 @@ const avatarProxyPlugin = () => {
   }
 }
 
+/**
+ * 开发面板的模板字体：
+ * 面板预览跑在浏览器里（/__ktr/sandbox），模板 CSS 里只有字体家族名——
+ * 生产由 Render/index.ts 以 extraStylePaths 读字体包，这里用 vite 的 /@fs 把同一份包内 CSS
+ * 交给面板，包内 ../fonts/* 的相对引用由 vite 接着解析，预览和实际渲染字体一致。
+ */
 /** 按需从已安装的数据包提供 Apple emoji PNG，KTR sandbox 与模板同源加载。 */
 const appleEmojiAssetPlugin = () => ({
   name: 'kkk-apple-emoji-assets-plugin',
@@ -100,19 +106,14 @@ const appleEmojiAssetPlugin = () => ({
   }
 })
 
-/**
- * 开发面板的模板字体：
- * 面板预览跑在浏览器里（/__ktr/sandbox），模板 CSS 里只有字体家族名——
- * 生产由 Render/index.ts 以 extraStylePaths 读字体包，这里用 vite 的 /@fs 把同一份包内 CSS
- * 交给面板，包内 ../fonts/* 的相对引用由 vite 接着解析，预览和实际渲染字体一致。
- */
 const fontLinkPlugin = () => ({
   name: 'kkk-font-link-plugin',
-  transformIndexHtml: () => templateFonts.map((font) => ({
-    tag: 'link',
-    attrs: { rel: 'stylesheet', href: `/@fs/${font.stylesheetPath.split(path.sep).join('/')}` },
-    injectTo: 'head' as const
-  }))
+  transformIndexHtml: () =>
+    templateFonts.map((font) => ({
+      tag: 'link',
+      attrs: { rel: 'stylesheet', href: `/@fs/${font.stylesheetPath.split(path.sep).join('/')}` },
+      injectTo: 'head' as const
+    }))
 })
 
 export default defineConfig({

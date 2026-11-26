@@ -80,8 +80,8 @@ mkdirSync(Common.tempDri.default)
 mkdirSync(Common.tempDri.images)
 mkdirSync(Common.tempDri.video)
 
-if (Config.douyin.switch && Config.laboratory?.messageHooks?.switch) {
-  void initializeDouyinShareCommandPatterns(Config.laboratory.messageHooks.signUrl)
+if (Config.douyin.switch && Config.laboratory?.douyinApp?.commandParse) {
+  void initializeDouyinShareCommandPatterns(Config.laboratory.douyinApp.signUrl)
     .then((patterns) => logger.info(`[实验室] 启动时已加载 ${patterns.length} 条抖音分享规则`))
     .catch((error) => {
       logger.warn(`[实验室] 启动时加载抖音分享规则失败：${error instanceof Error ? error.message : '未知错误'}`)

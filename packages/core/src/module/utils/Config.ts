@@ -61,13 +61,10 @@ class Cfg {
     setTimeout(() => {
       if (fs.existsSync(this.jsonConfigPath)) {
         watch<Partial<ConfigType> | undefined>(this.jsonConfigPath, (old, now) => {
-          const oldHooks = old?.laboratory?.messageHooks
-          const newHooks = now?.laboratory?.messageHooks
           if (
             old?.amagi !== now?.amagi ||
             old?.douyin?.switch !== now?.douyin?.switch ||
-            oldHooks?.switch !== newHooks?.switch ||
-            oldHooks?.signUrl !== newHooks?.signUrl
+            old?.laboratory?.douyinApp?.signUrl !== now?.laboratory?.douyinApp?.signUrl
           ) {
             logger.debug('[Config] 检测到 Amagi 客户端相关配置变化，正在重载...')
             import('./amagiClient')

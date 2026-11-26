@@ -13,6 +13,7 @@ import type { ImageElement, Message } from 'node-karin'
 
 import { Count, Render } from '@/module/utils'
 import { douyinWebApi } from '@/module/utils/amagiClient'
+import { processDouyinImageUrl } from '@/platform/douyin/image'
 import type { DouyinAwemeImage, DouyinLiveDetailData, DouyinTextExtra, DouyinWorkDetailData } from '@/platform/douyin/types'
 import { type dyVideo, formatDouyinQualityLabel } from '@/platform/douyin/videoQuality'
 
@@ -541,6 +542,7 @@ export async function renderWorkImage(options: RenderWorkImageOptions): Promise<
       return await Render(e, 'douyin/article-work', {
         title: articleInfo.article_title,
         markdown: content.markdown,
+        cover_url: await processDouyinImageUrl(coverUrl).catch(() => coverUrl),
         images: fe_data.image_list || [],
         read_time: fe_data.read_time || 0,
         dianzan: Count(Detail_Data.statistics.digg_count),

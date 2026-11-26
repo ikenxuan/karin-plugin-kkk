@@ -5,6 +5,8 @@ import type { RenderContext } from '@karinjs/template-react'
  * ktr 的 mergeContext 会把调用方传入的字段原样透传。
  */
 export interface PosterContext extends RenderContext {
+  /** 智能文章主题由后端从封面整图采样的平均色；其他模式不传。 */
+  coverColor?: string
   /** 版本信息（页脚展示） */
   version?: {
     /** 框架插件 */

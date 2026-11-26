@@ -58,6 +58,8 @@ export interface DouyinCommentData {
     text: RichTextDocument
     /** 评论图片 */
     commentimage?: string
+    /** 单条评论的多图内容 */
+    commentimages?: string[]
     /** 贴纸 */
     sticker?: string
     /** 创建时间戳（秒） */

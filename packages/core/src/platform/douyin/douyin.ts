@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 
-import { type DouyinEmojiListResponse, DouyinVideoWorkResponse } from '@ikenxuan/amagi'
+import { type DouyinEmojiListResponse, type DouyinVideoWorkResponse } from '@ikenxuan/amagi'
 import type { RichTextEmojiDefinition } from '@kkk/richtext'
 import type { DouyinUserVideoListData } from '@template/template/douyin/user_profile/components/types'
 import { format } from 'date-fns'
@@ -25,7 +25,6 @@ import {
   uploadFile
 } from '@/module/utils'
 import { Config } from '@/module/utils/Config'
-import { logger } from '@/module/utils/logger'
 import { createEmojiReactionFlow, type EmojiReactionFlow, settleEmojiReaction } from '@/module/utils/EmojiReaction'
 import {
   EPISODE_SELECTION_PAGE_SIZE,
@@ -40,18 +39,37 @@ import {
   parseEpisodePosterPageAction,
   setEpisodeSelectionMessage
 } from '@/module/utils/EpisodeSelection'
-import { douyinComments } from '@/platform/douyin'
-import { sendDouyinCommentImages } from '@/platform/douyin/commentImages'
+import { logger } from '@/module/utils/logger'
+import { douyinComments, sendDouyinCommentImages } from '@/platform/douyin'
 import { burnDouyinDanmaku, type DouyinDanmakuElem } from '@/platform/douyin/danmaku'
 import { renderWorkImage } from '@/platform/douyin/push/render'
 import { toDouyinShortUrl } from '@/platform/douyin/shortUrl'
-import { buildDouyinWorkDetail } from '@/platform/douyin/types'
+import { buildDouyinWorkDetail, mergeDouyinArticleInfo } from '@/platform/douyin/types'
 import { douyinProcessVideos, type dyVideo, buildDouyinPlayUrl } from '@/platform/douyin/videoQuality'
 import { getDouyinLiveImageSendPolicy } from '@/platform/douyin/workType'
 import { DouyinDataTypes, DouyinIdData } from '@/types'
 
 let mp4size = ''
 let img
+
+const sendDouyinForward = async (event: Message, elements: Elements[], options: { source: string; prompt: string; summary: string }) => {
+  if (event.bot.adapter?.name === '@karinjs/console') {
+    for (const element of elements) await event.reply(element)
+    return
+  }
+
+  const forward = common.makeForward(
+    elements,
+    Config.app.fakeForward ? event.sender.userId : event.bot.account.selfId,
+    Config.app.fakeForward ? event.sender.nick : event.bot.account.name
+  )
+  await event.bot.sendForwardMsg(event.contact, forward, {
+    ...options,
+    summary: options.summary.replace('{count}', String(forward.length)),
+    news: [{ text: '点击查看解析结果' }]
+  })
+}
+
 export class DouYin extends Base {
   e: Message
   type: DouyinDataTypes[keyof DouyinDataTypes]
@@ -84,31 +102,56 @@ export class DouYin extends Base {
     }
     switch (this.type) {
       case 'one_work': {
-        const VideoData = await this.amagi.douyin.web.work({
-          aweme_id: data.aweme_id
-        })
+        const useAppWork = Config.laboratory?.douyinApp?.dailyWork ?? false
+        const promise = useAppWork
+          ? this.amagi.douyin.app.work({ aweme_id: data.aweme_id })
+          : this.amagi.douyin.web.work({ aweme_id: data.aweme_id })
 
-        if (VideoData.data.aweme_detail === null) {
+        const workData = await promise
+
+        if (workData.data.aweme_detail === null) {
           throw new Error('获取作品详情失败，可能是因为该作品已被删除或设置为私密。')
         }
-        // 根据 API 返回的数据判断作品类型，而不是依赖 URL
-        // aweme_type: 0,4,55=视频, 68=图集, 163=文章
-
         /**
-         * 根据 aweme_type 判断作品类型
-         * - `0`、`4`、`55`、`61`：视频作品；`4` 是剧集合集
-         * - `163`：文章作品
-         * - `68`：图文作品（含图集、合辑等）
+         * 作品类型判定：以 API 返回的 aweme_type 为准，不依赖 URL。
+         *
+         * aweme_type 取值说明：
+         * - 0、55、61 —— 视频作品
+         * - 4        —— 剧集合集（视频）
+         * - 68       —— 图文作品（图集、合辑等）
+         * - 163      —— 文章作品
          */
-        const aweme_type = VideoData.data.aweme_detail.aweme_type
-        const isArticle = aweme_type === 163
-        const isVideo = aweme_type === 0 || aweme_type === 4 || aweme_type === 55 || aweme_type === 61
+        const aweme_type = workData.data.aweme_detail.aweme_type
 
-        const CommentsData = await this.amagi.douyin.web.comments({
-          aweme_id: data.aweme_id,
-          number: Config.douyin.numcomment
-        })
-        this.is_slides = VideoData.data.aweme_detail.is_slides === true
+        const isArticle = aweme_type === 163
+        const isVideo = [0, 4, 55, 61].includes(aweme_type)
+        const isTimeLimitedDaily = workData.data.aweme_detail.is_25_story === 1 || workData.data.aweme_detail.is_story === 1
+
+        if (isArticle && useAppWork && workData.data.aweme_detail.article_info) {
+          try {
+            const webWork = await this.amagi.douyin.web.work({ aweme_id: data.aweme_id })
+            const webArticleInfo = webWork.data.aweme_detail?.article_info
+            if (webArticleInfo) {
+              workData.data.aweme_detail.article_info = mergeDouyinArticleInfo(workData.data.aweme_detail.article_info, webArticleInfo)
+            }
+          } catch {
+            logger.warn(`获取文章 Web 正文失败，继续使用 App 返回的文章内容 (aweme_id=${data.aweme_id})`)
+          }
+        }
+
+        const useAppComments = Config.laboratory?.douyinApp?.appComments ?? false
+        const CommentsData = isTimeLimitedDaily
+          ? undefined
+          : useAppComments
+            ? await this.amagi.douyin.app.comments({
+                aweme_id: data.aweme_id,
+                number: Config.douyin.numcomment
+              })
+            : await this.amagi.douyin.web.comments({
+                aweme_id: data.aweme_id,
+                number: Config.douyin.numcomment
+              })
+        this.is_slides = workData.data.aweme_detail.is_slides === true
         // 统计用的内容形态，与下面渲染 `Type` 用的是同一套判定，保证统计口径和用户看到的一致
         this.workType = isArticle ? 'article' : isVideo ? 'video' : this.is_slides ? 'collection' : 'gallery'
         let g_video_url = ''
@@ -120,12 +163,12 @@ export class DouYin extends Base {
         if (!isVideo && !isArticle) {
           switch (true) {
             // 图集
-            case this.is_slides === false && VideoData.data.aweme_detail.images !== null: {
+            case this.is_slides === false && workData.data.aweme_detail.images !== null: {
               const image_data = []
               const imageres = []
               let image_url = ''
               // 使用可选链和空值合并操作符确保安全访问
-              const images = VideoData.data.aweme_detail.images ?? []
+              const images = workData.data.aweme_detail.images ?? []
 
               // 检查是否包含 live 图（clip_type !== 2）
               const hasLiveImage = images.some((item) => (item.clip_type ?? 2) !== 2)
@@ -137,7 +180,7 @@ export class DouYin extends Base {
                 let hasGeneratedLivePhoto = false // 标记是否生成了实况图
 
                 // 设置标题
-                const title = VideoData.data.aweme_detail.preview_title.substring(0, 50).replace(/[\\/:*?"<>|\r\n]/g, ' ')
+                const title = workData.data.aweme_detail.preview_title.substring(0, 50).replace(/[\\/:*?"<>|\r\n]/g, ' ')
                 g_title = title
 
                 /** 下载 BGM（如果存在） */
@@ -145,13 +188,13 @@ export class DouYin extends Base {
                 let bgmContext: LiveImageMergeOptions['context'] | null = null
                 const mergeMode = Config.douyin.liveImageMergeMode ?? 'independent'
 
-                if (VideoData.data.aweme_detail.music) {
+                if (workData.data.aweme_detail.music) {
                   let mp3Path = ''
-                  if (VideoData.data.aweme_detail.music.play_url.uri === '') {
-                    const extraData = JSON.parse(VideoData.data.aweme_detail.music.extra)
+                  if (workData.data.aweme_detail.music.play_url.uri === '') {
+                    const extraData = JSON.parse(workData.data.aweme_detail.music.extra)
                     mp3Path = extraData.original_song_url
                   } else {
-                    mp3Path = VideoData.data.aweme_detail.music.play_url.uri
+                    mp3Path = workData.data.aweme_detail.music.play_url.uri
                   }
 
                   liveimgbgm = await downloadFile(mp3Path, {
@@ -285,18 +328,12 @@ export class DouYin extends Base {
 
                 try {
                   if (processedImages.length === 0) {
-                    logger.warn(`抖音图集解析未生成可发送内容，aweme_id=${VideoData.data.aweme_detail.aweme_id}`)
+                    logger.warn(`抖音图集解析未生成可发送内容，aweme_id=${workData.data.aweme_detail.aweme_id}`)
                   } else {
-                    const Element = common.makeForward(
-                      processedImages,
-                      Config.app.fakeForward ? this.e.sender.userId : this.e.bot.account.selfId,
-                      Config.app.fakeForward ? this.e.sender.nick : this.e.bot.account.name
-                    )
-                    await this.e.bot.sendForwardMsg(this.e.contact, Element, {
+                    await sendDouyinForward(this.e, processedImages, {
                       source: '图集内容',
-                      summary: `查看${Element.length}张图片/视频消息`,
-                      prompt: '抖音图集解析结果',
-                      news: [{ text: '点击查看解析结果' }]
+                      summary: '查看{count}张图片/视频消息',
+                      prompt: '抖音图集解析结果'
                     })
                   }
                 } finally {
@@ -314,7 +351,7 @@ export class DouYin extends Base {
                   image_url = imageItem.url_list[2] || imageItem.url_list[1]
 
                   // 处理标题，去除特殊字符
-                  const title = VideoData.data.aweme_detail.preview_title.substring(0, 50).replace(/[\\/:*?"<>|\r\n]/g, ' ')
+                  const title = workData.data.aweme_detail.preview_title.substring(0, 50).replace(/[\\/:*?"<>|\r\n]/g, ' ')
                   g_title = title
 
                   const imageUrl = await processImageUrl(image_url, g_title, index)
@@ -351,7 +388,7 @@ export class DouYin extends Base {
               break
             }
             // 合辑
-            case VideoData.data.aweme_detail.is_slides === true && VideoData.data.aweme_detail.images !== null: {
+            case workData.data.aweme_detail.is_slides === true && workData.data.aweme_detail.images !== null: {
               const images: Elements[] = []
               const temp: fileInfo[] = []
               let hasGeneratedLivePhoto = false // 标记是否生成了实况图
@@ -361,14 +398,14 @@ export class DouYin extends Base {
               let bgmContext: LiveImageMergeOptions['context'] | null = null
               const mergeMode = Config.douyin.liveImageMergeMode ?? 'independent'
 
-              if (VideoData.data.aweme_detail.music) {
+              if (workData.data.aweme_detail.music) {
                 let mp3Path = ''
                 // 该声音由于版权原因在当前地区不可用
-                if (VideoData.data.aweme_detail.music.play_url.uri === '') {
-                  const extraData = JSON.parse(VideoData.data.aweme_detail.music.extra)
+                if (workData.data.aweme_detail.music.play_url.uri === '') {
+                  const extraData = JSON.parse(workData.data.aweme_detail.music.extra)
                   mp3Path = extraData.original_song_url
                 } else {
-                  mp3Path = VideoData.data.aweme_detail.music.play_url.uri
+                  mp3Path = workData.data.aweme_detail.music.play_url.uri
                 }
 
                 liveimgbgm = await downloadFile(mp3Path, {
@@ -378,7 +415,7 @@ export class DouYin extends Base {
                 temp.push(liveimgbgm)
               }
 
-              const images1 = VideoData.data.aweme_detail.images ?? []
+              const images1 = workData.data.aweme_detail.images ?? []
               if (!images1.length) {
                 logger.debug('未获取到合辑的图片数据')
               }
@@ -491,18 +528,12 @@ export class DouYin extends Base {
 
               try {
                 if (images.length === 0) {
-                  logger.warn(`抖音合辑解析未生成可发送内容，aweme_id=${VideoData.data.aweme_detail.aweme_id}`)
+                  logger.warn(`抖音合辑解析未生成可发送内容，aweme_id=${workData.data.aweme_detail.aweme_id}`)
                 } else {
-                  const Element = common.makeForward(
-                    images,
-                    Config.app.fakeForward ? this.e.sender.userId : this.e.bot.account.selfId,
-                    Config.app.fakeForward ? this.e.sender.nick : this.e.bot.account.name
-                  )
-                  await this.e.bot.sendForwardMsg(this.e.contact, Element, {
+                  await sendDouyinForward(this.e, images, {
                     source: '合辑内容',
-                    summary: `查看${Element.length}张图片/视频消息`,
-                    prompt: '抖音合辑解析结果',
-                    news: [{ text: '点击查看解析结果' }]
+                    summary: '查看{count}张图片/视频消息',
+                    prompt: '抖音合辑解析结果'
                   })
                 }
               } finally {
@@ -516,8 +547,8 @@ export class DouYin extends Base {
         }
 
         /** 背景音乐 */
-        if (VideoData.data.aweme_detail.music) {
-          const music = VideoData.data.aweme_detail.music
+        if (workData.data.aweme_detail.music) {
+          const music = workData.data.aweme_detail.music
           let music_url = ''
           // 该声音由于版权原因在当前地区不可用
           if (music.play_url.uri === '') {
@@ -528,7 +559,7 @@ export class DouYin extends Base {
           }
           if (!isVideo && Config.app.removeCache === false && music_url !== undefined) {
             try {
-              const title = g_title ?? VideoData.data.aweme_detail.preview_title.substring(0, 50).replace(/[\\/:*?"<>|\r\n]/g, ' ')
+              const title = g_title ?? workData.data.aweme_detail.preview_title.substring(0, 50).replace(/[\\/:*?"<>|\r\n]/g, ' ')
               const path = Common.tempDri.images + `${title}.mp3`
               await downloadFile(music_url, { title, filepath: path })
             } catch (error) {
@@ -563,26 +594,26 @@ export class DouYin extends Base {
         let selectedVideo: dyVideo | null = null
         if (isVideo) {
           // 视频地址特殊判断：play_addr_h264、play_addr、
-          video = VideoData.data.aweme_detail.video as VideoType
+          video = workData.data.aweme_detail.video as VideoType
           FPS = video.bit_rate[0]?.FPS ?? '获取失败' // FPS
 
           logger.debug(`开始排除不符合条件的视频分辨率；\n
               共拥有${logger.yellow(video.bit_rate.length)}个视频源\n
-              视频ID：${logger.green(VideoData.data.aweme_detail.aweme_id)}\n
-              分享链接：${logger.green(VideoData.data.aweme_detail.share_url)}
+              视频ID：${logger.green(workData.data.aweme_detail.aweme_id)}\n
+              分享链接：${logger.green(workData.data.aweme_detail.share_url)}
               `)
           // 只把选中项取到局部变量，不再原地覆盖 video.bit_rate：
           // video 是 aweme_detail.video 的同一个引用，覆盖它会把整个作品详情的视频源列表截断成一项，
           // 污染后面所有拿 Detail_Data 的下游（渲染、推送复用）。
           selectedVideo = douyinProcessVideos(video.bit_rate, Config.douyin.videoQuality, Config.douyin.maxAutoVideoSize)[0] ?? null
           if (!selectedVideo) {
-            throw new Error(`未找到可用的视频源，aweme_id=${VideoData.data.aweme_detail.aweme_id}`)
+            throw new Error(`未找到可用的视频源，aweme_id=${workData.data.aweme_detail.aweme_id}`)
           }
           // url_list[2] 是 www.douyin.com/aweme/v1/play 的包装 URL，会按 Douyin 负载均衡 302
           // 到任意 CDN，部分 CDN（如 cjjd14.com、n98-v-ncdnon）返回非 MP4 乱码字节。
           // 直接用 url_list[0] 的签名直链规避包装跳转。
           g_video_url = selectedVideo.play_addr.url_list[0] ?? selectedVideo.play_addr.url_list[1] ?? selectedVideo.play_addr.url_list[2]
-          const title = VideoData.data.aweme_detail.preview_title.substring(0, 80).replace(/[\\/:*?"<>|\r\n]/g, ' ') // video title
+          const title = workData.data.aweme_detail.preview_title.substring(0, 80).replace(/[\\/:*?"<>|\r\n]/g, ' ') // video title
           g_title = title
           mp4size = (selectedVideo.play_addr.data_size / (1024 * 1024)).toFixed(2)
         }
@@ -591,17 +622,17 @@ export class DouYin extends Base {
           if (Config.douyin.videoInfoMode === 'text') {
             // 构建回复内容数组
             const replyContent: SendMessage = []
-            const { digg_count, share_count, collect_count, comment_count, recommend_count } = VideoData.data.aweme_detail.statistics
+            const { digg_count, share_count, collect_count, comment_count, recommend_count } = workData.data.aweme_detail.statistics
             const coverImageUrl = isArticle
-              ? VideoData.data.aweme_detail.video.origin_cover.url_list[0]
+              ? workData.data.aweme_detail.video.origin_cover.url_list[0]
               : isVideo
-                ? (VideoData.data.aweme_detail.video.animated_cover?.url_list[0] ?? VideoData.data.aweme_detail.video.cover.url_list[0])
-                : VideoData.data.aweme_detail.images![0].url_list[0]
-            const coverUrl = await processImageUrl(coverImageUrl, VideoData.data.aweme_detail.desc)
+                ? (workData.data.aweme_detail.video.animated_cover?.url_list[0] ?? workData.data.aweme_detail.video.cover.url_list[0])
+                : workData.data.aweme_detail.images![0].url_list[0]
+            const coverUrl = await processImageUrl(coverImageUrl, workData.data.aweme_detail.desc)
             const contentMap = {
               cover: segment.image(coverUrl),
-              title: segment.text(`\n📺 标题: ${VideoData.data.aweme_detail.desc}\n`),
-              author: segment.text(`\n👤 作者: ${VideoData.data.aweme_detail.author.nickname}\n`),
+              title: segment.text(`\n📺 标题: ${workData.data.aweme_detail.desc}\n`),
+              author: segment.text(`\n👤 作者: ${workData.data.aweme_detail.author.nickname}\n`),
               stats: segment.text(formatVideoStats(digg_count, share_count, collect_count, comment_count, recommend_count))
             }
             // 重新排序
@@ -615,7 +646,7 @@ export class DouYin extends Base {
               this.e.reply(replyContent)
             }
           } else {
-            const aweme = VideoData.data.aweme_detail
+            const aweme = workData.data.aweme_detail
             const userProfile = await this.amagi.douyin.web.userProfile({
               sec_uid: aweme.author.sec_uid
             })
@@ -641,16 +672,16 @@ export class DouYin extends Base {
           }
         }
 
-        if (Config.douyin.sendContent.includes('comment')) {
+        if (Config.douyin.sendContent.includes('comment') && !isTimeLimitedDaily && CommentsData) {
           const EmojiData = await this.amagi.douyin.web.emojis()
           const list = Emoji(EmojiData.data)
-          const douyinCommentsRes = await douyinComments(CommentsData.data, list)
+          const douyinCommentsRes = await douyinComments(CommentsData.data, list, { app: useAppComments })
           if (!douyinCommentsRes.CommentsData.length) {
             await this.e.reply('这个作品没有评论 ~')
           } else {
             const suggest: string[] = []
-            if (VideoData.data.aweme_detail?.suggest_words?.suggest_words) {
-              for (const item of VideoData.data.aweme_detail.suggest_words.suggest_words) {
+            if (workData.data.aweme_detail?.suggest_words?.suggest_words) {
+              for (const item of workData.data.aweme_detail.suggest_words.suggest_words) {
                 if (item.words && item.scene === 'comment_top_rec') {
                   for (const v of item.words) {
                     if (v.word) {
@@ -660,7 +691,7 @@ export class DouYin extends Base {
                 }
               }
             }
-            const aweme = VideoData.data.aweme_detail
+            const aweme = workData.data.aweme_detail
             const img = await Render(this.e, 'douyin/comment', {
               Type: isArticle ? '文章' : isVideo ? '视频' : this.is_slides ? '合辑' : '图集',
               CommentsData: douyinCommentsRes.CommentsData,
@@ -689,13 +720,8 @@ export class DouYin extends Base {
               },
               CreateTime: aweme.create_time
             })
-            const messageElements = []
-            if (Config.douyin.commentImageCollection && douyinCommentsRes.image_url.length > 0) {
-              for (const [index, v] of douyinCommentsRes.image_url.entries()) {
-                const imageUrl = await processImageUrl(v, VideoData.data.aweme_detail.desc, index)
-                messageElements.push(segment.image(imageUrl))
-              }
-              await sendDouyinCommentImages(this.e, messageElements)
+            if (Config.douyin.commentImageCollection && douyinCommentsRes.image_media.length > 0) {
+              await sendDouyinCommentImages(this.e, douyinCommentsRes.image_media, workData.data.aweme_detail.desc)
             }
             await this.e.reply(img)
           }

@@ -1,4 +1,6 @@
-import { DouyinCommentRepliesResponse, DouyinCommentsResponse } from '@ikenxuan/amagi'
+import fs from 'node:fs/promises'
+
+import { DouyinAppCommentsResponse, DouyinCommentRepliesResponse, DouyinCommentsResponse } from '@ikenxuan/amagi'
 import {
   createEmojiNode,
   createLineBreakNode,
@@ -11,12 +13,14 @@ import {
   type RichTextNode
 } from '@kkk/richtext'
 import type { DouyinCommentData } from '@template/template/douyin/comment/components/types'
-import decode from 'heic-decode'
-import jpeg from 'jpeg-js'
+import { common, segment, type Elements, type Message } from 'node-karin'
 
-import { Networks } from '@/module/utils'
-import { douyinWebApi } from '@/module/utils/amagiClient'
+import { buildGoogleMotionPhoto, Common, downloadFile, processImageUrl } from '@/module/utils'
+import { douyinAppApi, douyinWebApi } from '@/module/utils/amagiClient'
 import { Config } from '@/module/utils/Config'
+import { logger } from '@/module/utils/logger'
+
+import { processDouyinImageUrl } from './image'
 
 /** 一级评论（`douyin.comments` 的元素） */
 type DyComment = DouyinCommentsResponse['comments'][number]
@@ -79,6 +83,50 @@ type DouyinMentionToken = {
 
 type DouyinCommentItem = DouyinCommentData['CommentsData'][number]
 type DouyinReplyCommentItem = NonNullable<DouyinCommentItem['replyComment']>[number]
+
+export interface DouyinCommentImageMedia {
+  imageUrl: string
+  liveVideoUrl?: string
+}
+
+const asRecord = (value: unknown): Record<string, any> | undefined =>
+  value !== null && typeof value === 'object' && !Array.isArray(value) ? (value as Record<string, any>) : undefined
+
+const firstUrl = (...values: unknown[]): string | undefined => {
+  for (const value of values) {
+    if (typeof value === 'string' && value.length > 0) return value
+    if (Array.isArray(value) && typeof value[0] === 'string' && value[0].length > 0) return value[0]
+  }
+  return undefined
+}
+
+/** App 评论一项可以同时携带静态封面与 Live Photo 视频，Web 评论通常只有静态图。 */
+const getCommentImageMedia = (imageList: unknown): DouyinCommentImageMedia[] => {
+  if (!Array.isArray(imageList)) return []
+
+  return imageList.flatMap((value) => {
+    const image = asRecord(value)
+    if (!image) return []
+
+    const imageUrl = firstUrl(
+      asRecord(image.origin_url)?.url_list,
+      asRecord(image.download_url)?.url_list,
+      asRecord(image.medium_url)?.url_list,
+      asRecord(image.thumb_url)?.url_list
+    )
+    if (!imageUrl) return []
+
+    const liveVideo = asRecord(image.live_video)
+    const video = asRecord(image.video)
+    const liveVideoUrl = firstUrl(liveVideo?.url_list, asRecord(liveVideo?.play_addr)?.url_list, asRecord(video?.play_addr_h264)?.url_list)
+    return [{ imageUrl, ...(liveVideoUrl ? { liveVideoUrl } : {}) }]
+  })
+}
+
+const getStickerUrl = (sticker: unknown): string | undefined => {
+  const stickerRecord = asRecord(sticker)
+  return firstUrl(asRecord(stickerRecord?.animate_url)?.url_list)
+}
 
 /**
  * 提取评论正文中的搜索词范围。
@@ -243,26 +291,85 @@ const buildDouyinRichText = async (
  */
 const processCommentImage = async (imageUrl: string | null): Promise<string | null> => {
   if (!imageUrl) return null
+  return await processDouyinImageUrl(imageUrl)
+}
 
-  const headers = await new Networks({ url: imageUrl, type: 'arraybuffer' }).getHeaders()
-  if (headers['content-type'] && headers['content-type'] === 'image/heic') {
-    const response = await new Networks({ url: imageUrl, type: 'arraybuffer' }).returnResult()
-
-    // 使用 heic-decode 解码 HEIC 图片
-    const decoded = await decode({ buffer: response.data })
-
-    // 使用 jpeg-js 将 RGBA 数据编码为 JPEG
-    const jpegImageData = {
-      data: Buffer.from(decoded.data),
-      width: decoded.width,
-      height: decoded.height
-    }
-    const jpegBuffer = jpeg.encode(jpegImageData, 90).data
-
-    const base64Image = Buffer.from(jpegBuffer).toString('base64')
-    return `data:image/jpeg;base64,${base64Image}`
+const downloadCommentImage = async (url: string, filepath: string, title: string): Promise<string> => {
+  const dataUrl = /^data:image\/(?:jpeg|jpg);base64,(.+)$/i.exec(url)
+  if (dataUrl) {
+    await fs.writeFile(filepath, Buffer.from(dataUrl[1], 'base64'))
+    return filepath
   }
-  return imageUrl
+
+  const downloaded = await downloadFile(url, { title, filepath })
+  if (!downloaded.filepath) throw new Error(`评论图片下载失败: ${title}`)
+  return downloaded.filepath
+}
+
+/** 将评论图片转为可发送图片；Live Photo 会封装成系统实况图。 */
+const buildDouyinCommentImageElements = async (
+  media: DouyinCommentImageMedia[],
+  title: string
+): Promise<{ elements: Elements[]; temporaryFiles: string[] }> => {
+  const elements: Elements[] = []
+  const temporaryFiles: string[] = []
+  for (const [index, item] of media.entries()) {
+    if (!item.liveVideoUrl) {
+      elements.push(segment.image(await processImageUrl(item.imageUrl, title, index)))
+      continue
+    }
+
+    const basename = `Douyin_comment_live_${Date.now()}_${index}`
+    const imagePath = `${Common.tempDri.images}${basename}.jpg`
+    const videoPath = `${Common.tempDri.video}${basename}.mp4`
+    const motionPhotoPath = `${Common.tempDri.images}${basename}_motion.jpg`
+
+    try {
+      const localImagePath = await downloadCommentImage(item.imageUrl, imagePath, `${basename}.jpg`)
+      const downloadedVideo = await downloadFile(item.liveVideoUrl, { title: `${basename}.mp4`, filepath: videoPath })
+      if (!downloadedVideo.filepath) throw new Error('Live Photo 视频下载失败')
+
+      const merged = await buildGoogleMotionPhoto({
+        imagePath: localImagePath,
+        videoPath: downloadedVideo.filepath,
+        outputPath: motionPhotoPath
+      })
+      if (!merged) throw new Error('Live Photo 合成失败')
+      elements.push(segment.image(motionPhotoPath))
+      temporaryFiles.push(motionPhotoPath)
+    } catch (error) {
+      logger.warn(`[抖音评论] ${basename} 合成 Live Photo 失败，回退发送静态图片: ${error}`)
+      elements.push(segment.image(await processImageUrl(item.imageUrl, title, index)))
+    } finally {
+      await Promise.all([imagePath, videoPath].map((filepath) => Common.removeFile(filepath, true)))
+    }
+  }
+  return { elements, temporaryFiles }
+}
+
+/** 评论图片收集与评论解析共用上游响应和媒体转换逻辑。 */
+export const sendDouyinCommentImages = async (event: Message, media: DouyinCommentImageMedia[], title: string): Promise<void> => {
+  const { elements, temporaryFiles } = await buildDouyinCommentImageElements(media, title)
+  try {
+    if (event.bot.adapter.name === '@karinjs/console') {
+      for (const image of elements) await event.reply(image)
+      return
+    }
+
+    const forward = common.makeForward(
+      elements,
+      Config.app.fakeForward ? event.sender.userId : event.bot.account.selfId,
+      Config.app.fakeForward ? event.sender.nick : event.bot.account.name
+    )
+    await event.bot.sendForwardMsg(event.contact, forward, {
+      source: '评论图片收集',
+      summary: `查看${elements.length}张图片`,
+      prompt: '抖音评论解析结果',
+      news: [{ text: '点击查看解析结果' }]
+    })
+  } finally {
+    await Promise.all(temporaryFiles.map((filepath) => Common.removeFile(filepath, true)))
+  }
 }
 
 /**
@@ -271,10 +378,15 @@ const processCommentImage = async (imageUrl: string | null): Promise<string | nu
  * @param {*} emojidata 处理过后的emoji列表
  * @returns obj
  */
-export const douyinComments = async (data: DouyinCommentsResponse, emojidata: RichTextEmojiDefinition[]) => {
+export const douyinComments = async (
+  data: DouyinCommentsResponse | DouyinAppCommentsResponse,
+  emojidata: RichTextEmojiDefinition[],
+  options: { app?: boolean } = {}
+) => {
   const commentsData: DouyinCommentItem[] = []
-  let imageUrls: string[] = []
-  if (data.comments === null) return { CommentsData: [], image_url: [] }
+  const imageUrls: string[] = []
+  const imageMedia: DouyinCommentImageMedia[] = []
+  if (!data.comments || data.comments.length === 0) return { CommentsData: [], image_url: [], image_media: [] }
   let id = 1
   for (const comment of data.comments) {
     const cid = comment.cid
@@ -284,45 +396,44 @@ export const douyinComments = async (data: DouyinCommentsResponse, emojidata: Ri
     const text = comment.text
     const ip = comment.ip_label ?? '未知'
     const label_type = comment.label_type ?? -1
-    const sticker = comment.sticker ? comment.sticker.animate_url.url_list[0] : null
+    const sticker = getStickerUrl(comment.sticker) ?? null
     const digg_count = comment.digg_count
-    const imageurl =
-      comment.image_list && comment.image_list?.[0] && comment.image_list?.[0].origin_url && comment.image_list?.[0].origin_url.url_list
-        ? comment.image_list?.[0].origin_url.url_list[0]
-        : null
+    const commentImageMedia = getCommentImageMedia(comment.image_list)
     const status_label = comment.label_list?.[0]?.text ?? null
-    const userintextlongid = extractMentionSecUids(comment.text_extra)
-    const search_text = extractSearchText(comment.text_extra)
-    const searchTokens = extractSearchTokens(comment.text_extra, text)
+    const textExtra = Array.isArray(comment.text_extra) ? (comment.text_extra as DyTextExtra[]) : undefined
+    const userintextlongid = extractMentionSecUids(textExtra)
+    const search_text = extractSearchText(textExtra)
+    const searchTokens = extractSearchTokens(textExtra, text)
     const richText = await buildDouyinRichText(text, emojidata, userintextlongid, searchTokens)
 
-    // 在循环中处理图片HEIC转JPG
-    const processedImageUrl = await processCommentImage(imageurl)
+    // 逐张处理图片，保留每个 App 评论关联的 Live Photo 视频源。
+    const processedCommentImages = await Promise.all(commentImageMedia.map(({ imageUrl }) => processCommentImage(imageUrl)))
+    const processedImageUrls = processedCommentImages.filter((url): url is string => Boolean(url))
+    const processedImageUrl = processedImageUrls[0] ?? null
 
     // 收集评论图片
-    if (processedImageUrl) {
+    for (const [index, imageUrl] of processedImageUrls.entries()) {
+      const liveVideoUrl = commentImageMedia[index]?.liveVideoUrl
+      imageMedia.push({ imageUrl, ...(liveVideoUrl ? { liveVideoUrl } : {}) })
       imageUrls.push(
-        processedImageUrl.startsWith('data:image/jpeg;base64,')
-          ? `base64://${processedImageUrl.replace('data:image/jpeg;base64,', '')}`
-          : processedImageUrl
+        imageUrl.startsWith('data:image/jpeg;base64,') ? `base64://${imageUrl.replace('data:image/jpeg;base64,', '')}` : imageUrl
       )
     }
 
     // 收集表情包图片
     if (sticker) {
       imageUrls.push(sticker)
+      imageMedia.push({ imageUrl: sticker })
     }
 
-    const replyComment = await douyinWebApi.commentReplies({
-      aweme_id,
-      comment_id: cid,
-      number: Config.douyin.subCommentLimit
-    })
+    const replyComment = options.app
+      ? await douyinAppApi.commentReplies({ aweme_id, comment_id: cid, number: Config.douyin.subCommentLimit })
+      : await douyinWebApi.commentReplies({ aweme_id, comment_id: cid, number: Config.douyin.subCommentLimit })
 
     const replyComments: DouyinReplyCommentItem[] = []
 
     if (replyComment.data.comments && replyComment.data.comments.length > 0) {
-      for (const reply of replyComment.data.comments) {
+      for (const reply of replyComment.data.comments as unknown as DyReplyComment[]) {
         // 生成树里回复的 image_list 是 null（样本没录到带图的回复），见 DyReplyWithImages
         const replyItem = reply as unknown as DyReplyWithImages
         const replyUserintextlongid = extractMentionSecUids(replyItem.text_extra)
@@ -330,23 +441,24 @@ export const douyinComments = async (data: DouyinCommentsResponse, emojidata: Ri
         const replyRichText = await buildDouyinRichText(replyItem.text, emojidata, replyUserintextlongid, replySearchTokens)
 
         // 处理回复评论的图片列表
-        const replyImageUrl = replyItem.image_list?.[0]?.origin_url?.url_list?.[0]
-        const replyStickerUrl = replyItem.sticker?.animate_url?.url_list?.[0]
+        const replyImageMedia = getCommentImageMedia(replyItem.image_list)
+        const replyStickerUrl = getStickerUrl(replyItem.sticker)
 
         let replyImageList: string[] | null = null
-        if (replyImageUrl) {
-          const processedReplyImage = await processCommentImage(replyImageUrl)
-          if (processedReplyImage) {
-            replyImageList = [processedReplyImage]
+        if (replyImageMedia.length > 0) {
+          const processedReplyImages = await Promise.all(replyImageMedia.map(({ imageUrl }) => processCommentImage(imageUrl)))
+          replyImageList = processedReplyImages.filter((url): url is string => Boolean(url))
+          for (const [index, imageUrl] of replyImageList.entries()) {
+            const liveVideoUrl = replyImageMedia[index]?.liveVideoUrl
+            imageMedia.push({ imageUrl, ...(liveVideoUrl ? { liveVideoUrl } : {}) })
             imageUrls.push(
-              processedReplyImage.startsWith('data:image/jpeg;base64,')
-                ? `base64://${processedReplyImage.replace('data:image/jpeg;base64,', '')}`
-                : processedReplyImage
+              imageUrl.startsWith('data:image/jpeg;base64,') ? `base64://${imageUrl.replace('data:image/jpeg;base64,', '')}` : imageUrl
             )
           }
         } else if (replyStickerUrl) {
           replyImageList = [replyStickerUrl]
           imageUrls.push(replyStickerUrl)
+          imageMedia.push({ imageUrl: replyStickerUrl })
         }
 
         replyComments.push({
@@ -378,6 +490,7 @@ export const douyinComments = async (data: DouyinCommentsResponse, emojidata: Ri
       ip_label: ip,
       create_time: comment.create_time,
       commentimage: processedImageUrl ?? undefined,
+      commentimages: processedImageUrls.length > 0 ? processedImageUrls : undefined,
       label_type,
       sticker: sticker ?? undefined,
       status_label: status_label ?? undefined,
@@ -399,6 +512,7 @@ export const douyinComments = async (data: DouyinCommentsResponse, emojidata: Ri
 
   return {
     CommentsData: commentsData,
-    image_url: imageUrls
+    image_url: imageUrls,
+    image_media: imageMedia
   }
 }

@@ -40,7 +40,7 @@ const runtime = vi.hoisted(() => {
       }
     },
     douyin: { switch: true },
-    laboratory: { messageHooks: { switch: false, signUrl: '' } }
+    laboratory: { douyinApp: { commandParse: false, dailyWork: false, appComments: false, signUrl: '' } }
   }
 
   /** 由用例切换的下一次返回值 */
@@ -259,9 +259,9 @@ describe('Amagi Client 热重载', () => {
   })
 
   it('导入的 App API 随配置重载实时更新，等价的 signer URL 不重建实例', () => {
-    const messageHooks = runtime.config.laboratory.messageHooks
-    messageHooks.switch = true
-    messageHooks.signUrl = '  https://SIGNER.example:443/  '
+    const douyinApp = runtime.config.laboratory.douyinApp
+    douyinApp.commandParse = true
+    douyinApp.signUrl = '  https://SIGNER.example:443/  '
     try {
       const calls = runtime.createClient.mock.calls.length
       expect(reloadAmagiConfig()).toBe(true)
@@ -277,22 +277,22 @@ describe('Amagi Client 热重载', () => {
         }
       })
 
-      messageHooks.signUrl = 'https://signer.example'
+      douyinApp.signUrl = 'https://signer.example'
       expect(reloadAmagiConfig()).toBe(false)
       const api = douyinAppApi
       expect(api.guest).toBe(getAmagiClient().douyin.app.guest)
       expect(api.request).toBe(getAmagiClient().douyin.app.request)
       expect(runtime.createClient).toHaveBeenCalledTimes(calls + 1)
 
-      messageHooks.signUrl = 'https://new-signer.example'
+      douyinApp.signUrl = 'https://new-signer.example'
       expect(reloadAmagiConfig()).toBe(true)
       expect(douyinAppApi).not.toBe(api)
       expect(douyinAppApi.guest).toBe(getAmagiClient().douyin.app.guest)
       expect(douyinAppApi.request).toBe(getAmagiClient().douyin.app.request)
       expect(runtime.createClient).toHaveBeenCalledTimes(calls + 2)
     } finally {
-      messageHooks.switch = false
-      messageHooks.signUrl = ''
+      douyinApp.commandParse = false
+      douyinApp.signUrl = ''
       reloadAmagiConfig()
     }
   })

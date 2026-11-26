@@ -83,6 +83,9 @@ export interface DouyinWorkDetailData {
   create_time: number
   aweme_type?: number
   media_type?: number
+  /** 是否为限时日常作品（任一标记为 1 即为限时内容）。 */
+  is_25_story?: number
+  is_story?: number
   is_slides?: boolean
   share_url?: string
   duration?: number
@@ -116,6 +119,42 @@ export interface DouyinWorkDetailData {
   /** 流程附加：喜欢/推荐列表场景下作品作者的主页信息 */
   author_user_info?: DouyinUserProfileResponse
   [key: string]: any
+}
+
+type DouyinArticleInfo = NonNullable<DouyinWorkDetailData['article_info']>
+
+/** 解析文章接口中的 JSON 字段；脏数据只影响对应补充字段，不中断作品解析。 */
+const parseArticleJson = (value: string): Record<string, unknown> => {
+  try {
+    const parsed: unknown = JSON.parse(value)
+    return typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed) ? (parsed as Record<string, unknown>) : {}
+  } catch {
+    return {}
+  }
+}
+
+/**
+ * 合并文章 App/Web 双端数据：Web 的 article_content 提供 Markdown 正文，App 的
+ * fe_data / article_content 优先提供头图；Web 的正文图片与其余字段保留。
+ */
+export const mergeDouyinArticleInfo = (appInfo: DouyinArticleInfo, webInfo: DouyinArticleInfo): DouyinArticleInfo => {
+  const appContent = parseArticleJson(appInfo.article_content)
+  const webContent = parseArticleJson(webInfo.article_content)
+  const appFeData = parseArticleJson(appInfo.fe_data)
+  const webFeData = parseArticleJson(webInfo.fe_data)
+  const appCover = appFeData.head_poster_list ?? appContent.head_poster_list
+  const webCover = webFeData.head_poster_list ?? webContent.head_poster_list
+
+  return {
+    ...appInfo,
+    ...webInfo,
+    article_content: webInfo.article_content || appInfo.article_content,
+    fe_data: JSON.stringify({
+      ...appFeData,
+      ...webFeData,
+      head_poster_list: appCover ?? webCover
+    })
+  }
 }
 
 /** 直播推送的详情数据（非 aweme 结构） */

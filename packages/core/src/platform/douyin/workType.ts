@@ -165,6 +165,7 @@ export function getWorkCoverUrl(
     images?: Array<{ url_list: string[] }> | null
     article_info?: {
       article_content?: string
+      fe_data?: string
     }
   }
 ): string {
@@ -184,11 +185,12 @@ export function getWorkCoverUrl(
     return data.images[0].url_list[0] ?? ''
   }
 
-  // 文章封面
-  if (workTypeInfo.isArticle && data.article_info?.article_content) {
+  // 文章头图分别可能出现在 Web/App 的 fe_data，或 App 的 article_content。
+  if (workTypeInfo.isArticle && data.article_info) {
     try {
-      const content = JSON.parse(data.article_info.article_content)
-      return content.head_poster_list?.url_list?.[0] ?? ''
+      const content = JSON.parse(data.article_info.article_content ?? '{}')
+      const feData = JSON.parse(data.article_info.fe_data ?? '{}')
+      return feData.head_poster_list?.url_list?.[0] ?? content.head_poster_list?.url_list?.[0] ?? ''
     } catch {
       return ''
     }

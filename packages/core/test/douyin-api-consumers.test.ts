@@ -20,13 +20,26 @@ const runtime = vi.hoisted(() => {
     liveRoom: vi.fn(),
     search: vi.fn()
   }
+  const app = {
+    work: vi.fn(),
+    comments: vi.fn(),
+    appFetchCommentReplies: vi.fn()
+  }
   return {
     web,
-    client: { douyin: { web } },
+    app,
+    client: { douyin: { web, app } },
     config: {
       app: { parseTip: false, removeCache: true },
       amagi: { cookies: { douyin: '' } },
-      douyin: { numcomment: 3, sendContent: [] as string[], burnDanmaku: false, videoInfoMode: 'image' },
+      laboratory: { douyinApp: { dailyWork: false, appComments: false, commandParse: false, signUrl: '' } },
+      douyin: {
+        numcomment: 3,
+        sendContent: [] as string[],
+        burnDanmaku: false,
+        videoInfoMode: 'image',
+        commentImageCollection: false
+      },
       pushlist: { douyin: [] as douyinPushItem[] }
     },
     render: vi.fn(),
@@ -37,7 +50,8 @@ const runtime = vi.hoisted(() => {
     modify: vi.fn(),
     processors: { post: vi.fn(), favorite: vi.fn(), recommend: vi.fn() },
     db: { syncConfigSubscriptions: vi.fn(), getGroupSubscriptions: vi.fn() },
-    cleanOldDynamicCache: vi.fn()
+    cleanOldDynamicCache: vi.fn(),
+    sendCommentImages: vi.fn()
   }
 })
 
@@ -84,7 +98,10 @@ vi.mock('node-karin', () => ({
 }))
 vi.mock('@/module/utils/EmojiReaction', () => ({ createEmojiReactionFlow: vi.fn(), settleEmojiReaction: vi.fn() }))
 vi.mock('@/module/utils/EpisodeSelection', () => ({ EPISODE_SELECTION_PAGE_SIZE: 8, EPISODE_SELECTION_TTL_SECONDS: 110 }))
-vi.mock('@/platform/douyin', () => ({ douyinComments: runtime.parseComments }))
+vi.mock('@/platform/douyin', () => ({
+  douyinComments: runtime.parseComments,
+  sendDouyinCommentImages: runtime.sendCommentImages
+}))
 vi.mock('@/platform/douyin/videoQuality', () => ({
   douyinProcessVideos: (videos: unknown[]) => videos,
   buildDouyinPlayUrl: (address: { url_list: string[] }) => address.url_list[0]
@@ -172,9 +189,14 @@ beforeEach(() => {
   vi.clearAllMocks()
   runtime.config.douyin.sendContent = []
   runtime.config.douyin.burnDanmaku = false
+  runtime.config.douyin.commentImageCollection = false
+  runtime.config.laboratory.douyinApp.dailyWork = false
+  runtime.config.laboratory.douyinApp.appComments = false
   runtime.config.pushlist.douyin = []
   runtime.web.work.mockResolvedValue(success('douyin.parseWork', { aweme_detail: videoWork }))
   runtime.web.comments.mockResolvedValue(success('douyin.comments', { comments: [], total: 0 }))
+  runtime.app.work.mockResolvedValue(success('douyin.appParseWork', { aweme_detail: videoWork }))
+  runtime.app.comments.mockResolvedValue(success('douyin.appComments', { comments: [], total: 0 }))
   runtime.web.userProfile.mockResolvedValue(success('douyin.userProfile', profile))
   runtime.web.emojis.mockResolvedValue(success('douyin.emojiList', { emoji_list: [] }))
   runtime.web.danmaku.mockResolvedValue(success('douyin.danmakuList', { danmaku_list: [] }))
@@ -186,7 +208,7 @@ beforeEach(() => {
   for (const processor of Object.values(runtime.processors)) processor.mockResolvedValue([])
   runtime.render.mockResolvedValue([image])
   runtime.renderWorkImage.mockResolvedValue([image])
-  runtime.parseComments.mockResolvedValue({ CommentsData: [], image_url: [] })
+  runtime.parseComments.mockResolvedValue({ CommentsData: [], image_url: [], image_media: [] })
   runtime.downloadFile.mockResolvedValue({})
   runtime.downloadVideo.mockResolvedValue(undefined)
   runtime.modify.mockResolvedValue(undefined)
@@ -212,13 +234,109 @@ describe('抖音主解析消费者的 v7 Web API', () => {
     expect(runtime.web.userProfile).toHaveBeenCalledWith({ sec_uid: 'author-1' })
     expect(runtime.web.emojis).toHaveBeenCalledExactlyOnceWith()
     expect(runtime.web.danmaku).toHaveBeenCalledWith({ aweme_id: 'aweme-1', duration: 2000 })
-    expect(runtime.parseComments).toHaveBeenCalledWith({ comments: [], total: 0 }, [])
+    expect(runtime.parseComments).toHaveBeenCalledWith({ comments: [], total: 0 }, [], { app: false })
     expect(runtime.renderWorkImage).toHaveBeenCalledWith(
       expect.objectContaining({ Detail_Data: expect.objectContaining({ user_info: profile }) })
     )
     expect(reply).toHaveBeenCalledWith([image])
     expect(reply).toHaveBeenCalledWith('这个作品没有评论 ~')
     expect(consumer.workType).toBe('video')
+  })
+
+  it('开启日常作品解析后，单作品详情改用 App work 接口', async () => {
+    runtime.config.laboratory.douyinApp.dailyWork = true
+    const { event } = createEvent()
+    const data: DouyinIdData = { type: 'one_work', aweme_id: 'aweme-app-1' }
+
+    expect(await new DouYin(event, data).DouyinHandler(data)).toBe(true)
+
+    expect(runtime.app.work).toHaveBeenCalledWith({ aweme_id: 'aweme-app-1' })
+    expect(runtime.web.work).not.toHaveBeenCalled()
+  })
+
+  it('日常文章同时读取 Web 正文和 App 封面，再将合并结果交给文章模板', async () => {
+    runtime.config.laboratory.douyinApp.dailyWork = true
+    runtime.config.douyin.sendContent = ['info']
+    const awemeId = 'article-app-web-1'
+    const appCoverUrl = 'https://example.test/app-article-cover.jpg'
+    const webCoverUrl = 'https://example.test/web-article-cover.jpg'
+    const appArticleContent = JSON.stringify({ markdown: '不可用的 App 正文', head_poster_list: { url_list: [appCoverUrl] } })
+    const webArticleContent = JSON.stringify({ markdown: '来自 Web 的可用正文' })
+    const makeArticle = (article_content: string, head_poster_url: string) => ({
+      ...videoWork,
+      aweme_type: 163,
+      article_info: {
+        article_title: '文章标题',
+        article_content,
+        fe_data: JSON.stringify({ head_poster_list: { url_list: [head_poster_url] }, image_list: [], read_time: 1 })
+      }
+    })
+    runtime.app.work.mockResolvedValue(success('douyin.appParseWork', { aweme_detail: makeArticle(appArticleContent, appCoverUrl) }))
+    runtime.web.work.mockResolvedValue(success('douyin.parseWork', { aweme_detail: makeArticle(webArticleContent, webCoverUrl) }))
+    const { event } = createEvent()
+    const data: DouyinIdData = { type: 'one_work', aweme_id: awemeId }
+
+    expect(await new DouYin(event, data).DouyinHandler(data)).toBe(true)
+
+    expect(runtime.app.work).toHaveBeenCalledOnce()
+    expect(runtime.web.work).toHaveBeenCalledExactlyOnceWith({ aweme_id: awemeId })
+    const detail = runtime.renderWorkImage.mock.calls[0]?.[0]?.Detail_Data
+    expect(JSON.parse(detail.article_info.article_content).markdown).toBe('来自 Web 的可用正文')
+    expect(JSON.parse(detail.article_info.fe_data).head_poster_list.url_list[0]).toBe(appCoverUrl)
+  })
+
+  it.each(['is_25_story', 'is_story'] as const)('$storyField 为 1 时跳过评论处理且不添加限时日常展示标记', async (storyField) => {
+    runtime.config.laboratory.douyinApp.appComments = true
+    runtime.config.douyin.sendContent = ['info', 'comment']
+    runtime.config.douyin.videoInfoMode = 'image'
+    runtime.web.work.mockResolvedValue(
+      success('douyin.parseWork', {
+        aweme_detail: { ...videoWork, [storyField]: 1 }
+      })
+    )
+    const { event, reply } = createEvent()
+    const data: DouyinIdData = { type: 'one_work', aweme_id: 'story-aweme-1' }
+
+    expect(await new DouYin(event, data).DouyinHandler(data)).toBe(true)
+
+    expect(runtime.web.comments).not.toHaveBeenCalled()
+    expect(runtime.app.comments).not.toHaveBeenCalled()
+    expect(runtime.web.emojis).not.toHaveBeenCalled()
+    expect(runtime.parseComments).not.toHaveBeenCalled()
+    expect(reply).not.toHaveBeenCalledWith('这个作品没有评论 ~')
+    expect(runtime.renderWorkImage).toHaveBeenCalledWith(
+      expect.objectContaining({
+        dynamicTypeLabel: '视频作品',
+        Detail_Data: expect.objectContaining({ [storyField]: 1 })
+      })
+    )
+  })
+
+  it('开启 App 评论和评论图片收集时使用 App 评论数据并交付带 Live Photo 的图片媒体', async () => {
+    runtime.config.laboratory.douyinApp.appComments = true
+    runtime.config.douyin.commentImageCollection = true
+    runtime.config.douyin.sendContent = ['comment']
+    const comment = {
+      cid: 'comment-1',
+      text: { nodes: [{ type: 'text', text: '评论' }] },
+      nickname: '用户',
+      userimageurl: 'https://example.test/avatar.png',
+      create_time: 1700000000,
+      ip_label: '上海',
+      digg_count: 3
+    }
+    const media = [{ imageUrl: 'https://example.test/comment.jpg', liveVideoUrl: 'https://example.test/comment.mp4' }]
+    runtime.app.comments.mockResolvedValue(success('douyin.appComments', { comments: [{ cid: 'comment-1' }] }))
+    runtime.parseComments.mockResolvedValue({ CommentsData: [comment], image_url: [], image_media: media })
+    const { event } = createEvent()
+    const data: DouyinIdData = { type: 'one_work', aweme_id: 'aweme-app-1' }
+
+    expect(await new DouYin(event, data).DouyinHandler(data)).toBe(true)
+
+    expect(runtime.app.comments).toHaveBeenCalledWith({ aweme_id: 'aweme-app-1', number: 3 })
+    expect(runtime.web.comments).not.toHaveBeenCalled()
+    expect(runtime.parseComments).toHaveBeenCalledWith({ comments: [{ cid: 'comment-1' }] }, [], { app: true })
+    expect(runtime.sendCommentImages).toHaveBeenCalledWith(event, media, '视频简介')
   })
 
   it('使用 userWorks 展示用户作品，保留用户资料与等待选择的流程', async () => {

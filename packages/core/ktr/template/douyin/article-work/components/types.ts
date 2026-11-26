@@ -22,6 +22,8 @@ export interface DouyinArticleWorkData {
   title: string
   /** 文章Markdown内容 */
   markdown: string
+  /** 文章头图；来源为 Web/App fe_data.head_poster_list */
+  cover_url?: string
   /** 文章图片列表 */
   images: ArticleImage[]
   /** 阅读时间(分钟) */

@@ -443,6 +443,8 @@ const ReplyItemComponent: React.FC<{ reply: ReplyNode; depth?: number; isLast?: 
  * @description Root comment component
  */
 const CommentItemComponent: React.FC<DouyinCommentData['CommentsData'][number] & { isLast?: boolean; maxDepth?: number }> = (props) => {
+  const commentImages = props.commentimages?.length ? props.commentimages : props.commentimage ? [props.commentimage] : []
+
   return (
     <div className={cn('flex flex-col px-6 pt-8', { 'pb-0': props.isLast, 'pb-10': !props.isLast })}>
       {/* 根网格 - 单列主体（根节点没有连接列） */}
@@ -493,11 +495,22 @@ const CommentItemComponent: React.FC<DouyinCommentData['CommentsData'][number] &
             </div>
 
             {/* 评论图片 */}
-            {(props.commentimage || props.sticker) && (
-              <div className="my-6 overflow-hidden shadow-sm rounded-2xl max-w-200">
-                <img className="object-contain w-full h-auto rounded-2xl" src={props.commentimage || props.sticker} alt="评论图片" />
+            {commentImages.length > 1 ? (
+              <div className="grid grid-cols-3 gap-3 my-6 max-w-200">
+                {commentImages.map((image, index) => (
+                  <img
+                    key={`${image}-${index}`}
+                    className="object-cover w-full aspect-square rounded-xl shadow-sm"
+                    src={image}
+                    alt="评论图片"
+                  />
+                ))}
               </div>
-            )}
+            ) : commentImages[0] || props.sticker ? (
+              <div className="my-6 overflow-hidden shadow-sm rounded-2xl max-w-200">
+                <img className="object-contain w-full h-auto rounded-2xl" src={commentImages[0] || props.sticker} alt="评论图片" />
+              </div>
+            ) : null}
 
             <div className="flex justify-between items-center text-muted">
               <div className="flex gap-6 items-center shrink-0">

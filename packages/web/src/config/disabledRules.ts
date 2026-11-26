@@ -54,6 +54,50 @@ const includesValue = (values: unknown, value: string): boolean => {
  * 所有配置项的禁用规则
  */
 export const disabledRules: DisabledRule[] = [
+  // ==================== 抖音 App 实验室功能 ====================
+  {
+    path: ['laboratory', 'douyinApp', 'commandParse'],
+    rules: [
+      {
+        condition: (cfg) => !getValue<string>(cfg, ['laboratory', 'douyinApp', 'signUrl'], '').trim(),
+        message: '请先填写「URL签名地址」'
+      },
+      {
+        condition: (cfg) => !getValue<boolean>(cfg, ['douyin', 'switch'], false),
+        message: '请先开启抖音「解析开关」'
+      }
+    ]
+  },
+  {
+    path: ['laboratory', 'douyinApp', 'dailyWork'],
+    rules: [
+      {
+        condition: (cfg) => !getValue<string>(cfg, ['laboratory', 'douyinApp', 'signUrl'], '').trim(),
+        message: '请先填写「URL签名地址」'
+      },
+      {
+        condition: (cfg) => !getValue<boolean>(cfg, ['douyin', 'switch'], false),
+        message: '请先开启抖音「解析开关」'
+      }
+    ]
+  },
+  {
+    path: ['laboratory', 'douyinApp', 'appComments'],
+    rules: [
+      {
+        condition: (cfg) => !getValue<string>(cfg, ['laboratory', 'douyinApp', 'signUrl'], '').trim(),
+        message: '请先填写「URL签名地址」'
+      },
+      {
+        condition: (cfg) => !getValue<boolean>(cfg, ['douyin', 'switch'], false),
+        message: '请先开启抖音「解析开关」'
+      },
+      {
+        condition: (cfg) => !includesValue(getValue(cfg, ['douyin', 'sendContent'], []), 'comment'),
+        message: '请先在抖音「解析时发送的内容」中勾选「评论图」'
+      }
+    ]
+  },
   // ==================== 应用配置 ====================
   {
     path: ['app', 'priority'],

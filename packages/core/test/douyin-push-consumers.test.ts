@@ -145,6 +145,34 @@ describe('抖音直播推送辅助消费者的 v7 Web API', () => {
 })
 
 describe('抖音作品推送渲染辅助消费者的 v7 Web API', () => {
+  it('从文章 fe_data.head_poster_list 提取封面并传入文章模板', async () => {
+    const coverUrl = 'https://example.test/article-cover.jpg'
+    const Detail_Data = {
+      ...aweme,
+      aweme_type: 163,
+      user_info: author,
+      article_info: {
+        article_title: '文章标题',
+        article_content: JSON.stringify({ markdown: '文章正文' }),
+        fe_data: JSON.stringify({ head_poster_list: { url_list: [coverUrl] }, image_list: [], read_time: 1 })
+      }
+    } as unknown as DouyinWorkDetailData
+
+    const result = await renderWorkImage({
+      e: {} as Message,
+      Detail_Data,
+      create_time: 1700000000,
+      shareLink: 'https://www.douyin.com/article/aweme-1'
+    })
+
+    expect(runtime.render).toHaveBeenCalledWith(
+      expect.anything(),
+      'douyin/article-work',
+      expect.objectContaining({ cover_url: coverUrl, markdown: '文章正文' })
+    )
+    expect(result).toEqual([image])
+  })
+
   it('通过 userProfile 校验描述中的用户，继续生成 mention 富文本', async () => {
     runtime.web.userProfile.mockResolvedValue(success('douyin.userProfile', userProfile('mention-1', '被提及用户')))
     const detail = {

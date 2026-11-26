@@ -1,15 +1,17 @@
-import type { AmagiSuccess, DouyinCommentsResponse } from '@ikenxuan/amagi'
+import type { AmagiSuccess, DouyinAppCommentsResponse, DouyinCommentsResponse } from '@ikenxuan/amagi'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const runtime = vi.hoisted(() => ({
   userProfile: vi.fn(),
   commentReplies: vi.fn(),
+  appCommentReplies: vi.fn(),
   getHeaders: vi.fn(),
   subCommentLimit: 2
 }))
 
 vi.mock('@/module/utils/amagiClient', () => ({
-  douyinWebApi: { userProfile: runtime.userProfile, commentReplies: runtime.commentReplies }
+  douyinWebApi: { userProfile: runtime.userProfile, commentReplies: runtime.commentReplies },
+  douyinAppApi: { commentReplies: runtime.appCommentReplies }
 }))
 vi.mock('@/module/utils/Config', () => ({
   Config: {
@@ -130,8 +132,52 @@ describe('抖音评论消费者的 v7 Web API', () => {
   })
 
   it('空评论保持空结果，不访问 API', async () => {
-    expect(await douyinComments(commentsResponse(null), [])).toEqual({ CommentsData: [], image_url: [] })
+    expect(await douyinComments(commentsResponse(null), [])).toEqual({ CommentsData: [], image_url: [], image_media: [] })
     expect(runtime.userProfile).not.toHaveBeenCalled()
+    expect(runtime.commentReplies).not.toHaveBeenCalled()
+  })
+})
+
+describe('抖音 App 评论消费者', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    runtime.subCommentLimit = 2
+    runtime.userProfile.mockResolvedValue(success('douyin.userProfile', { user: { sec_uid: 'mention-1', nickname: '被提及用户' } }))
+    runtime.appCommentReplies.mockResolvedValue(success('douyin.appCommentReplies', { comments: [] }))
+    runtime.getHeaders.mockResolvedValue({ 'content-type': 'image/png' })
+  })
+
+  it('保留单条评论的多张图片和 Live Photo 视频源，并使用 App 回复接口', async () => {
+    const firstImage = 'https://example.test/comment-1.jpg'
+    const liveImage = 'https://example.test/comment-2.jpg'
+    const liveVideo = 'https://example.test/comment-2.mp4'
+    const data = {
+      comments: [
+        {
+          cid: 'app-comment-1',
+          aweme_id: 'aweme-1',
+          text: 'App 评论',
+          text_extra: [],
+          user: { nickname: 'App 用户', avatar_thumb: { url_list: ['https://example.test/avatar.png'] } },
+          create_time: 1700000000,
+          digg_count: 3,
+          ip_label: '上海',
+          label_type: -1,
+          label_text: '',
+          label_list: null,
+          image_list: [
+            { origin_url: { url_list: [firstImage] } },
+            { origin_url: { url_list: [liveImage] }, live_video: { url_list: [liveVideo] } }
+          ]
+        }
+      ]
+    } as unknown as DouyinAppCommentsResponse
+
+    const result = await douyinComments(data, [], { app: true })
+
+    expect(result.CommentsData[0].commentimages).toEqual([firstImage, liveImage])
+    expect(result.image_media).toEqual([{ imageUrl: firstImage }, { imageUrl: liveImage, liveVideoUrl: liveVideo }])
+    expect(runtime.appCommentReplies).toHaveBeenCalledWith({ aweme_id: 'aweme-1', comment_id: 'app-comment-1', number: 2 })
     expect(runtime.commentReplies).not.toHaveBeenCalled()
   })
 })

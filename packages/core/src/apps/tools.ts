@@ -396,9 +396,9 @@ export const xiaohongshuAPP = Config.xiaohongshu.switch && xiaohongshu
 /** 实验室消息 hook：抖音 App 分享口令转作品链接，交回正常命令流程解析。 */
 export const douyinMessageHook = hooks.message(
   async (e, next) => {
-    const messageHooks = Config.laboratory?.messageHooks
+    const douyinApp = Config.laboratory?.douyinApp
     if (
-      !messageHooks?.switch ||
+      !douyinApp?.commandParse ||
       !Config.douyin.switch ||
       reg.douyin.test(e.msg) ||
       e.msg.startsWith('#测试') ||
@@ -409,7 +409,7 @@ export const douyinMessageHook = hooks.message(
     }
     let commandPatterns: readonly string[]
     try {
-      commandPatterns = await getDouyinShareCommandPatterns(messageHooks.signUrl)
+      commandPatterns = await getDouyinShareCommandPatterns(douyinApp.signUrl)
     } catch (error) {
       const message = error instanceof Error ? error.message : '未知错误'
       logger.warn(`[实验室] 抖音分享规则加载失败：${message}`)

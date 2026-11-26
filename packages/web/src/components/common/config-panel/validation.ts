@@ -244,15 +244,18 @@ export const validateConfig = (config: ConfigType | null): Record<string, string
 
   numberRules.forEach((rule) => addNumberValidation(errors, config, rule))
 
-  if (getValue<boolean>(config, ['laboratory', 'messageHooks', 'switch'], false)) {
-    const signUrl = getValue<string>(config, ['laboratory', 'messageHooks', 'signUrl'], '').trim()
+  const douyinAppConfig = ['commandParse', 'dailyWork', 'appComments'].some((key) =>
+    getValue<boolean>(config, ['laboratory', 'douyinApp', key], false)
+  )
+  if (douyinAppConfig) {
+    const signUrl = getValue<string>(config, ['laboratory', 'douyinApp', 'signUrl'], '').trim()
     try {
       const url = new URL(signUrl)
       if (!/^https?:\/\/[^/?#]+\/?$/i.test(signUrl) || url.username || url.password || url.search || url.hash || url.pathname !== '/') {
         throw new Error('invalid signer URL')
       }
     } catch {
-      errors['laboratory.messageHooks.signUrl'] = '请填写 HTTP(S) 签名服务的 base URL，不支持接口路径、自定义路径前缀、查询参数或凭据'
+      errors['laboratory.douyinApp.signUrl'] = '请填写 HTTP(S) 签名服务的 base URL，不支持接口路径、自定义路径前缀、查询参数或凭据'
     }
   }
 

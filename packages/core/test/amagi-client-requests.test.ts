@@ -12,7 +12,7 @@ const runtime = vi.hoisted(() => ({
       cookies: { bilibili: 'SESSDATA=bili-test', douyin: 'sessionid=web-test', kuaishou: '', xiaohongshu: '' }
     },
     douyin: { switch: true },
-    laboratory: { messageHooks: { switch: true, signUrl: 'http://signer.test' } }
+    laboratory: { douyinApp: { commandParse: true, dailyWork: false, appComments: false, signUrl: 'http://signer.test' } }
   }
 }))
 
@@ -52,7 +52,15 @@ vi.mock('@ikenxuan/amagi', async (importOriginal) => {
     const url = new URL(config.url!)
     const data =
       url.hostname === 'signer.test'
-        ? { ok: true, signObject: { url: body.url, method: body.method, headers: { ...body.headers, 'X-Khan': 'fixture-signature' } } }
+        ? {
+            ok: true,
+            signObject: {
+              url: body.url,
+              app_version: body.app_version,
+              method: body.method,
+              headers: { ...body.headers, 'X-Khan': 'fixture-signature' }
+            }
+          }
         : url.pathname === '/aweme/v2/platform/share/command/trans/'
           ? runtime.appEmptyResponse
             ? ''
