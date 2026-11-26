@@ -180,4 +180,53 @@ describe('抖音 App 评论消费者', () => {
     expect(runtime.appCommentReplies).toHaveBeenCalledWith({ aweme_id: 'aweme-1', comment_id: 'app-comment-1', number: 2 })
     expect(runtime.commentReplies).not.toHaveBeenCalled()
   })
+
+  it('过滤 App 评论用户头像的 HEIC 候选，但保留用户发送的 HEIC 评论图片', async () => {
+    const heicAvatar = 'https://cdn.example.test/avatar.heic'
+    const pngAvatar = 'https://cdn.example.test/avatar.png'
+    const heicCommentImage = 'https://cdn.example.test/comment.heic'
+    runtime.appCommentReplies.mockResolvedValue(
+      success('douyin.appCommentReplies', {
+        comments: [
+          {
+            cid: 'app-reply-heic',
+            aweme_id: 'aweme-1',
+            text: 'App 回复',
+            text_extra: [],
+            user: { nickname: '回复用户', avatar_thumb: { url_list: [heicAvatar, pngAvatar] } },
+            create_time: 1700000001,
+            digg_count: 0,
+            ip_label: '上海',
+            label_type: -1,
+            label_text: '',
+            label_list: null,
+            image_list: null,
+            reply_to_reply_id: '0',
+            reply_to_username: ''
+          }
+        ]
+      })
+    )
+    const data = {
+      comments: [
+        {
+          cid: 'app-comment-heic',
+          aweme_id: 'aweme-1',
+          text: 'App 评论',
+          text_extra: [],
+          user: { nickname: 'App 用户', avatar_thumb: { url_list: [heicAvatar, pngAvatar] } },
+          create_time: 1700000000,
+          digg_count: 0,
+          image_list: [{ origin_url: { url_list: [heicCommentImage] } }]
+        }
+      ]
+    } as unknown as DouyinAppCommentsResponse
+
+    const result = await douyinComments(data, [], { app: true })
+
+    expect(result.CommentsData[0].userimageurl).toBe(pngAvatar)
+    expect(result.CommentsData[0].replyComment[0].userimageurl).toBe(pngAvatar)
+    expect(result.CommentsData[0].commentimages).toEqual([heicCommentImage])
+    expect(result.image_media).toEqual([{ imageUrl: heicCommentImage }])
+  })
 })

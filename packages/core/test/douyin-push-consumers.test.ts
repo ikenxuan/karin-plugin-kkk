@@ -173,6 +173,54 @@ describe('抖音作品推送渲染辅助消费者的 v7 Web API', () => {
     expect(result).toEqual([image])
   })
 
+  it('为作品封面、图集图片、BGM 封面和作者头像跳过 HEIC 候选', async () => {
+    const heicCover = 'https://cdn.example.test/work-cover.heic'
+    const jpgCover = 'https://cdn.example.test/work-cover.jpg'
+    const heicImage = 'https://cdn.example.test/gallery.heif'
+    const heicMusicCover = 'https://cdn.example.test/music.heic'
+    const jpgMusicCover = 'https://cdn.example.test/music.jpg'
+    const heicAvatar = 'https://cdn.example.test/avatar.heic'
+    const pngAvatar = 'https://cdn.example.test/avatar.png'
+    const Detail_Data = {
+      ...aweme,
+      aweme_type: 68,
+      images: [{ url_list: [heicCover, jpgCover, 'https://cdn.example.test/work-cover-alt.HEIC'] }, { url_list: [heicImage] }],
+      author: {
+        ...aweme.author,
+        avatar_larger: { uri: 'avatar.heic', url_list: [heicAvatar, pngAvatar] },
+        avatar_medium: { url_list: ['https://cdn.example.test/avatar-medium.jpg'] }
+      },
+      music: {
+        title: 'BGM',
+        author: '音乐人',
+        cover_hd: { url_list: [heicMusicCover] },
+        cover_large: { url_list: [jpgMusicCover] },
+        cover_medium: { url_list: [] },
+        cover_thumb: { url_list: [] }
+      }
+    } as unknown as DouyinWorkDetailData
+
+    await renderWorkImage({
+      e: {} as Message,
+      Detail_Data,
+      create_time: 1700000000,
+      shareLink: 'https://www.douyin.com/note/aweme-1'
+    })
+
+    expect(runtime.render).toHaveBeenCalledWith(
+      expect.anything(),
+      'douyin/image-work',
+      expect.objectContaining({
+        image_list: {
+          images: [{ url: jpgCover, media_type: 'static' }],
+          total_count: 1
+        },
+        music: expect.objectContaining({ cover: jpgMusicCover }),
+        avater_url: pngAvatar
+      })
+    )
+  })
+
   it('通过 userProfile 校验描述中的用户，继续生成 mention 富文本', async () => {
     runtime.web.userProfile.mockResolvedValue(success('douyin.userProfile', userProfile('mention-1', '被提及用户')))
     const detail = {

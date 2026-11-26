@@ -345,7 +345,9 @@ const ReplyItemComponent: React.FC<{ reply: ReplyNode; depth?: number; isLast?: 
             <div className="flex relative flex-col items-center h-full">
               {/* 头像 - 固定高度 */}
               <div className="w-25 h-25 shrink-0 z-10 relative">
-                <img src={reply.userimageurl} className="object-cover rounded-full w-25 h-25 bg-background" alt="用户头像" />
+                {reply.userimageurl && (
+                  <img src={reply.userimageurl} className="object-cover rounded-full w-25 h-25 bg-background" alt="用户头像" />
+                )}
               </div>
 
               {/* 子线程线 - 从头像下方开始并延伸到此单元格底部 */}
@@ -455,7 +457,9 @@ const CommentItemComponent: React.FC<DouyinCommentData['CommentsData'][number] &
           <div className="flex relative flex-col items-center">
             {/* 头像 - 根节点更大 */}
             <div className="w-35 h-35 shrink-0 z-10 relative">
-              <img src={props.userimageurl} className="w-35 h-35 rounded-full object-cover shadow-md bg-background" alt="用户头像" />
+              {props.userimageurl && (
+                <img src={props.userimageurl} className="w-35 h-35 rounded-full object-cover shadow-md bg-background" alt="用户头像" />
+              )}
             </div>
 
             {/* 子线程线 */}

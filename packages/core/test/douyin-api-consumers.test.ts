@@ -38,11 +38,13 @@ const runtime = vi.hoisted(() => {
         sendContent: [] as string[],
         burnDanmaku: false,
         videoInfoMode: 'image',
+        displayContent: ['cover'],
         commentImageCollection: false
       },
       pushlist: { douyin: [] as douyinPushItem[] }
     },
     render: vi.fn(),
+    processImageUrl: vi.fn(),
     renderWorkImage: vi.fn(),
     parseComments: vi.fn(),
     downloadFile: vi.fn(),
@@ -70,6 +72,7 @@ const utils = vi.hoisted(() => ({
   Common: { tempDri: { video: 'D:/test/video/', images: 'D:/test/images/' } },
   Count: (value: number) => String(value),
   Render: runtime.render,
+  processImageUrl: runtime.processImageUrl,
   downloadFile: runtime.downloadFile,
   downloadVideo: runtime.downloadVideo,
   cleanOldDynamicCache: runtime.cleanOldDynamicCache,
@@ -93,7 +96,7 @@ vi.mock('@/module/utils/logger', () => ({
 vi.mock('node-karin', () => ({
   default: { ctx: async () => undefined, getAllBotID: () => ['bot-1'] },
   common: { sleep: async () => undefined, makeForward: (elements: unknown[]) => elements },
-  segment: { image: (file: string) => ({ type: 'image', file }) },
+  segment: { image: (file: string) => ({ type: 'image', file }), text: (text: string) => ({ type: 'text', text }) },
   mkdirSync: vi.fn()
 }))
 vi.mock('@/module/utils/EmojiReaction', () => ({ createEmojiReactionFlow: vi.fn(), settleEmojiReaction: vi.fn() }))
@@ -188,6 +191,7 @@ const subscription = (pushTypes: Array<'post' | 'favorite' | 'recommend'> = ['po
 beforeEach(() => {
   vi.clearAllMocks()
   runtime.config.douyin.sendContent = []
+  runtime.config.douyin.videoInfoMode = 'image'
   runtime.config.douyin.burnDanmaku = false
   runtime.config.douyin.commentImageCollection = false
   runtime.config.laboratory.douyinApp.dailyWork = false
@@ -207,6 +211,7 @@ beforeEach(() => {
   }
   for (const processor of Object.values(runtime.processors)) processor.mockResolvedValue([])
   runtime.render.mockResolvedValue([image])
+  runtime.processImageUrl.mockImplementation(async (url: string) => url)
   runtime.renderWorkImage.mockResolvedValue([image])
   runtime.parseComments.mockResolvedValue({ CommentsData: [], image_url: [], image_media: [] })
   runtime.downloadFile.mockResolvedValue({})
@@ -241,6 +246,35 @@ describe('抖音主解析消费者的 v7 Web API', () => {
     expect(reply).toHaveBeenCalledWith([image])
     expect(reply).toHaveBeenCalledWith('这个作品没有评论 ~')
     expect(consumer.workType).toBe('video')
+  })
+
+  it('App 作品信息卡片跳过 HEIC 封面并选用同列表中的可显示备选', async () => {
+    runtime.config.laboratory.douyinApp.dailyWork = true
+    runtime.config.douyin.sendContent = ['info']
+    runtime.config.douyin.videoInfoMode = 'text'
+    const heicCover = 'https://cdn.example.test/app-cover.heic?biz_tag=aweme_video'
+    const jpgCover = 'https://cdn.example.test/app-cover.jpg'
+    runtime.app.work.mockResolvedValue(
+      success('douyin.appParseWork', {
+        aweme_detail: {
+          ...videoWork,
+          statistics: { ...videoWork.statistics, recommend_count: 3 },
+          video: {
+            ...videoWork.video,
+            animated_cover: { url_list: [heicCover] },
+            cover: { url_list: [heicCover, jpgCover] },
+            origin_cover: { url_list: [heicCover, jpgCover] }
+          }
+        }
+      })
+    )
+    const { event } = createEvent()
+    const data: DouyinIdData = { type: 'one_work', aweme_id: 'aweme-heic-cover' }
+
+    expect(await new DouYin(event, data).DouyinHandler(data)).toBe(true)
+
+    expect(runtime.processImageUrl).toHaveBeenCalledWith(jpgCover, videoWork.desc)
+    expect(runtime.processImageUrl).not.toHaveBeenCalledWith(heicCover, videoWork.desc)
   })
 
   it('开启日常作品解析后，单作品详情改用 App work 接口', async () => {

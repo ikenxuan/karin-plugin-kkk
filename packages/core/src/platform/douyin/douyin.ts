@@ -42,6 +42,7 @@ import {
 import { logger } from '@/module/utils/logger'
 import { douyinComments, sendDouyinCommentImages } from '@/platform/douyin'
 import { burnDouyinDanmaku, type DouyinDanmakuElem } from '@/platform/douyin/danmaku'
+import { pickChromiumImageUrl } from '@/platform/douyin/image'
 import { renderWorkImage } from '@/platform/douyin/push/render'
 import { toDouyinShortUrl } from '@/platform/douyin/shortUrl'
 import { buildDouyinWorkDetail, mergeDouyinArticleInfo } from '@/platform/douyin/types'
@@ -209,7 +210,11 @@ export class DouYin extends Base {
 
                   // 静态图片，clip_type为2或undefined
                   if (imageItem.clip_type === 2 || imageItem.clip_type === undefined) {
-                    image_url = imageItem.url_list[2] || imageItem.url_list[1]
+                    image_url = pickChromiumImageUrl(imageItem.url_list[2], imageItem.url_list[1], imageItem.url_list[0]) ?? ''
+                    if (!image_url) {
+                      imagenum--
+                      continue
+                    }
                     const imageUrl = await processImageUrl(image_url, g_title, index)
                     processedImages.push(segment.image(imageUrl))
 
@@ -230,6 +235,7 @@ export class DouYin extends Base {
                    */
                   const liveVideo = imageItem.video
                   if (!liveVideo) continue
+                  const staticImageUrl = pickChromiumImageUrl(imageItem.url_list)
                   const liveimg = await downloadFile(buildDouyinPlayUrl(liveVideo.play_addr_h264), {
                     title: `Douyin_tmp_V_${Date.now()}.mp4`,
                     headers: this.headers
@@ -239,8 +245,8 @@ export class DouYin extends Base {
                     const outputPath = Common.tempDri.video + `Douyin_Result_${Date.now()}.mp4`
                     const loopCount = imageItem.clip_type === 4 ? 1 : 3
                     let staticImgPath = ''
-                    if (imageItem.url_list?.[0]) {
-                      const staticImg = await downloadFile(imageItem.url_list[0], {
+                    if (staticImageUrl) {
+                      const staticImg = await downloadFile(staticImageUrl, {
                         title: `Douyin_static_${Date.now()}_${index}.jpg`,
                         headers: this.headers,
                         filepath: Common.tempDri.images + `Douyin_static_${Date.now()}_${index}.jpg`
@@ -287,7 +293,7 @@ export class DouYin extends Base {
                     }
 
                     // 生成实况图（clip_type === 5 是 livePhoto）
-                    if (shouldGenerateLivePhoto && imageItem.clip_type === 5 && imageItem.url_list?.[0]) {
+                    if (shouldGenerateLivePhoto && imageItem.clip_type === 5 && staticImageUrl) {
                       let hasPushedMotionPhotoCover = false
                       if (staticImgPath) {
                         const motionPhotoCoverPath =
@@ -305,7 +311,7 @@ export class DouYin extends Base {
                         }
                       }
                       if (!hasPushedMotionPhotoCover) {
-                        const imageUrl = await processImageUrl(imageItem.url_list[0], g_title, index)
+                        const imageUrl = await processImageUrl(staticImageUrl, g_title, index)
                         processedImages.push(segment.image(imageUrl))
                       } else {
                         hasGeneratedLivePhoto = true // 标记已生成实况图
@@ -348,12 +354,13 @@ export class DouYin extends Base {
                 // 纯静态图集，使用原有逻辑
                 for (const [index, imageItem] of images.entries()) {
                   // 获取图片地址，优先使用第三个URL，其次使用第二个URL
-                  image_url = imageItem.url_list[2] || imageItem.url_list[1]
+                  image_url = pickChromiumImageUrl(imageItem.url_list[2], imageItem.url_list[1], imageItem.url_list[0]) ?? ''
 
                   // 处理标题，去除特殊字符
                   const title = workData.data.aweme_detail.preview_title.substring(0, 50).replace(/[\\/:*?"<>|\r\n]/g, ' ')
                   g_title = title
 
+                  if (!image_url) continue
                   const imageUrl = await processImageUrl(image_url, g_title, index)
                   imageres.push(segment.image(imageUrl))
                   imagenum++
@@ -365,6 +372,10 @@ export class DouYin extends Base {
                       .getData()
                       .then((data) => fs.promises.writeFile(path, Buffer.from(data)))
                   }
+                }
+                if (imageres.length === 0) {
+                  logger.warn(`抖音图集没有 Chromium 可显示的图片候选，aweme_id=${workData.data.aweme_detail.aweme_id}`)
+                  break
                 }
                 const res = common.makeForward(
                   imageres,
@@ -424,13 +435,19 @@ export class DouYin extends Base {
                 imagenum++
                 // 静态图片，clip_type为2或undefined
                 if (item.clip_type === 2 || item.clip_type === undefined) {
-                  const imageUrl = await processImageUrl(item.url_list[0], g_title, index)
+                  const staticImageUrl = pickChromiumImageUrl(item.url_list)
+                  if (!staticImageUrl) {
+                    imagenum--
+                    continue
+                  }
+                  const imageUrl = await processImageUrl(staticImageUrl, g_title, index)
                   images.push(segment.image(imageUrl))
                   continue
                 }
                 /** 动图/短片（同图集分支：`video` 在生成类型里是可选的，没有就跳过这一项） */
                 const liveVideo = item.video
                 if (!liveVideo) continue
+                const staticImageUrl = pickChromiumImageUrl(item.url_list)
                 const livePhoto = await downloadFile(buildDouyinPlayUrl(liveVideo.play_addr_h264), {
                   title: `Douyin_tmp_V_${Date.now()}.mp4`,
                   headers: this.headers
@@ -440,8 +457,8 @@ export class DouYin extends Base {
                   const outputPath = Common.tempDri.video + `Douyin_Result_${Date.now()}.mp4`
                   const loopCount = item.clip_type === 4 ? 1 : 3
                   let staticImgPath = ''
-                  if (item.url_list?.[0]) {
-                    const staticImg = await downloadFile(item.url_list[0], {
+                  if (staticImageUrl) {
+                    const staticImg = await downloadFile(staticImageUrl, {
                       title: `Douyin_static_${Date.now()}_${index}.jpg`,
                       headers: this.headers,
                       filepath: Common.tempDri.images + `Douyin_static_${Date.now()}_${index}.jpg`
@@ -488,7 +505,7 @@ export class DouYin extends Base {
                   }
 
                   // 生成实况图（clip_type === 5 是 livePhoto，clip_type === 4 短片按视频发送）
-                  if (shouldGenerateLivePhoto && item.clip_type === 5 && item.url_list?.[0]) {
+                  if (shouldGenerateLivePhoto && item.clip_type === 5 && staticImageUrl) {
                     let hasPushedMotionPhotoCover = false
                     if (staticImgPath) {
                       const motionPhotoCoverPath = Common.tempDri.images + `MVIMG_${format(new Date(), 'yyyyMMdd_HHmmss_SSS')}_${index}.jpg`
@@ -505,7 +522,7 @@ export class DouYin extends Base {
                       }
                     }
                     if (!hasPushedMotionPhotoCover) {
-                      const imageUrl = await processImageUrl(item.url_list[0], g_title, index)
+                      const imageUrl = await processImageUrl(staticImageUrl, g_title, index)
                       images.push(segment.image(imageUrl))
                     } else {
                       hasGeneratedLivePhoto = true // 标记已生成实况图
@@ -623,14 +640,17 @@ export class DouYin extends Base {
             // 构建回复内容数组
             const replyContent: SendMessage = []
             const { digg_count, share_count, collect_count, comment_count, recommend_count } = workData.data.aweme_detail.statistics
-            const coverImageUrl = isArticle
-              ? workData.data.aweme_detail.video.origin_cover.url_list[0]
-              : isVideo
-                ? (workData.data.aweme_detail.video.animated_cover?.url_list[0] ?? workData.data.aweme_detail.video.cover.url_list[0])
-                : workData.data.aweme_detail.images![0].url_list[0]
-            const coverUrl = await processImageUrl(coverImageUrl, workData.data.aweme_detail.desc)
+            const detail = workData.data.aweme_detail
+            const coverImageUrl = pickChromiumImageUrl(
+              isArticle ? detail.video?.origin_cover?.url_list : undefined,
+              isVideo ? detail.video?.animated_cover?.url_list : undefined,
+              isVideo ? detail.video?.cover?.url_list : undefined,
+              isVideo ? detail.video?.origin_cover?.url_list : undefined,
+              !isVideo && !isArticle ? detail.images?.flatMap((image) => image.url_list) : undefined
+            )
+            const coverUrl = coverImageUrl ? await processImageUrl(coverImageUrl, detail.desc) : ''
             const contentMap = {
-              cover: segment.image(coverUrl),
+              cover: coverUrl ? segment.image(coverUrl) : undefined,
               title: segment.text(`\n📺 标题: ${workData.data.aweme_detail.desc}\n`),
               author: segment.text(`\n👤 作者: ${workData.data.aweme_detail.author.nickname}\n`),
               stats: segment.text(formatVideoStats(digg_count, share_count, collect_count, comment_count, recommend_count))
@@ -711,7 +731,7 @@ export class DouYin extends Base {
               Resolution: selectedVideo ? `${selectedVideo.play_addr.width} x ${selectedVideo.play_addr.height}` : null,
               maxDepth: 6,
               Author: aweme.author.nickname,
-              AuthorAvatar: aweme.author.avatar_thumb.url_list[0],
+              AuthorAvatar: pickChromiumImageUrl(aweme.author.avatar_thumb.url_list) ?? '',
               Statistics: {
                 digg_count: aweme.statistics.digg_count,
                 comment_count: aweme.statistics.comment_count,
@@ -824,7 +844,7 @@ export class DouYin extends Base {
             aweme_id: aweme.aweme_id,
             is_top: aweme.is_top === 1,
             title: aweme.desc || aweme.item_title || '无标题',
-            cover: aweme.video.cover.url_list[0],
+            cover: pickChromiumImageUrl(aweme.video.cover.url_list) ?? '',
             duration: aweme.video?.duration || 0,
             create_time: aweme.create_time,
             statistics: {
@@ -852,11 +872,11 @@ export class DouYin extends Base {
           user: {
             head_image:
               user.cover_and_head_image_info.profile_cover_list.length > 0
-                ? user.cover_and_head_image_info.profile_cover_list[0].cover_url?.url_list[0] || null
+                ? (pickChromiumImageUrl(user.cover_and_head_image_info.profile_cover_list[0].cover_url?.url_list) ?? null)
                 : null,
             nickname: user.nickname ?? '',
             short_id: user.unique_id === '' ? user.short_id : user.unique_id,
-            avatar: user.avatar_larger?.url_list?.[0] || user.avatar_thumb?.url_list?.[0] || '',
+            avatar: pickChromiumImageUrl(user.avatar_larger?.url_list, user.avatar_thumb?.url_list) ?? '',
             signature: user.signature,
             follower_count: user.follower_count,
             following_count: user.following_count,
@@ -925,8 +945,8 @@ export class DouYin extends Base {
           // 末尾的话题标签对选集没用
           title: aweme.desc.replace(/#\S+/g, '').trim(),
           duration: aweme.video.duration,
-          cover: aweme.video.cover?.url_list?.[0] ?? '',
-          originCover: aweme.video.origin_cover?.url_list?.[0] ?? ''
+          cover: pickChromiumImageUrl(aweme.video.cover?.url_list) ?? '',
+          originCover: pickChromiumImageUrl(aweme.video.origin_cover?.url_list) ?? ''
         }))
         // 最新一集在前，和 B 站番剧一致；翻页时上一页往更新的方向翻
         const displayEpisodes = [...episodes].sort((a, b) => b.episode - a.episode)
@@ -939,14 +959,14 @@ export class DouYin extends Base {
           Render(this.e, 'douyin/mix', {
             kind: isPlaylet ? 'playlet' : 'collection',
             mix_name: mixInfo.mix_name,
-            image_url: mixInfo.cover_url.url_list[0],
+            image_url: pickChromiumImageUrl(mixInfo.cover_url.url_list) ?? '',
             // 短剧每集文案都是同一段剧情简介；普通合集每集文案就是各自的标题，没有合集级简介
             desc: isPlaylet ? (displayEpisodes[0]?.title ?? '') : '',
             total_episode: totalEpisode,
             updated_to_episode: mixInfo.statis.updated_to_episode,
             author: {
               nickname: author.nickname,
-              avatar: author.avatar_thumb.url_list[0],
+              avatar: pickChromiumImageUrl(author.avatar_thumb.url_list) ?? '',
               short_id: author.unique_id === '' ? author.short_id : author.unique_id,
               follower_count: author.follower_count,
               verified: !!author.custom_verify || !!author.enterprise_verify_reason
@@ -1120,12 +1140,25 @@ export class DouYin extends Base {
           return true
         }
         img = await Render(this.e, 'douyin/musicinfo', {
-          image_url: musicInfo.cover_hd.url_list[0],
+          image_url:
+            pickChromiumImageUrl(
+              musicInfo.cover_hd.url_list,
+              musicInfo.cover_large?.url_list,
+              musicInfo.cover_medium?.url_list,
+              musicInfo.cover_thumb?.url_list
+            ) ?? '',
           desc: musicInfo.title,
           music_id: musicInfo.id.toString(),
           create_time: Time(0),
           user_count: Count(musicInfo.user_count),
-          avater_url: musicInfo.avatar_large?.url_list[0] || UserData.data.user.avatar_larger.url_list[0],
+          avater_url:
+            pickChromiumImageUrl(
+              musicInfo.avatar_large?.url_list,
+              musicInfo.avatar_medium?.url_list,
+              musicInfo.avatar_thumb?.url_list,
+              UserData.data.user.avatar_larger.url_list,
+              UserData.data.user.avatar_thumb?.url_list
+            ) ?? '',
           fans: UserData.data.user.mplatform_followers_count || UserData.data.user.follower_count,
           following_count: UserData.data.user.following_count,
           total_favorited: UserData.data.user.total_favorited,
@@ -1180,14 +1213,14 @@ export class DouYin extends Base {
           const resolution = streamExtra ? `${streamExtra.width}x${streamExtra.height}` : liveItem.stream_url?.default_resolution || ''
 
           const img = await Render(this.e, 'douyin/live', {
-            image_url: liveItem.cover?.url_list[0],
+            image_url: pickChromiumImageUrl(liveItem.cover?.url_list) ?? '',
             text: liveItem.title,
             partition_title: live_data.data.data.partition_road_map?.partition?.title || '未知分区',
             room_id: room_data.owner.web_rid,
             online_viewers: Count(Number(liveItem.room_view_stats?.display_value)),
             total_viewers: liveItem.stats?.total_user_str || '刚开播无法获取',
             username: user.nickname,
-            avater_url: user.avatar_larger.url_list[0],
+            avater_url: pickChromiumImageUrl(user.avatar_larger.url_list, user.avatar_thumb?.url_list) ?? '',
             fans: Count(user.follower_count),
             share_url: 'https://live.douyin.com/' + room_data.owner.web_rid,
             dynamicTYPE: '直播间信息',
@@ -1239,7 +1272,7 @@ export const Emoji = (data: DouyinEmojiListResponse): RichTextEmojiDefinition[] 
   for (const i of data.emoji_list) {
     list.push({
       name: i.display_name,
-      url: i.emoji_url.url_list[0] ?? ''
+      url: pickChromiumImageUrl(i.emoji_url.url_list) ?? ''
     })
   }
 

@@ -1,3 +1,4 @@
+import { isHeicImageUrl, pickChromiumImageUrl } from '../../../ktr/utils/imageUrl'
 import type { DouyinWorkDetailData } from './types'
 
 /**
@@ -177,12 +178,13 @@ export function getWorkCoverUrl(
     const candidates = [data.video.animated_cover, data.video.cover_original_scale, data.video.origin_cover, data.video.cover].flatMap(
       (field) => field?.url_list ?? []
     )
-    return candidates.find((url) => !LOW_RES_COVER_PATTERN.test(url)) ?? candidates[0] ?? ''
+    const chromiumCandidates = candidates.filter((url) => !isHeicImageUrl(url))
+    return chromiumCandidates.find((url) => !LOW_RES_COVER_PATTERN.test(url)) ?? chromiumCandidates[0] ?? ''
   }
 
   // 图文封面
   if (workTypeInfo.isImage && data.images && data.images.length > 0) {
-    return data.images[0].url_list[0] ?? ''
+    return pickChromiumImageUrl(...data.images.map((image) => image.url_list)) ?? ''
   }
 
   // 文章头图分别可能出现在 Web/App 的 fe_data，或 App 的 article_content。
@@ -190,7 +192,7 @@ export function getWorkCoverUrl(
     try {
       const content = JSON.parse(data.article_info.article_content ?? '{}')
       const feData = JSON.parse(data.article_info.fe_data ?? '{}')
-      return feData.head_poster_list?.url_list?.[0] ?? content.head_poster_list?.url_list?.[0] ?? ''
+      return pickChromiumImageUrl(feData.head_poster_list?.url_list, content.head_poster_list?.url_list) ?? ''
     } catch {
       return ''
     }

@@ -3,6 +3,8 @@ import jpeg from 'jpeg-js'
 
 import { Networks } from '@/module/utils'
 
+export { isHeicImageUrl as isHeicDouyinImageUrl, pickChromiumImageUrl } from '../../../ktr/utils/imageUrl'
+
 /** 将抖音返回的 HEIC 图转成 Chromium 可显示的 JPEG；其他图片格式沿用原 URL。 */
 export const processDouyinImageUrl = async (imageUrl: string): Promise<string> => {
   if (!/^https?:\/\//i.test(imageUrl)) return imageUrl

@@ -31,6 +31,7 @@ import type { DouyinListItem } from '@/platform/douyin/types'
 import { getDouyinLiveImageSendPolicy, getWorkTypeDisplayName, getWorkTypeInfo } from '@/platform/douyin/workType'
 import type { douyinPushItem } from '@/types/config/pushlist'
 
+import { pickChromiumImageUrl } from './image'
 import { processFavoriteList } from './push/favorite'
 import { processLiveStream } from './push/live'
 import { processPostList } from './push/post'
@@ -454,7 +455,9 @@ export class DouYinpush extends Base {
                 for (const [index, item] of images1.entries()) {
                   // 静态图片，clip_type为2或undefined
                   if (item.clip_type === 2 || item.clip_type === undefined) {
-                    const imageUrl = await processImageUrl(item.url_list[0], Detail_Data.desc, index)
+                    const sourceImageUrl = pickChromiumImageUrl(item.url_list)
+                    if (!sourceImageUrl) continue
+                    const imageUrl = await processImageUrl(sourceImageUrl, Detail_Data.desc, index)
                     images.push(segment.image(imageUrl))
                     continue
                   }
@@ -465,6 +468,7 @@ export class DouYinpush extends Base {
                     logger.warn(`合辑第 ${index + 1} 个动态媒体缺少视频源，跳过`)
                     continue
                   }
+                  const staticImageUrl = pickChromiumImageUrl(item.url_list)
                   const liveimg = await downloadFile(buildDouyinPlayUrl(livePlayAddr), {
                     title: `Douyin_tmp_V_${Date.now()}.mp4`,
                     headers: douyinBaseHeaders
@@ -474,8 +478,8 @@ export class DouYinpush extends Base {
                     const outputPath = Common.tempDri.video + `Douyin_Result_${Date.now()}.mp4`
                     const loopCount = item.clip_type === 4 ? 1 : 3
                     let staticImgPath = ''
-                    if (item.url_list?.[0]) {
-                      const staticImg = await downloadFile(item.url_list[0], {
+                    if (staticImageUrl) {
+                      const staticImg = await downloadFile(staticImageUrl, {
                         title: `Douyin_static_${Date.now()}_${index}.jpg`,
                         headers: douyinBaseHeaders,
                         filepath: Common.tempDri.images + `Douyin_static_${Date.now()}_${index}.jpg`
@@ -524,7 +528,7 @@ export class DouYinpush extends Base {
                     }
 
                     // 生成实况图（clip_type === 5 是 livePhoto）
-                    if (shouldGenerateLivePhoto && item.clip_type === 5 && item.url_list?.[0]) {
+                    if (shouldGenerateLivePhoto && item.clip_type === 5 && staticImageUrl) {
                       let hasPushedMotionPhotoCover = false
                       if (staticImgPath) {
                         const motionPhotoCoverPath =
@@ -542,7 +546,7 @@ export class DouYinpush extends Base {
                         }
                       }
                       if (!hasPushedMotionPhotoCover) {
-                        const imageUrl = await processImageUrl(item.url_list[0], Detail_Data.desc, index)
+                        const imageUrl = await processImageUrl(staticImageUrl, Detail_Data.desc, index)
                         images.push(segment.image(imageUrl))
                       } else {
                         hasGeneratedLivePhoto = true // 标记已生成实况图
@@ -618,7 +622,7 @@ export class DouYinpush extends Base {
                   for (const [index, item] of Detail_Data.images.entries()) {
                     // 静态图片，clip_type为2或undefined
                     if (item.clip_type === 2 || item.clip_type === undefined) {
-                      const image_url = item.url_list[2] ?? item.url_list[1]
+                      const image_url = pickChromiumImageUrl(item.url_list[2], item.url_list[1], item.url_list[0])
                       if (!image_url) continue
                       const imageUrl = await processImageUrl(image_url, Detail_Data.desc, index)
                       processedImages.push(segment.image(imageUrl))
@@ -631,6 +635,7 @@ export class DouYinpush extends Base {
                       logger.warn(`图集第 ${index + 1} 个动态媒体缺少视频源，跳过`)
                       continue
                     }
+                    const staticImageUrl = pickChromiumImageUrl(item.url_list)
                     const liveimg = await downloadFile(buildDouyinPlayUrl(livePlayAddr), {
                       title: `Douyin_tmp_V_${Date.now()}.mp4`,
                       headers: douyinBaseHeaders
@@ -640,8 +645,8 @@ export class DouYinpush extends Base {
                       const outputPath = Common.tempDri.video + `Douyin_Result_${Date.now()}.mp4`
                       const loopCount = item.clip_type === 4 ? 1 : 3
                       let staticImgPath = ''
-                      if (item.url_list?.[0]) {
-                        const staticImg = await downloadFile(item.url_list[0], {
+                      if (staticImageUrl) {
+                        const staticImg = await downloadFile(staticImageUrl, {
                           title: `Douyin_static_${Date.now()}_${index}.jpg`,
                           headers: douyinBaseHeaders,
                           filepath: Common.tempDri.images + `Douyin_static_${Date.now()}_${index}.jpg`
@@ -690,7 +695,7 @@ export class DouYinpush extends Base {
                       }
 
                       // 生成实况图（clip_type === 5 是 livePhoto）
-                      if (shouldGenerateLivePhoto && item.clip_type === 5 && item.url_list?.[0]) {
+                      if (shouldGenerateLivePhoto && item.clip_type === 5 && staticImageUrl) {
                         let hasPushedMotionPhotoCover = false
                         if (staticImgPath) {
                           const motionPhotoCoverPath =
@@ -708,7 +713,7 @@ export class DouYinpush extends Base {
                           }
                         }
                         if (!hasPushedMotionPhotoCover) {
-                          const imageUrl = await processImageUrl(item.url_list[0], Detail_Data.desc, index)
+                          const imageUrl = await processImageUrl(staticImageUrl, Detail_Data.desc, index)
                           processedImages.push(segment.image(imageUrl))
                         } else {
                           hasGeneratedLivePhoto = true // 标记已生成实况图
@@ -1075,7 +1080,7 @@ export class DouYinpush extends Base {
       const pushTypes = configItem?.pushTypes || ['post']
 
       renderOpt.push({
-        avatar_img: userInfo.data.user.avatar_larger.url_list[0],
+        avatar_img: pickChromiumImageUrl(userInfo.data.user.avatar_larger.url_list, userInfo.data.user.avatar_thumb?.url_list) ?? '',
         username: userInfo.data.user.nickname,
         short_id: userInfo.data.user.unique_id === '' ? userInfo.data.user.short_id : userInfo.data.user.unique_id,
         fans: this.count(userInfo.data.user.follower_count),

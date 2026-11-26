@@ -10,8 +10,12 @@ interface ArticleImage {
   high_image_url: string
   /** Markdown图片URL */
   markdown_url: string
-  /** 原始图片URL */
+  /** 原始图片 URL */
   origin_image_url: string
+  /** CDN 重采样图片 URL */
+  resize_url?: string
+  /** 同源图片 URL 备选 */
+  same_url?: string
 }
 
 /**

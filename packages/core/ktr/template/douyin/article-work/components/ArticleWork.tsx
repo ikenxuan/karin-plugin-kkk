@@ -6,6 +6,7 @@ import React from 'react'
 import ReactMarkdown, { defaultUrlTransform } from 'react-markdown'
 
 import { APPLE_EMOJI_MARKER, getAppleEmojiAssetUrl } from '../../../../utils/appleEmoji'
+import { pickChromiumImageUrl } from '../../../../utils/imageUrl'
 import { isDark } from '../../../../utils/theme'
 import { DefaultLayout } from '../../../components/DefaultLayout'
 import { QRCodeWithAvatar } from '../../../components/QRCodeWithAvatar'
@@ -21,7 +22,14 @@ const getTitleClassName = (titleLength: number): string => {
 }
 
 const getArticleImageUrl = (image?: DouyinArticleWorkData['images'][number]): string | undefined =>
-  image?.ai_high_image_url || image?.high_image_url || image?.origin_image_url || image?.markdown_url
+  pickChromiumImageUrl(
+    image?.ai_high_image_url,
+    image?.high_image_url,
+    image?.origin_image_url,
+    image?.resize_url,
+    image?.same_url,
+    image?.markdown_url
+  )
 
 const preprocessMarkdown = (markdown: string): string =>
   markdown.replace(/!\[([^\]]*)\]\(([^\s)]+)(?:\s+width=\d+)?(?:\s+height=\d+)?\)/g, '![$1]($2)')
@@ -156,7 +164,8 @@ const getArticleCoverToSolidTransition = (coverColor?: string): string => {
   )`
 }
 
-const getArticleCoverUrl = (data: DouyinArticleWorkData): string | undefined => data.cover_url || getArticleImageUrl(data.images[0])
+const getArticleCoverUrl = (data: DouyinArticleWorkData): string | undefined =>
+  pickChromiumImageUrl(data.cover_url, getArticleImageUrl(data.images[0]))
 
 interface DouyinArticleNoiseProps extends PosterProps<DouyinArticleWorkData> {
   filterId: string
@@ -350,7 +359,7 @@ const DouyinArticleContent: React.FC<PosterProps<DouyinArticleWorkData>> = ({ da
               )
             }
 
-            const imageUrl = src ? imageMap.get(src) || src : ''
+            const imageUrl = src ? (pickChromiumImageUrl(imageMap.get(src), src) ?? '') : ''
             if (!imageUrl) return null
 
             return (

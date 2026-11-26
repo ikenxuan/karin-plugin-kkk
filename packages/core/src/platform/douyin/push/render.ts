@@ -13,7 +13,7 @@ import type { ImageElement, Message } from 'node-karin'
 
 import { Count, Render } from '@/module/utils'
 import { douyinWebApi } from '@/module/utils/amagiClient'
-import { processDouyinImageUrl } from '@/platform/douyin/image'
+import { pickChromiumImageUrl, processDouyinImageUrl } from '@/platform/douyin/image'
 import type { DouyinAwemeImage, DouyinLiveDetailData, DouyinTextExtra, DouyinWorkDetailData } from '@/platform/douyin/types'
 import { type dyVideo, formatDouyinQualityLabel } from '@/platform/douyin/videoQuality'
 
@@ -37,6 +37,16 @@ function desc(Desc: string | undefined) {
  * @param Detail_Data - 作品详情数据，包含 cooperation_info、user_info、author 等字段
  * @returns 合作信息对象，如果不存在则返回 undefined
  */
+/** 从多种头像尺寸中选 Chromium 可显示的 URL；URI 兜底只用于响应未返回任何 URL 列表的旧形状。 */
+function pickUserAvatarUrl(...images: Array<{ uri?: string; url_list?: (string | undefined)[] } | null | undefined>): string | undefined {
+  const listedCandidates = images.flatMap((image) => image?.url_list ?? []).filter((url): url is string => Boolean(url?.trim()))
+  const listedUrl = pickChromiumImageUrl(...images.map((image) => image?.url_list))
+  if (listedUrl || listedCandidates.length > 0) return listedUrl
+
+  const uri = images.find((image) => image?.uri)?.uri
+  return uri ? cdnAvatar(uri) : undefined
+}
+
 function buildCooperationInfo(Detail_Data: DouyinWorkDetailData):
   | {
       co_creator_nums: number
@@ -62,7 +72,11 @@ function buildCooperationInfo(Detail_Data: DouyinWorkDetailData):
   )
 
   const co_creators = rawCreators.map((c) => {
-    const avatarUrl = c.avatar_thumb?.url_list?.[0] ?? (c.avatar_thumb?.uri ? `https://p3.douyinpic.com/${c.avatar_thumb.uri}` : undefined)
+    const avatarUrl =
+      pickChromiumImageUrl(c.avatar_thumb?.url_list) ??
+      (!c.avatar_thumb?.url_list?.some((url) => typeof url === 'string' && url.trim()) && c.avatar_thumb?.uri
+        ? `https://p3.douyinpic.com/${c.avatar_thumb.uri}`
+        : undefined)
 
     return {
       avatar_url: avatarUrl,
@@ -82,8 +96,11 @@ function buildCooperationInfo(Detail_Data: DouyinWorkDetailData):
   ) {
     co_creators.unshift({
       avatar_url:
-        Detail_Data.author.avatar_thumb?.url_list?.[0] ??
-        (Detail_Data.author.avatar_thumb?.uri ? `https://p3.douyinpic.com/${Detail_Data.author.avatar_thumb.uri}` : undefined),
+        pickChromiumImageUrl(Detail_Data.author.avatar_thumb?.url_list) ??
+        (!Detail_Data.author.avatar_thumb?.url_list?.some((url) => typeof url === 'string' && url.trim()) &&
+        Detail_Data.author.avatar_thumb?.uri
+          ? `https://p3.douyinpic.com/${Detail_Data.author.avatar_thumb.uri}`
+          : undefined),
       nickname: Detail_Data.author.nickname,
       role_title: '作者'
     })
@@ -115,8 +132,7 @@ function cdnAvatar(uri: string): string {
  * 获取作品作者头像，优先沿用用户主页的高清头像，解析侧缺少主页数据时回退到作品作者头像。
  */
 function getUserAvatar(user: DouyinUserLike | null | undefined): string {
-  if (user?.avatar_larger?.uri) return cdnAvatar(user.avatar_larger.uri)
-  return pickImageUrl(user?.avatar_larger, user?.avatar_medium, user?.avatar_thumb) ?? ''
+  return pickUserAvatarUrl(user?.avatar_larger, user?.avatar_medium, user?.avatar_thumb) ?? ''
 }
 
 /** 图文内单张媒体的模板类型。 */
@@ -169,9 +185,11 @@ function buildImageList(
   const imageItems = images
     .map((img, index) => ({
       url:
-        index === 0
-          ? (img.url_list[2] ?? img.url_list[1] ?? img.url_list[0] ?? fallbackCover)
-          : (img.url_list[1] ?? img.url_list[0] ?? img.url_list[2] ?? ''),
+        pickChromiumImageUrl(
+          index === 0
+            ? [img.url_list[2], img.url_list[1], img.url_list[0], fallbackCover]
+            : [img.url_list[1], img.url_list[0], img.url_list[2]]
+        ) ?? '',
       media_type: getImageMediaType(img)
     }))
     .filter((item) => {
@@ -184,7 +202,7 @@ function buildImageList(
 
   return {
     images: imageItems,
-    total_count: images.length
+    total_count: imageItems.length
   }
 }
 
@@ -404,11 +422,7 @@ function extractSuggestWord(Detail_Data: DouyinWorkDetailData): { hint_text: str
  * @returns 可直接渲染的图片 URL，不存在时返回 undefined
  */
 function pickImageUrl(...images: Array<{ url_list?: (string | undefined)[] } | null | undefined>): string | undefined {
-  for (const image of images) {
-    const url = image?.url_list?.find((item): item is string => typeof item === 'string' && item.length > 0)
-    if (url) return url
-  }
-  return undefined
+  return pickChromiumImageUrl(...images.map((image) => image?.url_list))
 }
 
 /**
@@ -601,7 +615,13 @@ export async function renderWorkImage(options: RenderWorkImageOptions): Promise<
     }
 
     case DouyinWorkMainType.IMAGE: {
-      const cover = Detail_Data.images?.[0]?.url_list[2] ?? Detail_Data.images?.[0]?.url_list[1] ?? coverUrl
+      const cover =
+        pickChromiumImageUrl(
+          Detail_Data.images?.[0]?.url_list[2],
+          Detail_Data.images?.[0]?.url_list[1],
+          Detail_Data.images?.[0]?.url_list[0],
+          coverUrl
+        ) ?? ''
       const rawDesc = Detail_Data.desc ?? ''
       const splitDesc = splitTitleAndBody(rawDesc)
       const titleOffset = rawDesc.length - splitDesc.body.length
@@ -674,10 +694,10 @@ export async function renderFavoriteImage(options: RenderFavoriteRecommendOption
     tuijian: Count(Detail_Data.statistics.recommend_count),
     create_time: format(fromUnixTime(create_time), 'yyyy-MM-dd HH:mm'),
     liker_username: remark,
-    liker_avatar: cdnAvatar(subscriberUser.avatar_larger.uri),
+    liker_avatar: getUserAvatar(subscriberUser),
     liker_douyin_id: douyinId(subscriberUser),
     author_username: Detail_Data.author.nickname,
-    author_avatar: authorUserInfo ? cdnAvatar(authorUserInfo.user.avatar_larger.uri) : Detail_Data.author.avatar_thumb.url_list[0],
+    author_avatar: getUserAvatar(authorUserInfo?.user ?? Detail_Data.author),
     author_douyin_id: authorUserInfo ? douyinId(authorUserInfo.user) : douyinId(Detail_Data.author),
     share_url: shareLink
   })
@@ -706,10 +726,10 @@ export async function renderRecommendImage(options: RenderFavoriteRecommendOptio
     tuijian: Count(Detail_Data.statistics.recommend_count),
     create_time: format(fromUnixTime(create_time), 'yyyy-MM-dd HH:mm'),
     recommender_username: remark,
-    recommender_avatar: cdnAvatar(recommenderUser.avatar_larger.uri),
+    recommender_avatar: getUserAvatar(recommenderUser),
     recommender_douyin_id: douyinId(recommenderUser),
     author_username: Detail_Data.author.nickname,
-    author_avatar: authorUserInfo ? cdnAvatar(authorUserInfo.user.avatar_larger.uri) : Detail_Data.author.avatar_thumb.url_list[0],
+    author_avatar: getUserAvatar(authorUserInfo?.user ?? Detail_Data.author),
     author_douyin_id: authorUserInfo ? douyinId(authorUserInfo.user) : douyinId(Detail_Data.author),
     share_url: shareLink
   })
@@ -745,14 +765,14 @@ export async function renderLiveImage(options: RenderLiveImageOptions): Promise<
   const resolution = streamExtra ? `${streamExtra.width}x${streamExtra.height}` : liveItem.stream_url?.default_resolution
 
   return await Render(e, 'douyin/live', {
-    image_url: liveItem.cover ? liveItem.cover?.url_list[0] : '',
+    image_url: pickChromiumImageUrl(liveItem.cover?.url_list) ?? '',
     text: liveItem.title ?? '',
     partition_title: Detail_Data.live_data.data.partition_road_map?.partition?.title || '未知分区',
     room_id: room_data.owner.web_rid,
     online_viewers: Count(Number(liveItem.room_view_stats?.display_value)),
     total_viewers: liveItem.stats?.total_user_str || '',
     username: user.nickname,
-    avater_url: cdnAvatar(user.avatar_larger.uri),
+    avater_url: getUserAvatar(user),
     fans: Count(user.follower_count),
     share_url: 'https://live.douyin.com/' + room_data.owner.web_rid,
     dynamicTYPE: dynamicTypeLabel,

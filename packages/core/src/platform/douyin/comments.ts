@@ -20,7 +20,7 @@ import { douyinAppApi, douyinWebApi } from '@/module/utils/amagiClient'
 import { Config } from '@/module/utils/Config'
 import { logger } from '@/module/utils/logger'
 
-import { processDouyinImageUrl } from './image'
+import { pickChromiumImageUrl, processDouyinImageUrl } from './image'
 
 /** 一级评论（`douyin.comments` 的元素） */
 type DyComment = DouyinCommentsResponse['comments'][number]
@@ -392,7 +392,7 @@ export const douyinComments = async (
     const cid = comment.cid
     const aweme_id = comment.aweme_id
     const nickname = comment.user.nickname
-    const userimageurl = comment.user.avatar_thumb.url_list[0]
+    const userimageurl = pickChromiumImageUrl(comment.user.avatar_thumb.url_list) ?? ''
     const text = comment.text
     const ip = comment.ip_label ?? '未知'
     const label_type = comment.label_type ?? -1
@@ -464,7 +464,7 @@ export const douyinComments = async (
         replyComments.push({
           create_time: replyItem.create_time,
           nickname: replyItem.user.nickname,
-          userimageurl: replyItem.user.avatar_thumb.url_list[0],
+          userimageurl: pickChromiumImageUrl(replyItem.user.avatar_thumb.url_list) ?? '',
           text: replyRichText,
           digg_count: replyItem.digg_count,
           ip_label: replyItem.ip_label,
