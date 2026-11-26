@@ -18,8 +18,8 @@ vi.mock('@/module/utils', () => ({
 vi.mock('heic-decode', () => ({ default: runtime.decode }))
 vi.mock('jpeg-js', () => ({ default: { encode: runtime.encode } }))
 
-import { isHeicDouyinImageUrl, pickChromiumImageUrl, processDouyinImageUrl } from '@/platform/douyin/image'
-import { getWorkCoverUrl } from '@/platform/douyin/workType'
+import { isHeicDouyinImageUrl, pickChromiumImageUrl, processDouyinImageUrl, resolveDouyinWorkCoverUrl } from '@/platform/douyin/image'
+import { getWorkCoverCandidates, getWorkCoverUrl } from '@/platform/douyin/workType'
 
 describe('抖音图片浏览器兼容处理', () => {
   beforeEach(() => {
@@ -43,6 +43,24 @@ describe('抖音图片浏览器兼容处理', () => {
       90
     )
     expect(result).toBe('data:image/jpeg;base64,/9j/2Q==')
+  })
+
+  it('HEIC 封面地址直接下载转码，不依赖不稳定的 HEAD 响应', async () => {
+    const result = await processDouyinImageUrl('https://example.test/article-cover.heic', { forceKnownHeic: true })
+
+    expect(runtime.getHeaders).not.toHaveBeenCalled()
+    expect(runtime.returnResult).toHaveBeenCalledTimes(1)
+    expect(result).toBe('data:image/jpeg;base64,/9j/2Q==')
+  })
+
+  it('调用方未要求强制转码时仍按响应 MIME 判断，保护评论图片原有处理方式', async () => {
+    runtime.getHeaders.mockResolvedValue({ 'content-type': 'image/png' })
+
+    const result = await processDouyinImageUrl('https://example.test/comment.heic')
+
+    expect(result).toBe('https://example.test/comment.heic')
+    expect(runtime.getHeaders).toHaveBeenCalledTimes(1)
+    expect(runtime.returnResult).not.toHaveBeenCalled()
   })
 
   it('其他浏览器支持的图片类型保留原始 URL，不重复下载', async () => {
@@ -84,6 +102,16 @@ describe('抖音静态图片候选筛选', () => {
     expect(pickChromiumImageUrl('https://cdn.example.test/a.heic', 'https://cdn.example.test/b.heif')).toBeUndefined()
   })
 
+  it('只把图文作品的第一张图片作为封面候选', () => {
+    const firstImage = 'https://cdn.example.test/first.heic'
+    const secondImage = 'https://cdn.example.test/second.jpg'
+    const workType = { mainType: 'image', isImage: true }
+    const data = { images: [{ url_list: [firstImage] }, { url_list: [secondImage] }] }
+
+    expect(getWorkCoverCandidates(workType as never, data as never)).toEqual([firstImage])
+    expect(getWorkCoverUrl(workType as never, data as never)).toBe('')
+  })
+
   it.each([
     {
       name: '视频封面',
@@ -108,5 +136,41 @@ describe('抖音静态图片候选筛选', () => {
     }
   ] as const)('$name 跳过 HEIC 并回退到兼容候选', ({ workType, data }) => {
     expect(getWorkCoverUrl(workType as never, data as never)).toBe('https://cdn.example.test/cover.jpg')
+  })
+})
+
+describe('抖音作品封面 HEIC 兜底', () => {
+  const workType = { mainType: 'video', isVideo: true }
+
+  it('没有可显示候选时下载并转码 HEIC 封面，提供 JPEG Data URL', async () => {
+    const heic = 'https://cdn.example.test/cover.heic'
+    const data = { video: { animated_cover: { url_list: [heic] } } }
+
+    await expect(resolveDouyinWorkCoverUrl(workType as never, data as never)).resolves.toBe('data:image/jpeg;base64,/9j/2Q==')
+    expect(runtime.getHeaders).not.toHaveBeenCalled()
+    expect(runtime.returnResult).toHaveBeenCalledTimes(1)
+  })
+
+  it('一个 HEIC 候选解码失败后继续尝试后续候选', async () => {
+    const firstHeic = 'https://cdn.example.test/first.heic'
+    const secondHeic = 'https://cdn.example.test/second.heif'
+    const data = {
+      video: {
+        animated_cover: { url_list: [firstHeic] },
+        cover: { url_list: [secondHeic] }
+      }
+    }
+    runtime.decode.mockRejectedValueOnce(new Error('HEIC decode failed'))
+
+    await expect(resolveDouyinWorkCoverUrl(workType as never, data as never)).resolves.toBe('data:image/jpeg;base64,/9j/2Q==')
+    expect(runtime.returnResult).toHaveBeenCalledTimes(2)
+  })
+
+  it('不向模板返回未能解码的 HEIC 封面链接', async () => {
+    const heic = 'https://cdn.example.test/cover.heic'
+    const data = { video: { animated_cover: { url_list: [heic] } } }
+    runtime.decode.mockRejectedValue(new Error('HEIC decode failed'))
+
+    await expect(resolveDouyinWorkCoverUrl(workType as never, data as never)).resolves.toBe('')
   })
 })

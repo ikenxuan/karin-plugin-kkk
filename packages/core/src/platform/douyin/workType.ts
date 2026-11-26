@@ -1,4 +1,4 @@
-import { isHeicImageUrl, pickChromiumImageUrl } from '../../../ktr/utils/imageUrl'
+import { pickChromiumImageUrl } from '../../../ktr/utils/imageUrl'
 import type { DouyinWorkDetailData } from './types'
 
 /**
@@ -152,53 +152,60 @@ export function getWorkTypeInfo(data: {
 const LOW_RES_COVER_PATTERN = /~tplv-[^/?]*(?:270p|360p|480p|540p)/i
 
 /**
- * 获取作品封面 URL
+ * 获取作品封面候选 URL，顺序与各类作品的现有封面优先级一致。
+ * 图文封面只从第一张图片取候选；后续图片是作品正文，不得被误选为主封面。
  */
-export function getWorkCoverUrl(
+export function getWorkCoverCandidates(
   workTypeInfo: DouyinWorkTypeInfo,
   data: {
     video?: {
-      animated_cover?: { url_list: string[] }
-      cover_original_scale?: { url_list: string[] }
-      origin_cover?: { url_list: string[] }
-      cover?: { url_list: string[] }
+      animated_cover?: { url_list?: string[] }
+      cover_original_scale?: { url_list?: string[] }
+      origin_cover?: { url_list?: string[] }
+      cover?: { url_list?: string[] }
     }
-    images?: Array<{ url_list: string[] }> | null
+    images?: Array<{ url_list?: string[] }> | null
     article_info?: {
       article_content?: string
       fe_data?: string
     }
   }
-): string {
-  // 视频封面
+): string[] {
+  // 视频候选：先保留原来的字段优先级，并把低分辨率模板放到末尾。
   if (workTypeInfo.isVideo && data.video) {
-    // 详情接口没有 animated_cover，会落到 cover_original_scale，
-    // 而它的 url_list[0] 常是 ~tplv-dy-360p 这类 CDN 降质模板（签名绑定路径，无法改 URL 还原）。
-    // 所以按优先级收集所有候选后，优先取未命中低清模板的；全部命中时维持原优先级兜底。
     const candidates = [data.video.animated_cover, data.video.cover_original_scale, data.video.origin_cover, data.video.cover].flatMap(
       (field) => field?.url_list ?? []
     )
-    const chromiumCandidates = candidates.filter((url) => !isHeicImageUrl(url))
-    return chromiumCandidates.find((url) => !LOW_RES_COVER_PATTERN.test(url)) ?? chromiumCandidates[0] ?? ''
+    return [...candidates.filter((url) => !LOW_RES_COVER_PATTERN.test(url)), ...candidates.filter((url) => LOW_RES_COVER_PATTERN.test(url))]
   }
 
-  // 图文封面
-  if (workTypeInfo.isImage && data.images && data.images.length > 0) {
-    return pickChromiumImageUrl(...data.images.map((image) => image.url_list)) ?? ''
+  if (workTypeInfo.isImage && data.images?.[0]) {
+    return data.images[0].url_list ?? []
   }
 
-  // 文章头图分别可能出现在 Web/App 的 fe_data，或 App 的 article_content。
   if (workTypeInfo.isArticle && data.article_info) {
-    try {
-      const content = JSON.parse(data.article_info.article_content ?? '{}')
-      const feData = JSON.parse(data.article_info.fe_data ?? '{}')
-      return pickChromiumImageUrl(feData.head_poster_list?.url_list, content.head_poster_list?.url_list) ?? ''
-    } catch {
-      return ''
+    const parseHeadPosterUrls = (value?: string): string[] => {
+      try {
+        const parsed = JSON.parse(value ?? '{}')
+        const urls: unknown = parsed?.head_poster_list?.url_list
+        return Array.isArray(urls) ? urls.filter((url): url is string => typeof url === 'string') : []
+      } catch {
+        return []
+      }
     }
+
+    // Web/App 返回位置不同时逐个收集，某一方 JSON 损坏不影响另一方候选。
+    return [...parseHeadPosterUrls(data.article_info.fe_data), ...parseHeadPosterUrls(data.article_info.article_content)]
   }
 
-  return ''
+  return []
+}
+
+/**
+ * 获取首个 Chromium 可显示的作品封面 URL；全部 HEIC/HEIF 时交给下载转码兜底。
+ */
+export function getWorkCoverUrl(workTypeInfo: DouyinWorkTypeInfo, data: Parameters<typeof getWorkCoverCandidates>[1]): string {
+  return pickChromiumImageUrl(getWorkCoverCandidates(workTypeInfo, data)) ?? ''
 }
 
 /**

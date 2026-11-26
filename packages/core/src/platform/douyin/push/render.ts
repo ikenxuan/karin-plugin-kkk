@@ -13,11 +13,11 @@ import type { ImageElement, Message } from 'node-karin'
 
 import { Count, Render } from '@/module/utils'
 import { douyinWebApi } from '@/module/utils/amagiClient'
-import { pickChromiumImageUrl, processDouyinImageUrl } from '@/platform/douyin/image'
+import { pickChromiumImageUrl, processDouyinImageUrl, resolveDouyinWorkCoverUrl } from '@/platform/douyin/image'
 import type { DouyinAwemeImage, DouyinLiveDetailData, DouyinTextExtra, DouyinWorkDetailData } from '@/platform/douyin/types'
 import { type dyVideo, formatDouyinQualityLabel } from '@/platform/douyin/videoQuality'
 
-import { DouyinWorkMainType, type DouyinWorkTypeInfo, getWorkCoverUrl, getWorkTypeInfo } from '../workType'
+import { DouyinWorkMainType, type DouyinWorkTypeInfo, getWorkTypeInfo } from '../workType'
 
 /** 作品作者或订阅者用户对象（aweme author 与用户主页 user 的联合） */
 type DouyinUserLike = DouyinWorkDetailData['author'] | DouyinUserProfileResponse['user']
@@ -537,7 +537,7 @@ export async function renderWorkImage(options: RenderWorkImageOptions): Promise<
   const { e, Detail_Data, create_time, shareLink, videoSource } = options
   const workTypeInfo = getWorkTypeInfo(Detail_Data)
   const dynamicTypeLabel = options.dynamicTypeLabel ?? getDefaultPushLabel(workTypeInfo)
-  const coverUrl = getWorkCoverUrl(workTypeInfo, Detail_Data)
+  const coverUrl = await resolveDouyinWorkCoverUrl(workTypeInfo, Detail_Data)
   const formatTime = format(fromUnixTime(create_time), 'yyyy-MM-dd HH:mm')
   const user = Detail_Data.user_info?.user ?? Detail_Data.author
   if (!user) return []
@@ -680,7 +680,7 @@ export interface RenderFavoriteRecommendOptions {
 export async function renderFavoriteImage(options: RenderFavoriteRecommendOptions): Promise<ImageElement[]> {
   const { e, Detail_Data, create_time, shareLink, remark } = options
   const workTypeInfo = getWorkTypeInfo(Detail_Data)
-  const coverUrl = getWorkCoverUrl(workTypeInfo, Detail_Data)
+  const coverUrl = await resolveDouyinWorkCoverUrl(workTypeInfo, Detail_Data)
   const authorUserInfo = Detail_Data.author_user_info
   const subscriberUser = Detail_Data.user_info.user
 
@@ -712,7 +712,7 @@ export async function renderFavoriteImage(options: RenderFavoriteRecommendOption
 export async function renderRecommendImage(options: RenderFavoriteRecommendOptions): Promise<ImageElement[]> {
   const { e, Detail_Data, create_time, shareLink, remark } = options
   const workTypeInfo = getWorkTypeInfo(Detail_Data)
-  const coverUrl = getWorkCoverUrl(workTypeInfo, Detail_Data)
+  const coverUrl = await resolveDouyinWorkCoverUrl(workTypeInfo, Detail_Data)
   const authorUserInfo = Detail_Data.author_user_info
   const recommenderUser = Detail_Data.user_info.user
 

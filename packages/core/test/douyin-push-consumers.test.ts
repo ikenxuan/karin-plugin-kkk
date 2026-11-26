@@ -15,18 +15,31 @@ const runtime = vi.hoisted(() => ({
     getLiveStatus: vi.fn(),
     updateLiveStatus: vi.fn()
   },
-  render: vi.fn()
+  render: vi.fn(),
+  getHeaders: vi.fn(),
+  returnResult: vi.fn(),
+  decode: vi.fn(),
+  encode: vi.fn()
 }))
 
 vi.mock('@/module/utils/amagiClient', () => ({ douyinWebApi: runtime.web }))
 vi.mock('@/module', () => ({ douyinDB: runtime.db }))
-vi.mock('@/module/utils', () => ({ Count: (value: number) => String(value), Render: runtime.render }))
+vi.mock('@/module/utils', () => ({
+  Count: (value: number) => String(value),
+  Render: runtime.render,
+  Networks: class {
+    getHeaders = runtime.getHeaders
+    returnResult = runtime.returnResult
+  }
+}))
+vi.mock('heic-decode', () => ({ default: runtime.decode }))
+vi.mock('jpeg-js', () => ({ default: { encode: runtime.encode } }))
 vi.mock('@/module/utils/logger', () => ({ logger: { debug: vi.fn(), warn: vi.fn(), info: vi.fn(), error: vi.fn() } }))
 
 import { processFavoriteList } from '@/platform/douyin/push/favorite'
 import { processLiveStream } from '@/platform/douyin/push/live'
 import { processRecommendList } from '@/platform/douyin/push/recommend'
-import { renderWorkImage } from '@/platform/douyin/push/render'
+import { renderFavoriteImage, renderRecommendImage, renderWorkImage } from '@/platform/douyin/push/render'
 
 const success = <T>(endpoint: string, data: T): AmagiSuccess<T> => ({
   success: true,
@@ -80,6 +93,10 @@ beforeEach(() => {
   runtime.db.isAwemePushed.mockResolvedValue(false)
   runtime.db.getLiveStatus.mockResolvedValue({ living: false })
   runtime.render.mockResolvedValue([image])
+  runtime.getHeaders.mockResolvedValue({ 'content-type': 'image/jpeg' })
+  runtime.returnResult.mockResolvedValue({ data: Buffer.from([0x00, 0x01]) })
+  runtime.decode.mockResolvedValue({ data: new Uint8Array([0xff, 0xff, 0xff, 0xff]), width: 1, height: 1 })
+  runtime.encode.mockReturnValue({ data: Buffer.from([0xff, 0xd8, 0xff, 0xd9]) })
 })
 
 describe('抖音喜欢、推荐推送辅助消费者的 v7 Web API', () => {
@@ -112,6 +129,66 @@ describe('抖音喜欢、推荐推送辅助消费者的 v7 Web API', () => {
     expect(result[0].Detail_Data.user_info).toBe(subscriber)
     expect(result[0].Detail_Data.author_user_info).toBeUndefined()
     expect(runtime.db.touchAwemeCache).toHaveBeenCalledWith('subscriber-1', pushType, ['aweme-1'])
+  })
+})
+
+describe('抖音作品封面转码后传入模板数据', () => {
+  const heicCover = 'https://cdn.example.test/work-cover.heic'
+  const convertedCover = 'data:image/jpeg;base64,/9j/2Q=='
+  const cases = [
+    {
+      name: '视频作品',
+      template: 'douyin/video-work',
+      templateData: { image_url: convertedCover },
+      detail: { ...aweme, video: { animated_cover: { url_list: [heicCover] }, cover: { url_list: [heicCover] } } }
+    },
+    {
+      name: '图文作品',
+      template: 'douyin/image-work',
+      templateData: { image_list: { images: [{ url: convertedCover, media_type: 'static' }], total_count: 1 } },
+      detail: { ...aweme, aweme_type: 68, images: [{ url_list: [heicCover] }] }
+    },
+    {
+      name: '文章作品',
+      template: 'douyin/article-work',
+      templateData: { cover_url: convertedCover },
+      detail: {
+        ...aweme,
+        aweme_type: 163,
+        article_info: {
+          article_title: '文章标题',
+          article_content: JSON.stringify({ markdown: '正文' }),
+          fe_data: JSON.stringify({ head_poster_list: { url_list: [heicCover] }, image_list: [] })
+        }
+      }
+    }
+  ] as const
+
+  it.each(cases)('$name 使用 JPEG Data URL 填充作品模板封面', async ({ detail, template, templateData }) => {
+    await renderWorkImage({
+      e: {} as Message,
+      Detail_Data: detail as unknown as DouyinWorkDetailData,
+      create_time: 1700000000,
+      shareLink: 'https://www.douyin.com/video/aweme-heic-cover'
+    })
+
+    expect(runtime.decode).toHaveBeenCalledWith({ buffer: Buffer.from([0x00, 0x01]) })
+    expect(runtime.render).toHaveBeenCalledWith(expect.anything(), template, expect.objectContaining(templateData))
+  })
+
+  it.each([
+    { name: '喜欢列表', render: renderFavoriteImage, template: 'douyin/favorite-list' },
+    { name: '推荐列表', render: renderRecommendImage, template: 'douyin/recommend-list' }
+  ] as const)('$name 同样将转换后的封面传入模板', async ({ render, template }) => {
+    await render({
+      e: {} as Message,
+      Detail_Data: { ...aweme, user_info: subscriber, video: { cover: { url_list: [heicCover] } } } as unknown as DouyinWorkDetailData,
+      create_time: 1700000000,
+      shareLink: 'https://www.douyin.com/video/aweme-heic-cover',
+      remark: '订阅者'
+    })
+
+    expect(runtime.render).toHaveBeenCalledWith(expect.anything(), template, expect.objectContaining({ image_url: convertedCover }))
   })
 })
 
